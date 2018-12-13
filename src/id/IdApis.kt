@@ -15,7 +15,7 @@ fun Route.idApis(
     idGateway: IdGateway
 ) {
 
-    val logger: Logger = LoggerFactory.getLogger("defaultStatusPages")
+    val logger: Logger = LoggerFactory.getLogger("nav.defaultStatusPages")
 
 
     @Location("/id/{fnr}")

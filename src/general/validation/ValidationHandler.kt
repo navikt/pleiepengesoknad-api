@@ -11,7 +11,7 @@ class ValidationHandler(
 ) {
     fun <T> validate(input: T) {
 
-        val logger: Logger = LoggerFactory.getLogger("validationStatusPages")
+        val logger: Logger = LoggerFactory.getLogger("nav.validationStatusPages")
 
 
         val constraints = validator.validate(input)
@@ -24,7 +24,7 @@ class ValidationHandler(
                 var invalidValue = if (it.invalidValue != null) objectMapper.writeValueAsString(it.invalidValue) else null
                 if (invalidValue != null) invalidValue = invalidValue.removePrefix("\"").removeSuffix("\"")
 
-                logger.info("Invalid Value = '{}'", invalidValue)
+                logger.trace("Invalid Value = '{}'", invalidValue)
                 violations.add(
                     Violation(
                         name = it.propertyPath.toString(),

@@ -12,7 +12,7 @@ import java.net.URI
 
 fun StatusPages.Configuration.defaultStatusPages() {
 
-    val logger: Logger = LoggerFactory.getLogger("defaultStatusPages")
+    val logger: Logger = LoggerFactory.getLogger("nav.defaultStatusPages")
     val aboutBlank = URI.create("about:blank")
 
     exception<IllegalStateException> { cause ->

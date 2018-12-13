@@ -17,7 +17,7 @@ class ApplicationWithMocks {
 
 
             val testArgs = arrayOf(
-                "-P:ktor.deployment.port=8888",
+                "-P:ktor.deployment.port=8810",
                 "-P:nav.gateways.idGateway.baseUrl=" + wireMockServer.baseUrl() + "/id-gateway"
             )
 

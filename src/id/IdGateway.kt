@@ -14,7 +14,7 @@ class IdGateway(
     private val baseUri: Url
 ) {
 
-    val logger: Logger = LoggerFactory.getLogger("IdGateway")
+    val logger: Logger = LoggerFactory.getLogger("nav.IdGateway")
 
     suspend fun getId() : String {
         val url = URLBuilder().takeFrom(baseUri).path(baseUri.fullPath, "foo").buildString()

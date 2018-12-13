@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 
 fun StatusPages.Configuration.authorizationStatusPages() {
 
-    val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+    val logger: Logger = LoggerFactory.getLogger("nav.authorizationStatusPages")
 
     exception<UnauthorizedException> { cause ->
         call.respond(HttpStatusCode.Forbidden, DefaultError(

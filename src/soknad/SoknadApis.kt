@@ -14,7 +14,7 @@ fun Route.soknadApis(
     validationHandler: ValidationHandler
 ) {
 
-    val logger: Logger = LoggerFactory.getLogger("soknadApis")
+    val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 
     @Location("/soker/{id}/soknad")
     class sendSoknad(
