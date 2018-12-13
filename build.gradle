@@ -29,6 +29,15 @@ repositories {
     maven { url 'https://kotlin.bintray.com/kotlinx' }
 }
 
+jar {
+    archiveName 'app.jar'
+    manifest {
+        attributes 'Main-Class': 'io.ktor.server.netty.EngineMain'
+    }
+
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
 dependencies {
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "ch.qos.logback:logback-classic:$logback_version"
@@ -55,11 +64,8 @@ dependencies {
     compile 'javax.el:javax.el-api:3.0.1-b06'
     compile 'org.glassfish.web:javax.el:2.2.6'
 
-
     // Test
     testCompile "com.github.tomakehurst:wiremock:$wiremock_version"
-//    testCompile "io.ktor:ktor-server-tests:$ktor_version"
-//
     testCompile("io.ktor:ktor-server-test-host:$ktor_version") {
         exclude(group: "org.eclipse.jetty")
     }
