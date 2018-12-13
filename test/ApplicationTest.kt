@@ -29,6 +29,7 @@ class ApplicationTest {
 
         val engine = TestApplicationEngine(createTestEnvironment {
             config = MapApplicationConfig().apply {
+                put("ktor.deployment.port", "8081")
                 put("nav.cors.addresses", listOf("http://localhost:8888"))
                 put("nav.gateways.idGateway.baseUrl",
                     URLBuilder().takeFrom(wireMockServer.baseUrl()).path("id-gateway").build().toString()
