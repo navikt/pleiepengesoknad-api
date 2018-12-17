@@ -1,6 +1,11 @@
 package no.nav.pleiepenger.api
 
+import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.application.*
+import io.ktor.auth.Authentication
+import io.ktor.auth.authenticate
+import io.ktor.auth.jwt.JWTPrincipal
+import io.ktor.auth.jwt.jwt
 import io.ktor.request.*
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
@@ -12,10 +17,14 @@ import io.ktor.http.*
 import io.ktor.features.*
 import io.ktor.jackson.jackson
 import io.ktor.locations.*
+import io.ktor.util.pipeline.PipelineInterceptor
+import io.ktor.util.pipeline.PipelinePhase
+import io.ktor.util.toMap
 
 import no.nav.pleiepenger.api.ansettelsesforhold.ansettelsesforholdApis
 import no.nav.pleiepenger.api.barn.barnApis
 import no.nav.pleiepenger.api.general.auth.authorizationStatusPages
+import no.nav.pleiepenger.api.general.auth.jwtFromCookie
 import no.nav.pleiepenger.api.general.error.defaultStatusPages
 import no.nav.pleiepenger.api.general.jackson.configureObjectMapper
 import no.nav.pleiepenger.api.general.validation.ValidationHandler
@@ -24,9 +33,12 @@ import no.nav.pleiepenger.api.id.IdGateway
 import no.nav.pleiepenger.api.id.idApis
 import no.nav.pleiepenger.api.soker.sokerApis
 import no.nav.pleiepenger.api.soknad.soknadApis
+import org.slf4j.MDC
 
 import org.slf4j.event.*
 import java.net.URI
+import java.net.URL
+import java.util.concurrent.TimeUnit
 import javax.validation.Validation
 import javax.validation.Validator
 
@@ -44,6 +56,7 @@ fun Application.pleiepengesoknadapi(
     }
 ) {
 
+    val configuration = Configuration(environment.config)
     log.info("Client Engine type is '{}'", client.engineConfig.javaClass)
 
     val objectMapper = configureObjectMapper()
@@ -57,6 +70,21 @@ fun Application.pleiepengesoknadapi(
         }
     }
 
+    install(Authentication) {
+        jwtFromCookie {
+            val jwkProvider = JwkProviderBuilder(configuration.getJwksUrl())
+                .cached(configuration.getJwkCacheSize(), configuration.getJwkCacheExpiryDuration(), configuration.getJwkCacheExpiryTimeUnit())
+                .rateLimited(configuration.getJwsJwkRateLimitBucketSize(), configuration.getJwkRateLimitRefillRate(), configuration.getJwkRateLimitRefillTimeUnit())
+                .build()
+            verifier(jwkProvider, configuration.getIssuer())
+            validate { credentials ->
+                MDC.put("fnr", credentials.payload.subject) // TODO: mdc..
+                return@validate JWTPrincipal(credentials.payload)
+            }
+            withCookieName(configuration.getCookieName())
+        }
+    }
+
     install(Locations) {
     }
 
@@ -65,7 +93,6 @@ fun Application.pleiepengesoknadapi(
         filter { call -> call.request.path().startsWith("/") }
     }
 
-    val corsAddresses = environment.config.property("nav.cors.addresses").getList()
 
     install(CORS) {
         method(HttpMethod.Options)
@@ -75,10 +102,9 @@ fun Application.pleiepengesoknadapi(
         header(HttpHeaders.Authorization)
         allowCredentials = true
         log.info("Configuring CORS")
-        corsAddresses.forEach {
-            val uri = URI.create(it)
-            log.info("Adding host {} with scheme {}", uri.host, uri.scheme)
-            host(host = uri.host, schemes = listOf(uri.scheme))
+        configuration.getWhitelistedCorsAddreses().forEach {
+            log.info("Adding host {} with scheme {}", it.host, it.scheme)
+            host(host = it.host, schemes = listOf(it.scheme))
         }
     }
 
@@ -94,6 +120,7 @@ fun Application.pleiepengesoknadapi(
     }
 
     install(Routing) {
+
         idApis(
             validationHandler = validationHandler,
             idGateway = IdGateway(
@@ -101,9 +128,12 @@ fun Application.pleiepengesoknadapi(
                 baseUri = Url(environment.config.property("nav.gateways.idGateway.baseUrl").getString())
             )
         )
-        barnApis(
-            httpClient = client
-        )
+        authenticate {
+            barnApis(
+                httpClient = client
+            )
+        }
+
         sokerApis(
             httpClient = client
         )

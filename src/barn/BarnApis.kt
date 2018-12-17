@@ -6,6 +6,7 @@ import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import org.slf4j.MDC
 import java.time.LocalDate
 import java.util.*
 
@@ -23,7 +24,7 @@ fun Route.barnApis(
             BarnResponse(
                 Collections.singletonList(
                     Barn(
-                        fornavn = "Barn",
+                        fornavn = "Barn" + MDC.get("fnr"),
                         mellomnavn = "Barn",
                         etternavn = "Barnesen",
                         fodselsdato = LocalDate.now()

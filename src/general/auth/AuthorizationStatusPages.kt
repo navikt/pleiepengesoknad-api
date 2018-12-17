@@ -12,11 +12,13 @@ fun StatusPages.Configuration.authorizationStatusPages() {
 
     val logger: Logger = LoggerFactory.getLogger("nav.authorizationStatusPages")
 
+    // TODO: 401 / 403 errors and proper type
     exception<UnauthorizedException> { cause ->
         call.respond(HttpStatusCode.Forbidden, DefaultError(
             status = HttpStatusCode.Forbidden.value,
-            title = "authorizationStatusPages"
+            title = "Not authenticated"
         ))
+        throw cause
     }
 
 
