@@ -14,10 +14,8 @@ fun Route.barnApis(
     httpClient: HttpClient
 ) {
 
-    @Location("/soker/{id}/barn")
-    class getBarn(
-        val id: kotlin.String
-    )
+    @Location("/barn")
+    class getBarn
 
     get { it: getBarn ->
         call.respond(

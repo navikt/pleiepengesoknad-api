@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.common.FileSource
 import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.*
-import no.nav.security.oidc.test.support.JwtTokenGenerator
+import no.nav.pleiepenger.api.getAuthCookie
 
 class AuthMockCookieResponseTransformer : ResponseTransformer() {
     override fun transform(
@@ -16,9 +16,8 @@ class AuthMockCookieResponseTransformer : ResponseTransformer() {
         val subject = request!!.queryParameter("subject").firstValue()
         val redirectLocation = if (request.queryParameter("redirect_location").isPresent) request.queryParameter("redirect_location").firstValue() else null
         val cookieName = if (request.queryParameter("cookie_name").isPresent) request.queryParameter("cookie_name").firstValue() else "localhost-idtoken"
-        val jwt = JwtTokenGenerator.createSignedJWT(subject).serialize()
 
-        val cookie = Cookie(listOf(String.format("%s=%s", cookieName, jwt), "Path=/", "Domain=localhost"))
+        val cookie = getAuthCookie(subject, cookieName)
 
         if (redirectLocation.isNullOrBlank()) {
             return Response.Builder.like(response)

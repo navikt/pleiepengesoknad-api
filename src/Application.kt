@@ -5,7 +5,6 @@ import io.ktor.application.*
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTPrincipal
-import io.ktor.auth.jwt.jwt
 import io.ktor.request.*
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
@@ -17,10 +16,6 @@ import io.ktor.http.*
 import io.ktor.features.*
 import io.ktor.jackson.jackson
 import io.ktor.locations.*
-import io.ktor.util.pipeline.PipelineInterceptor
-import io.ktor.util.pipeline.PipelinePhase
-import io.ktor.util.toMap
-
 import no.nav.pleiepenger.api.ansettelsesforhold.ansettelsesforholdApis
 import no.nav.pleiepenger.api.barn.barnApis
 import no.nav.pleiepenger.api.general.auth.authorizationStatusPages
@@ -33,12 +28,8 @@ import no.nav.pleiepenger.api.id.IdGateway
 import no.nav.pleiepenger.api.id.idApis
 import no.nav.pleiepenger.api.soker.sokerApis
 import no.nav.pleiepenger.api.soknad.soknadApis
-import org.slf4j.MDC
 
 import org.slf4j.event.*
-import java.net.URI
-import java.net.URL
-import java.util.concurrent.TimeUnit
 import javax.validation.Validation
 import javax.validation.Validator
 
@@ -78,7 +69,6 @@ fun Application.pleiepengesoknadapi(
                 .build()
             verifier(jwkProvider, configuration.getIssuer())
             validate { credentials ->
-                MDC.put("fnr", credentials.payload.subject) // TODO: mdc..
                 return@validate JWTPrincipal(credentials.payload)
             }
             withCookieName(configuration.getCookieName())

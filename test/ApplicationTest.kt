@@ -9,6 +9,7 @@ import io.ktor.config.HoconApplicationConfig
 import io.ktor.http.*
 import kotlin.test.*
 import io.ktor.server.testing.*
+import no.nav.pleiepenger.api.general.auth.UnauthorizedException
 import no.nav.pleiepenger.api.general.jackson.configureObjectMapper
 import no.nav.pleiepenger.api.id.IdResponse
 import no.nav.pleiepenger.api.wiremock.bootstrap
@@ -41,6 +42,7 @@ class ApplicationTest {
             config = getConfig()
         })
 
+
         @BeforeClass
         @JvmStatic
         fun buildUp() {
@@ -68,11 +70,36 @@ class ApplicationTest {
         )
         with(engine) {
             with(handleRequest(HttpMethod.Get, "/id/12345678911") {
-                addHeader("accept", "application/json")
+                addHeader("Accept", "application/json")
             }) {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals(IdResponse("1234"), objectMapper.readValue(response.content!!))
            }
+        }
+    }
+
+    @Test
+    fun getBarnAuthorizedTest() {
+        val cookie = getAuthCookie("290990123456")
+
+        with(engine) {
+            with(handleRequest(HttpMethod.Get, "/barn") {
+                addHeader("Accept", "application/json")
+                addHeader("Cookie", cookie.toString())
+            }) {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test(expected = UnauthorizedException::class)
+    fun getBarnUnauthorizedTest() {
+        with(engine) {
+            with(handleRequest(HttpMethod.Get, "/barn") {
+                addHeader("Accept", "application/json")
+            }) {
+                assertEquals(HttpStatusCode.Forbidden, response.status())
+            }
         }
     }
 }
