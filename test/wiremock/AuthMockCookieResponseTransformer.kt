@@ -1,4 +1,4 @@
-package no.nav.pleiepenger.api
+package no.nav.pleiepenger.api.wiremock
 
 import com.github.tomakehurst.wiremock.common.FileSource
 import com.github.tomakehurst.wiremock.extension.Parameters
