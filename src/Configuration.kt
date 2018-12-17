@@ -1,6 +1,8 @@
 package no.nav.pleiepenger.api
 
 import io.ktor.config.ApplicationConfig
+import io.ktor.http.Url
+import org.apache.http.client.utils.URIBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -63,5 +65,9 @@ data class Configuration(val config : ApplicationConfig) {
             corsAddresses.add(URI(it))
         }
         return corsAddresses.toList()
+    }
+
+    fun getSparkelUrl() : Url {
+        return Url(getString("nav.gateways.sparkel_url"))
     }
 }

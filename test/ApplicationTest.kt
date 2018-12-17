@@ -1,6 +1,5 @@
 package no.nav.pleiepenger.api
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.typesafe.config.ConfigFactory
@@ -11,7 +10,6 @@ import kotlin.test.*
 import io.ktor.server.testing.*
 import no.nav.pleiepenger.api.general.auth.UnauthorizedException
 import no.nav.pleiepenger.api.general.jackson.configureObjectMapper
-import no.nav.pleiepenger.api.id.IdResponse
 import no.nav.pleiepenger.api.wiremock.bootstrap
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -29,7 +27,7 @@ class ApplicationTest {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(mutableMapOf(
-                Pair("nav.gateways.idGateway.baseUrl", wireMockServer.baseUrl() + "/id-gateway")
+                Pair("nav.gateways.sparkel_url", wireMockServer.baseUrl() + "/sparkel-mock")
             ))
 
             val mergedConfig = testConfig.withFallback(fileConfig)
@@ -56,11 +54,10 @@ class ApplicationTest {
         }
     }
 
-
     @Test
-    fun getIdTest() {
+    fun getBarnAuthorizedTest() {
         stubFor(
-            get("/id-gateway/foo")
+            get("/sparkel-mock/foo")
                 .willReturn(
                     aResponse()
                         .withStatus(200)
@@ -68,18 +65,6 @@ class ApplicationTest {
                         .withBody("{\"id\":\"1234\"}")
                 )
         )
-        with(engine) {
-            with(handleRequest(HttpMethod.Get, "/id/12345678911") {
-                addHeader("Accept", "application/json")
-            }) {
-                assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals(IdResponse("1234"), objectMapper.readValue(response.content!!))
-           }
-        }
-    }
-
-    @Test
-    fun getBarnAuthorizedTest() {
         val cookie = getAuthCookie("290990123456")
 
         with(engine) {

@@ -16,11 +16,11 @@ class IdGateway(
 
     val logger: Logger = LoggerFactory.getLogger("nav.IdGateway")
 
-    suspend fun getId() : String {
+    suspend fun getId() : Id {
         val url = URLBuilder().takeFrom(baseUri).path(baseUri.fullPath, "foo").buildString()
         logger.info("Requesting url '{}'", url)
         val response = httpClient.get<IdResponse>(url)
         logger.info("id='{}'", response)
-        return response.id
+        return Id(response.id)
     }
 }

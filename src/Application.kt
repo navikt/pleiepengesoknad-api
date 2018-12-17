@@ -17,6 +17,8 @@ import io.ktor.features.*
 import io.ktor.jackson.jackson
 import io.ktor.locations.*
 import no.nav.pleiepenger.api.ansettelsesforhold.ansettelsesforholdApis
+import no.nav.pleiepenger.api.barn.BarnGateway
+import no.nav.pleiepenger.api.barn.BarnService
 import no.nav.pleiepenger.api.barn.barnApis
 import no.nav.pleiepenger.api.general.auth.authorizationStatusPages
 import no.nav.pleiepenger.api.general.auth.jwtFromCookie
@@ -25,7 +27,7 @@ import no.nav.pleiepenger.api.general.jackson.configureObjectMapper
 import no.nav.pleiepenger.api.general.validation.ValidationHandler
 import no.nav.pleiepenger.api.general.validation.validationStatusPages
 import no.nav.pleiepenger.api.id.IdGateway
-import no.nav.pleiepenger.api.id.idApis
+import no.nav.pleiepenger.api.id.IdService
 import no.nav.pleiepenger.api.soker.sokerApis
 import no.nav.pleiepenger.api.soknad.soknadApis
 
@@ -110,17 +112,22 @@ fun Application.pleiepengesoknadapi(
     }
 
     install(Routing) {
-
-        idApis(
-            validationHandler = validationHandler,
-            idGateway = IdGateway(
+        val idService = IdService(
+            IdGateway(
                 httpClient = client,
-                baseUri = Url(environment.config.property("nav.gateways.idGateway.baseUrl").getString())
+                baseUri = configuration.getSparkelUrl()
             )
         )
+
         authenticate {
             barnApis(
-                httpClient = client
+                barnService = BarnService(
+                    barnGateway = BarnGateway(
+                        httpClient = client,
+                        baseUrl = configuration.getSparkelUrl()
+                    ),
+                    idService = idService
+                )
             )
         }
 
