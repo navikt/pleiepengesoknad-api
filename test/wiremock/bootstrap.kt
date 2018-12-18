@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory
 
 private val logger: Logger = LoggerFactory.getLogger("nav.bootstrap")
 private const val jwkSetPath = "/auth-mock/jwk-set"
+private const val sparkelPath = "/sparkel-mock"
+
 
 fun bootstrap(port: Int? = null,
               extensions : Array<Extension> = arrayOf()) : WireMockServer {
@@ -73,4 +75,8 @@ private fun authMockJwkSet() {
 
 fun WireMockServer.getJwksUri() : String {
     return baseUrl() + jwkSetPath
+}
+
+fun WireMockServer.getSparkelUrl() : String {
+    return baseUrl() + sparkelPath
 }

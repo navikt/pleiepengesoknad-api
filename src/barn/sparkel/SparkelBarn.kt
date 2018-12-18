@@ -1,9 +1,8 @@
-package no.nav.pleiepenger.api.barn
-
+package no.nav.pleiepenger.api.barn.sparkel
 
 import java.time.LocalDate
 
-data class Barn (
+data class SparkelBarn (
     val fodselsdato : LocalDate,
     val fornavn: String,
     val mellomnavn: String? = null,

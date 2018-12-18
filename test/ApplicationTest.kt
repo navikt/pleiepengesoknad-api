@@ -1,25 +1,26 @@
 package no.nav.pleiepenger.api
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.http.*
 import kotlin.test.*
 import io.ktor.server.testing.*
+import io.ktor.util.KtorExperimentalAPI
+import no.nav.pleiepenger.api.barn.BarnResponse
 import no.nav.pleiepenger.api.general.auth.UnauthorizedException
 import no.nav.pleiepenger.api.general.jackson.configureObjectMapper
-import no.nav.pleiepenger.api.wiremock.bootstrap
-import no.nav.pleiepenger.api.wiremock.getJwksUri
-import no.nav.pleiepenger.api.wiremock.stubSparkelgetId
+import no.nav.pleiepenger.api.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
 
+
+@KtorExperimentalAPI
 class ApplicationTest {
 
     private val objectMapper = configureObjectMapper()
-
 
     private companion object {
 
@@ -29,7 +30,7 @@ class ApplicationTest {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(mutableMapOf(
-                Pair("nav.gateways.sparkel_url", wireMockServer.baseUrl() + "/sparkel-mock"),
+                Pair("nav.gateways.sparkel_url", wireMockServer.getSparkelUrl()),
                 Pair("nav.authorization.jwks_uri", wireMockServer.getJwksUri())
             ))
 
@@ -61,6 +62,7 @@ class ApplicationTest {
     fun getBarnAuthorizedTest() {
         val fnr = "290990123456"
         stubSparkelgetId()
+        stubSparkelGetBarn()
         val cookie = getAuthCookie(fnr)
 
         with(engine) {
@@ -69,6 +71,8 @@ class ApplicationTest {
                 addHeader("Cookie", cookie.toString())
             }) {
                 assertEquals(HttpStatusCode.OK, response.status())
+                val mappedResponse : BarnResponse = objectMapper.readValue(response.content!!)
+                assertEquals(2, mappedResponse.barn.size)
             }
         }
     }

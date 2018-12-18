@@ -41,7 +41,9 @@ fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args
 fun Application.pleiepengesoknadapi(
     client: HttpClient = HttpClient(Apache) {
         install(JsonFeature) {
-            serializer = JacksonSerializer()
+            serializer = JacksonSerializer{
+                configureObjectMapper(this)
+            }
         }
         install(Logging) {
             level = LogLevel.HEADERS
@@ -124,9 +126,9 @@ fun Application.pleiepengesoknadapi(
                 barnService = BarnService(
                     barnGateway = BarnGateway(
                         httpClient = client,
-                        baseUrl = configuration.getSparkelUrl()
-                    ),
-                    idService = idService
+                        baseUrl = configuration.getSparkelUrl(),
+                        idService = idService
+                    )
                 )
             )
         }
