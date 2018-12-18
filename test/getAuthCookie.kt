@@ -8,14 +8,14 @@ fun getAuthCookie(
     issuer: String? = null,
     authLevel: String? = null,
     cookieName: String? = null,
-    expiryInMinutes: Long? = null) : Cookie {
+    expiry: Long? = null) : Cookie {
 
     val claimSet = JwtTokenGenerator.buildClaimSet(
         fnr,
         issuer ?: JwtTokenGenerator.ISS,
         JwtTokenGenerator.AUD,
         authLevel ?: JwtTokenGenerator.ACR,
-        expiryInMinutes ?: JwtTokenGenerator.EXPIRY
+        expiry ?: JwtTokenGenerator.EXPIRY
     )
 
     val jwt = JwtTokenGenerator.createSignedJWT(claimSet).serialize()

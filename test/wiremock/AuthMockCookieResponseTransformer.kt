@@ -16,7 +16,7 @@ class AuthMockCookieResponseTransformer : ResponseTransformer() {
         val subject = request!!.queryParameter("subject").firstValue()
         val redirectLocation = if (request.queryParameter("redirect_location").isPresent) request.queryParameter("redirect_location").firstValue() else null
         val cookieName = if (request.queryParameter("cookie_name").isPresent) request.queryParameter("cookie_name").firstValue() else null
-        val expiryInMinutes = if (request.queryParameter("expiry_in_minutes").isPresent) request.queryParameter("expiry_in_minutes").firstValue().toLong() else null
+        val expiry = if (request.queryParameter("expiry").isPresent) request.queryParameter("expiry").firstValue().toLong() else null
         val issuer = if(request.queryParameter("issuer").isPresent) request.queryParameter("issuer").firstValue() else null
         val authenticationLevel = if(request.queryParameter("authentication_level").isPresent) request.queryParameter("authentication_level").firstValue() else null
 
@@ -24,7 +24,7 @@ class AuthMockCookieResponseTransformer : ResponseTransformer() {
             fnr = subject,
             authLevel = authenticationLevel,
             cookieName = cookieName,
-            expiryInMinutes = expiryInMinutes,
+            expiry = expiry,
             issuer = issuer
         )
 

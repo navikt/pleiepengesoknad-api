@@ -77,7 +77,7 @@ private suspend fun verifyAndValidate(
 ): Principal? {
     val jwt = try {
         token?.let { jwtVerifier?.verify(it) }
-    } catch (ex: JWTVerificationException) {
+    } catch (ex: Throwable) {
         logger.trace("Token verification failed: {}", ex.message)
         throw ex
     } ?: return null
@@ -114,10 +114,10 @@ private fun getVerifier(
 
     } catch (ex: JwkException) {
         logger.trace("Failed to get JWK: {}", ex.message)
-        return null
+        throw ex
     } catch (ex: JWTDecodeException) {
         logger.trace("Illegal JWT: {}", ex.message)
-        return null
+        throw ex
     }
 }
 

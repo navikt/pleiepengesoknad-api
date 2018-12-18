@@ -17,8 +17,14 @@ import no.nav.pleiepenger.api.general.jackson.configureObjectMapper
 import no.nav.pleiepenger.api.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.time.Duration
 
 private const val fnr = "290990123456"
+private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis();
+private val logger: Logger = LoggerFactory.getLogger("nav.ApplicationTest")
+
 
 @KtorExperimentalAPI
 class ApplicationTest {
@@ -108,7 +114,8 @@ class ApplicationTest {
     @Test(expected = TokenExpiredException::class)
     fun getBarnExpiredToken() {
 
-        val cookie = getAuthCookie(fnr, expiryInMinutes = -1)
+        val cookie = getAuthCookie(fnr, expiry = -(oneMinuteInMillis))
+        logger.debug("cookie={}", cookie.toString())
 
         with(engine) {
             with(handleRequest(HttpMethod.Get, "/barn") {
