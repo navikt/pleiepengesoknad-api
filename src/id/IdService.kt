@@ -9,7 +9,7 @@ class IdService(val idGateway: IdGateway) {
         if (fnrIdMap.containsKey(fnr)) {
             return fnrIdMap.get(fnr)!!
         }
-        val id = idGateway.getId()
+        val id = idGateway.getId(fnr)
         fnrIdMap[fnr] = id
         return id
     }

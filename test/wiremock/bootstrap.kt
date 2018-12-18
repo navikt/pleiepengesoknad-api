@@ -3,6 +3,7 @@ package no.nav.pleiepenger.api.wiremock
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
+import com.github.tomakehurst.wiremock.extension.Extension
 import no.nav.pleiepenger.api.ApplicationWithMocks
 import no.nav.security.oidc.test.support.JwkGenerator
 import org.slf4j.Logger
@@ -11,10 +12,15 @@ import org.slf4j.LoggerFactory
 private val logger: Logger = LoggerFactory.getLogger("nav.bootstrap")
 private const val jwkSetPath = "/auth-mock/jwk-set"
 
-fun bootstrap(port: Int? = null) : WireMockServer {
+fun bootstrap(port: Int? = null,
+              extensions : Array<Extension> = arrayOf()) : WireMockServer {
     val wireMockConfiguration = WireMockConfiguration.options()
         .extensions(AuthMockJwtResponseTransformer())
         .extensions(AuthMockCookieResponseTransformer())
+
+    extensions.forEach {
+        wireMockConfiguration.extensions(it)
+    }
 
     if (port == null) {
         wireMockConfiguration.dynamicPort()

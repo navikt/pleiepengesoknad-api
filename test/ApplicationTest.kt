@@ -11,6 +11,8 @@ import io.ktor.server.testing.*
 import no.nav.pleiepenger.api.general.auth.UnauthorizedException
 import no.nav.pleiepenger.api.general.jackson.configureObjectMapper
 import no.nav.pleiepenger.api.wiremock.bootstrap
+import no.nav.pleiepenger.api.wiremock.getJwksUri
+import no.nav.pleiepenger.api.wiremock.stubSparkelgetId
 import org.junit.AfterClass
 import org.junit.BeforeClass
 
@@ -27,7 +29,8 @@ class ApplicationTest {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(mutableMapOf(
-                Pair("nav.gateways.sparkel_url", wireMockServer.baseUrl() + "/sparkel-mock")
+                Pair("nav.gateways.sparkel_url", wireMockServer.baseUrl() + "/sparkel-mock"),
+                Pair("nav.authorization.jwks_uri", wireMockServer.getJwksUri())
             ))
 
             val mergedConfig = testConfig.withFallback(fileConfig)
@@ -56,16 +59,9 @@ class ApplicationTest {
 
     @Test
     fun getBarnAuthorizedTest() {
-        stubFor(
-            get("/sparkel-mock/foo")
-                .willReturn(
-                    aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody("{\"id\":\"1234\"}")
-                )
-        )
-        val cookie = getAuthCookie("290990123456")
+        val fnr = "290990123456"
+        stubSparkelgetId()
+        val cookie = getAuthCookie(fnr)
 
         with(engine) {
             with(handleRequest(HttpMethod.Get, "/barn") {

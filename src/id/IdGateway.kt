@@ -6,6 +6,7 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.fullPath
 import io.ktor.http.takeFrom
+import no.nav.pleiepenger.api.general.auth.Fodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -16,8 +17,8 @@ class IdGateway(
 
     val logger: Logger = LoggerFactory.getLogger("nav.IdGateway")
 
-    suspend fun getId() : Id {
-        val url = URLBuilder().takeFrom(baseUri).path(baseUri.fullPath, "foo").buildString()
+    suspend fun getId(fnr: Fodselsnummer) : Id {
+        val url = URLBuilder().takeFrom(baseUri).path(baseUri.fullPath, "fnr", fnr.value).buildString()
         logger.info("Requesting url '{}'", url)
         val response = httpClient.get<IdResponse>(url)
         logger.info("id='{}'", response)
