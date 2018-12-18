@@ -1,5 +1,6 @@
 package no.nav.pleiepenger.api
 
+import com.auth0.jwt.exceptions.TokenExpiredException
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.typesafe.config.ConfigFactory
@@ -10,12 +11,14 @@ import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.pleiepenger.api.barn.BarnResponse
-import no.nav.pleiepenger.api.general.auth.UnauthorizedException
+import no.nav.pleiepenger.api.general.auth.CookieNotSetException
+import no.nav.pleiepenger.api.general.auth.InsufficientAuthenticationLevelException
 import no.nav.pleiepenger.api.general.jackson.configureObjectMapper
 import no.nav.pleiepenger.api.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
 
+private const val fnr = "290990123456"
 
 @KtorExperimentalAPI
 class ApplicationTest {
@@ -60,7 +63,6 @@ class ApplicationTest {
 
     @Test
     fun getBarnAuthorizedTest() {
-        val fnr = "290990123456"
         stubSparkelgetId()
         stubSparkelGetBarn()
         val cookie = getAuthCookie(fnr)
@@ -77,13 +79,43 @@ class ApplicationTest {
         }
     }
 
-    @Test(expected = UnauthorizedException::class)
+    @Test(expected = CookieNotSetException::class)
     fun getBarnUnauthorizedTest() {
         with(engine) {
             with(handleRequest(HttpMethod.Get, "/barn") {
                 addHeader("Accept", "application/json")
             }) {
+                assertEquals(HttpStatusCode.Unauthorized, response.status())
+            }
+        }
+    }
+
+    @Test(expected = InsufficientAuthenticationLevelException::class)
+    fun getBarnWrongAuthenticationLevel() {
+
+        val cookie = getAuthCookie(fnr, authLevel = "Level3")
+
+        with(engine) {
+            with(handleRequest(HttpMethod.Get, "/barn") {
+                addHeader("Accept", "application/json")
+                addHeader("Cookie", cookie.toString())
+            }) {
                 assertEquals(HttpStatusCode.Forbidden, response.status())
+            }
+        }
+    }
+
+    @Test(expected = TokenExpiredException::class)
+    fun getBarnExpiredToken() {
+
+        val cookie = getAuthCookie(fnr, expiryInMinutes = -1)
+
+        with(engine) {
+            with(handleRequest(HttpMethod.Get, "/barn") {
+                addHeader("Accept", "application/json")
+                addHeader("Cookie", cookie.toString())
+            }) {
+                assertEquals(HttpStatusCode.Unauthorized, response.status())
             }
         }
     }

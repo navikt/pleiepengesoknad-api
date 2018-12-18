@@ -20,6 +20,7 @@ import no.nav.pleiepenger.api.ansettelsesforhold.ansettelsesforholdApis
 import no.nav.pleiepenger.api.barn.BarnGateway
 import no.nav.pleiepenger.api.barn.BarnService
 import no.nav.pleiepenger.api.barn.barnApis
+import no.nav.pleiepenger.api.general.auth.InsufficientAuthenticationLevelException
 import no.nav.pleiepenger.api.general.auth.authorizationStatusPages
 import no.nav.pleiepenger.api.general.auth.jwtFromCookie
 import no.nav.pleiepenger.api.general.error.defaultStatusPages
@@ -73,6 +74,10 @@ fun Application.pleiepengesoknadapi(
                 .build()
             verifier(jwkProvider, configuration.getIssuer())
             validate { credentials ->
+                val acr = credentials.payload.getClaim("acr").asString()
+                if ("Level4" != acr) {
+                    throw InsufficientAuthenticationLevelException(acr)
+                }
                 return@validate JWTPrincipal(credentials.payload)
             }
             withCookieName(configuration.getCookieName())

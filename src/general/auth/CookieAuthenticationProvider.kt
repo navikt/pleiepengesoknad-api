@@ -55,25 +55,13 @@ fun Authentication.Configuration.jwtFromCookie(
     val verifier = provider.verifier
 
     provider.pipeline.intercept(AuthenticationPipeline.RequestAuthentication) { context ->
-        val cookie = call.request.cookies.get(provider.cookieName!!)
+        val cookie = call.request.cookies[provider.cookieName!!]
         if (cookie == null) {
-            logger.debug("No cookie set")
-            throw UnauthorizedException("No cookie set on request")
+            throw CookieNotSetException(provider.cookieName!!)
         } else {
-            logger.debug("Cookie is set")
             logger.debug(cookie)
+            val principal = verifyAndValidate(call, verifier(cookie), cookie, authenticate) ?: throw IllegalStateException("principal == null")
 
-            val principal: Principal?
-            try {
-                principal = verifyAndValidate(call, verifier(cookie), cookie, authenticate)
-            } catch (cause: Throwable) {
-                logger.debug("Unable to verify and validate token")
-                throw UnauthorizedException(cause)
-            }
-
-            if (principal == null) {
-                throw UnauthorizedException("Unable to verify and validate")
-            }
             context.principal(principal)
             logger.debug("User successfully authorized")
         }
@@ -91,7 +79,7 @@ private suspend fun verifyAndValidate(
         token?.let { jwtVerifier?.verify(it) }
     } catch (ex: JWTVerificationException) {
         logger.trace("Token verification failed: {}", ex.message)
-        null
+        throw ex
     } ?: return null
 
     val payload = jwt.parsePayload()
@@ -119,7 +107,7 @@ private fun getVerifier(
                 jwk.algorithm,
                 cause.message ?: cause.javaClass.simpleName
             )
-            return null
+            throw cause
         }
 
         return JWT.require(algorithm).withIssuer(issuer).build()

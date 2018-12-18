@@ -5,6 +5,6 @@ import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.principal
 
 fun getFodselsnummer(call: ApplicationCall) : Fodselsnummer {
-    val principal: JWTPrincipal = call.principal() ?: throw UnauthorizedException("No principal sett on call")
+    val principal: JWTPrincipal = call.principal() ?: throw IllegalStateException("Principal == null")
     return Fodselsnummer(principal.payload.subject)
 }
