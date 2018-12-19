@@ -10,10 +10,14 @@ import io.ktor.http.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.common.KafkaEnvironment
 import no.nav.helse.barn.BarnResponse
 import no.nav.helse.general.auth.CookieNotSetException
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.jackson.configureObjectMapper
+import no.nav.helse.kafka.bootstrapKafka
+import no.nav.helse.kafka.getPassword
+import no.nav.helse.kafka.getUsername
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -22,9 +26,8 @@ import org.slf4j.LoggerFactory
 import java.time.Duration
 
 private const val fnr = "290990123456"
-private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis();
+private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 private val logger: Logger = LoggerFactory.getLogger("nav.ApplicationTest")
-
 
 @KtorExperimentalAPI
 class ApplicationTest {
@@ -33,14 +36,18 @@ class ApplicationTest {
 
     private companion object {
 
-        val wireMockServer: WireMockServer = bootstrap()
+        val wireMockServer: WireMockServer = bootstrapWiremock()
+        val kafkaEnvironment: KafkaEnvironment = bootstrapKafka()
 
         fun getConfig() : ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(mutableMapOf(
                 Pair("nav.gateways.sparkel_url", wireMockServer.getSparkelUrl()),
-                Pair("nav.authorization.jwks_uri", wireMockServer.getJwksUri())
+                Pair("nav.authorization.jwks_uri", wireMockServer.getJwksUri()),
+                Pair("nav.kafka.bootstrap_servers", kafkaEnvironment.brokersURL),
+                Pair("nav.kafka.username", kafkaEnvironment.getUsername()),
+                Pair("nav.kafka.password", kafkaEnvironment.getPassword())
             ))
 
             val mergedConfig = testConfig.withFallback(fileConfig)
@@ -63,7 +70,10 @@ class ApplicationTest {
         @AfterClass
         @JvmStatic
         fun tearDown() {
+            logger.info("Tearing down")
+            kafkaEnvironment.tearDown()
             wireMockServer.stop()
+            logger.info("Tear down complete")
         }
     }
 

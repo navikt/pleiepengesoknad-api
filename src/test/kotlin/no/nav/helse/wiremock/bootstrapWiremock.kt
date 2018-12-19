@@ -14,7 +14,7 @@ private const val jwkSetPath = "/auth-mock/jwk-set"
 private const val sparkelPath = "/sparkel-mock"
 
 
-fun bootstrap(port: Int? = null,
+fun bootstrapWiremock(port: Int? = null,
               extensions : Array<Extension> = arrayOf()) : WireMockServer {
     val wireMockConfiguration = WireMockConfiguration.options()
         .extensions(AuthMockJwtResponseTransformer())

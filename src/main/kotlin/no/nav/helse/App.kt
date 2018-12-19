@@ -39,7 +39,8 @@ import no.nav.helse.general.validation.validationStatusPages
 import no.nav.helse.id.IdGateway
 import no.nav.helse.id.IdService
 import no.nav.helse.soker.sokerApis
-import no.nav.pleiepenger.api.soknad.soknadApis
+import no.nav.helse.soknad.SoknadKafkaProducer
+import no.nav.helse.soknad.soknadApis
 import org.slf4j.event.Level
 import javax.validation.Validation
 import javax.validation.Validator
@@ -143,7 +144,13 @@ fun Application.pleiepengesoknadapi() {
         ansettelsesforholdApis()
 
         soknadApis(
-            validationHandler = validationHandler
+            validationHandler = validationHandler,
+            soknadKafkaProducer = SoknadKafkaProducer(
+                bootstrapServers = configuration.getKafkaBootstrapServers(),
+                username = configuration.getKafkaUsername(),
+                password = configuration.getKafkaPassword(),
+                objectMapper = objectMapper
+            )
         )
     }
 }

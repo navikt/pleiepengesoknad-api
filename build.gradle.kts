@@ -5,6 +5,7 @@ val ktorVersion = "1.0.1"
 val jacksonVersion = "2.9.2"
 val wiremockVersion = "2.19.0"
 val logstashLogbackVersion = "5.2"
+val kafkaVersion = "2.0.1"
 
 val mainClass = "no.nav.helse.AppKt"
 
@@ -53,12 +54,17 @@ dependencies {
     compile ("javax.el:javax.el-api:3.0.1-b06")
     compile ("org.glassfish.web:javax.el:2.2.6")
 
+    // Kafka
+    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
+
     // Test
     testCompile ("com.github.tomakehurst:wiremock:$wiremockVersion")
     testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
     testCompile ("no.nav.security:oidc-test-support:0.2.12")
+    testImplementation("no.nav:kafka-embedded-env:2.0.1")
+
 
 }
 

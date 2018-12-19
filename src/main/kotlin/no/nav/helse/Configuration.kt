@@ -71,4 +71,16 @@ data class Configuration(val config : ApplicationConfig) {
     fun getSparkelUrl() : Url {
         return Url(getString("nav.gateways.sparkel_url"))
     }
+
+    fun getKafkaBootstrapServers() : String {
+        return getString("nav.kafka.bootstrap_servers")
+    }
+
+    fun getKafkaUsername() : String {
+        return getString("nav.kafka.username")
+    }
+
+    fun getKafkaPassword() : String {
+        return getString("nav.kafka.password")
+    }
 }
