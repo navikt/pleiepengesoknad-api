@@ -102,13 +102,6 @@ tasks.named<Jar>("jar") {
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-    testLogging {
-        events("passed", "skipped", "failed")
-    }
-}
-
 tasks.withType<Wrapper> {
     gradleVersion = "5.0"
 }
