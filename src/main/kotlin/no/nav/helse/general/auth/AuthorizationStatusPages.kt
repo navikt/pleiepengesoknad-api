@@ -25,8 +25,6 @@ private val insufficientLevelType = URI.create("/errors/insufficient-authenticat
 
 fun StatusPages.Configuration.authorizationStatusPages() {
 
-    val logger: Logger = LoggerFactory.getLogger("nav.authorizationStatusPages")
-
     exception<JWTVerificationException> { cause ->
         call.respond(HttpStatusCode.Unauthorized, DefaultError(
             status = HttpStatusCode.Unauthorized.value,

@@ -2,6 +2,7 @@ package no.nav.helse
 
 import io.ktor.config.ApplicationConfig
 import io.ktor.http.Url
+import io.ktor.util.KtorExperimentalAPI
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit
 private val logger: Logger = LoggerFactory.getLogger("nav.Configuration")
 
 
+@KtorExperimentalAPI
 data class Configuration(val config : ApplicationConfig) {
 
     private fun getString(key: String) : String  {

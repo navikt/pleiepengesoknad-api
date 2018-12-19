@@ -76,7 +76,7 @@ private suspend fun verifyAndValidate(
     validate: suspend ApplicationCall.(JWTCredential) -> Principal?
 ): Principal? {
     val jwt = try {
-        token?.let { jwtVerifier?.verify(it) }
+        token.let { jwtVerifier?.verify(it) }
     } catch (ex: Throwable) {
         logger.trace("Token verification failed: {}", ex.message)
         throw ex

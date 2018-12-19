@@ -20,9 +20,11 @@ import io.ktor.features.StatusPages
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
+import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
 import io.ktor.request.path
 import io.ktor.routing.Routing
+import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
@@ -45,6 +47,8 @@ import javax.validation.Validator
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
 
+@KtorExperimentalAPI
+@KtorExperimentalLocationsAPI
 fun Application.pleiepengesoknadapi() {
 
     val configuration = Configuration(environment.config)
