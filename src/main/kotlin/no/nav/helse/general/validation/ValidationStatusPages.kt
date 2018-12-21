@@ -24,11 +24,13 @@ fun StatusPages.Configuration.validationStatusPages(
     exception<MissingKotlinParameterException> { cause ->
         val errors: MutableList<Violation> = mutableListOf()
         cause.path.forEach {
-            errors.add(
-                Violation(
-                    name = it.fieldName,
-                    reason = "can not be null"
-            ))
+            if (it.fieldName != null) {
+                errors.add(
+                    Violation(
+                        name = it.fieldName,
+                        reason = "can not be null"
+                    ))
+            }
         }
         call.respond(
             HttpStatusCode.UnprocessableEntity, ValidationError(

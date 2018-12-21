@@ -21,11 +21,11 @@ private fun body() : String {
                 "fornavn": "Santa",
                 "mellomnavn": "Claus",
                 "etternavn": "Winter",
-                "fodselsdato": "1990-09-29"
+                "fodselsnummer": "29099012345"
             },{
                 "fornavn": "George",
                 "etternavn": "Costanza",
-                "fodselsdato": "1966-06-06"
+                "fodselsnummer": "29099052345"
             }]
         }
     """.trimIndent()

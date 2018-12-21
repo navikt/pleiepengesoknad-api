@@ -18,11 +18,23 @@ fun Route.barnApis(
     class getBarn
 
     get { _: getBarn ->
+
+        val kompletteBarn = barnService.getBarn(getFodselsnummer(call))
         call.respond(
-            BarnResponse(
-                barnService.getBarn(getFodselsnummer(call))
-            )
+            toApiResponse(kompletteBarn)
         )
     }
+}
 
+private fun toApiResponse(kompletteBarn: List<KomplettBarn>) : BarnResponse {
+    val barn = mutableListOf<Barn>()
+    kompletteBarn.forEach {
+        barn.add(Barn(
+            fornavn = it.fornavn,
+            mellomnavn = it.mellomnavn,
+            etternavn = it.etternavn,
+            fodselsdato = it.fodselsdato
+        ))
+    }
+    return BarnResponse(barn = barn.toList())
 }

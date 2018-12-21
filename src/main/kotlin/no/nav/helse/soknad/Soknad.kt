@@ -1,13 +1,17 @@
 package no.nav.helse.soknad
 
-import java.time.ZonedDateTime
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.Past
+import java.time.LocalDate
+import javax.validation.Valid
+import javax.validation.constraints.Size
 
+/*
+    I starten vil vi kun tillate søknader for et barn og et ansettelsesforhold.
+    Må sende inn minst et vedlegg
+ */
 data class Soknad (
-    @get:Past
-    val dato: ZonedDateTime,
-    @get:NotEmpty
-    val megatest: String,
-    val endaen: String
+    @get:Valid @get:Size(min=1, max=1) val barn : List<BarnDetaljer>,
+    @get:Valid @get:Size(min=1, max=1) val ansettelsesforhold : List<AnsettelsesforholdDetaljer>,
+    @get:Valid @get:Size(min=1) val vedlegg : List<Vedlegg>,
+    val fraOgMed: LocalDate,
+    val tilOgMed: LocalDate
 )

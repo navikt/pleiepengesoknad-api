@@ -30,7 +30,7 @@ class SoknadKafkaProducer(private val bootstrapServers : String,
         )
     })
 
-    fun produce(soknad: Soknad) {
+    fun produce(soknad: KomplettSoknad) {
         val serializedSoknad = objectMapper.writeValueAsString(soknad)
         logger.trace("SerializedSoknad={}", serializedSoknad)
         val result = producer.send(ProducerRecord(TOPIC, serializedSoknad))

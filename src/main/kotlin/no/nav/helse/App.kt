@@ -38,8 +38,10 @@ import no.nav.helse.general.validation.ValidationHandler
 import no.nav.helse.general.validation.validationStatusPages
 import no.nav.helse.id.IdGateway
 import no.nav.helse.id.IdService
+import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.SoknadKafkaProducer
+import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
 import org.slf4j.event.Level
 import javax.validation.Validation
@@ -126,31 +128,36 @@ fun Application.pleiepengesoknadapi() {
             )
         )
 
+        val barnService = BarnService(
+            barnGateway = BarnGateway(
+                httpClient = httpClient,
+                baseUrl = configuration.getSparkelUrl(),
+                idService = idService
+            )
+        )
+
         authenticate {
             barnApis(
-                barnService = BarnService(
-                    barnGateway = BarnGateway(
-                        httpClient = httpClient,
-                        baseUrl = configuration.getSparkelUrl(),
-                        idService = idService
-                    )
+                barnService = barnService
+            )
+            sokerApis(
+                httpClient = httpClient
+            )
+            ansettelsesforholdApis()
+
+            soknadApis(
+                validationHandler = validationHandler,
+                soknadService = SoknadService(
+                    soknadKafkaProducer = SoknadKafkaProducer(
+                        bootstrapServers = configuration.getKafkaBootstrapServers(),
+                        username = configuration.getKafkaUsername(),
+                        password = configuration.getKafkaPassword(),
+                        objectMapper = objectMapper
+                    ),
+                    sokerService = SokerService(),
+                    barnService = barnService
                 )
             )
         }
-
-        sokerApis(
-            httpClient = httpClient
-        )
-        ansettelsesforholdApis()
-
-        soknadApis(
-            validationHandler = validationHandler,
-            soknadKafkaProducer = SoknadKafkaProducer(
-                bootstrapServers = configuration.getKafkaBootstrapServers(),
-                username = configuration.getKafkaUsername(),
-                password = configuration.getKafkaPassword(),
-                objectMapper = objectMapper
-            )
-        )
     }
 }

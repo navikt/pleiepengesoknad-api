@@ -7,6 +7,7 @@ import io.ktor.http.*
 import no.nav.helse.barn.sparkel.SparkelGetBarnResponse
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.general.error.CommunicationException
+import no.nav.helse.general.extractFodselsdato
 import no.nav.helse.id.Id
 import no.nav.helse.id.IdNotFoundException
 import no.nav.helse.id.IdService
@@ -16,7 +17,7 @@ class BarnGateway(
     private val baseUrl: Url,
     private val idService: IdService
 ) {
-    suspend fun getBarn(fnr: Fodselsnummer) : List<Barn> {
+    suspend fun getBarn(fnr: Fodselsnummer) : List<KomplettBarn> {
 
         val response: SparkelGetBarnResponse = try {
             request(idService.getId(fnr))
@@ -45,14 +46,17 @@ class BarnGateway(
         }
     }
 
-    private fun mapResponse(sparkelResponse : SparkelGetBarnResponse) : List<Barn> {
-        val barn = mutableListOf<Barn>()
+    private fun mapResponse(sparkelResponse : SparkelGetBarnResponse) : List<KomplettBarn> {
+        val barn = mutableListOf<KomplettBarn>()
         sparkelResponse.barn.forEach {
+            val fnr = Fodselsnummer(it.fodselsnummer)
             barn.add(
-                Barn(fornavn = it.fornavn,
+                KomplettBarn(
+                    fornavn = it.fornavn,
                     etternavn = it.etternavn,
                     mellomnavn = it.mellomnavn,
-                    fodselsdato = it.fodselsdato
+                    fodselsnummer = fnr,
+                    fodselsdato = extractFodselsdato(fnr)
                 )
             )
         }
