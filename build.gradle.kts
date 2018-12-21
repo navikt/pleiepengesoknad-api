@@ -1,3 +1,4 @@
+import org.gradle.internal.impldep.org.fusesource.jansi.AnsiRenderer.test
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val logbackVersion = "1.2.1"
@@ -54,6 +55,10 @@ dependencies {
     compile ("javax.el:javax.el-api:3.0.1-b06")
     compile ("org.glassfish.web:javax.el:2.2.6")
 
+    // Vedlegg
+    implementation("org.apache.pdfbox:pdfbox:2.0.13")
+    implementation("org.apache.tika:tika-core:1.19.1")
+
     // Kafka
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
 
@@ -78,10 +83,12 @@ repositories {
     mavenCentral()
 }
 
+
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }
+
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
