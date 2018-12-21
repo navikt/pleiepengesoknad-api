@@ -6,13 +6,14 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Past
 import javax.validation.constraints.Pattern
 
+@ValidBarnDetaljer
 data class BarnDetaljer(
     @get:Pattern(regexp = "\\d{11}") var fodselsnummer: String?,
     @get:NotBlank val fornavn: String,
-    @get:Pattern(regexp = "\\+*")  val mellomnavn: String?, // TODO not allow empty string
+    val mellomnavn: String?,
     @get:NotBlank val etternavn: String,
     @get:NotBlank val relasjon: String,
-    @get:Past val fodselsdato: LocalDate
+    @get:Past val fodselsdato: LocalDate?
 ) {
     fun medFodselsnummer(fnr: Fodselsnummer){
         this.fodselsnummer = fnr.value
