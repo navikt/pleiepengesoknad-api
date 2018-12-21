@@ -43,6 +43,9 @@ import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.SoknadKafkaProducer
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
+import no.nav.helse.vedlegg.Image2PDFConverter
+import no.nav.helse.vedlegg.ImageScaler
+import no.nav.helse.vedlegg.vedleggStatusPages
 import org.slf4j.event.Level
 import javax.validation.Validation
 import javax.validation.Validator
@@ -116,6 +119,7 @@ fun Application.pleiepengesoknadapi() {
         defaultStatusPages()
         authorizationStatusPages()
         validationStatusPages()
+        vedleggStatusPages()
     }
 
     install(Locations)
@@ -155,7 +159,10 @@ fun Application.pleiepengesoknadapi() {
                         objectMapper = objectMapper
                     ),
                     sokerService = SokerService(),
-                    barnService = barnService
+                    barnService = barnService,
+                    image2PDFConverter = Image2PDFConverter(
+                        imageScaler = ImageScaler()
+                    )
                 )
             )
         }
