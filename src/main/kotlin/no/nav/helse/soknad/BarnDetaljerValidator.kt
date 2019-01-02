@@ -14,9 +14,13 @@ class BarnDetaljerValidator : ConstraintValidator<ValidBarnDetaljer, BarnDetalje
             valid = withError(context,"'fodselsnummer' eller 'fodselsdato' må oppgis.")
         } else if (value.fodselsnummer != null && value.fodselsdato == null) {
             try {
-                extractFodselsdato(fnr = Fodselsnummer(value.fodselsnummer!!))
+                extractFodselsdato(fnr = Fodselsnummer(value.fodselsnummer))
             } catch (cause: Throwable) {
                 valid =  withError(context,"'fodselsdato' må sendes ettersom den ikke kan avledes fra 'fodselsnummer'.")
+            }
+        } else if (value.fodselsnummer != null && value.fodselsdato != null) {
+            if (!value.fodselsdato!!.isEqual(extractFodselsdato(Fodselsnummer(value.fodselsnummer)))) {
+                valid =  withError(context,"'fodselsdato' og 'fodselsnummer' samsvarer ikke.")
             }
         }
 

@@ -21,7 +21,7 @@ class SoknadValidator : ConstraintValidator<ValidSoknad, Soknad> {
         context!!.disableDefaultConstraintViolation()
         context
             .buildConstraintViolationWithTemplate(error)
-            .addPropertyNode("til_og_med og fra_og_til")
+            .addPropertyNode("soknad")
             .addConstraintViolation()
         return false
     }

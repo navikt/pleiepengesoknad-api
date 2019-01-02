@@ -1,6 +1,7 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.general.auth.Fodselsnummer
+import no.nav.helse.general.extractFodselsdato
 import no.nav.helse.soker.SokerService
 import no.nav.helse.vedlegg.Image2PDFConverter
 
@@ -17,13 +18,21 @@ class SoknadService(val soknadKafkaProducer: SoknadKafkaProducer,
             fraOgMed = soknad.fraOgMed,
             tilOgMed = soknad.tilOgMed,
             soker = sokerService.getSoker(fnr),
-//            barn = leggTilFodselsnummer(soknad.barn, fnr),
-            barn = soknad.barn,
+            barn = leggTilFodselsDato(soknad.barn),
             vedlegg = prosseserVedlegg(soknad.vedlegg),
             ansettelsesforhold = soknad.ansettelsesforhold
         )
 
         soknadKafkaProducer.produce(komplettSoknad)
+    }
+
+    private fun leggTilFodselsDato(barnDetaljer: List<BarnDetaljer>) : List<BarnDetaljer> {
+        barnDetaljer.forEach {
+            if (it.fodselsdato == null) {
+                it.medFodselsDato(extractFodselsdato(Fodselsnummer(it.fodselsnummer!!)))
+            }
+        }
+        return barnDetaljer
     }
 
 //    private suspend fun leggTilFodselsnummer(

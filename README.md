@@ -5,7 +5,27 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 ### Sende inn søknad
 POST @ /soknad -> 202 Response
 ```json
-
+{
+	"barn": [{ // Listen med barn kan kun inneholde et barn per nå
+		"fornavn": "Iben",
+		"mellomnavn": "Olafsson",   // Mellomnavn må ikke settes
+		"etternavn": "Hansen",
+		"relasjon": "mor",
+		"fodselsnummer": "01011950021",  // Om fødselsdato kan avledes fra fødselsnummer trenger kun denne å bli sendt
+		"fodselsdato": "2019-01-01"
+	}],
+	"fra_og_med": "2019-10-10",
+	"til_og_med": "2019-11-10",
+	"ansettelsesforhold": [{ // Listen med ansettelsesforhold kan kun inneholde et ansettelsesforhold per nå
+		"navn": "Byggmax"
+	}],
+	// Vedlegg som byte array eller base64. Må Være PDF, PNG eller JPG på mindre enn 8MB. Må sendes med minst ett vedlegg.
+	"vedlegg": [{
+		"innhold": [-1, -40, -1, -37, 0, -124, 0, 8, 6, 6, 7, 6, 5, 8, 7]
+	},{
+      	"innhold": "JVBERi0xLjQKJfbk/N8KMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovVmVyc2l"
+    }]
+}
 ```
 
 ### Hente barn
