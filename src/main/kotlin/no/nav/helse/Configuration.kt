@@ -17,7 +17,7 @@ data class Configuration(val config : ApplicationConfig) {
 
     private fun getString(key: String) : String  {
         val stringValue = config.property(key).getString()
-        logger.info("{}={}", key, stringValue)
+        logger.info("{}={}", key, if (stringValue.contains("password")) "***" else stringValue)
         return stringValue
     }
 

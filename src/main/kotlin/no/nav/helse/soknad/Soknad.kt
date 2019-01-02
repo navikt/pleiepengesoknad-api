@@ -8,6 +8,8 @@ import javax.validation.constraints.Size
     I starten vil vi kun tillate søknader for et barn og et ansettelsesforhold.
     Må sende inn minst et vedlegg
  */
+
+@ValidSoknad
 data class Soknad (
     @get:Valid @get:Size(min=1, max=1) val barn : List<BarnDetaljer>,
     @get:Valid @get:Size(min=1, max=1) val ansettelsesforhold : List<AnsettelsesforholdDetaljer>,

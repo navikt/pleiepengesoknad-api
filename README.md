@@ -2,6 +2,12 @@
 Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 
 ## Endepunkt
+### Sende inn søknad
+POST @ /soknad -> 202 Response
+```json
+
+```
+
 ### Hente barn
 GET @ /barn -> 200 Response
 ```json

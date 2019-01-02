@@ -8,20 +8,19 @@ import javax.validation.ConstraintValidatorContext
 class BarnDetaljerValidator : ConstraintValidator<ValidBarnDetaljer, BarnDetaljer> {
 
     override fun isValid(value: BarnDetaljer?, context: ConstraintValidatorContext?): Boolean {
-        if (value!!.fodselsnummer == null && value.fodselsdato == null) {
-            return withError(context,"'fodselsnummer' eller 'fodselsdato' må oppgis.")
-        }
+        var valid = true
 
-        if (value.fodselsnummer != null && value.fodselsdato == null) {
+        if (value!!.fodselsnummer == null && value.fodselsdato == null) {
+            valid = withError(context,"'fodselsnummer' eller 'fodselsdato' må oppgis.")
+        } else if (value.fodselsnummer != null && value.fodselsdato == null) {
             try {
                 extractFodselsdato(fnr = Fodselsnummer(value.fodselsnummer!!))
             } catch (cause: Throwable) {
-                return withError(context,"'fodselsdato' må sendes ettersom den ikke kan avledes fra 'fodselsnummer'.")
+                valid =  withError(context,"'fodselsdato' må sendes ettersom den ikke kan avledes fra 'fodselsnummer'.")
             }
         }
 
-
-        return true
+        return valid
     }
 
 

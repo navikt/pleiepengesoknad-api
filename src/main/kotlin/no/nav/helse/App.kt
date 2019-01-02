@@ -144,10 +144,6 @@ fun Application.pleiepengesoknadapi() {
             barnApis(
                 barnService = barnService
             )
-            sokerApis(
-                httpClient = httpClient
-            )
-            ansettelsesforholdApis()
 
             soknadApis(
                 validationHandler = validationHandler,
@@ -159,7 +155,6 @@ fun Application.pleiepengesoknadapi() {
                         objectMapper = objectMapper
                     ),
                     sokerService = SokerService(),
-                    barnService = barnService,
                     image2PDFConverter = Image2PDFConverter(
                         imageScaler = ImageScaler()
                     )

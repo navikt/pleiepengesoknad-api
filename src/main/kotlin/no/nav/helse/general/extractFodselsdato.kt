@@ -4,7 +4,7 @@ import no.nav.helse.general.auth.Fodselsnummer
 import java.time.LocalDate
 
 fun extractFodselsdato(fnr: Fodselsnummer) : LocalDate {
-    if (fnr.value.matches(regex = Regex("""\\d{11}"""))) throw IllegalStateException("Ugyldig fødselsnummer")
+    if (fnr.value.matches(regex = Regex("""\\d{11}"""))) throw IllegalStateException("Ugyldig fødselsnummer '${fnr.value}'")
 
     val dag = fnr.value.substring(0,2).toInt()
     val maned = fnr.value.substring(2,4).toInt()
