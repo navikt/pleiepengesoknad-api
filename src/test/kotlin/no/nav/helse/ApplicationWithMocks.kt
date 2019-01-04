@@ -19,9 +19,6 @@ class ApplicationWithMocks {
         fun main(args: Array<String>) {
 
             val wireMockSerer = bootstrapWiremock(8081)
-            stubSparkelgetId()
-            stubSparkelGetBarn()
-
             val kafkaEnvironment = bootstrapKafka()
 
             val testArgs = arrayOf(

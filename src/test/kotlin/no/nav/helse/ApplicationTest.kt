@@ -4,8 +4,6 @@ import com.auth0.jwt.exceptions.TokenExpiredException
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.typesafe.config.ConfigFactory
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.http.*
@@ -13,6 +11,7 @@ import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.common.KafkaEnvironment
+import no.nav.helse.ansettelsesforhold.AnsettelsesforholdResponse
 import no.nav.helse.barn.BarnResponse
 import no.nav.helse.general.auth.CookieNotSetException
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
@@ -40,7 +39,6 @@ class ApplicationTest {
 
         val wireMockServer: WireMockServer = bootstrapWiremock()
         val kafkaEnvironment: KafkaEnvironment = bootstrapKafka()
-        val httpClient: HttpClient = HttpClient(Apache)
 
         fun getConfig() : ApplicationConfig {
 
@@ -82,8 +80,6 @@ class ApplicationTest {
 
     @Test
     fun getBarnAuthorizedTest() {
-        stubSparkelgetId()
-        stubSparkelGetBarn()
         val cookie = getAuthCookie(fnr)
 
         with(engine) {
@@ -145,5 +141,22 @@ class ApplicationTest {
         val cookie = getAuthCookie(fnr).toString()
         obligatoriskeFelterIkkeSatt(engine, cookie)
         ugyldigInformasjonOmBarn(engine, cookie)
+    }
+
+    @Test
+    fun getAnsettelsesforholdAuthorizedTest() {
+        val cookie = getAuthCookie(fnr)
+
+        with(engine) {
+            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold") {
+                addHeader("Accept", "application/json")
+                addHeader("Cookie", cookie.toString())
+            }) {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val expectedResponse : AnsettelsesforholdResponse = objectMapper.readValue(getAnsettelsesforholdMockBody())
+                val actualResponse : AnsettelsesforholdResponse = objectMapper.readValue(response.content!!)
+                assertEquals(expectedResponse, actualResponse)
+            }
+        }
     }
 }

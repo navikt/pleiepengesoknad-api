@@ -39,6 +39,10 @@ fun bootstrapWiremock(port: Int? = null,
     authMockCookie()
     authMockJwkSet()
 
+    stubSparkelgetId()
+    stubSparkelGetBarn()
+    stubSparkelGetAnsettelsesforhold()
+
     logger.info("Mock available on '{}'", wireMockServer.baseUrl())
     return wireMockServer
 }

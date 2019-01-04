@@ -25,6 +25,9 @@ import io.ktor.locations.Locations
 import io.ktor.request.path
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.ansettelsesforhold.AnsettelsesforholdGateway
+import no.nav.helse.ansettelsesforhold.AnsettelsesforholdService
+import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
@@ -139,6 +142,17 @@ fun Application.pleiepengesoknadapi() {
         )
 
         authenticate {
+
+            ansettelsesforholdApis(
+                service = AnsettelsesforholdService(
+                    gateway = AnsettelsesforholdGateway(
+                        httpClient = httpClient,
+                        idService = idService,
+                        baseUrl = configuration.getSparkelUrl()
+                    )
+                )
+            )
+
             barnApis(
                 barnService = barnService
             )
