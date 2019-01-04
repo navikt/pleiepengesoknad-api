@@ -4,6 +4,8 @@ import com.auth0.jwt.exceptions.TokenExpiredException
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.typesafe.config.ConfigFactory
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.http.*
@@ -38,6 +40,7 @@ class ApplicationTest {
 
         val wireMockServer: WireMockServer = bootstrapWiremock()
         val kafkaEnvironment: KafkaEnvironment = bootstrapKafka()
+        val httpClient: HttpClient = HttpClient(Apache)
 
         fun getConfig() : ApplicationConfig {
 
@@ -135,5 +138,12 @@ class ApplicationTest {
                 assertEquals(HttpStatusCode.Unauthorized, response.status())
             }
         }
+    }
+
+    @Test
+    fun sendSoknadValidering() {
+        val cookie = getAuthCookie(fnr).toString()
+        obligatoriskeFelterIkkeSatt(engine, cookie)
+        ugyldigInformasjonOmBarn(engine, cookie)
     }
 }

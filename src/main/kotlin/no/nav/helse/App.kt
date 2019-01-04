@@ -25,7 +25,6 @@ import io.ktor.locations.Locations
 import io.ktor.request.path
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
@@ -39,7 +38,6 @@ import no.nav.helse.general.validation.validationStatusPages
 import no.nav.helse.id.IdGateway
 import no.nav.helse.id.IdService
 import no.nav.helse.soker.SokerService
-import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.SoknadKafkaProducer
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
@@ -93,7 +91,7 @@ fun Application.pleiepengesoknadapi() {
         log.info("Configuring CORS")
         configuration.getWhitelistedCorsAddreses().forEach {
             log.info("Adding host {} with scheme {}", it.host, it.scheme)
-            host(host = it.host, schemes = listOf(it.scheme))
+            host(host = it.authority, schemes = listOf(it.scheme))
         }
     }
 

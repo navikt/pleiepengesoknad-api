@@ -19,7 +19,11 @@ class BarnDetaljerValidator : ConstraintValidator<ValidBarnDetaljer, BarnDetalje
                 valid =  withError(context,"'fodselsdato' må sendes ettersom den ikke kan avledes fra 'fodselsnummer'.")
             }
         } else if (value.fodselsnummer != null && value.fodselsdato != null) {
-            if (!value.fodselsdato!!.isEqual(extractFodselsdato(Fodselsnummer(value.fodselsnummer)))) {
+            val fodselsdato = try {
+                extractFodselsdato(Fodselsnummer(value.fodselsnummer))
+            } catch (ignore : Throwable) { null }
+
+            if (fodselsdato != null && !value.fodselsdato!!.isEqual(fodselsdato)) {
                 valid =  withError(context,"'fodselsdato' og 'fodselsnummer' samsvarer ikke.")
             }
         }
