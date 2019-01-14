@@ -1,0 +1,55 @@
+sudo: required
+language: java
+jdk:
+  - openjdk11
+services:
+  - docker
+before_install:
+  - openssl aes-256-cbc -K $encrypted_d039a0754913_key -iv $encrypted_d039a0754913_iv
+    -in travis/helseci.key.enc -out travis/helseci.key -d
+  - git clone https://github.com/navikt/github-apps-support.git
+  - export PATH=`pwd`/github-apps-support/bin:$PATH
+  - export GH_TOKEN=$(generate-installation-token.sh `generate-jwt.sh ./travis/helseci.key
+    $GITHUB_APP_ID`)
+  - export COMMIT_SHORT=$(git rev-parse --short HEAD)
+  - export ORIGINAL_COMMITTER=$(git log -1 --pretty=format:'%an <%ae>')
+  - echo -e "machine github.com\n  login $GH_TOKEN" > ~/.netrc
+script:
+  - "./gradlew check jar"
+  - docker build --pull -t $DOCKER_IMG_NAME:$COMMIT_SHORT .
+  - |
+    if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
+      echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+      docker push $DOCKER_IMG_NAME:$COMMIT_SHORT
+
+      git clone https://x-access-token:$GH_TOKEN@github.com/navikt/helse-iac.git
+
+      cd helse-iac
+      ./set-image.sh preprod/$APP_NAME/naiserator.yaml $DOCKER_IMG_NAME:$COMMIT_SHORT
+      ./set-image.sh prod/$APP_NAME/naiserator.yaml $DOCKER_IMG_NAME:$COMMIT_SHORT
+
+      git config user.name team-helse[bot]
+      git config user.email team-helse[bot]@users.noreply.github.com
+
+      git add preprod/$APP_NAME/naiserator.yaml
+      git add prod/$APP_NAME/naiserator.yaml
+      git commit -m "Bump $APP_NAME" -m "Caused by $TRAVIS_BUILD_WEB_URL" --author "$ORIGINAL_COMMITTER"
+
+      git push https://x-access-token:$GH_TOKEN@github.com/navikt/helse-iac.git master
+
+      cd ..
+      fi
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - "$HOME/.gradle/caches/"
+    - "$HOME/.gradle/wrapper/"
+env:
+  global:
+    - APP_NAME=pleiepengesoknad-api
+    - DOCKER_IMG_NAME=navikt/pleiepengesoknad-api
+    - GITHUB_APP_ID=19726
+    - secure: qMgMoefUMwe1XPGKS0OWz/mXGTuHBiKjCmQIzo30tQ8JTvBrkBN9LEiUh1AwWoQLx2ZDKeecp+jQVr83MBbfWlmihtlpYke+0kZ4d1mFO6OsXLXQFV1dK3GrxQOvRxThPUxIoo+SnDHsDru9gAguizXUiZ1qAxnIAbgr36BS/FN+MgIZSkKYtd7NjSpy1ZoDSxjtRRMweg5rBobz0p3Se9DigjnFsF07jxA7/6akpbo1otLEVDJb9vCeY1AaUHE/u6aXUd560vSi00k9ggDRmgC0jILrVrApMcAMl+QvGuD6k1YKl1YEeZXy6dvsVpydp0RsaxQyK8mM7+1TIO2V4K3YkwCKQBw6D6rrBqz2lnadtihNC5VZQGhlBAmBwaxVlYSczd5rz0ossyNZBKMT+DAmF4/uR2O9V2o43dd+y3MYLyuX8ruk48wVuIR+O1G5sNU4DVMkoK9+SUrDoNEEHcxeqpSPG1iYjB6orlQuSRlp3Dk1nqTUguUu55mcVowJ8msuRzut/O0wYGvQWPnECqaSvjHZVZVcIKT3xwd+ePREpmXL+lz5xlf9Wm21kFlO1Ii6iowuXej0YonqASmDUNhqLvl8UU+QOWjNUTnR/GdE92zWNy4NzljdnvME1E08Qrjq0yNpzo431cCYxUYpezYNKRXXl5qWamOMna0D5tI=
+    - secure: SBrMGTqxVwijePraUvbEa4gnh+N3VyRh66HOl+UMhy2qQo4N9gZInpT/XSaSB7JA5r4X8JJFygqt/CvJ8XDNBUtT80mJ9UR1IuPE8UareUxogqzpqZ3eF1Nvg87TzszkCNSzkbi0FZfunrgRzl+p8lXCwT5VJP3rZep9oHJ+ZXTarzl3OU/Ob0oGLoo0ZwoPgTxzVWcDq3HRfd+mbqNwJxUI/hlP7RGW7QAhjgoZQB35uUW0N3Z3vdFz2Q0fZTn9T2Vdqn9yIwZw9wU8fykgazvD76VHFAaV4Nq/bb908X+DEaw0ONdvWclOPA1UpxRpPJr0O70Xb5a9jgY7Caax1QSUJQcl1+tc/zZdbqKzwacq0U7Zc/NPLaBTkThCzVMBuTqdhG5wcOOugr3uYKsco6dHj/HXkTsVHe9OTo2IAHnL9Umf6NDeYcBOyFgLRHP8q8F4xM6bw4Gy4wTie1Y8FOJEQeTTjqUvbR0+oKqrSad4iS2OsjfgRqTFdvwfNyc4YxEJNwIhC6WZUn8P2OG3pcStqVGD/N7B09QN+N+HvopinnlNj0QGPqqh19u1RaZjJjwyzDwBAVSboBj6js97a4uzUH/1N/0YZWrAyBlSmwSgGo4hKpNgyDoIsQKQD1PgWw93wfzzGHT0qHpvqjqnZFItvRlC6ly9BrEH3iA5YsM=
