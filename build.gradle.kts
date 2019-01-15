@@ -72,7 +72,8 @@ dependencies {
     testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
-    testCompile ("no.nav.security:oidc-test-support:0.2.12")
+
+    testCompile ("com.nimbusds:oauth2-oidc-sdk:5.56")
     testImplementation("no.nav:kafka-embedded-env:2.0.1")
 
 
