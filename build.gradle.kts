@@ -61,11 +61,11 @@ dependencies {
     compile ("org.glassfish.web:javax.el:2.2.6")
 
     // Vedlegg
-    implementation("org.apache.pdfbox:pdfbox:2.0.13")
-    implementation("org.apache.tika:tika-core:1.19.1")
+    compile("org.apache.pdfbox:pdfbox:2.0.13")
+    compile("org.apache.tika:tika-core:1.19.1")
 
     // Kafka
-    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
+    compile("org.apache.kafka:kafka-clients:$kafkaVersion")
 
     // Test
     testCompile ("com.github.tomakehurst:wiremock:$wiremockVersion")
