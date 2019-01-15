@@ -25,6 +25,8 @@ import io.ktor.locations.Locations
 import io.ktor.request.path
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
+import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.hotspot.DefaultExports
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdGateway
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdService
 import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
@@ -40,6 +42,7 @@ import no.nav.helse.general.validation.ValidationHandler
 import no.nav.helse.general.validation.validationStatusPages
 import no.nav.helse.id.IdGateway
 import no.nav.helse.id.IdService
+import no.nav.helse.monitorering.monitoreringApis
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soknad.SoknadKafkaProducer
 import no.nav.helse.soknad.SoknadService
@@ -57,6 +60,9 @@ fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args
 @KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 fun Application.pleiepengesoknadapi() {
+
+    val collectorRegistry = CollectorRegistry.defaultRegistry
+    DefaultExports.initialize()
 
     val configuration = Configuration(environment.config)
     val objectMapper = configureObjectMapper()
@@ -140,6 +146,8 @@ fun Application.pleiepengesoknadapi() {
                 idService = idService
             )
         )
+
+        monitoreringApis(collectorRegistry)
 
         authenticate {
 

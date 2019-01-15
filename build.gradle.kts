@@ -7,6 +7,7 @@ val jacksonVersion = "2.9.2"
 val wiremockVersion = "2.19.0"
 val logstashLogbackVersion = "5.2"
 val kafkaVersion = "2.0.1"
+val prometheusVersion = "0.6.0"
 
 val mainClass = "no.nav.helse.AppKt"
 
@@ -35,6 +36,10 @@ dependencies {
     // Logging
     compile ( "ch.qos.logback:logback-classic:$logbackVersion")
     compile ("net.logstash.logback:logstash-logback-encoder:$logstashLogbackVersion")
+
+    // Prometheus
+    compile("io.prometheus:simpleclient_common:$prometheusVersion")
+    compile("io.prometheus:simpleclient_hotspot:$prometheusVersion")
 
     // Ktor Client
     compile ("io.ktor:ktor-client-core:$ktorVersion")
