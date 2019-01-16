@@ -78,6 +78,20 @@ fun Application.pleiepengesoknadapi() {
             level = LogLevel.HEADERS
         }
     }
+    val pinghHttpClient= HttpClient(Apache) {
+        engine {
+            socketTimeout = 1_000  // Max time between TCP packets - default 10 seconds
+            connectTimeout = 1_000 // Max time to establish an HTTP connection - default 10 seconds
+        }
+        install(JsonFeature) {
+            serializer = JacksonSerializer{
+                configureObjectMapper(this)
+            }
+        }
+        install(Logging) {
+            level = LogLevel.BODY
+        }
+    }
 
 
     install(ContentNegotiation) {
@@ -147,7 +161,24 @@ fun Application.pleiepengesoknadapi() {
             )
         )
 
-        monitoreringApis(collectorRegistry)
+        val soknadKafkaProducer = SoknadKafkaProducer(
+            bootstrapServers = configuration.getKafkaBootstrapServers(),
+            username = configuration.getKafkaUsername(),
+            password = configuration.getKafkaPassword(),
+            objectMapper = objectMapper
+        )
+
+        monitoreringApis(
+            collectorRegistry = collectorRegistry,
+            readiness = listOf(
+                soknadKafkaProducer
+            ),
+            pingUrls = listOf(
+                configuration.getJwksUrl(),
+                configuration.getSparkelReadinessUrl()
+            ),
+            httpClient = pinghHttpClient
+        )
 
         authenticate {
 
@@ -168,12 +199,7 @@ fun Application.pleiepengesoknadapi() {
             soknadApis(
                 validationHandler = validationHandler,
                 soknadService = SoknadService(
-                    soknadKafkaProducer = SoknadKafkaProducer(
-                        bootstrapServers = configuration.getKafkaBootstrapServers(),
-                        username = configuration.getKafkaUsername(),
-                        password = configuration.getKafkaPassword(),
-                        objectMapper = objectMapper
-                    ),
+                    soknadKafkaProducer = soknadKafkaProducer,
                     sokerService = SokerService(),
                     image2PDFConverter = Image2PDFConverter(
                         imageScaler = ImageScaler()

@@ -1,29 +1,70 @@
 package no.nav.helse.monitorering
 
 import io.ktor.application.call
+import io.ktor.client.HttpClient
+import io.ktor.client.call.call
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.response.respondText
+import io.ktor.response.respond
 import io.ktor.response.respondTextWriter
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
+import java.net.URL
 import java.util.*
 
 @KtorExperimentalLocationsAPI
 fun Route.monitoreringApis(
-    collectorRegistry: CollectorRegistry
+    collectorRegistry: CollectorRegistry,
+    readiness: List<Readiness>,
+    pingUrls: List<URL>,
+    httpClient: HttpClient
 ) {
 
 
     get("/isalive") {
-        call.respondText("ALIVE", ContentType.Text.Plain)
+        call.respond(Response(status = "ALIVE", success = listOf("I am alive"), errors = emptyList()))
     }
 
     get("/isready") {
-        // TODO: Requeste Sparkel /isready og se at vi har kontakt med Kafka før vi sier READY?
-        call.respondText("READY", ContentType.Text.Plain)
+        val success = mutableListOf<String>()
+        val errors = mutableListOf<String>()
+
+        readiness.forEach { r ->
+            if (r.getResult().isOk) {
+                success.add(r.getResult().message)
+            } else {
+                errors.add(r.getResult().message)
+            }
+        }
+
+        pingUrls.forEach { pu ->
+            try {
+                val response = httpClient.call(pu.toString()).response
+                if (HttpStatusCode.OK != response.status) {
+                    errors.add("Received HTTP response '${response.status}' while expecting 200 response from '$pu'")
+                } else {
+                    success.add("Received 200 response from '$pu'")
+                }
+            } catch (cause: Throwable) {
+                errors.add("Requesting '$pu' gave error '${cause.message}'")
+            }
+        }
+
+
+        val httpStatusCode = if(errors.isEmpty()) HttpStatusCode.OK else HttpStatusCode.ServiceUnavailable
+        val status = if(errors.isEmpty()) "READY" else "NOT_READY"
+
+        call.respond(
+            message = Response(
+                errors = errors,
+                success = success,
+                status = status
+            ),
+            status = httpStatusCode
+        )
     }
 
     get("/metrics") {
@@ -33,3 +74,5 @@ fun Route.monitoreringApis(
         }
     }
 }
+
+private data class Response (val status: String, val success: List<String>, val errors: List<String>)
