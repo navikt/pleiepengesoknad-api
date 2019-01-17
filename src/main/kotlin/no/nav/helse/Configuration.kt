@@ -93,4 +93,25 @@ data class Configuration(val config : ApplicationConfig) {
     fun getKafkaPassword() : String {
         return getString("nav.kafka.password")
     }
+
+    fun getServiceAccountUsername(): String {
+        return getString("nav.authorization.service_account.username")
+    }
+
+    fun getServiceAccountPassword(): String {
+        return getString("nav.authorization.service_account.password")
+    }
+
+    fun getServiceAccountScopes(): List<String> {
+        val scopes : List<String> = config.property("nav.authorization.service_account.scopes").getList()
+        logger.info("nav.authorization.service_account.scopes")
+        scopes.forEach {
+            logger.info(it)
+        }
+        return scopes
+    }
+
+    fun getAuthorizationServerTokenUrl(): URL {
+        return URL(getString("nav.authorization.token_url"))
+    }
 }

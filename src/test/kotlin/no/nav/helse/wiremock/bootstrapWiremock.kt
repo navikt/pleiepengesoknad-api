@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 private val logger: Logger = LoggerFactory.getLogger("nav.bootstrap")
 private const val jwkSetPath = "/auth-mock/jwk-set"
 private const val sparkelPath = "/sparkel-mock"
+private const val authorizationServerPath = "/authorization-server-mock/token"
 
 
 fun bootstrapWiremock(port: Int? = null,
@@ -43,6 +44,8 @@ fun bootstrapWiremock(port: Int? = null,
     stubSparkelgetId()
     stubSparkelGetBarn()
     stubSparkelGetAnsettelsesforhold()
+
+    stubStsGetAccessToken()
 
     logger.info("Mock available on '{}'", wireMockServer.baseUrl())
     return wireMockServer
@@ -84,4 +87,8 @@ fun WireMockServer.getJwksUri() : String {
 
 fun WireMockServer.getSparkelUrl() : String {
     return baseUrl() + sparkelPath
+}
+
+fun WireMockServer.getAuthorizationTokenUrl() : String {
+    return baseUrl() + authorizationServerPath
 }

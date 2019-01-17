@@ -18,7 +18,7 @@ class ServiceAccountTokenProvider(
     private var expiry: LocalDateTime? = null
 
     private val httpRequestBuilder: HttpRequestBuilder = HttpRequestBuilder()
-    private val completeUrl : URL = if (scopes.isEmpty()) url else URL("$url&scope=${getScopesAsSpaceDelimitedList(scopes)}")
+    private val completeUrl : URL = if (scopes.isEmpty()) URL("$url?grant_type=client_credentials") else URL("$url?grant_type=client_credentials&scope=${getScopesAsSpaceDelimitedList(scopes)}")
 
     init {
         httpRequestBuilder.header("Authorization", getAuthorizationHeader(username, password))
@@ -26,7 +26,7 @@ class ServiceAccountTokenProvider(
         httpRequestBuilder.url(completeUrl)
     }
 
-    suspend fun getToken() : String {
+    private suspend fun getToken() : String {
         if (hasCachedToken() && isCachedTokenValid()) {
             return cachedToken!!
         }
@@ -40,6 +40,10 @@ class ServiceAccountTokenProvider(
         } catch (cause: Throwable) {
             throw IllegalStateException("Unable to retrieve service account access token from '$completeUrl' with username '$username'")
         }
+    }
+
+    suspend fun getAuthorizationHeader() : String {
+        return "Bearer ${getToken()}"
     }
 
     private fun setCachedData(response: Response) {
@@ -67,7 +71,7 @@ private data class Response(val accessToken : String, val expiresIn: Long)
 
 private fun getAuthorizationHeader(username : String, password: String) : String {
     val auth = "$username:$password"
-    return Base64.getEncoder().encodeToString(auth.toByteArray())
+    return "Basic ${Base64.getEncoder().encodeToString(auth.toByteArray())}"
 }
 
 private fun getScopesAsSpaceDelimitedList(scopes : List<String>) : String {

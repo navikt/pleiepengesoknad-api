@@ -24,6 +24,7 @@ import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
 import io.ktor.request.path
 import io.ktor.routing.Routing
+import io.ktor.routing.contentType
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
@@ -33,6 +34,7 @@ import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
+import no.nav.helse.general.ServiceAccountTokenProvider
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.auth.authorizationStatusPages
 import no.nav.helse.general.auth.jwtFromCookie
@@ -146,6 +148,14 @@ fun Application.pleiepengesoknadapi() {
     install(Locations)
 
     install(Routing) {
+        val tokenProvider = ServiceAccountTokenProvider(
+            username = configuration.getServiceAccountUsername(),
+            password = configuration.getServiceAccountPassword(),
+            scopes = configuration.getServiceAccountScopes(),
+            url = configuration.getAuthorizationServerTokenUrl(),
+            httpClient = httpClient
+        )
+
         val idService = IdService(
             IdGateway(
                 httpClient = httpClient,
@@ -187,7 +197,8 @@ fun Application.pleiepengesoknadapi() {
                     gateway = AnsettelsesforholdGateway(
                         httpClient = httpClient,
                         idService = idService,
-                        baseUrl = configuration.getSparkelUrl()
+                        baseUrl = configuration.getSparkelUrl(),
+                        tokenProvider = tokenProvider
                     )
                 )
             )

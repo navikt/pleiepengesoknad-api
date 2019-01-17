@@ -48,7 +48,8 @@ class ApplicationTest {
                 Pair("nav.authorization.jwks_uri", wireMockServer.getJwksUri()),
                 Pair("nav.kafka.bootstrap_servers", kafkaEnvironment.brokersURL),
                 Pair("nav.kafka.username", kafkaEnvironment.getUsername()),
-                Pair("nav.kafka.password", kafkaEnvironment.getPassword())
+                Pair("nav.kafka.password", kafkaEnvironment.getPassword()),
+                Pair("nav.authorization.token_url", wireMockServer.getAuthorizationTokenUrl())
             ))
 
             val mergedConfig = testConfig.withFallback(fileConfig)

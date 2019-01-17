@@ -29,6 +29,10 @@ fun Route.monitoreringApis(
     }
 
     get("/isready") {
+        call.respond(Response(status = "READY", success = listOf("I am ready"), errors = emptyList()))
+    }
+
+    get("/v2/isready") {
         val success = mutableListOf<String>()
         val errors = mutableListOf<String>()
 

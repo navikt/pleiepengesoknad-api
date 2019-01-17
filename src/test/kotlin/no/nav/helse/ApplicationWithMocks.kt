@@ -27,7 +27,8 @@ class ApplicationWithMocks {
                 "-P:nav.gateways.sparkel_url=${wireMockSerer.getSparkelUrl()}",
                 "-P:nav.kafka.bootstrap_servers=${kafkaEnvironment.brokersURL}",
                 "-P:nav.kafka.username=${kafkaEnvironment.getUsername()}",
-                "-P:nav.kafka.password=${kafkaEnvironment.getPassword()}"
+                "-P:nav.kafka.password=${kafkaEnvironment.getPassword()}",
+                "-P:nav.authorization.token_url=${wireMockSerer.getAuthorizationTokenUrl()}"
             )
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {
