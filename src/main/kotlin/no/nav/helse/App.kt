@@ -9,6 +9,7 @@ import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.jetty.Jetty
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
@@ -24,7 +25,6 @@ import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
 import io.ktor.request.path
 import io.ktor.routing.Routing
-import io.ktor.routing.contentType
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
@@ -76,9 +76,7 @@ fun Application.pleiepengesoknadapi() {
                 configureObjectMapper(this)
             }
         }
-        install(Logging) {
-            level = LogLevel.HEADERS
-        }
+
     }
     val pinghHttpClient= HttpClient(Apache) {
         engine {
@@ -152,14 +150,15 @@ fun Application.pleiepengesoknadapi() {
             username = configuration.getServiceAccountUsername(),
             password = configuration.getServiceAccountPassword(),
             scopes = configuration.getServiceAccountScopes(),
-            url = configuration.getAuthorizationServerTokenUrl(),
+            baseUrl = configuration.getAuthorizationServerTokenUrl(),
             httpClient = httpClient
         )
 
         val idService = IdService(
             IdGateway(
                 httpClient = httpClient,
-                baseUri = configuration.getSparkelUrl()
+                baseUrl = configuration.getSparkelUrl(),
+                tokenProvider = tokenProvider
             )
         )
 
@@ -167,7 +166,8 @@ fun Application.pleiepengesoknadapi() {
             barnGateway = BarnGateway(
                 httpClient = httpClient,
                 baseUrl = configuration.getSparkelUrl(),
-                idService = idService
+                idService = idService,
+                tokenProvider = tokenProvider
             )
         )
 

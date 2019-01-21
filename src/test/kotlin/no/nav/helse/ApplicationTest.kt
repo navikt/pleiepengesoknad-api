@@ -154,9 +154,10 @@ class ApplicationTest {
                 addHeader("Cookie", cookie.toString())
             }) {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val expectedResponse : AnsettelsesforholdResponse = objectMapper.readValue(getAnsettelsesforholdMockBody())
+                val expectedResponse : AnsettelsesforholdResponse = objectMapper.readValue(expectedGetAnsettelsesforholdJson)
                 val actualResponse : AnsettelsesforholdResponse = objectMapper.readValue(response.content!!)
                 assertEquals(expectedResponse, actualResponse)
+
             }
         }
     }

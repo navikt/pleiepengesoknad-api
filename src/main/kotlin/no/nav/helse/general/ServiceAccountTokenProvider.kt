@@ -10,20 +10,28 @@ class ServiceAccountTokenProvider(
     private val username: String,
     password: String,
     scopes: List<String>,
-    url: URL,
+    baseUrl: URL,
     private val httpClient: HttpClient
-) {
+) { // TODO: Implement Readiness
 
     private var cachedToken: String? = null
     private var expiry: LocalDateTime? = null
 
-    private val httpRequestBuilder: HttpRequestBuilder = HttpRequestBuilder()
-    private val completeUrl : URL = if (scopes.isEmpty()) URL("$url?grant_type=client_credentials") else URL("$url?grant_type=client_credentials&scope=${getScopesAsSpaceDelimitedList(scopes)}")
+    private val httpRequestBuilder: HttpRequestBuilder
+    private val completeUrl : URL
 
     init {
-        httpRequestBuilder.header("Authorization", getAuthorizationHeader(username, password))
-        httpRequestBuilder.header("Accept", "application/json")
-        httpRequestBuilder.url(completeUrl)
+        val queryParameters : MutableMap<String, String> = mutableMapOf(Pair("grant_type","client_credentials"))
+        if (!scopes.isEmpty()) {
+            queryParameters["scope"] = getScopesAsSpaceDelimitedList(scopes)
+        }
+
+        completeUrl = buildURL(baseUrl = baseUrl, queryParameters = queryParameters)
+
+        httpRequestBuilder = prepareHttpRequestBuilder(
+            authorization = getAuthorizationHeader(username, password),
+            url = completeUrl
+        )
     }
 
     private suspend fun getToken() : String {
@@ -38,7 +46,7 @@ class ServiceAccountTokenProvider(
             setCachedData(response)
             return cachedToken!!
         } catch (cause: Throwable) {
-            throw IllegalStateException("Unable to retrieve service account access token from '$completeUrl' with username '$username'")
+            throw IllegalStateException("Unable to retrieve service account access token from '$completeUrl' with username '$username'", cause)
         }
     }
 

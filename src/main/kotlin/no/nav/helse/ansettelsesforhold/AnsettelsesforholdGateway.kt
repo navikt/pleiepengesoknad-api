@@ -1,53 +1,57 @@
 package no.nav.helse.ansettelsesforhold
 
 import io.ktor.client.HttpClient
-import io.ktor.client.features.BadResponseStatusException
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.url
-import io.ktor.http.*
 import no.nav.helse.general.ServiceAccountTokenProvider
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.general.error.CommunicationException
-import no.nav.helse.id.Id
-import no.nav.helse.id.IdNotFoundException
+import no.nav.helse.general.buildURL
+import no.nav.helse.general.lookupThroughSparkel
 import no.nav.helse.id.IdService
+import java.net.URL
 
 class AnsettelsesforholdGateway(
     private val httpClient: HttpClient,
-    private val baseUrl: Url,
+    private val baseUrl: URL,
     private val idService: IdService,
     private val tokenProvider: ServiceAccountTokenProvider
 ) {
     suspend fun getAnsettelsesforhold(fnr: Fodselsnummer) : List<Ansettelsesforhold> {
-        return try {
-            request(idService.getId(fnr)).ansettelsesforhold
-        } catch (cause: IdNotFoundException) {
-            request(idService.refreshAndGetId(fnr)).ansettelsesforhold
+        val sparkelResponse = request(fnr)
+        val ansettelsesforhold = mutableListOf<Ansettelsesforhold>()
+
+        sparkelResponse.arbeidsforhold.forEach {arbeidsforhold ->
+            if (arbeidsforhold.arbeidsgiver.isOrganization()) {
+                ansettelsesforhold.add(
+                    Ansettelsesforhold(
+                        navn = arbeidsforhold.arbeidsgiver.navn!!,
+                        organisasjonsnummer = arbeidsforhold.arbeidsgiver.orgnummer!!
+                    )
+                )
+            }
         }
+
+        return ansettelsesforhold.toList()
     }
 
-    private suspend fun request(id: Id) : AnsettelsesforholdResponse { // TODO: Ikke bruk samme klasse som API'et returnerer
-        val url = URLBuilder()
-            .takeFrom(baseUrl)
-            .path(baseUrl.fullPath, "id", id.value, "ansettelsesforhold")
-            .build()
-        try {
-            val requestBuilder = HttpRequestBuilder()
-            requestBuilder.header("Accept", "application/json")
-            requestBuilder.header("Authorization", tokenProvider.getAuthorizationHeader())
-            requestBuilder.url(url.toString())
+    private suspend fun request(fnr: Fodselsnummer) : SparkelResponse {
+        val url = buildURL(
+            baseUrl = baseUrl,
+            pathParts = listOf("api","arbeidsforhold")
+        )
 
-            return httpClient.get(requestBuilder)
-        } catch (cause: BadResponseStatusException) {
-            if (HttpStatusCode.NotFound == cause.statusCode) {
-                throw IdNotFoundException()
-            } else {
-                throw CommunicationException(url, cause.response)
-            }
-        } catch (cause: Throwable) {
-            throw CommunicationException(url, cause)
-        }
+        return lookupThroughSparkel(
+            httpClient = httpClient,
+            url = url,
+            idService = idService,
+            tokenProvider = tokenProvider,
+            fnr = fnr
+        )
     }
 }
+
+data class SparkelArbeidsGiver(val orgnummer: String?, val navn: String?) {
+    fun isOrganization() : Boolean {
+        return orgnummer != null && navn != null
+    }
+}
+data class SparkelArbeidsforhold(val arbeidsgiver: SparkelArbeidsGiver)
+data class SparkelResponse(val arbeidsforhold: Set<SparkelArbeidsforhold>) // Kan å samme arbeidsgiver flere ganger, så bruker Set istedenfor List

@@ -1,5 +1,5 @@
 package no.nav.helse.ansettelsesforhold
 
 data class AnsettelsesforholdResponse (
-    val ansettelsesforhold : List<Ansettelsesforhold>
+    val organisasjoner : List<Ansettelsesforhold>
 )

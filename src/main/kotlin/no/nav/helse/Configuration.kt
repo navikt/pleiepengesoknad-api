@@ -1,8 +1,8 @@
 package no.nav.helse
 
 import io.ktor.config.ApplicationConfig
-import io.ktor.http.*
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.general.buildURL
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -68,18 +68,12 @@ data class Configuration(val config : ApplicationConfig) {
         return corsAddresses.toList()
     }
 
-    fun getSparkelUrl() : Url {
-        return Url(getString("nav.gateways.sparkel_url"))
+    fun getSparkelUrl() : URL {
+        return URL(getString("nav.gateways.sparkel_url"))
     }
 
     fun getSparkelReadinessUrl() : URL {
-        val sparkelUrl = getSparkelUrl()
-        val url = URLBuilder()
-            .takeFrom(sparkelUrl)
-            .path(sparkelUrl.fullPath, "isready")
-            .build()
-        return url.toURI().toURL()
-
+        return buildURL(baseUrl = getSparkelUrl(), pathParts = listOf("isready"))
     }
 
     fun getKafkaBootstrapServers() : String {

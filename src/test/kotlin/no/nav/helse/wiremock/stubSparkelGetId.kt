@@ -6,7 +6,7 @@ import java.util.*
 fun stubSparkelgetId() {
     val uuid = UUID.randomUUID().toString()
     WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching("/sparkel-mock/fnr/.*"))
+        WireMock.get(WireMock.urlPathMatching("/sparkel-mock/api/ident.*"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)
