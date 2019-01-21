@@ -69,9 +69,7 @@ dependencies {
     compile("org.apache.kafka:kafka-clients:$kafkaVersion")
 
     // Test
-    testCompile ("com.github.tomakehurst:wiremock:$wiremockVersion") {
-        exclude(group = "org.eclipse.jetty")
-    }
+    testCompile ("com.github.tomakehurst:wiremock:$wiremockVersion")
     testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
