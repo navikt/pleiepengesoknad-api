@@ -45,7 +45,6 @@ dependencies {
     compile ("io.ktor:ktor-client-core:$ktorVersion")
     compile ("io.ktor:ktor-client-core-jvm:$ktorVersion")
     compile ("io.ktor:ktor-client-apache:$ktorVersion")
-    compile ("io.ktor:ktor-client-jetty:$ktorVersion")
 
     compile ("io.ktor:ktor-client-json-jvm:$ktorVersion")
     compile ("io.ktor:ktor-client-jackson:$ktorVersion")
