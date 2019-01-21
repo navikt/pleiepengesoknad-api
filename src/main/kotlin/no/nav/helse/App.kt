@@ -181,7 +181,8 @@ fun Application.pleiepengesoknadapi() {
         monitoreringApis(
             collectorRegistry = collectorRegistry,
             readiness = listOf(
-                soknadKafkaProducer
+                soknadKafkaProducer,
+                tokenProvider
             ),
             pingUrls = listOf(
                 configuration.getJwksUrl(),

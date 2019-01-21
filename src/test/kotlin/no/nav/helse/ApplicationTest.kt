@@ -161,4 +161,13 @@ class ApplicationTest {
             }
         }
     }
+
+    @Test
+    fun testDeepIsReadyReturnsOk() {
+        with(engine) {
+            with(handleRequest(HttpMethod.Get, "/isready-deep")) {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
 }

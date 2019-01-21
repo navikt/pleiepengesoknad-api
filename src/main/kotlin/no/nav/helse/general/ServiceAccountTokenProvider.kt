@@ -2,6 +2,8 @@ package no.nav.helse.general
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.*
+import no.nav.helse.monitorering.Readiness
+import no.nav.helse.monitorering.ReadinessResult
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.*
@@ -12,7 +14,17 @@ class ServiceAccountTokenProvider(
     scopes: List<String>,
     baseUrl: URL,
     private val httpClient: HttpClient
-) { // TODO: Implement Readiness
+) : Readiness {
+
+    override suspend fun getResult(): ReadinessResult {
+        try {
+            getToken()
+            return ReadinessResult(isOk = true, message = "Successfully retrieved Service Account Access Token")
+        } catch (cause: Throwable) {
+            return ReadinessResult(isOk = false, message = "Error retrieving Service Account Token : '$cause.message'")
+
+        }
+    }
 
     private var cachedToken: String? = null
     private var expiry: LocalDateTime? = null

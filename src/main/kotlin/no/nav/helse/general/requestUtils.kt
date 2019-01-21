@@ -47,7 +47,6 @@ fun prepareHttpRequestBuilder(authorization : String,
                               url : URL) : HttpRequestBuilder {
     val httpRequestBuilder = HttpRequestBuilder()
     httpRequestBuilder.header("Authorization", authorization)
-    //httpRequestBuilder.header("Accept", "application/json")
     httpRequestBuilder.url(url)
     return httpRequestBuilder
 }
