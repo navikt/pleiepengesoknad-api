@@ -26,39 +26,12 @@ class SoknadService(val soknadKafkaProducer: SoknadKafkaProducer,
         soknadKafkaProducer.produce(komplettSoknad)
     }
 
-    private fun leggTilFodselsDato(barnDetaljer: List<BarnDetaljer>) : List<BarnDetaljer> {
-        barnDetaljer.forEach {
-            if (it.fodselsdato == null) {
-                it.medFodselsDato(extractFodselsdato(Fodselsnummer(it.fodselsnummer!!)))
-            }
+    private fun leggTilFodselsDato(barnDetaljer: BarnDetaljer) : BarnDetaljer {
+        if (barnDetaljer.fodselsdato == null) {
+            barnDetaljer.medFodselsDato(extractFodselsdato(Fodselsnummer(barnDetaljer.fodselsnummer!!)))
         }
         return barnDetaljer
     }
-
-//    private suspend fun leggTilFodselsnummer(
-//        barnDetlajer : List<BarnDetaljer>,
-//        sokerFnr: Fodselsnummer) : List<BarnDetaljer> {
-//
-//        val kompletteBarn = barnService.getBarn(sokerFnr)
-//
-//        barnDetlajer.forEach {
-//            if (it.fodselsnummer == null) {
-//                for (komplettBarn in kompletteBarn) {
-//                    if (erSammeBarn(komplettBarn, it)) {
-//                        it.medFodselsnummer(komplettBarn.fodselsnummer)
-//                    }
-//                }
-//            }
-//        }
-//        return barnDetlajer
-//    }
-
-//    private fun erSammeBarn(komplettBarn: KomplettBarn,
-//                            barnDetaljer: BarnDetaljer) : Boolean {
-//        return  komplettBarn.fodselsdato.isEqual(barnDetaljer.fodselsdato) &&
-//                komplettBarn.fornavn.trim().equals(barnDetaljer.fornavn.trim(), ignoreCase = true) &&
-//                komplettBarn.etternavn.trim().equals(barnDetaljer.etternavn.trim(), ignoreCase = true)
-//    }
 
     private fun prosseserVedlegg(vedlegg: List<Vedlegg>) : List<PdfVedlegg> {
         val pdfVedlegg = mutableListOf<PdfVedlegg>()

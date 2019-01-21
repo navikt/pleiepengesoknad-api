@@ -11,8 +11,8 @@ import javax.validation.constraints.Size
 
 @ValidSoknad
 data class Soknad (
-    @get:Valid @get:Size(min=1, max=1) val barn : List<BarnDetaljer>,
-    @get:Valid @get:Size(min=1, max=1) val ansettelsesforhold : List<AnsettelsesforholdDetaljer>,
+    @get:Valid val barn : BarnDetaljer,
+    @get:Valid val ansettelsesforhold : AnsettelsesforholdDetaljer,
     @get:Valid @get:Size(min=1) val vedlegg : List<Vedlegg>,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate

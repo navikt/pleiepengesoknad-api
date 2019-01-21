@@ -140,6 +140,7 @@ class ApplicationTest {
     @Test
     fun sendSoknadValidering() {
         val cookie = getAuthCookie(fnr).toString()
+        gyldigSoknad(engine, cookie)
         obligatoriskeFelterIkkeSatt(engine, cookie)
         ugyldigInformasjonOmBarn(engine, cookie)
     }

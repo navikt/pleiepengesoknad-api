@@ -1,7 +1,8 @@
 package no.nav.helse.soknad
 
-import javax.validation.constraints.NotBlank
+import no.nav.helse.ansettelsesforhold.Ansettelsesforhold
+import javax.validation.constraints.NotEmpty
 
 data class AnsettelsesforholdDetaljer(
-    @get:NotBlank val navn: String
+    @get:NotEmpty val organisasjoner : List<Ansettelsesforhold>
 )
