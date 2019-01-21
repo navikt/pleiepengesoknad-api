@@ -22,13 +22,13 @@ POST @ /soknad -> 202 Response
 	"fra_og_med": "2019-10-10",
 	"til_og_med": "2019-11-10",
 	"ansettelsesforhold": {
-	  "organisasjoner" : [ {
-        "navn" : "Telenor",
-        "organisasjonsnummer" : "973861778"
-      }, {
-        "navn" : "Maxbo",
-        "organisasjonsnummer" : "910831143"
-      } ]
+		"organisasjoner": [{
+			"navn": "Telenor",
+			"organisasjonsnummer": "973861778"
+		}, {
+			"navn": "Maxbo",
+			"organisasjonsnummer": "910831143"
+		}]
 	},
 	"vedlegg": [{
 		"innhold": [-1, -40, -1, -37, 0, -124, 0, 8, 6, 6, 7, 6, 5, 8, 7]
