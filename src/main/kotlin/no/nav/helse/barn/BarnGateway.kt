@@ -1,19 +1,17 @@
 package no.nav.helse.barn
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.barn.sparkel.SparkelGetBarnResponse
-import no.nav.helse.general.ServiceAccountTokenProvider
+import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.general.buildURL
-import no.nav.helse.general.extractFodselsdato
-import no.nav.helse.general.lookupThroughSparkel
-import no.nav.helse.id.IdService
 import java.net.URL
 
 class BarnGateway(
     private val httpClient : HttpClient,
     private val baseUrl : URL,
-    private val idService : IdService,
+    private val aktoerService: AktoerService,
     private val tokenProvider : ServiceAccountTokenProvider
 ) {
     suspend fun getBarn(fnr: Fodselsnummer) : List<KomplettBarn> {
@@ -23,15 +21,18 @@ class BarnGateway(
     private suspend fun request(fnr: Fodselsnummer) : SparkelGetBarnResponse {
         val url = buildURL(
             baseUrl = baseUrl,
-            pathParts = listOf("barn")
+            pathParts = listOf(
+                "barn",
+                aktoerService.getAktorId(fnr).value
+            )
         )
-        return lookupThroughSparkel(
-            httpClient = httpClient,
-            url = url,
-            idService = idService,
-            tokenProvider = tokenProvider,
-            fnr = fnr
+
+        val httpRequest = prepareHttpRequestBuilder(
+            authorization = tokenProvider.getAuthorizationHeader(),
+            url = url
         )
+
+        return httpClient.get(httpRequest)
     }
 
     private fun mapResponse(sparkelResponse : SparkelGetBarnResponse) : List<KomplettBarn> {

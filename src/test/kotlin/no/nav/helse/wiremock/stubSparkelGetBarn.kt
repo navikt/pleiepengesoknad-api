@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 
 fun stubSparkelGetBarn() {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching("/sparkel-mock/barn"))
+        WireMock.get(WireMock.urlPathMatching("/sparkel-mock/barn/.*"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)

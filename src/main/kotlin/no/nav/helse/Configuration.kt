@@ -108,4 +108,8 @@ data class Configuration(val config : ApplicationConfig) {
     fun getAuthorizationServerTokenUrl(): URL {
         return URL(getString("nav.authorization.token_url"))
     }
+
+    fun getAktoerRegisterUrl(): URL {
+        return URL(getString("nav.gateways.aktoer_register_url"))
+    }
 }

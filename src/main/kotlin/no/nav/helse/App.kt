@@ -27,6 +27,8 @@ import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
+import no.nav.helse.aktoer.AktoerGateway
+import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdGateway
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdService
 import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
@@ -41,8 +43,6 @@ import no.nav.helse.general.error.defaultStatusPages
 import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.general.validation.ValidationHandler
 import no.nav.helse.general.validation.validationStatusPages
-import no.nav.helse.id.IdGateway
-import no.nav.helse.id.IdService
 import no.nav.helse.monitorering.monitoreringApis
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soknad.SoknadKafkaProducer
@@ -153,10 +153,10 @@ fun Application.pleiepengesoknadapi() {
             httpClient = httpClient
         )
 
-        val idService = IdService(
-            IdGateway(
+        val aktoerService = AktoerService(
+            aktoerGateway = AktoerGateway(
                 httpClient = httpClient,
-                baseUrl = configuration.getSparkelUrl(),
+                baseUrl = configuration.getAktoerRegisterUrl(),
                 tokenProvider = tokenProvider
             )
         )
@@ -165,7 +165,7 @@ fun Application.pleiepengesoknadapi() {
             barnGateway = BarnGateway(
                 httpClient = httpClient,
                 baseUrl = configuration.getSparkelUrl(),
-                idService = idService,
+                aktoerService = aktoerService,
                 tokenProvider = tokenProvider
             )
         )
@@ -196,7 +196,7 @@ fun Application.pleiepengesoknadapi() {
                 service = AnsettelsesforholdService(
                     gateway = AnsettelsesforholdGateway(
                         httpClient = httpClient,
-                        idService = idService,
+                        aktoerService = aktoerService,
                         baseUrl = configuration.getSparkelUrl(),
                         tokenProvider = tokenProvider
                     )

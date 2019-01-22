@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 
 fun stubSparkelGetAnsettelsesforhold() {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/arbeidsforhold.*")) // .*
+        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/arbeidsforhold/.*"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)

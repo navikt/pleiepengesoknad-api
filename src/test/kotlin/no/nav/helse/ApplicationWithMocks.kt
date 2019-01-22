@@ -28,7 +28,8 @@ class ApplicationWithMocks {
                 "-P:nav.kafka.bootstrap_servers=${kafkaEnvironment.brokersURL}",
                 "-P:nav.kafka.username=${kafkaEnvironment.getUsername()}",
                 "-P:nav.kafka.password=${kafkaEnvironment.getPassword()}",
-                "-P:nav.authorization.token_url=${wireMockSerer.getAuthorizationTokenUrl()}"
+                "-P:nav.authorization.token_url=${wireMockSerer.getAuthorizationTokenUrl()}",
+                "-P:nav.gateways.aktoer_register_url=${wireMockSerer.getAktoerRegisterUrl()}"
             )
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {

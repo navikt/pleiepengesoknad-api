@@ -1,17 +1,18 @@
 package no.nav.helse.ansettelsesforhold
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.general.ServiceAccountTokenProvider
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.general.buildURL
-import no.nav.helse.general.lookupThroughSparkel
-import no.nav.helse.id.IdService
+import no.nav.helse.general.prepareHttpRequestBuilder
 import java.net.URL
 
 class AnsettelsesforholdGateway(
     private val httpClient: HttpClient,
     private val baseUrl: URL,
-    private val idService: IdService,
+    private val aktoerService: AktoerService,
     private val tokenProvider: ServiceAccountTokenProvider
 ) {
     suspend fun getAnsettelsesforhold(fnr: Fodselsnummer) : List<Ansettelsesforhold> {
@@ -35,16 +36,19 @@ class AnsettelsesforholdGateway(
     private suspend fun request(fnr: Fodselsnummer) : SparkelResponse {
         val url = buildURL(
             baseUrl = baseUrl,
-            pathParts = listOf("api","arbeidsforhold")
+            pathParts = listOf(
+                "api",
+                "arbeidsforhold",
+                aktoerService.getAktorId(fnr).value
+            )
         )
 
-        return lookupThroughSparkel(
-            httpClient = httpClient,
-            url = url,
-            idService = idService,
-            tokenProvider = tokenProvider,
-            fnr = fnr
+        val httpRequest = prepareHttpRequestBuilder(
+            authorization = tokenProvider.getAuthorizationHeader(),
+            url = url
         )
+
+        return httpClient.get(httpRequest)
     }
 }
 

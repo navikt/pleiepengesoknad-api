@@ -13,6 +13,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.bootstrap")
 private const val jwkSetPath = "/auth-mock/jwk-set"
 private const val sparkelPath = "/sparkel-mock"
 private const val authorizationServerPath = "/authorization-server-mock/token"
+private const val aktoerRegisterServerPath = "/aktoer-register-mock"
 
 
 fun bootstrapWiremock(port: Int? = null,
@@ -20,6 +21,7 @@ fun bootstrapWiremock(port: Int? = null,
     val wireMockConfiguration = WireMockConfiguration.options()
         .extensions(AuthMockJwtResponseTransformer())
         .extensions(AuthMockCookieResponseTransformer())
+        .extensions(AktoerRegisterMockGetAktoerIdResponseTransformer())
 
     extensions.forEach {
         wireMockConfiguration.extensions(it)
@@ -46,6 +48,8 @@ fun bootstrapWiremock(port: Int? = null,
     stubSparkelGetAnsettelsesforhold()
 
     stubStsGetAccessToken()
+
+    aktoerRegisterGetAktoerId()
 
     logger.info("Mock available on '{}'", wireMockServer.baseUrl())
     return wireMockServer
@@ -81,6 +85,17 @@ private fun authMockJwkSet() {
     )
 }
 
+private fun aktoerRegisterGetAktoerId() {
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlPathMatching("$aktoerRegisterServerPath/.*")).willReturn(
+            WireMock.aResponse()
+                .withHeader("Content-Type", "application/json")
+                .withStatus(200)
+                .withTransformers("aktoer-register-mock-get-aktoer-id")
+        )
+    )
+}
+
 fun WireMockServer.getJwksUri() : String {
     return baseUrl() + jwkSetPath
 }
@@ -91,4 +106,7 @@ fun WireMockServer.getSparkelUrl() : String {
 
 fun WireMockServer.getAuthorizationTokenUrl() : String {
     return baseUrl() + authorizationServerPath
+}
+fun WireMockServer.getAktoerRegisterUrl() : String {
+    return baseUrl() + aktoerRegisterServerPath
 }
