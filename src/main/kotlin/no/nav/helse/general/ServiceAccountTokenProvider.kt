@@ -2,11 +2,22 @@ package no.nav.helse.general
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.*
+import io.prometheus.client.Histogram
 import no.nav.helse.monitorering.Readiness
 import no.nav.helse.monitorering.ReadinessResult
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.*
+
+private val getAccessTokenHistogram = Histogram.build(
+    "histogram_hente_service_account_acesss_token",
+    "Tidsbruk for henting av Service Account Access Tokens"
+).register()
+
+private val getAccessTokenCounter = monitoredOperationtCounter(
+    name = "counter_hente_service_account_acesss_token",
+    help = "Antall Service Account Access Tokens hentet"
+)
 
 class ServiceAccountTokenProvider(
     private val username: String,
@@ -54,7 +65,11 @@ class ServiceAccountTokenProvider(
         clearCachedData()
 
         try {
-            val response = httpClient.get<Response>(httpRequestBuilder)
+            val response = monitoredOperation(
+                operation = { httpClient.get<Response>(httpRequestBuilder) },
+                counter = getAccessTokenCounter,
+                histogram = getAccessTokenHistogram
+            )
             setCachedData(response)
             return cachedToken!!
         } catch (cause: Throwable) {

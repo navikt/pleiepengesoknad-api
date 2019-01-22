@@ -1,13 +1,11 @@
 package no.nav.helse.aktoer
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
-import no.nav.helse.general.ServiceAccountTokenProvider
+import io.prometheus.client.Histogram
+import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.general.buildURL
-import no.nav.helse.general.prepareHttpRequestBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -17,6 +15,16 @@ import java.net.URL
  */
 
 private val logger: Logger = LoggerFactory.getLogger("nav.AktoerGateway")
+
+private val getAktoerIdHistogram = Histogram.build(
+    "histogram_hente_aktoer_id_fra_fnr",
+    "Tidsbruk for henting av Aktør ID fra Fødselsnummer"
+).register()
+
+private val getAktoerCounter = monitoredOperationtCounter(
+    name = "counter_hente_aktoer_id_fra_fnr",
+    help = "Antall Aktør ID'er hentet fra Fødselsnummer"
+)
 
 class AktoerGateway(
     val httpClient: HttpClient,
@@ -31,7 +39,7 @@ class AktoerGateway(
             Pair("identgruppe", "AktoerId")
         )
     )
-    
+
     suspend fun getAktoerId(fnr: Fodselsnummer) : AktoerId {
         val httpRequest = prepareHttpRequestBuilder(
             authorization = tokenProvider.getAuthorizationHeader(),
@@ -42,7 +50,11 @@ class AktoerGateway(
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
         httpRequest.header("Nav-Personidenter", fnr.value)
 
-        val httpResponse = httpClient.get<Map<String, IdentResponse>>(httpRequest)
+        val httpResponse = monitoredOperation(
+            operation = { httpClient.get<Map<String, IdentResponse>>(httpRequest) },
+            counter = getAktoerCounter,
+            histogram = getAktoerIdHistogram
+        )
 
         if (!httpResponse.containsKey(fnr.value)) {
             throw IllegalStateException("Svar fra '$completeUrl' inneholdt ikke data om det forsespurte fødselsnummeret.")
