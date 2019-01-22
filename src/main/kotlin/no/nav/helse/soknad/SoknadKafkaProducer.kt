@@ -1,15 +1,16 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
+import io.prometheus.client.Histogram
+import no.nav.helse.general.monitoredOperation
+import no.nav.helse.general.monitoredOperationtCounter
 import no.nav.helse.monitorering.Readiness
 import no.nav.helse.monitorering.ReadinessResult
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.KafkaException
+import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.config.SaslConfigs
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,6 +18,16 @@ import java.util.*
 
 private val logger: Logger = LoggerFactory.getLogger("nav.SoknadKafkaProducer")
 private val TOPIC = "private-pleiepengesoknad-inn"
+
+private val leggeTilBehandlingHistogram = Histogram.build(
+    "histogram_legge_soknad_til_behandling",
+    "Tidsbruk for å legge søknad til behandling"
+).register()
+
+private val leggeTilBehandlingCounter = monitoredOperationtCounter(
+    name = "counter_legge_soknad_til_behandling",
+    help = "Antall søknader lagt til behandling"
+)
 
 class SoknadKafkaProducer(private val bootstrapServers : String,
                           private val username : String,
@@ -27,11 +38,23 @@ class SoknadKafkaProducer(private val bootstrapServers : String,
     private val readinessProducer = KafkaProducer<String, String>(getProps(true))
 
 
-    fun produce(soknad: KomplettSoknad) {
+    suspend fun produce(soknad: KomplettSoknad) {
         val serializedSoknad = objectMapper.writeValueAsString(soknad)
         logger.trace("SerializedSoknad={}", serializedSoknad)
-        val result = producer.send(ProducerRecord(TOPIC, serializedSoknad))
-        logger.trace("RecordMetadata='{}'", result.get())
+
+        monitoredOperation<RecordMetadata>(
+            operation = {
+                try {
+                    producer.send(ProducerRecord(TOPIC, serializedSoknad)).get()
+                } catch (cause : Throwable) {
+                    logger.error("Fikk ikke lagt søknad til behandling", cause)
+                    throw cause
+                }
+            },
+            histogram = leggeTilBehandlingHistogram,
+            counter = leggeTilBehandlingCounter
+
+        )
     }
 
     override suspend fun getResult(): ReadinessResult {
