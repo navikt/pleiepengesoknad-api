@@ -32,9 +32,6 @@ import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdGateway
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdService
 import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
-import no.nav.helse.barn.BarnGateway
-import no.nav.helse.barn.BarnService
-import no.nav.helse.barn.barnApis
 import no.nav.helse.general.ServiceAccountTokenProvider
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.auth.authorizationStatusPages
@@ -161,15 +158,6 @@ fun Application.pleiepengesoknadapi() {
             )
         )
 
-        val barnService = BarnService(
-            barnGateway = BarnGateway(
-                httpClient = httpClient,
-                baseUrl = configuration.getSparkelUrl(),
-                aktoerService = aktoerService,
-                tokenProvider = tokenProvider
-            )
-        )
-
         val soknadKafkaProducer = SoknadKafkaProducer(
             bootstrapServers = configuration.getKafkaBootstrapServers(),
             username = configuration.getKafkaUsername(),
@@ -201,10 +189,6 @@ fun Application.pleiepengesoknadapi() {
                         tokenProvider = tokenProvider
                     )
                 )
-            )
-
-            barnApis(
-                barnService = barnService
             )
 
             soknadApis(

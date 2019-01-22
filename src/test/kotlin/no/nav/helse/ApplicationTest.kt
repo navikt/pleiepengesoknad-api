@@ -12,7 +12,6 @@ import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.common.KafkaEnvironment
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdResponse
-import no.nav.helse.barn.BarnResponse
 import no.nav.helse.general.auth.CookieNotSetException
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.jackson.configureObjectMapper
@@ -80,26 +79,11 @@ class ApplicationTest {
         }
     }
 
-    @Test
-    fun getBarnAuthorizedTest() {
-        val cookie = getAuthCookie(fnr)
-
-        with(engine) {
-            with(handleRequest(HttpMethod.Get, "/barn") {
-                addHeader("Accept", "application/json")
-                addHeader("Cookie", cookie.toString())
-            }) {
-                assertEquals(HttpStatusCode.OK, response.status())
-                val mappedResponse : BarnResponse = objectMapper.readValue(response.content!!)
-                assertEquals(2, mappedResponse.barn.size)
-            }
-        }
-    }
 
     @Test(expected = CookieNotSetException::class)
-    fun getBarnUnauthorizedTest() {
+    fun getAnsettelsesforholdUnauthorizedTest() {
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/barn") {
+            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold") {
                 addHeader("Accept", "application/json")
             }) {
                 assertEquals(HttpStatusCode.Unauthorized, response.status())
@@ -108,12 +92,12 @@ class ApplicationTest {
     }
 
     @Test(expected = InsufficientAuthenticationLevelException::class)
-    fun getBarnWrongAuthenticationLevel() {
+    fun getAnsettelsesforholdWrongAuthenticationLevel() {
 
         val cookie = getAuthCookie(fnr, authLevel = "Level3")
 
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/barn") {
+            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
             }) {
@@ -123,13 +107,13 @@ class ApplicationTest {
     }
 
     @Test(expected = TokenExpiredException::class)
-    fun getBarnExpiredToken() {
+    fun getAnsettelsesforholdExpiredToken() {
 
         val cookie = getAuthCookie(fnr, expiry = -(oneMinuteInMillis))
         logger.debug("cookie={}", cookie.toString())
 
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/barn") {
+            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
             }) {
@@ -139,7 +123,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun sendSoknadValidering() {
+    fun sendSoknadTests() {
         val cookie = getAuthCookie(fnr).toString()
         gyldigSoknad(engine, cookie)
         obligatoriskeFelterIkkeSatt(engine, cookie)
