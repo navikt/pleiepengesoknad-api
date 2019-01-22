@@ -2,12 +2,21 @@ package no.nav.helse.ansettelsesforhold
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.prometheus.client.Histogram
 import no.nav.helse.aktoer.AktoerService
-import no.nav.helse.general.ServiceAccountTokenProvider
+import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.general.buildURL
-import no.nav.helse.general.prepareHttpRequestBuilder
 import java.net.URL
+
+private val ansettelsesforholdOppslagHistogram = Histogram.build(
+    "histogram_oppslag_ansettelsesforhold",
+    "Tidsbruk for oppslag på arbeidsforhold for søker"
+).register()
+
+private val ansettelsesforholdOppslagCounter = monitoredOperationtCounter(
+    name = "counter_oppslag_ansettelsesforhold",
+    help = "Antall oppslag gjort på arbeidsforhold for person"
+)
 
 class AnsettelsesforholdGateway(
     private val httpClient: HttpClient,
@@ -48,9 +57,14 @@ class AnsettelsesforholdGateway(
             url = url
         )
 
-        return httpClient.get(httpRequest)
+        return monitoredOperation(
+            operation = { httpClient.get<SparkelResponse>(httpRequest) },
+            histogram = ansettelsesforholdOppslagHistogram,
+            counter = ansettelsesforholdOppslagCounter
+        )
     }
 }
+
 
 data class SparkelArbeidsGiver(val orgnummer: String?, val navn: String?) {
     fun isOrganization() : Boolean {
