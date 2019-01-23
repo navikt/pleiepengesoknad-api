@@ -9,6 +9,7 @@ import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.apache.ApacheEngineConfig
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
@@ -50,10 +51,15 @@ import no.nav.helse.systembruker.SystemBrukerTokenService
 import no.nav.helse.vedlegg.Image2PDFConverter
 import no.nav.helse.vedlegg.ImageScaler
 import no.nav.helse.vedlegg.vedleggStatusPages
+import org.apache.http.HttpHost
+import org.apache.http.client.config.RequestConfig
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import javax.validation.Validation
 import javax.validation.Validator
 
+private val logger: Logger = LoggerFactory.getLogger("nav.Application")
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
 
@@ -68,6 +74,9 @@ fun Application.pleiepengesoknadapi() {
     val objectMapper = configureObjectMapper()
     val validator : Validator = Validation.buildDefaultValidatorFactory().validator
     val validationHandler = ValidationHandler(validator, objectMapper)
+
+
+    val proxy = configuration.getHttpsProxy()
     val httpClient= HttpClient(Apache) {
         install(JsonFeature) {
             serializer = JacksonSerializer{
@@ -75,22 +84,19 @@ fun Application.pleiepengesoknadapi() {
             }
         }
 
+        engine { customizeRequest { applyProxy(proxy, "httpClient") } }
+
     }
     val pinghHttpClient= HttpClient(Apache) {
         engine {
             socketTimeout = 1_000  // Max time between TCP packets - default 10 seconds
             connectTimeout = 1_000 // Max time to establish an HTTP connection - default 10 seconds
-        }
-        install(JsonFeature) {
-            serializer = JacksonSerializer{
-                configureObjectMapper(this)
-            }
+            customizeRequest { applyProxy(proxy, "pingHttpClient") }
         }
         install(Logging) {
             level = LogLevel.BODY
         }
     }
-
 
     install(ContentNegotiation) {
         jackson {
@@ -208,5 +214,17 @@ fun Application.pleiepengesoknadapi() {
                 )
             )
         }
+    }
+}
+
+private fun RequestConfig.Builder.applyProxy(
+    proxy: String?,
+    clientName: String
+) {
+    if (!proxy.isNullOrBlank()) {
+        logger.info("Setting proxy '$proxy' on '$clientName'")
+        setProxy(HttpHost.create(proxy))
+    } else {
+        logger.info("client '$clientName' not using proxy")
     }
 }

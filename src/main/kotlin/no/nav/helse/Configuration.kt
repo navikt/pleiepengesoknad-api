@@ -112,4 +112,9 @@ data class Configuration(val config : ApplicationConfig) {
     fun getAktoerRegisterUrl(): URL {
         return URL(getString("nav.gateways.aktoer_register_url"))
     }
+
+    fun getHttpsProxy() : String? {
+        val proxy = getString("nav.proxy")
+        return if ("disabled".equals(proxy, false)) null else proxy
+    }
 }
