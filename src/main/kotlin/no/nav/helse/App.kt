@@ -36,6 +36,7 @@ import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.auth.authorizationStatusPages
 import no.nav.helse.general.auth.jwtFromCookie
 import no.nav.helse.general.error.defaultStatusPages
+import no.nav.helse.general.error.initializeErrorCounter
 import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.general.validation.ValidationHandler
 import no.nav.helse.general.validation.validationStatusPages
@@ -133,11 +134,13 @@ fun Application.pleiepengesoknadapi() {
         }
     }
 
+    val errorCounter = initializeErrorCounter()
+
     install(StatusPages) {
-        defaultStatusPages()
-        authorizationStatusPages()
-        validationStatusPages()
-        vedleggStatusPages()
+        defaultStatusPages(errorCounter)
+        authorizationStatusPages(errorCounter)
+        validationStatusPages(errorCounter)
+        vedleggStatusPages(errorCounter)
     }
 
     install(Locations)

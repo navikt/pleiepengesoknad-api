@@ -7,10 +7,13 @@ import io.ktor.application.call
 import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import io.prometheus.client.Counter
 import no.nav.helse.general.error.DefaultError
+import no.nav.helse.general.error.monitorException
 import java.net.URI
 
 fun StatusPages.Configuration.validationStatusPages(
+    errorCounter: Counter
 ) {
 
     val invalidParametersType = URI.create("/errors/invalid-parameters")
@@ -22,6 +25,7 @@ fun StatusPages.Configuration.validationStatusPages(
      * Missing not nullable fields in kotlin data classes
      */
     exception<MissingKotlinParameterException> { cause ->
+        monitorException(cause, invalidParametersType, errorCounter)
         val errors: MutableList<Violation> = mutableListOf()
         cause.path.forEach {
             if (it.fieldName != null) {
@@ -48,6 +52,8 @@ fun StatusPages.Configuration.validationStatusPages(
      * Properly formatted JSON object, but contains entities on an invalid format
      */
     exception<InvalidFormatException> { cause ->
+        monitorException(cause, invalidParametersType, errorCounter)
+
         val fieldName: String = cause.path.first().fieldName
 
         call.respond(
@@ -72,6 +78,7 @@ fun StatusPages.Configuration.validationStatusPages(
      * Errors validating objects from their annotations
      */
     exception<ValidationException> { cause ->
+        monitorException(cause, invalidParametersType, errorCounter)
 
         call.respond(
             HttpStatusCode.UnprocessableEntity, ValidationError(
@@ -89,6 +96,8 @@ fun StatusPages.Configuration.validationStatusPages(
      * Invalid formatted JSON object
      */
     exception<JsonProcessingException> { cause ->
+        monitorException(cause, invalidJsonType, errorCounter)
+
         call.respond(
             HttpStatusCode.BadRequest, DefaultError(
                 status = HttpStatusCode.BadRequest.value,
