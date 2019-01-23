@@ -6,6 +6,7 @@ import io.prometheus.client.Histogram
 import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
+import no.nav.helse.systembruker.SystemBrukerTokenService
 import java.net.URL
 
 private val ansettelsesforholdOppslagHistogram = Histogram.build(
@@ -22,7 +23,7 @@ class AnsettelsesforholdGateway(
     private val httpClient: HttpClient,
     private val baseUrl: URL,
     private val aktoerService: AktoerService,
-    private val tokenProvider: ServiceAccountTokenProvider
+    private val systemBrukerTokenService: SystemBrukerTokenService
 ) {
     suspend fun getAnsettelsesforhold(fnr: Fodselsnummer) : List<Ansettelsesforhold> {
         val sparkelResponse = request(fnr)
@@ -53,7 +54,7 @@ class AnsettelsesforholdGateway(
         )
 
         val httpRequest = prepareHttpRequestBuilder(
-            authorization = tokenProvider.getAuthorizationHeader(),
+            authorization = systemBrukerTokenService.getAuthorizationHeader(),
             url = url
         )
 

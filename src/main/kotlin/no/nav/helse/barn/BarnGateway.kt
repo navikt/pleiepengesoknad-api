@@ -6,13 +6,14 @@ import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.barn.sparkel.SparkelGetBarnResponse
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
+import no.nav.helse.systembruker.SystemBrukerTokenService
 import java.net.URL
 
 class BarnGateway(
     private val httpClient : HttpClient,
     private val baseUrl : URL,
     private val aktoerService: AktoerService,
-    private val tokenProvider : ServiceAccountTokenProvider
+    private val systemBrukerTokenService: SystemBrukerTokenService
 ) {
     suspend fun getBarn(fnr: Fodselsnummer) : List<KomplettBarn> {
         return mapResponse(request(fnr))
@@ -28,7 +29,7 @@ class BarnGateway(
         )
 
         val httpRequest = prepareHttpRequestBuilder(
-            authorization = tokenProvider.getAuthorizationHeader(),
+            authorization = systemBrukerTokenService.getAuthorizationHeader(),
             url = url
         )
 

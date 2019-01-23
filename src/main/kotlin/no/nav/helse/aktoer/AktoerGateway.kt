@@ -6,6 +6,7 @@ import io.ktor.client.request.header
 import io.prometheus.client.Histogram
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
+import no.nav.helse.systembruker.SystemBrukerTokenService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -29,7 +30,7 @@ private val getAktoerCounter = monitoredOperationtCounter(
 class AktoerGateway(
     val httpClient: HttpClient,
     baseUrl: URL,
-    val tokenProvider: ServiceAccountTokenProvider
+    val systemBrukerTokenService: SystemBrukerTokenService
 ) {
     private val completeUrl : URL = buildURL(
         baseUrl = baseUrl,
@@ -42,7 +43,7 @@ class AktoerGateway(
 
     suspend fun getAktoerId(fnr: Fodselsnummer) : AktoerId {
         val httpRequest = prepareHttpRequestBuilder(
-            authorization = tokenProvider.getAuthorizationHeader(),
+            authorization = systemBrukerTokenService.getAuthorizationHeader(),
             url = completeUrl
         )
 

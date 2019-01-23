@@ -32,7 +32,6 @@ import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdGateway
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdService
 import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
-import no.nav.helse.general.ServiceAccountTokenProvider
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.auth.authorizationStatusPages
 import no.nav.helse.general.auth.jwtFromCookie
@@ -45,6 +44,8 @@ import no.nav.helse.soker.SokerService
 import no.nav.helse.soknad.SoknadKafkaProducer
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
+import no.nav.helse.systembruker.SystemBrukerTokenGateway
+import no.nav.helse.systembruker.SystemBrukerTokenService
 import no.nav.helse.vedlegg.Image2PDFConverter
 import no.nav.helse.vedlegg.ImageScaler
 import no.nav.helse.vedlegg.vedleggStatusPages
@@ -142,19 +143,21 @@ fun Application.pleiepengesoknadapi() {
     install(Locations)
 
     install(Routing) {
-        val tokenProvider = ServiceAccountTokenProvider(
-            username = configuration.getServiceAccountUsername(),
-            password = configuration.getServiceAccountPassword(),
-            scopes = configuration.getServiceAccountScopes(),
-            baseUrl = configuration.getAuthorizationServerTokenUrl(),
-            httpClient = httpClient
+        val systemBrukerTokenService = SystemBrukerTokenService(
+            SystemBrukerTokenGateway(
+                username = configuration.getServiceAccountUsername(),
+                password = configuration.getServiceAccountPassword(),
+                scopes = configuration.getServiceAccountScopes(),
+                baseUrl = configuration.getAuthorizationServerTokenUrl(),
+                httpClient = httpClient
+            )
         )
 
         val aktoerService = AktoerService(
             aktoerGateway = AktoerGateway(
                 httpClient = httpClient,
                 baseUrl = configuration.getAktoerRegisterUrl(),
-                tokenProvider = tokenProvider
+                systemBrukerTokenService = systemBrukerTokenService
             )
         )
 
@@ -169,7 +172,7 @@ fun Application.pleiepengesoknadapi() {
             collectorRegistry = collectorRegistry,
             readiness = listOf(
                 soknadKafkaProducer,
-                tokenProvider
+                systemBrukerTokenService
             ),
             pingUrls = listOf(
                 configuration.getJwksUrl(),
@@ -186,7 +189,7 @@ fun Application.pleiepengesoknadapi() {
                         httpClient = httpClient,
                         aktoerService = aktoerService,
                         baseUrl = configuration.getSparkelUrl(),
-                        tokenProvider = tokenProvider
+                        systemBrukerTokenService = systemBrukerTokenService
                     )
                 )
             )
