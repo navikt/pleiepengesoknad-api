@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 
 fun stubSparkelReadiness() {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching("/sparkel-mock/isready"))
+        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/isready"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)
