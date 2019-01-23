@@ -21,6 +21,20 @@ data class Configuration(val config : ApplicationConfig) {
         return stringValue
     }
 
+    private fun <T>getListFromCsv(key: String,
+                                  builder: (value: String) -> T) : List<T> {
+        val csv = getString(key)
+        val list = csv.replace(" ", "").split(",")
+        val builtList = mutableListOf<T>()
+        list.forEach { entry ->
+            logger.info("$key entry = $entry")
+            builtList.add(builder(entry))
+        }
+        return builtList.toList()
+
+    }
+
+
     fun getJwksUrl() : URL {
         return URL(getString("nav.authorization.jwks_uri"))
     }
@@ -58,14 +72,13 @@ data class Configuration(val config : ApplicationConfig) {
     }
 
     fun getWhitelistedCorsAddreses() : List<URI> {
-        val corsAdressesString : List<String> = config.property("nav.cors.addresses").getList()
-        val corsAddresses : MutableList<URI> = mutableListOf()
-        logger.info("nav.cors.addresses")
-        corsAdressesString.forEach {
-            logger.info(it)
-            corsAddresses.add(URI(it))
-        }
-        return corsAddresses.toList()
+        return getListFromCsv(
+            key = "nav.cors.addresses",
+            builder = { value ->
+                URI.create(value)
+            }
+        )
+
     }
 
     fun getSparkelUrl() : URL {
@@ -97,12 +110,10 @@ data class Configuration(val config : ApplicationConfig) {
     }
 
     fun getServiceAccountScopes(): List<String> {
-        val scopes : List<String> = config.property("nav.authorization.service_account.scopes").getList()
-        logger.info("nav.authorization.service_account.scopes")
-        scopes.forEach {
-            logger.info(it)
-        }
-        return scopes
+        return getListFromCsv(
+                key = "nav.authorization.service_account.scopes",
+                builder = { value -> value}
+        )
     }
 
     fun getAuthorizationServerTokenUrl(): URL {
@@ -115,6 +126,6 @@ data class Configuration(val config : ApplicationConfig) {
 
     fun getHttpsProxy() : String? {
         val proxy = getString("nav.proxy")
-        return if ("disabled".equals(proxy, false)) null else proxy
+        return if ("disabled".equals(proxy, true)) null else proxy
     }
 }
