@@ -39,13 +39,14 @@ class SoknadKafkaProducer(private val bootstrapServers : String,
 
 
     suspend fun produce(soknad: KomplettSoknad) {
-        val serializedSoknad = objectMapper.writeValueAsString(soknad)
-        logger.trace("SerializedSoknad={}", serializedSoknad)
+        val kafkaMessage = KafkaMessage(metaData = KafkaMetadata(version = "1.0.0"), message = soknad)
+        val serializedKafkaMessage = objectMapper.writeValueAsString(kafkaMessage)
+        logger.trace("serializedKafkaMessage={}", serializedKafkaMessage)
 
         monitoredOperation<RecordMetadata>(
             operation = {
                 try {
-                    producer.send(ProducerRecord(TOPIC, serializedSoknad)).get()
+                    producer.send(ProducerRecord(TOPIC, serializedKafkaMessage)).get()
                 } catch (cause : Throwable) {
                     logger.error("Fikk ikke lagt søknad til behandling", cause)
                     throw cause
