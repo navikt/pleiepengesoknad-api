@@ -12,7 +12,6 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
-import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 
@@ -46,20 +45,6 @@ fun Route.monitoreringApis(
         }
 
         pingUrls.forEach { pu ->
-            try {
-                val connection = pu.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.connect()
-                val code = connection.responseCode
-                if (200 == code) {
-                    success.add("Tilkobling mot '$pu' fungerer (med HttpURLConnection)")
-                } else {
-                    errors.add("Tilkobling mot '$pu' feiler (med HTTP $code) (med HttpURLConnection)")
-                }
-            } catch (cause: Throwable) {
-                errors.add("Tilkobling mot '$pu' feiler (med feilmeldingen '${cause.message}') (med HttpURLConnection)")
-            }
-
             try {
                 val response = httpClient.call(pu.toString()).response
                 if (HttpStatusCode.OK != response.status) {
