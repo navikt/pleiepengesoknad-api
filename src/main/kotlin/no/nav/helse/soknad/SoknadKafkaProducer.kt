@@ -60,10 +60,10 @@ class SoknadKafkaProducer(private val bootstrapServers : String,
     override suspend fun getResult(): ReadinessResult {
         return try {
             readinessProducer.partitionsFor(TOPIC)
-            ReadinessResult(isOk = true, message = "Successfully connected to Kafka with bootstrap servers '$bootstrapServers'")
+            ReadinessResult(isOk = true, message = "Tilkobling til Kafka på bootstrap servers '$bootstrapServers' er OK")
         } catch (cause: Throwable) {
             logger.warn("Kafka connection issues", cause)
-            ReadinessResult(isOk = false, message = "Connecting to Kafka with bootstrap servers '$bootstrapServers' gave error '${cause.message}'")
+            ReadinessResult(isOk = false, message = "Tilkobling til Kafka bootstrap servers '$bootstrapServers' feilet med meldingen '${cause.message}'")
         }
     }
 

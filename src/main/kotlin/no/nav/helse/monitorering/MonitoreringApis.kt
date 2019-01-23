@@ -48,12 +48,12 @@ fun Route.monitoreringApis(
             try {
                 val response = httpClient.call(pu.toString()).response
                 if (HttpStatusCode.OK != response.status) {
-                    errors.add("Received HTTP response '${response.status}' while expecting 200 response from '$pu'")
+                    errors.add("Tilkobling mot '$pu' feiler (med HTTP ${response.status})")
                 } else {
-                    success.add("Received 200 response from '$pu'")
+                    success.add("Tilkobling mot '$pu' fungerer")
                 }
             } catch (cause: Throwable) {
-                errors.add("Requesting '$pu' gave error '${cause.message}'")
+                errors.add("Tilkobling mot '$pu' feiler (med feilmeldingen '${cause.message}')")
             }
         }
 
