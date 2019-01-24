@@ -12,12 +12,12 @@ import java.net.URL
 import java.util.*
 
 private val getAccessTokenHistogram = Histogram.build(
-    "histogram_hente_syste_bruker_acesss_token",
+    "histogram_hente_system_bruker_acesss_token",
     "Tidsbruk for henting av system bruker Access Tokens"
 ).register()
 
 private val getAccessTokenCounter = monitoredOperationtCounter(
-    name = "counter_hente_syste_bruker_acesss_token",
+    name = "counter_hente_system_bruker_acesss_token",
     help = "Antall system bruker Access Tokens hentet"
 )
 

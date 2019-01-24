@@ -12,15 +12,14 @@ class SystemBrukerTokenService(
     override suspend fun getResult(): ReadinessResult {
         return try {
             getToken()
-            ReadinessResult(isOk = true, message = "Successfully retrieved Service Account Access Token")
+            ReadinessResult(isOk = true, message = "Henting av Systembruker Access Token OK")
         } catch (cause: Throwable) {
-            ReadinessResult(isOk = false, message = "Error retrieving Service Account Token : '$cause.message'")
+            ReadinessResult(isOk = false, message = "Henting av Systembruker Access Token feilet ('$cause.message')")
         }
     }
 
-    private var cachedToken: String? = null
-    private var expiry: LocalDateTime? = null
-
+    @Volatile private var cachedToken: String? = null
+    @Volatile private var expiry: LocalDateTime? = null
 
     private suspend fun getToken() : String {
         if (hasCachedToken() && isCachedTokenValid()) {
