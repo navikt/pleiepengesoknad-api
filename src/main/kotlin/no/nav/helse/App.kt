@@ -32,6 +32,8 @@ import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdGateway
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdService
 import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
+import no.nav.helse.barn.BarnService
+import no.nav.helse.barn.barnApis
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.auth.authorizationStatusPages
 import no.nav.helse.general.auth.jwtFromCookie
@@ -190,6 +192,10 @@ fun Application.pleiepengesoknadapi() {
         )
 
         authenticate {
+
+            barnApis(
+                barnService = BarnService()
+            )
 
             ansettelsesforholdApis(
                 service = AnsettelsesforholdService(

@@ -12,6 +12,7 @@ import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.common.KafkaEnvironment
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdResponse
+import no.nav.helse.barn.BarnResponse
 import no.nav.helse.general.auth.CookieNotSetException
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.jackson.configureObjectMapper
@@ -153,6 +154,27 @@ class ApplicationTest {
         with(engine) {
             with(handleRequest(HttpMethod.Get, "/isready-deep")) {
                 assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+    @Test
+    fun testGetBarnIsEmptyList() {
+        val cookie = getAuthCookie(fnr)
+
+        with(engine) {
+            with(handleRequest(HttpMethod.Get, "/barn") {
+                addHeader("Accept", "application/json")
+                addHeader("Cookie", cookie.toString())
+            }) {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val expectedResponse : BarnResponse = objectMapper.readValue("""
+                    {
+                        "barn": []
+                    }
+                """.trimIndent())
+                val actualResponse : BarnResponse = objectMapper.readValue(response.content!!)
+                assertEquals(expectedResponse, actualResponse)
             }
         }
     }
