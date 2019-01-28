@@ -2,6 +2,7 @@ package no.nav.helse
 
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.buildURL
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -11,13 +12,13 @@ import java.util.concurrent.TimeUnit
 
 private val logger: Logger = LoggerFactory.getLogger("nav.Configuration")
 
-
 @KtorExperimentalAPI
 data class Configuration(val config : ApplicationConfig) {
 
-    private fun getString(key: String) : String  {
+    private fun getString(key: String,
+                          secret: Boolean = false) : String  {
         val stringValue = config.property(key).getString()
-        logger.info("{}={}", key, if (key.contains("password")) "***" else stringValue)
+        logger.info("{}={}", key, if (secret) "***" else stringValue)
         return stringValue
     }
 
@@ -78,7 +79,6 @@ data class Configuration(val config : ApplicationConfig) {
                 URI.create(value)
             }
         )
-
     }
 
     fun getSparkelUrl() : URL {
@@ -98,7 +98,7 @@ data class Configuration(val config : ApplicationConfig) {
     }
 
     fun getKafkaPassword() : String {
-        return getString("nav.kafka.password")
+        return getString(key = "nav.kafka.password", secret = true)
     }
 
     fun getServiceAccountUsername(): String {
@@ -106,7 +106,7 @@ data class Configuration(val config : ApplicationConfig) {
     }
 
     fun getServiceAccountPassword(): String {
-        return getString("nav.authorization.service_account.password")
+        return getString(key = "nav.authorization.service_account.password", secret = true)
     }
 
     fun getServiceAccountScopes(): List<String> {
@@ -127,5 +127,10 @@ data class Configuration(val config : ApplicationConfig) {
     fun getHttpsProxy() : String? {
         val proxy = getString("nav.proxy")
         return if ("disabled".equals(proxy, true)) null else proxy
+    }
+
+    fun getApiGatewayApiKey() : ApiGatewayApiKey {
+        val apiKey = getString(key = "nav.authorization.api_gateway.api_key", secret = true)
+        return ApiGatewayApiKey(value = apiKey)
     }
 }

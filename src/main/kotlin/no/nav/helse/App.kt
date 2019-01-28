@@ -156,6 +156,9 @@ fun Application.pleiepengesoknadapi() {
     install(Locations)
 
     install(Routing) {
+
+        val apiGatewayApiKey = configuration.getApiGatewayApiKey()
+
         val systemBrukerTokenService = SystemBrukerTokenService(
             SystemBrukerTokenGateway(
                 username = configuration.getServiceAccountUsername(),

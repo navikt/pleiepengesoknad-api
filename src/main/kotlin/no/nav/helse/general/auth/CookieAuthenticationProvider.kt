@@ -54,7 +54,7 @@ fun Authentication.Configuration.jwtFromCookie(
     val verifier = provider.verifier
 
     provider.pipeline.intercept(AuthenticationPipeline.RequestAuthentication) { context ->
-        val  idToken= provider.idTokenProvider!!.getIdToken(call)
+        val idToken= provider.idTokenProvider!!.getIdToken(call)
         logger.debug("idToken = ${idToken.value}")
         val principal = verifyAndValidate(call, verifier(idToken.value), idToken.value, authenticate) ?: throw IllegalStateException("principal == null")
         context.principal(principal)
