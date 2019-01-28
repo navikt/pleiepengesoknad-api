@@ -41,13 +41,16 @@ class AktoerGateway(
         )
     )
 
-    suspend fun getAktoerId(fnr: Fodselsnummer) : AktoerId {
+    suspend fun getAktoerId(
+        fnr: Fodselsnummer,
+        callId: CallId
+    ) : AktoerId {
         val httpRequest = prepareHttpRequestBuilder(
             authorization = systemBrukerTokenService.getAuthorizationHeader(),
             url = completeUrl
         )
 
-        httpRequest.header("Nav-Call-Id", "to-do-add") // TODO
+        httpRequest.header("Nav-Call-Id", callId.value)
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
         httpRequest.header("Nav-Personidenter", fnr.value)
 

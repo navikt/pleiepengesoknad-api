@@ -15,22 +15,29 @@ class BarnGateway(
     private val aktoerService: AktoerService,
     private val systemBrukerTokenService: SystemBrukerTokenService
 ) {
-    suspend fun getBarn(fnr: Fodselsnummer) : List<KomplettBarn> {
-        return mapResponse(request(fnr))
+    suspend fun getBarn(
+        fnr: Fodselsnummer,
+        callId: CallId
+    ) : List<KomplettBarn> {
+        return mapResponse(request(fnr, callId))
     }
 
-    private suspend fun request(fnr: Fodselsnummer) : SparkelGetBarnResponse {
+    private suspend fun request(
+        fnr: Fodselsnummer,
+        callId: CallId
+    ) : SparkelGetBarnResponse {
         val url = buildURL(
             baseUrl = baseUrl,
             pathParts = listOf(
                 "barn",
-                aktoerService.getAktorId(fnr).value
+                aktoerService.getAktorId(fnr, callId).value
             )
         )
 
         val httpRequest = prepareHttpRequestBuilder(
             authorization = systemBrukerTokenService.getAuthorizationHeader(),
-            url = url
+            url = url,
+            callId = callId
         )
 
         return httpClient.get(httpRequest)

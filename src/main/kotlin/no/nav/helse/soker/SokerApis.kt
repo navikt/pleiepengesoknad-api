@@ -22,6 +22,8 @@ fun Route.sokerApis(
     class getSoker
 
     get { _: getSoker ->
-        call.respond(sokerService.getSoker(getFodselsnummer(call)))
+        call.respond(sokerService.getSoker(
+            fnr = call.getFodselsnummer()
+        ))
     }
 }

@@ -31,7 +31,7 @@ fun Route.soknadApis(
 
         soknadService.registrer(
             soknad = soknad,
-            fnr = getFodselsnummer(call)
+            fnr = call.getFodselsnummer()
         )
 
         call.response.status(HttpStatusCode.Accepted)

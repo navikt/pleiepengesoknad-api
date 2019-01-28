@@ -7,6 +7,7 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import no.nav.helse.general.auth.getFodselsnummer
+import no.nav.helse.general.getCallId
 
 
 @KtorExperimentalLocationsAPI
@@ -19,7 +20,10 @@ fun Route.barnApis(
 
     get { _: getBarn ->
 
-        val kompletteBarn = barnService.getBarn(getFodselsnummer(call))
+        val kompletteBarn = barnService.getBarn(
+            fnr = call.getFodselsnummer(),
+            callId = call.getCallId()
+        )
         call.respond(
             toApiResponse(kompletteBarn)
         )

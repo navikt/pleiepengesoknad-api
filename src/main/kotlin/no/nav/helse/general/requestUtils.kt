@@ -40,8 +40,12 @@ fun buildURL(
 
 fun prepareHttpRequestBuilder(authorization : String,
                               url : URL,
+                              callId: CallId? = null,
                               httpRequestBuilder: HttpRequestBuilder = HttpRequestBuilder()) : HttpRequestBuilder {
     httpRequestBuilder.header("Authorization", authorization)
+    if (callId != null) {
+        httpRequestBuilder.header("Nav-Call-Id", callId.value)
+    }
     httpRequestBuilder.url(url)
     return httpRequestBuilder
 }

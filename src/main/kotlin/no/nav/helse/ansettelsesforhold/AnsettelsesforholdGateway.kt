@@ -25,8 +25,11 @@ class AnsettelsesforholdGateway(
     private val aktoerService: AktoerService,
     private val systemBrukerTokenService: SystemBrukerTokenService
 ) {
-    suspend fun getAnsettelsesforhold(fnr: Fodselsnummer) : List<Ansettelsesforhold> {
-        val sparkelResponse = request(fnr)
+    suspend fun getAnsettelsesforhold(
+        fnr: Fodselsnummer,
+        callId: CallId
+    ) : List<Ansettelsesforhold> {
+        val sparkelResponse = request(fnr, callId)
         val ansettelsesforhold = mutableListOf<Ansettelsesforhold>()
 
         sparkelResponse.arbeidsforhold.forEach {arbeidsforhold ->
@@ -43,19 +46,23 @@ class AnsettelsesforholdGateway(
         return ansettelsesforhold.toList()
     }
 
-    private suspend fun request(fnr: Fodselsnummer) : SparkelResponse {
+    private suspend fun request(
+        fnr: Fodselsnummer,
+        callId: CallId
+    ) : SparkelResponse {
         val url = buildURL(
             baseUrl = baseUrl,
             pathParts = listOf(
                 "api",
                 "arbeidsforhold",
-                aktoerService.getAktorId(fnr).value
+                aktoerService.getAktorId(fnr, callId).value
             )
         )
 
         val httpRequest = prepareHttpRequestBuilder(
             authorization = systemBrukerTokenService.getAuthorizationHeader(),
-            url = url
+            url = url,
+            callId = callId
         )
 
         return monitoredOperation(
@@ -65,7 +72,6 @@ class AnsettelsesforholdGateway(
         )
     }
 }
-
 
 data class SparkelArbeidsGiver(val orgnummer: String?, val navn: String?) {
     fun isOrganization() : Boolean {

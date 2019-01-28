@@ -13,10 +13,7 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
-import io.ktor.features.CORS
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.StatusPages
+import io.ktor.features.*
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
@@ -58,6 +55,7 @@ import org.apache.http.client.config.RequestConfig
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
+import java.util.*
 import javax.validation.Validation
 import javax.validation.Validator
 
@@ -106,9 +104,16 @@ fun Application.pleiepengesoknadapi() {
         }
     }
 
+    install(CallId) {
+        header("Nav-Call-Id")
+        generate { UUID.randomUUID().toString() }
+    }
+
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
+        callIdMdc("call_id")
+
     }
 
     install(CORS) {
