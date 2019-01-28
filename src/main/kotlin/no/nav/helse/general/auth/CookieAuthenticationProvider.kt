@@ -7,7 +7,6 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTDecodeException
-import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.impl.JWTParser
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.auth0.jwt.interfaces.Payload
@@ -27,7 +26,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.CookieAuthenticationPr
 class CookieAuthenticationProvider(name: String?) : AuthenticationProvider(name) {
     internal var verifier : ((String)) -> JWTVerifier? = { null }
     internal var authenticationFunction: suspend ApplicationCall.(JWTCredential) -> Principal? = { null }
-    internal var cookieName : String? = null
+    internal var idTokenProvider : IdTokenProvider? = null
 
     fun verifier(jwkProvider: JwkProvider, issuer: String) {
         this.verifier = { token: String -> getVerifier(jwkProvider, issuer, token) }
@@ -37,8 +36,8 @@ class CookieAuthenticationProvider(name: String?) : AuthenticationProvider(name)
         authenticationFunction = validate
     }
 
-    fun withCookieName(cookieName: String) {
-        this.cookieName = cookieName
+    fun withIdTokenProvider(idTokenProvider: IdTokenProvider) {
+        this.idTokenProvider = idTokenProvider
     }
 }
 
@@ -55,16 +54,11 @@ fun Authentication.Configuration.jwtFromCookie(
     val verifier = provider.verifier
 
     provider.pipeline.intercept(AuthenticationPipeline.RequestAuthentication) { context ->
-        val cookie = call.request.cookies[provider.cookieName!!]
-        if (cookie == null) {
-            throw CookieNotSetException(provider.cookieName!!)
-        } else {
-            logger.debug(cookie)
-            val principal = verifyAndValidate(call, verifier(cookie), cookie, authenticate) ?: throw IllegalStateException("principal == null")
-
-            context.principal(principal)
-            logger.debug("User successfully authorized")
-        }
+        val  idToken= provider.idTokenProvider!!.getIdToken(call)
+        logger.debug("idToken = ${idToken.value}")
+        val principal = verifyAndValidate(call, verifier(idToken.value), idToken.value, authenticate) ?: throw IllegalStateException("principal == null")
+        context.principal(principal)
+        logger.debug("User successfully authorized")
     }
     register(provider)
 }

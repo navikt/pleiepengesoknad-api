@@ -34,6 +34,7 @@ import no.nav.helse.ansettelsesforhold.AnsettelsesforholdService
 import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
+import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.auth.authorizationStatusPages
 import no.nav.helse.general.auth.jwtFromCookie
@@ -123,6 +124,8 @@ fun Application.pleiepengesoknadapi() {
         }
     }
 
+    val idTokenProviderBuilder = IdTokenProvider(cookieName = configuration.getCookieName())
+
     install(Authentication) {
         jwtFromCookie {
             val jwkProvider = JwkProviderBuilder(configuration.getJwksUrl())
@@ -137,7 +140,7 @@ fun Application.pleiepengesoknadapi() {
                 }
                 return@validate JWTPrincipal(credentials.payload)
             }
-            withCookieName(configuration.getCookieName())
+            withIdTokenProvider(idTokenProviderBuilder)
         }
     }
 
