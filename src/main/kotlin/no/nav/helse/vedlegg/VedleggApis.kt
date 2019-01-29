@@ -56,13 +56,14 @@ fun Route.vedleggApis(vedleggStorage: VedleggStorage) {
             multipart.forEachPart { part ->
                 when (part) {
                     is PartData.FileItem -> {
-                        vedlegg = Vedlegg(
-                            content = part.streamProvider().readBytes(),
-                            contentType = part.contentType!! // TODO
-                        )
+                        if ("vedlegg".equals(part.name)) {
+                            vedlegg = Vedlegg(
+                                content = part.streamProvider().readBytes(),
+                                contentType = part.contentType!! // TODO
+                            )
+                        }
                     }
                 }
-
                 part.dispose()
             }
 

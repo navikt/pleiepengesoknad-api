@@ -206,7 +206,7 @@ class ApplicationTest {
                             HttpHeaders.ContentDisposition,
                             listOf(
                                 ContentDisposition.File
-                                    .withParameter(ContentDisposition.Parameters.Name, "iPhone6")
+                                    .withParameter(ContentDisposition.Parameters.Name, "vedlegg")
                                     .withParameter(ContentDisposition.Parameters.FileName, "iPhone_6.jpg")
                                     .toString()
                             )
