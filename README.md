@@ -62,7 +62,7 @@ POST @/vedlegg -> 201 Response med 'Location' header satt til vedlegget
 
 ```json
 {
-  "type" : "/errors/attachment-too-large,
+  "type" : "/errors/attachment-too-large",
   "title" : "Vedlegget var over maks tillatt størrelse på 8MB.",
   "status" : 413,
   "detail" : null,
