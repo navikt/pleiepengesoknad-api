@@ -7,7 +7,7 @@ POST @ /soknad -> 202 Response
 - mellomnavn må ikke settes
 - Om fødselsdato kan avledes fra fødselsnummer trenger kun denne å bli sendt
 - Listen med ansettelsesforhold inneholder data på samme format som GET @ /ansettelsesforhold
-- Vedlegg som byte array eller base64. Må Være PDF, PNG eller JPG på mindre enn 8MB. Må sendes med minst ett vedlegg.
+- Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 
 ```json
 {
@@ -30,11 +30,9 @@ POST @ /soknad -> 202 Response
 			"organisasjonsnummer": "910831143"
 		}]
 	},
-	"vedlegg": [{
-		"innhold": [-1, -40, -1, -37, 0, -124, 0, 8, 6, 6, 7, 6, 5, 8, 7]
-	}, {
-		"innhold": "JVBERi0xLjQKJfbk/N8KMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovVmVyc2l"
-	}]
+	"vedlegg": [
+	    "http://pleiepengesoknad-api.nav.no/vedlegg/e2daa60b-2423-401c-aa33-b41dc6b630e7"
+	]
 }
 ```
 ### Vedlegg
