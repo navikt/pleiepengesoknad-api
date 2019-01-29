@@ -38,11 +38,44 @@ POST @ /soknad -> 202 Response
 }
 ```
 ### Vedlegg
+
 #### Laste opp
 POST @/vedlegg -> 201 Response med 'Location' header satt til vedlegget
+##### Feilmeldinger
+```json
+{
+  "type" : "/errors/multipart-form-required",
+  "title" : "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt.",
+  "status" : 400,
+  "detail" : null,
+  "instance" : "about:blank"
+}
+```
+
+```json
+{
+  "type" : "/errors/attachment-not-attached",
+  "title" : "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt.",
+  "status" : 400,
+  "detail" : null,
+  "instance" : "about:blank"
+}
+```
 Må sendes som en multipart/form-data hvor parten har name=vedlegg og Content-Type header satt
+
 #### Hente vedlegg
 GET @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasting -> 200 Response med vedlegget
+##### Feilmeldinger
+```json
+{
+  "type" : "/errors/attachment-not-found",
+  "title" : "Inget vedlegg funnet med etterspurt ID.",
+  "status" : 404,
+  "detail" : "Vedlegg med ID 123 ikke funnet.",
+  "instance" : "about:blank"
+}
+```
+
 #### Slette vedlegg
 DELETE @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasting -> 204 response
 
