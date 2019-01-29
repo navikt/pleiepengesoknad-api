@@ -7,11 +7,9 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.http.*
-import io.ktor.http.content.PartData
 import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
-import kotlinx.io.streams.asInput
 import no.nav.common.KafkaEnvironment
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdResponse
 import no.nav.helse.barn.BarnResponse
@@ -128,7 +126,7 @@ class ApplicationTest {
 
     @Test
     fun sendSoknadTests() {
-        val cookie = getAuthCookie(fnr).toString()
+        val cookie = getAuthCookie(fnr)
         gyldigSoknad(engine, cookie)
         obligatoriskeFelterIkkeSatt(engine, cookie)
         ugyldigInformasjonOmBarn(engine, cookie)
@@ -186,65 +184,33 @@ class ApplicationTest {
     fun testHaandteringAvVedlegg() {
         val cookie = getAuthCookie(fnr)
         val jpeg = "vedlegg/iPhone_6.jpg".fromResources()
-        val boundary = "***vedlegg***"
 
         with(engine) {
             // LASTER OPP VEDLEGG
-            handleRequest(HttpMethod.Post, "/vedlegg") {
+            val url = handleRequestUploadImage(
+                cookie = cookie,
+                vedlegg = jpeg
+            )
+            val path = Url(url).fullPath
+            // HENTER OPPLASTET VEDLEGG
+            handleRequest(HttpMethod.Get, path) {
                 addHeader("Cookie", cookie.toString())
-                addHeader(
-                    HttpHeaders.ContentType,
-                    ContentType.MultiPart.FormData.withParameter("boundary", boundary).toString()
-                )
-                setBody(boundary, listOf(
-                    PartData.FileItem({ jpeg.inputStream().asInput() }, {}, headersOf(
-                        Pair(
-                            HttpHeaders.ContentType,
-                            listOf("image/jpeg")
-                        ),
-                        Pair(
-                            HttpHeaders.ContentDisposition,
-                            listOf(
-                                ContentDisposition.File
-                                    .withParameter(ContentDisposition.Parameters.Name, "vedlegg")
-                                    .withParameter(ContentDisposition.Parameters.FileName, "iPhone_6.jpg")
-                                    .toString()
-                            )
-                        )
-                    )
-                    )
-                )
-                )
             }.apply {
-                assertEquals(HttpStatusCode.Created, response.status())
-                val url = response.headers[HttpHeaders.Location]
-                assertNotNull(url)
-                val path = Url(url).fullPath
-                // HENTER OPPLASTET VEDLEGG
-                handleRequest(HttpMethod.Get, path) {
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertTrue(Arrays.equals(jpeg, response.byteContent))
+                // SLETTER OPPLASTET VEDLEGG
+                handleRequest(HttpMethod.Delete, path) {
                     addHeader("Cookie", cookie.toString())
                 }.apply {
-                    assertEquals(HttpStatusCode.OK, response.status())
-                    assertTrue(Arrays.equals(jpeg, response.byteContent))
-                    // SLETTER OPPLASTET VEDLEGG
-                    handleRequest(HttpMethod.Delete, path) {
+                    assertEquals(HttpStatusCode.NoContent, response.status())
+                    // VERIFISERER AT VEDLEGG ER SLETTET
+                    handleRequest(HttpMethod.Get, path) {
                         addHeader("Cookie", cookie.toString())
                     }.apply {
-                        assertEquals(HttpStatusCode.NoContent, response.status())
-                        // VERIFISERER AT VEDLEGG ER SLETTET
-                        handleRequest(HttpMethod.Get, path) {
-                            addHeader("Cookie", cookie.toString())
-                        }.apply {
-                            assertEquals(HttpStatusCode.NotFound, response.status())
-                        }
+                        assertEquals(HttpStatusCode.NotFound, response.status())
                     }
                 }
             }
         }
     }
-}
-
-
-private fun String.fromResources() : ByteArray {
-    return Thread.currentThread().contextClassLoader.getResource(this).readBytes()
 }

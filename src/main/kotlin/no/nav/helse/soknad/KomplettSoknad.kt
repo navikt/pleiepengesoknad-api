@@ -1,6 +1,7 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.soker.Soker
+import no.nav.helse.vedlegg.Vedlegg
 import java.time.LocalDate
 
 data class KomplettSoknad(
@@ -9,5 +10,5 @@ data class KomplettSoknad(
     val soker : Soker,
     val barn : BarnDetaljer,
     val ansettelsesforhold: AnsettelsesforholdDetaljer,
-    val vedlegg: List<PdfVedlegg>
+    val vedlegg: List<Vedlegg>
 )

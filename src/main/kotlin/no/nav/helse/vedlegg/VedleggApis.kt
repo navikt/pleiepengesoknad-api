@@ -11,6 +11,7 @@ import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.routing.Route
+import no.nav.helse.general.auth.getFodselsnummer
 import no.nav.helse.general.error.DefaultError
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -32,7 +33,7 @@ private val vedleggTooLargeType = URI.create("/errors/attachment-too-large")
 private const val vedleggTooLargeTitle = "Vedlegget var over maks tillatt størrelse på 8MB."
 
 @KtorExperimentalLocationsAPI
-fun Route.vedleggApis(vedleggStorage: VedleggStorage) {
+fun Route.vedleggApis(vedleggService: VedleggService) {
 
     @Location("/vedlegg")
     class NyttVedleg
@@ -42,7 +43,7 @@ fun Route.vedleggApis(vedleggStorage: VedleggStorage) {
 
     get<EksisterendeVedlegg> { eksisterendeVedlegg ->
         val vedleggId = VedleggId(eksisterendeVedlegg.vedleggId)
-        val vedlegg = vedleggStorage.hentVedlegg(vedleggId)
+        val vedlegg = vedleggService.hentVedlegg(vedleggId, call.getFodselsnummer())
 
         if (vedlegg == null) {
             call.respondVedleggNotFound(vedleggId)
@@ -56,7 +57,7 @@ fun Route.vedleggApis(vedleggStorage: VedleggStorage) {
     }
 
     delete<EksisterendeVedlegg> { eksisterendeVedlegg ->
-        vedleggStorage.slettVedleg(VedleggId(eksisterendeVedlegg.vedleggId))
+        vedleggService.slettVedleg(VedleggId(eksisterendeVedlegg.vedleggId), call.getFodselsnummer())
         call.respond(HttpStatusCode.NoContent)
     }
 
@@ -70,10 +71,10 @@ fun Route.vedleggApis(vedleggStorage: VedleggStorage) {
             if (vedlegg == null) {
                 call.respondVedleggNotAttached()
             } else {
-                if (vedlegg.getSize() > MAX_VEDLEGG_SIZE) {
+                if (vedlegg.size > MAX_VEDLEGG_SIZE) {
                     call.respondVedleggTooLarge()
                 } else {
-                    val vedleggId = vedleggStorage.lagreVedlegg(vedlegg)
+                    val vedleggId = vedleggService.lagreVedlegg(vedlegg, call.getFodselsnummer())
                     call.respondVedlegg(vedleggId)
                 }
             }
@@ -84,10 +85,12 @@ fun Route.vedleggApis(vedleggStorage: VedleggStorage) {
 private suspend fun MultiPartData.getVedlegg() : Vedlegg? {
     for (partData in readAllParts()) {
         if (partData is PartData.FileItem && "vedlegg".equals(partData.name, ignoreCase = true) && partData.contentType != null) {
-            return Vedlegg(
+            val vedlegg = Vedlegg(
                 content = partData.streamProvider().readBytes(),
                 contentType = partData.contentType!!
             )
+            partData.dispose()
+            return vedlegg
         }
         partData.dispose()
     }
@@ -146,7 +149,7 @@ private suspend fun ApplicationCall.respondVedlegg(vedleggId: VedleggId) {
 }
 
 private fun ApplicationCall.getBaseUrlFromRequest() : String {
-    return "${request.origin.scheme}://${request.origin.remoteHost}${request.origin.exposedPortPart()}"
+    return "${request.origin.scheme}://${request.origin.host}${request.origin.exposedPortPart()}"
 }
 
 private fun RequestConnectionPoint.exposedPortPart(): String {

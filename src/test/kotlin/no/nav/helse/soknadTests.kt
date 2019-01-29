@@ -1,6 +1,7 @@
 package no.nav.helse
 
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import com.github.tomakehurst.wiremock.http.Cookie
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
@@ -16,14 +17,20 @@ private val logger: Logger = LoggerFactory.getLogger("nav.soknadValidationTest")
 
 fun gyldigSoknad(
     engine: TestApplicationEngine,
-    cookie: String
+    cookie: Cookie
 ) {
     with(engine) {
-        with(handleRequest(HttpMethod.Post, "/soknad") {
+        val url = handleRequestUploadImage(
+            cookie = cookie,
+            vedlegg = "vedlegg/nav-logo.png".fromResources(),
+            fileName = "nav-logo.png",
+            contentType = "image/png"
+        )
+        handleRequest(HttpMethod.Post, "/soknad") {
             addHeader("Accept", "application/json")
-            addHeader("Cookie", cookie)
-            setBody(body())
-        }) {
+            addHeader("Cookie", cookie.toString())
+            setBody(body(vedleggUrl = url))
+        }.apply {
             assertEquals(HttpStatusCode.Accepted, response.status())
         }
     }
@@ -32,12 +39,12 @@ fun gyldigSoknad(
 
 fun obligatoriskeFelterIkkeSatt(
     engine: TestApplicationEngine,
-    cookie: String) {
+    cookie: Cookie) {
     assertFailsWith(MissingKotlinParameterException::class) {
         with(engine) {
             with(handleRequest(HttpMethod.Post, "/soknad") {
                 addHeader("Accept", "application/json")
-                addHeader("Cookie", cookie)
+                addHeader("Cookie", cookie.toString())
                 setBody("{}")
             }) {}
         }
@@ -46,12 +53,12 @@ fun obligatoriskeFelterIkkeSatt(
 
 fun ugyldigInformasjonOmBarn(
     engine: TestApplicationEngine,
-    cookie: String) {
+    cookie: Cookie) {
 
     expectViolationException(
         engine = engine,
         cookie = cookie,
-        body = body(fodselsnummer = "123"),
+        body = body(fodselsnummer = "123", vedleggUrl = "http://localhost:8080/vedlegg/123123"),
         numberOfExpectedViolations = 1
     )
 
@@ -60,13 +67,13 @@ fun ugyldigInformasjonOmBarn(
 private fun expectViolationException(
     body: String,
     engine: TestApplicationEngine,
-    cookie: String,
+    cookie: Cookie,
     numberOfExpectedViolations: Int) {
     val ex = assertFailsWith(ValidationException::class) {
         with(engine) {
             with(handleRequest(HttpMethod.Post, "/soknad") {
                 addHeader("Accept", "application/json")
-                addHeader("Cookie", cookie)
+                addHeader("Cookie", cookie.toString())
                 setBody(body)
             }) {}
         }
@@ -80,7 +87,8 @@ private fun body(
     fodselsdato: String? = "1990-09-25",
     fodselsnummer: String? = "25099012345",
     fraOgMed: String? = "2018-10-10",
-    tilOgMed: String? = "2019-10-10") : String {
+    tilOgMed: String? = "2019-10-10",
+    vedleggUrl: String) : String {
 
     val body = """{
 
@@ -103,9 +111,7 @@ private fun body(
         ]
 
 	},
-	"vedlegg": [{
-        "innhold": "${base64Vedlegg()}"
-	}]
+	"vedlegg": ["$vedleggUrl"]
     }""".trimIndent()
     logger.info(body)
 

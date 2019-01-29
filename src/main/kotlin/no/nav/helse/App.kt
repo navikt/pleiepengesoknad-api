@@ -187,6 +187,10 @@ fun Application.pleiepengesoknadapi() {
             objectMapper = objectMapper
         )
 
+        val vedleggService = VedleggService(
+            vedleggStorage = InMemoryVedleggStorage()
+        )
+
         monitoreringApis(
             collectorRegistry = collectorRegistry,
             readiness = listOf(
@@ -220,7 +224,7 @@ fun Application.pleiepengesoknadapi() {
             )
 
             vedleggApis(
-                vedleggStorage = InMemoryVedleggStorage()
+                vedleggService = vedleggService
             )
 
             soknadApis(
@@ -228,9 +232,7 @@ fun Application.pleiepengesoknadapi() {
                 soknadService = SoknadService(
                     soknadKafkaProducer = soknadKafkaProducer,
                     sokerService = SokerService(),
-                    image2PDFConverter = Image2PDFConverter(
-                        imageScaler = ImageScaler()
-                    )
+                    vedleggService = vedleggService
                 )
             )
         }

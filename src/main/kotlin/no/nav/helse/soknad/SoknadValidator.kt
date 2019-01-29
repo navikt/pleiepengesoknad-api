@@ -12,6 +12,12 @@ class SoknadValidator : ConstraintValidator<ValidSoknad, Soknad> {
             valid = withError(context, "Startdato kan ikke være før sluttdato")
         }
 
+        value.vedlegg.forEach { url ->
+            if (!url.path.matches(Regex("/vedlegg/.*"))) {
+                valid = withError(context, "$url matcher peker ikke på et gyldig vedlegg")
+            }
+        }
+
         return valid
     }
 
