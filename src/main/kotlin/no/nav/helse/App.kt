@@ -47,9 +47,7 @@ import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
 import no.nav.helse.systembruker.SystemBrukerTokenGateway
 import no.nav.helse.systembruker.SystemBrukerTokenService
-import no.nav.helse.vedlegg.Image2PDFConverter
-import no.nav.helse.vedlegg.ImageScaler
-import no.nav.helse.vedlegg.vedleggStatusPages
+import no.nav.helse.vedlegg.*
 import org.apache.http.HttpHost
 import org.apache.http.client.config.RequestConfig
 import org.slf4j.Logger
@@ -202,6 +200,8 @@ fun Application.pleiepengesoknadapi() {
             httpClient = pinghHttpClient
         )
 
+
+
         authenticate {
 
             barnApis(
@@ -217,6 +217,10 @@ fun Application.pleiepengesoknadapi() {
                         systemBrukerTokenService = systemBrukerTokenService
                     )
                 )
+            )
+
+            vedleggApis(
+                vedleggStorage = InMemoryVedleggStorage()
             )
 
             soknadApis(
