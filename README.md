@@ -37,6 +37,14 @@ POST @ /soknad -> 202 Response
 	}]
 }
 ```
+### Vedlegg
+#### Laste opp
+POST @/vedlegg -> 201 Response med 'Location' header satt til vedlegget
+Må sendes som en multipart/form-data hvor parten har name=vedlegg og Content-Type header satt
+#### Hente vedlegg
+GET @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasting -> 200 Response med vedlegget
+#### Slette vedlegg
+DELETE @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasting -> 204 response
 
 ### Hente ansettelsesforhold
 GET @ /ansettelsesforhold -> 200 Response
