@@ -61,6 +61,17 @@ POST @/vedlegg -> 201 Response med 'Location' header satt til vedlegget
   "instance" : "about:blank"
 }
 ```
+
+```json
+{
+  "type" : "/errors/attachment-too-large,
+  "title" : "Vedlegget var over maks tillatt størrelse på 8MB.",
+  "status" : 413,
+  "detail" : null,
+  "instance" : "about:blank"
+}
+```
+
 Må sendes som en multipart/form-data hvor parten har name=vedlegg og Content-Type header satt
 
 #### Hente vedlegg

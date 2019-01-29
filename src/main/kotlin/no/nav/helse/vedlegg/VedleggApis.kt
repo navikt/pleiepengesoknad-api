@@ -4,9 +4,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.features.origin
 import io.ktor.http.*
-import io.ktor.http.content.PartData
-import io.ktor.http.content.forEachPart
-import io.ktor.http.content.streamProvider
+import io.ktor.http.content.*
 import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.response.header
@@ -19,6 +17,7 @@ import org.slf4j.LoggerFactory
 import java.net.URI
 
 private val logger: Logger = LoggerFactory.getLogger("nav.vedleggApis")
+private const val MAX_VEDLEGG_SIZE = 8 * 1024 * 1024
 
 private val hasToBeMultipartType = URI.create("/errors/multipart-form-required")
 private const val hasToBeMultipartTitle = "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt."
@@ -28,6 +27,9 @@ private const val vedleggNotFoundTitle = "Inget vedlegg funnet med etterspurt ID
 
 private val vedleggNotAttachedType = URI.create("/errors/attachment-not-attached")
 private const val vedleggNotAttachedTitle = "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt."
+
+private val vedleggTooLargeType = URI.create("/errors/attachment-too-large")
+private const val vedleggTooLargeTitle = "Vedlegget var over maks tillatt størrelse på 8MB."
 
 @KtorExperimentalLocationsAPI
 fun Route.vedleggApis(vedleggStorage: VedleggStorage) {
@@ -58,34 +60,48 @@ fun Route.vedleggApis(vedleggStorage: VedleggStorage) {
         call.respond(HttpStatusCode.NoContent)
     }
 
-    post<NyttVedleg> { nyttVedlegg ->
+    post<NyttVedleg> { _ ->
         if (!call.request.isFormMultipart()) {
             call.respondHasToBeMultiPart()
         } else {
-            var vedlegg: Vedlegg? = null
             val multipart = call.receiveMultipart()
-            multipart.forEachPart { part ->
-                when (part) {
-                    is PartData.FileItem -> {
-                        if (part.contentType != null && "vedlegg".equals(part.name)) {
-                            vedlegg = Vedlegg(
-                                content = part.streamProvider().readBytes(),
-                                contentType = part.contentType!!
-                            )
-                        }
-                    }
-                }
-                part.dispose()
-            }
+            val vedlegg = multipart.getVedlegg()
 
             if (vedlegg == null) {
                 call.respondVedleggNotAttached()
             } else {
-                val vedleggId = vedleggStorage.lagreVedlegg(vedlegg!!)
-                call.respondVedlegg(vedleggId)
+                if (vedlegg.getSize() > MAX_VEDLEGG_SIZE) {
+                    call.respondVedleggTooLarge()
+                } else {
+                    val vedleggId = vedleggStorage.lagreVedlegg(vedlegg)
+                    call.respondVedlegg(vedleggId)
+                }
             }
         }
     }
+}
+
+private suspend fun MultiPartData.getVedlegg() : Vedlegg? {
+    for (partData in readAllParts()) {
+        if (partData is PartData.FileItem && "vedlegg".equals(partData.name, ignoreCase = true) && partData.contentType != null) {
+            return Vedlegg(
+                content = partData.streamProvider().readBytes(),
+                contentType = partData.contentType!!
+            )
+        }
+        partData.dispose()
+    }
+    return null
+}
+
+private suspend fun ApplicationCall.respondVedleggTooLarge() {
+    respond(
+        HttpStatusCode.PayloadTooLarge, DefaultError(
+            status = HttpStatusCode.PayloadTooLarge.value,
+            type = vedleggTooLargeType,
+            title = vedleggTooLargeTitle
+        )
+    )
 }
 
 private suspend fun ApplicationCall.respondVedleggNotAttached() {
