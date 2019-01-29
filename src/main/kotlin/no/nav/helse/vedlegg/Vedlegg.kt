@@ -1,10 +1,8 @@
 package no.nav.helse.vedlegg
 
-import io.ktor.http.ContentType
-
 data class Vedlegg(
     val content: ByteArray,
-    val contentType: ContentType, // TODO: String?
+    val contentType: String,
     val size : Int = content.size
 ) {
     override fun equals(other: Any?): Boolean {

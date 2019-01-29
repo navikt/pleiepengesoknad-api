@@ -50,7 +50,7 @@ fun Route.vedleggApis(vedleggService: VedleggService) {
         } else {
             call.respondBytes(
                 bytes = vedlegg.content,
-                contentType = vedlegg.contentType,
+                contentType = ContentType.parse(vedlegg.contentType),
                 status = HttpStatusCode.OK
             )
         }
@@ -87,7 +87,7 @@ private suspend fun MultiPartData.getVedlegg() : Vedlegg? {
         if (partData is PartData.FileItem && "vedlegg".equals(partData.name, ignoreCase = true) && partData.contentType != null) {
             val vedlegg = Vedlegg(
                 content = partData.streamProvider().readBytes(),
-                contentType = partData.contentType!!
+                contentType = partData.contentType.toString()
             )
             partData.dispose()
             return vedlegg
