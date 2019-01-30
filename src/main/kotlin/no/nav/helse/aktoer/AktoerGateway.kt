@@ -5,6 +5,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.prometheus.client.Histogram
 import no.nav.helse.general.*
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.systembruker.SystemBrukerTokenService
 import org.slf4j.Logger
@@ -28,9 +29,10 @@ private val getAktoerCounter = monitoredOperationtCounter(
 )
 
 class AktoerGateway(
-    val httpClient: HttpClient,
+    private val httpClient: HttpClient,
     baseUrl: URL,
-    val systemBrukerTokenService: SystemBrukerTokenService
+    private val systemBrukerTokenService: SystemBrukerTokenService,
+    private val apiGatewayApiKey: ApiGatewayApiKey
 ) {
     private val completeUrl : URL = buildURL(
         baseUrl = baseUrl,
@@ -47,10 +49,11 @@ class AktoerGateway(
     ) : AktoerId {
         val httpRequest = prepareHttpRequestBuilder(
             authorization = systemBrukerTokenService.getAuthorizationHeader(),
-            url = completeUrl
+            url = completeUrl,
+            apiGatewayApiKey = apiGatewayApiKey,
+            callId = callId
         )
 
-        httpRequest.header("Nav-Call-Id", callId.value)
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
         httpRequest.header("Nav-Personidenter", fnr.value)
 

@@ -177,7 +177,8 @@ fun Application.pleiepengesoknadapi() {
             aktoerGateway = AktoerGateway(
                 httpClient = httpClient,
                 baseUrl = configuration.getAktoerRegisterUrl(),
-                systemBrukerTokenService = systemBrukerTokenService
+                systemBrukerTokenService = systemBrukerTokenService,
+                apiGatewayApiKey = apiGatewayApiKey
             )
         )
 
@@ -220,7 +221,8 @@ fun Application.pleiepengesoknadapi() {
                         httpClient = httpClient,
                         aktoerService = aktoerService,
                         baseUrl = configuration.getSparkelUrl(),
-                        systemBrukerTokenService = systemBrukerTokenService
+                        systemBrukerTokenService = systemBrukerTokenService,
+                        apiGatewayApiKey = apiGatewayApiKey
                     )
                 )
             )

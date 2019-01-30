@@ -5,6 +5,7 @@ import io.ktor.client.request.get
 import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.barn.sparkel.SparkelGetBarnResponse
 import no.nav.helse.general.*
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.systembruker.SystemBrukerTokenService
 import java.net.URL
@@ -13,7 +14,8 @@ class BarnGateway(
     private val httpClient : HttpClient,
     private val baseUrl : URL,
     private val aktoerService: AktoerService,
-    private val systemBrukerTokenService: SystemBrukerTokenService
+    private val systemBrukerTokenService: SystemBrukerTokenService,
+    private val apiGatewayApiKey: ApiGatewayApiKey
 ) {
     suspend fun getBarn(
         fnr: Fodselsnummer,
@@ -37,7 +39,8 @@ class BarnGateway(
         val httpRequest = prepareHttpRequestBuilder(
             authorization = systemBrukerTokenService.getAuthorizationHeader(),
             url = url,
-            callId = callId
+            callId = callId,
+            apiGatewayApiKey = apiGatewayApiKey
         )
 
         return httpClient.get(httpRequest)
