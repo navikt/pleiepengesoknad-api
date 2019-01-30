@@ -198,13 +198,14 @@ fun Application.pleiepengesoknadapi() {
                 systemBrukerTokenService
             ),
             pingUrls = listOf(
-                configuration.getJwksUrl(),
+                configuration.getJwksUrl()
+            ),
+            apiGatewayPingUrls = listOf(
                 configuration.getSparkelReadinessUrl()
             ),
+            apiGatewayApiKey = apiGatewayApiKey,
             httpClient = pinghHttpClient
         )
-
-
 
         authenticate {
 

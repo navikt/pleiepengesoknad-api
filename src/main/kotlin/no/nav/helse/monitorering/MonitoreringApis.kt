@@ -3,6 +3,8 @@ package no.nav.helse.monitorering
 import io.ktor.application.call
 import io.ktor.client.HttpClient
 import io.ktor.client.call.call
+import io.ktor.client.request.get
+import io.ktor.client.response.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
@@ -12,6 +14,8 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
+import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.general.prepareHttpRequestBuilder
 import java.net.URL
 import java.util.*
 
@@ -20,6 +24,8 @@ fun Route.monitoreringApis(
     collectorRegistry: CollectorRegistry,
     readiness: List<Readiness>,
     pingUrls: List<URL>,
+    apiGatewayPingUrls: List<URL>,
+    apiGatewayApiKey: ApiGatewayApiKey,
     httpClient: HttpClient
 ) {
 
@@ -47,6 +53,23 @@ fun Route.monitoreringApis(
         pingUrls.forEach { pu ->
             try {
                 val response = httpClient.call(pu.toString()).response
+                if (HttpStatusCode.OK != response.status) {
+                    errors.add("Tilkobling mot '$pu' feiler (med HTTP ${response.status})")
+                } else {
+                    success.add("Tilkobling mot '$pu' fungerer")
+                }
+            } catch (cause: Throwable) {
+                errors.add("Tilkobling mot '$pu' feiler (med feilmeldingen '${cause.message}')")
+            }
+        }
+
+        apiGatewayPingUrls.forEach { pu ->
+            try {
+                val httpRequest = prepareHttpRequestBuilder(
+                    url = pu,
+                    apiGatewayApiKey = apiGatewayApiKey
+                )
+                val response = httpClient.get<HttpResponse>(httpRequest)
                 if (HttpStatusCode.OK != response.status) {
                     errors.add("Tilkobling mot '$pu' feiler (med HTTP ${response.status})")
                 } else {

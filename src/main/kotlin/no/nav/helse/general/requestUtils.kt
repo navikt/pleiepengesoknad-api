@@ -6,6 +6,7 @@ import io.ktor.client.request.url
 import io.ktor.http.*
 import io.prometheus.client.Counter
 import io.prometheus.client.Histogram
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -38,13 +39,19 @@ fun buildURL(
 }
 
 
-fun prepareHttpRequestBuilder(authorization : String,
+fun prepareHttpRequestBuilder(authorization : String? = null,
                               url : URL,
                               callId: CallId? = null,
+                              apiGatewayApiKey: ApiGatewayApiKey? = null,
                               httpRequestBuilder: HttpRequestBuilder = HttpRequestBuilder()) : HttpRequestBuilder {
-    httpRequestBuilder.header("Authorization", authorization)
+    if (authorization != null) {
+        httpRequestBuilder.header("Authorization", authorization)
+    }
     if (callId != null) {
         httpRequestBuilder.header("Nav-Call-Id", callId.value)
+    }
+    if (apiGatewayApiKey != null) {
+        httpRequestBuilder.header("x-nav-apiKey", apiGatewayApiKey.value)
     }
     httpRequestBuilder.url(url)
     return httpRequestBuilder
