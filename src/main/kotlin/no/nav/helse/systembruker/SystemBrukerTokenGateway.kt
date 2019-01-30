@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.prometheus.client.Histogram
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.buildURL
 import no.nav.helse.general.monitoredOperation
 import no.nav.helse.general.monitoredOperationtCounter
@@ -26,6 +27,7 @@ class SystemBrukerTokenGateway(
     password: String,
     scopes: List<String>,
     baseUrl: URL,
+    apiGatewayApiKey: ApiGatewayApiKey,
     private val httpClient: HttpClient
 ) {
     private val httpRequestBuilder: HttpRequestBuilder
@@ -41,7 +43,8 @@ class SystemBrukerTokenGateway(
 
         httpRequestBuilder = prepareHttpRequestBuilder(
             authorization = getAuthorizationHeader(username, password),
-            url = completeUrl
+            url = completeUrl,
+            apiGatewayApiKey = apiGatewayApiKey
         )
     }
 
@@ -53,7 +56,7 @@ class SystemBrukerTokenGateway(
                 histogram = getAccessTokenHistogram
             )
         } catch (cause: Throwable) {
-            throw IllegalStateException("Fikk ikke hentet system bruker access token fra'$completeUrl' med brukernavn '$username'", cause)
+            throw IllegalStateException("Fikk ikke hentet system bruker access token fra'$completeUrl' med brukernavn '$username'. Feilet med '${cause.message}'", cause)
         }
     }
 }

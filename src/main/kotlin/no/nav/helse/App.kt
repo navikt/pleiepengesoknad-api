@@ -168,7 +168,8 @@ fun Application.pleiepengesoknadapi() {
                 password = configuration.getServiceAccountPassword(),
                 scopes = configuration.getServiceAccountScopes(),
                 baseUrl = configuration.getAuthorizationServerTokenUrl(),
-                httpClient = httpClient
+                httpClient = httpClient,
+                apiGatewayApiKey = apiGatewayApiKey
             )
         )
 
