@@ -145,6 +145,7 @@ private fun ApplicationRequest.isFormMultipart(): Boolean {
 private suspend fun ApplicationCall.respondVedlegg(vedleggId: VedleggId) {
     val url = URLBuilder(getBaseUrlFromRequest()).path("vedlegg",vedleggId.value).buildString()
     response.header(HttpHeaders.Location, url)
+    response.header(HttpHeaders.AccessControlExposeHeaders, HttpHeaders.Location)
     respond(HttpStatusCode.Created)
 }
 
