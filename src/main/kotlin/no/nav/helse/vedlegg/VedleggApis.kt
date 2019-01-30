@@ -143,16 +143,16 @@ private fun ApplicationRequest.isFormMultipart(): Boolean {
 }
 
 private suspend fun ApplicationCall.respondVedlegg(vedleggId: VedleggId) {
-    val url = URLBuilder(getBaseUrlFromRequest()).path("vedlegg",vedleggId.value).buildString()
+    val url = URLBuilder(getBaseUrlFromRequest()).path("vedlegg",vedleggId.value).build().toString()
     response.header(HttpHeaders.Location, url)
     response.header(HttpHeaders.AccessControlExposeHeaders, HttpHeaders.Location)
     respond(HttpStatusCode.Created)
 }
 
 private fun ApplicationCall.getBaseUrlFromRequest() : String {
-    return "${request.origin.scheme}://${request.origin.host}${request.origin.exposedPortPart()}"
-}
-
-private fun RequestConnectionPoint.exposedPortPart(): String {
-    return if ("http".equals(scheme, ignoreCase = true) && port != 80 || "https".equals(scheme, ignoreCase = true) && port != 443) ":$port" else ""
+    val host = request.origin.host
+    val isLocalhost = "localhost".equals(host, ignoreCase = true)
+    val scheme = if (isLocalhost) "http" else "https"
+    val port = if (isLocalhost) ":${request.origin.port}" else ""
+    return "$scheme://$host$port"
 }
