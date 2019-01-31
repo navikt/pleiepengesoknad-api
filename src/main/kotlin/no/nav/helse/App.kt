@@ -203,7 +203,7 @@ fun Application.pleiepengesoknadapi() {
                 configuration.getJwksUrl()
             ),
             apiGatewayPingUrls = listOf(
-                configuration.getSparkelReadinessUrl()
+                configuration.getSparkelReadinessUrl() // TODO: Aktoer-register
             ),
             apiGatewayApiKey = apiGatewayApiKey,
             httpClient = pinghHttpClient

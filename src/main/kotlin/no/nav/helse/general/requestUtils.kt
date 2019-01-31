@@ -31,7 +31,7 @@ fun buildURL(
         parameters = parametersBuilder
     )
         .takeFrom(baseUrl.toString())
-        .path(withBasePath)
+        .trimmedPath(withBasePath)
 
     val url = urlBuilder.build().toURI().toURL()
     logger.info("Built URL '$url'")
@@ -83,4 +83,14 @@ fun monitoredOperationtCounter(name: String, help: String) : Counter {
         .help(help)
         .labelNames("request_status", "response_time_status")
         .register()
+}
+
+private fun URLBuilder.trimmedPath(pathParts : List<String>): URLBuilder  {
+    val trimmedPathParts = mutableListOf<String>()
+    pathParts.forEach { part ->
+        if (part.isNotBlank()) {
+            trimmedPathParts.add(part.trimStart('/').trimEnd('/'))
+        }
+    }
+    return path(trimmedPathParts)
 }
