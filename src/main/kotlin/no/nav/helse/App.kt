@@ -48,11 +48,12 @@ import no.nav.helse.soknad.soknadApis
 import no.nav.helse.systembruker.SystemBrukerTokenGateway
 import no.nav.helse.systembruker.SystemBrukerTokenService
 import no.nav.helse.vedlegg.*
-import org.apache.http.HttpHost
-import org.apache.http.client.config.RequestConfig
+import org.apache.http.impl.conn.SystemDefaultRoutePlanner
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
+import java.net.ProxySelector
 import java.util.*
 import javax.validation.Validation
 import javax.validation.Validator
@@ -73,28 +74,27 @@ fun Application.pleiepengesoknadapi() {
     val validator : Validator = Validation.buildDefaultValidatorFactory().validator
     val validationHandler = ValidationHandler(validator, objectMapper)
 
-
-    val proxy = configuration.getHttpsProxy()
     val httpClient= HttpClient(Apache) {
         install(JsonFeature) {
             serializer = JacksonSerializer{
                 configureObjectMapper(this)
             }
         }
-
-        engine { customizeRequest { applyProxy(proxy, "httpClient") } }
+        engine { customizeClient { setProxyRoutePlanner() } }
 
     }
     val pinghHttpClient= HttpClient(Apache) {
         engine {
             socketTimeout = 1_000  // Max time between TCP packets - default 10 seconds
             connectTimeout = 1_000 // Max time to establish an HTTP connection - default 10 seconds
-            customizeRequest { applyProxy(proxy, "pingHttpClient") }
+            customizeClient { setProxyRoutePlanner() }
         }
         install(Logging) {
             level = LogLevel.BODY
         }
     }
+
+    configuration.logIndirectlyUsedConfiguration()
 
     install(ContentNegotiation) {
         jackson {
@@ -243,14 +243,6 @@ fun Application.pleiepengesoknadapi() {
     }
 }
 
-private fun RequestConfig.Builder.applyProxy(
-    proxy: String?,
-    clientName: String
-) {
-    if (!proxy.isNullOrBlank()) {
-        logger.info("Setting proxy '$proxy' on '$clientName'")
-        setProxy(HttpHost.create(proxy))
-    } else {
-        logger.info("client '$clientName' not using proxy")
-    }
+private fun HttpAsyncClientBuilder.setProxyRoutePlanner() {
+    setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault()))
 }

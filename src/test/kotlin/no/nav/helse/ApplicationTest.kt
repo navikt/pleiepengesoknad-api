@@ -16,9 +16,7 @@ import no.nav.helse.barn.BarnResponse
 import no.nav.helse.general.auth.CookieNotSetException
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.jackson.configureObjectMapper
-import no.nav.helse.kafka.bootstrapKafka
-import no.nav.helse.kafka.getPassword
-import no.nav.helse.kafka.getUsername
+import no.nav.helse.kafka.*
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -48,8 +46,8 @@ class ApplicationTest {
                 Pair("nav.gateways.sparkel_url", wireMockServer.getSparkelUrl()),
                 Pair("nav.authorization.jwks_uri", wireMockServer.getJwksUri()),
                 Pair("nav.kafka.bootstrap_servers", kafkaEnvironment.brokersURL),
-                Pair("nav.kafka.username", kafkaEnvironment.getUsername()),
-                Pair("nav.kafka.password", kafkaEnvironment.getPassword()),
+                Pair("nav.kafka.username", kafkaEnvironment.getProducerUsername()),
+                Pair("nav.kafka.password", kafkaEnvironment.getProducerPassword()),
                 Pair("nav.authorization.token_url", wireMockServer.getAuthorizationTokenUrl()),
                 Pair("nav.gateways.aktoer_register_url", wireMockServer.getAktoerRegisterUrl())
             ))
@@ -127,7 +125,9 @@ class ApplicationTest {
     @Test
     fun sendSoknadTests() {
         val cookie = getAuthCookie(fnr)
+        //testAtDetLiggerMeldingPaaKoen(antallMeldinger = 0, kafkaEnvironment = kafkaEnvironment)
         gyldigSoknad(engine, cookie)
+        //testAtDetLiggerMeldingPaaKoen(antallMeldinger = 1, kafkaEnvironment = kafkaEnvironment)
         obligatoriskeFelterIkkeSatt(engine, cookie)
         ugyldigInformasjonOmBarn(engine, cookie)
     }

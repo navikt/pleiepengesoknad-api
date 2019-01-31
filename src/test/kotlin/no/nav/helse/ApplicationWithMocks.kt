@@ -2,8 +2,8 @@ package no.nav.helse
 
 import io.ktor.server.testing.withApplication
 import no.nav.helse.kafka.bootstrapKafka
-import no.nav.helse.kafka.getPassword
-import no.nav.helse.kafka.getUsername
+import no.nav.helse.kafka.getProducerPassword
+import no.nav.helse.kafka.getProducerUsername
 import no.nav.helse.wiremock.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,8 +26,8 @@ class ApplicationWithMocks {
                 "-P:nav.authorization.jwks_uri=${wireMockSerer.getJwksUri()}",
                 "-P:nav.gateways.sparkel_url=${wireMockSerer.getSparkelUrl()}",
                 "-P:nav.kafka.bootstrap_servers=${kafkaEnvironment.brokersURL}",
-                "-P:nav.kafka.username=${kafkaEnvironment.getUsername()}",
-                "-P:nav.kafka.password=${kafkaEnvironment.getPassword()}",
+                "-P:nav.kafka.username=user_${kafkaEnvironment.getProducerUsername()}",
+                "-P:nav.kafka.password=${kafkaEnvironment.getProducerPassword()}",
                 "-P:nav.authorization.token_url=${wireMockSerer.getAuthorizationTokenUrl()}",
                 "-P:nav.gateways.aktoer_register_url=${wireMockSerer.getAktoerRegisterUrl()}",
                 "-P:nav.cors.addresses=http://localhost:8080"
