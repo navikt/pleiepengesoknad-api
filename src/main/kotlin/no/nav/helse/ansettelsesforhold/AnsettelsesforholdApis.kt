@@ -8,6 +8,7 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import no.nav.helse.general.auth.getFodselsnummer
 import no.nav.helse.general.getCallId
+import java.time.LocalDate
 
 @KtorExperimentalLocationsAPI
 fun Route.ansettelsesforholdApis(
@@ -15,14 +16,16 @@ fun Route.ansettelsesforholdApis(
 ) {
 
     @Location("/ansettelsesforhold")
-    class getAnsettelsesforhold
+    data class GetAnsettelsesforhold(val fra_og_med : String, val til_og_med : String)
 
-    get { _: getAnsettelsesforhold ->
+    get<GetAnsettelsesforhold> { parameters ->
         call.respond(
             AnsettelsesforholdResponse(
                 service.getAnsettelsesforhold(
                     fnr = call.getFodselsnummer(),
-                    callId = call.getCallId()
+                    callId = call.getCallId(),
+                    fraOgMed = LocalDate.parse(parameters.fra_og_med),
+                    tilOgMed = LocalDate.parse(parameters.til_og_med)
                 )
             )
         )

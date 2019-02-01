@@ -9,6 +9,8 @@ import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.systembruker.SystemBrukerTokenService
 import java.net.URL
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 private val ansettelsesforholdOppslagHistogram = Histogram.build(
     "histogram_oppslag_ansettelsesforhold",
@@ -29,9 +31,11 @@ class AnsettelsesforholdGateway(
 ) {
     suspend fun getAnsettelsesforhold(
         fnr: Fodselsnummer,
-        callId: CallId
+        callId: CallId,
+        fraOgMed: LocalDate,
+        tilOgMed: LocalDate
     ) : List<Ansettelsesforhold> {
-        val sparkelResponse = request(fnr, callId)
+        val sparkelResponse = request(fnr, callId, fraOgMed, tilOgMed)
         val ansettelsesforhold = mutableListOf<Ansettelsesforhold>()
 
         sparkelResponse.arbeidsforhold.forEach {arbeidsforhold ->
@@ -50,7 +54,9 @@ class AnsettelsesforholdGateway(
 
     private suspend fun request(
         fnr: Fodselsnummer,
-        callId: CallId
+        callId: CallId,
+        fraOgMed: LocalDate,
+        tilOgMed: LocalDate
     ) : SparkelResponse {
         val url = buildURL(
             baseUrl = baseUrl,
@@ -58,6 +64,10 @@ class AnsettelsesforholdGateway(
                 "api",
                 "arbeidsforhold",
                 aktoerService.getAktorId(fnr, callId).value
+            ),
+            queryParameters = mapOf(
+                Pair("fom", DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed)),
+                Pair("tom", DateTimeFormatter.ISO_LOCAL_DATE.format(tilOgMed))
             )
         )
 

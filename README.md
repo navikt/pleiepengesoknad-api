@@ -89,7 +89,8 @@ GET @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasti
 DELETE @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasting -> 204 response
 
 ### Hente ansettelsesforhold
-GET @ /ansettelsesforhold -> 200 Response
+- Query parameter 'fra_og_til' og 'til_og_med' må settes til datoer
+GET @ /ansettelsesforhold?fra_og_med=2019-01-20&til_og_med=2019-01-30 -> 200 Response
 ```json
 {
   "organisasjoner" : [ {

@@ -83,7 +83,7 @@ class ApplicationTest {
     @Test(expected = CookieNotSetException::class)
     fun getAnsettelsesforholdUnauthorizedTest() {
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold") {
+            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
                 addHeader("Accept", "application/json")
             }) {
                 assertEquals(HttpStatusCode.Unauthorized, response.status())
@@ -97,7 +97,7 @@ class ApplicationTest {
         val cookie = getAuthCookie(fnr, authLevel = "Level3")
 
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold") {
+            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
             }) {
@@ -113,7 +113,7 @@ class ApplicationTest {
         logger.debug("cookie={}", cookie.toString())
 
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold") {
+            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
             }) {
@@ -137,7 +137,7 @@ class ApplicationTest {
         val cookie = getAuthCookie(fnr)
 
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold") {
+            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
             }) {
