@@ -9,8 +9,12 @@ import no.nav.helse.general.buildURL
 import no.nav.helse.general.monitoredOperation
 import no.nav.helse.general.monitoredOperationtCounter
 import no.nav.helse.general.prepareHttpRequestBuilder
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URL
 import java.util.*
+
+private val logger: Logger = LoggerFactory.getLogger("nav.SystemBrukerTokenGateway")
 
 private val getAccessTokenHistogram = Histogram.build(
     "histogram_hente_system_bruker_acesss_token",
@@ -56,7 +60,9 @@ class SystemBrukerTokenGateway(
                 histogram = getAccessTokenHistogram
             )
         } catch (cause: Throwable) {
-            throw IllegalStateException("Fikk ikke hentet system bruker access token fra'$completeUrl' med brukernavn '$username'. Feilet med '${cause.message}'", cause)
+            val msg = "Henting av system access token fra '$completeUrl' med brukernavn '$username' feilet med '${cause.message}''"
+            logger.error(msg, cause)
+            throw IllegalStateException(msg, cause)
         }
     }
 }

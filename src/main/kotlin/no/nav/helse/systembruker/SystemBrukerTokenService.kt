@@ -4,7 +4,6 @@ import no.nav.helse.monitorering.Readiness
 import no.nav.helse.monitorering.ReadinessResult
 import java.time.LocalDateTime
 
-
 class SystemBrukerTokenService(
     private val systemBrukerTokenGateway: SystemBrukerTokenGateway
 ) : Readiness {
@@ -14,7 +13,7 @@ class SystemBrukerTokenService(
             getToken()
             ReadinessResult(isOk = true, message = "Henting av Systembruker Access Token OK")
         } catch (cause: Throwable) {
-            ReadinessResult(isOk = false, message = "Henting av Systembruker Access Token feilet ('$cause.message')")
+            ReadinessResult(isOk = false, message = "${cause.message}")
         }
     }
 

@@ -50,6 +50,7 @@ fun bootstrapWiremock(port: Int? = null,
     stubStsGetAccessToken()
 
     aktoerRegisterGetAktoerId()
+    stubAktoerRegisterReadiness()
 
     logger.info("Mock available on '{}'", wireMockServer.baseUrl())
     return wireMockServer

@@ -124,6 +124,10 @@ data class Configuration(val config : ApplicationConfig) {
         return URL(getString("nav.gateways.aktoer_register_url"))
     }
 
+    fun getAktoerRegisterReadinessUrl(): URL {
+        return buildURL(baseUrl = getAktoerRegisterUrl(), pathParts = listOf("internal","isAlive"))
+    }
+
     fun getApiGatewayApiKey() : ApiGatewayApiKey {
         val apiKey = getString(key = "nav.authorization.api_gateway.api_key", secret = true)
         return ApiGatewayApiKey(value = apiKey)

@@ -111,7 +111,6 @@ fun Application.pleiepengesoknadapi() {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
         callIdMdc("call_id")
-
     }
 
     install(CORS) {
@@ -203,7 +202,8 @@ fun Application.pleiepengesoknadapi() {
                 configuration.getJwksUrl()
             ),
             apiGatewayPingUrls = listOf(
-                configuration.getSparkelReadinessUrl() // TODO: Aktoer-register
+                configuration.getSparkelReadinessUrl(),
+                configuration.getAktoerRegisterReadinessUrl()
             ),
             apiGatewayApiKey = apiGatewayApiKey,
             httpClient = pinghHttpClient
