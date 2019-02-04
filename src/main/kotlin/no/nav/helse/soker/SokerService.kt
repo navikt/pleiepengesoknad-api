@@ -1,22 +1,17 @@
 package no.nav.helse.soker
 
+import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.general.extractFodselsdato
-import java.time.LocalDate
 
-class SokerService {
-    fun getSoker(fnr: Fodselsnummer) : Soker {
-        return Soker(
-            fodselsnummer = fnr.value,
-            fodselsdato = fodselsDato(fnr)
+class SokerService(
+    private val sokerGateway: SokerGateway
+) {
+    suspend fun getSoker(
+        fnr: Fodselsnummer,
+        callId: CallId) : Soker {
+        return sokerGateway.getSoker(
+            fnr = fnr,
+            callId = callId
         )
-    }
-
-    private fun fodselsDato(fnr: Fodselsnummer) : LocalDate? {
-        try {
-            return extractFodselsdato(fnr)
-        } catch (cause: Throwable) {
-            return null
-        }
     }
 }

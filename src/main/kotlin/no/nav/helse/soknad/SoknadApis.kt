@@ -8,6 +8,7 @@ import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.routing.Route
 import no.nav.helse.general.auth.getFodselsnummer
+import no.nav.helse.general.getCallId
 import no.nav.helse.general.validation.ValidationHandler
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -31,7 +32,8 @@ fun Route.soknadApis(
 
         soknadService.registrer(
             soknad = soknad,
-            fnr = call.getFodselsnummer()
+            fnr = call.getFodselsnummer(),
+            callId = call.getCallId()
         )
 
         call.response.status(HttpStatusCode.Accepted)

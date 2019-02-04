@@ -43,7 +43,7 @@ fun bootstrapWiremock(port: Int? = null,
     authMockJwkSet()
 
     stubSparkelReadiness()
-    stubSparkelgetId()
+    stubSparkelGetSoker()
     stubSparkelGetBarn()
     stubSparkelGetAnsettelsesforhold()
 

@@ -40,7 +40,9 @@ import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.general.validation.ValidationHandler
 import no.nav.helse.general.validation.validationStatusPages
 import no.nav.helse.monitorering.monitoreringApis
+import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
+import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.SoknadKafkaProducer
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
@@ -191,6 +193,16 @@ fun Application.pleiepengesoknadapi() {
             vedleggStorage = InMemoryVedleggStorage()
         )
 
+        val sokerService =  SokerService(
+            sokerGateway = SokerGateway(
+                httpClient = httpClient,
+                baseUrl = configuration.getSparkelUrl(),
+                aktoerService = aktoerService,
+                apiGatewayApiKey = apiGatewayApiKey,
+                systemBrukerTokenService = systemBrukerTokenService
+            )
+        )
+
         monitoreringApis(
             collectorRegistry = collectorRegistry,
             readiness = listOf(
@@ -209,6 +221,10 @@ fun Application.pleiepengesoknadapi() {
         )
 
         authenticate {
+
+            sokerApis(
+                sokerService = sokerService
+            )
 
             barnApis(
                 barnService = BarnService()
@@ -234,7 +250,7 @@ fun Application.pleiepengesoknadapi() {
                 validationHandler = validationHandler,
                 soknadService = SoknadService(
                     soknadKafkaProducer = soknadKafkaProducer,
-                    sokerService = SokerService(),
+                    sokerService = sokerService,
                     vedleggService = vedleggService
                 )
             )

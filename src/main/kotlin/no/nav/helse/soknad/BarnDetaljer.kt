@@ -1,20 +1,13 @@
 package no.nav.helse.soknad
 
-import java.time.LocalDate
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Past
+import org.hibernate.validator.constraints.Length
+import javax.validation.constraints.Max
 import javax.validation.constraints.Pattern
+import kotlin.math.max
 
 @ValidBarnDetaljer
 data class BarnDetaljer(
     @get:Pattern(regexp = "\\d{11}") val fodselsnummer: String?,
-    @get:NotBlank val fornavn: String,
-    val mellomnavn: String?,
-    @get:NotBlank val etternavn: String,
-    @get:NotBlank val relasjon: String,
-    @get:Past var fodselsdato: LocalDate?
-) {
-    fun medFodselsDato(fodselsdato: LocalDate){
-        this.fodselsdato = fodselsdato
-    }
-}
+    @get:Pattern(regexp = "\\d{11}") val alternativId: String?,
+    @get:Length(max = 100) val navn: String
+)

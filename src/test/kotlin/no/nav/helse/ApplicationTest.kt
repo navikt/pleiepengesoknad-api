@@ -17,6 +17,7 @@ import no.nav.helse.general.auth.CookieNotSetException
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.kafka.*
+import no.nav.helse.soker.Soker
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -210,6 +211,23 @@ class ApplicationTest {
                         assertEquals(HttpStatusCode.NotFound, response.status())
                     }
                 }
+            }
+        }
+    }
+
+    @Test
+    fun testHentSoker() {
+        val cookie = getAuthCookie(fnr)
+
+        with(engine) {
+            with(handleRequest(HttpMethod.Get, "/soker") {
+                addHeader("Accept", "application/json")
+                addHeader("Cookie", cookie.toString())
+            }) {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val expectedResponse : Soker = objectMapper.readValue(expectedGetSokerJson(fnr))
+                val actualResponse : Soker = objectMapper.readValue(response.content!!)
+                assertEquals(expectedResponse, actualResponse)
             }
         }
     }

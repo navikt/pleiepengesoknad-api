@@ -4,22 +4,20 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 ## Endepunkt
 ### Sende inn søknad
 POST @ /soknad -> 202 Response
-- mellomnavn må ikke settes
-- Om fødselsdato kan avledes fra fødselsnummer trenger kun denne å bli sendt
 - Listen med ansettelsesforhold inneholder data på samme format som GET @ /ansettelsesforhold
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
+- Det må sendes med minst ett vedlegg
+- Ingen detaljer om barnet er påkrevd
 
 ```json
 {
 	"barn": {
-		"fornavn": "Iben",
-		"mellomnavn": "Olafsson",
-		"etternavn": "Hansen",
-		"relasjon": "mor",
+		"navn": "Iben Olafsson Hansen",
 		"fodselsnummer": "01011950021",
-		"fodselsdato": "2019-01-01"
+		"alternativ_id": null
 	},
-	"fra_og_med": "2019-10-10",
+    "relasjon_til_barnet": "mor",
+    "fra_og_med": "2019-10-10",
 	"til_og_med": "2019-11-10",
 	"ansettelsesforhold": {
 		"organisasjoner": [{
@@ -35,6 +33,18 @@ POST @ /soknad -> 202 Response
 	]
 }
 ```
+### Søker
+GET @/soker -> 200 Response
+```json
+{
+    "etternavn": "MORSEN",
+    "fornavn": "MOR",
+    "mellomnavn": "HEISANN",
+    "kjonn": "kvinne",
+    "fodselsnummer": "290990123456"
+}
+```
+
 ### Vedlegg
 
 #### Laste opp

@@ -84,7 +84,6 @@ private fun expectViolationException(
 }
 
 private fun body(
-    fodselsdato: String? = "1990-09-25",
     fodselsnummer: String? = "25099012345",
     fraOgMed: String? = "2018-10-10",
     tilOgMed: String? = "2019-10-10",
@@ -93,13 +92,10 @@ private fun body(
     val body = """{
 
 	"barn": {
-        "fornavn": "Santa",
-		"mellomnavn": "Heisann",
-		"etternavn": "winter",
-		"relasjon": "mor",
-		"fodselsnummer": "$fodselsnummer",
-		"fodselsdato": "$fodselsdato"
+        "navn": "Santa Heisann Winter",
+		"fodselsnummer": "$fodselsnummer"
 	},
+    "relasjon_til_barnet": "mor",
 	"fra_og_med": "$fraOgMed",
 	"til_og_med": "$tilOgMed",
 	"ansettelsesforhold": {

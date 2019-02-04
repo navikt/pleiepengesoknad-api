@@ -1,7 +1,7 @@
 package no.nav.helse.soknad
 
+import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.general.extractFodselsdato
 import no.nav.helse.soker.SokerService
 import no.nav.helse.vedlegg.Vedlegg
 import no.nav.helse.vedlegg.VedleggService
@@ -13,26 +13,20 @@ class SoknadService(val soknadKafkaProducer: SoknadKafkaProducer,
 
     suspend fun registrer(
         soknad: Soknad,
-        fnr: Fodselsnummer
+        fnr: Fodselsnummer,
+        callId: CallId
     ) {
 
         val komplettSoknad = KomplettSoknad(
             fraOgMed = soknad.fraOgMed,
             tilOgMed = soknad.tilOgMed,
-            soker = sokerService.getSoker(fnr),
-            barn = leggTilFodselsDato(soknad.barn),
+            soker = sokerService.getSoker(fnr = fnr, callId = callId),
+            barn = soknad.barn,
             vedlegg = hentVedlegg(vedleggUrls = soknad.vedlegg, fnr = fnr),
             ansettelsesforhold = soknad.ansettelsesforhold
         )
 
         soknadKafkaProducer.produce(komplettSoknad)
-    }
-
-    private fun leggTilFodselsDato(barnDetaljer: BarnDetaljer) : BarnDetaljer {
-        if (barnDetaljer.fodselsdato == null) {
-            barnDetaljer.medFodselsDato(extractFodselsdato(Fodselsnummer(barnDetaljer.fodselsnummer!!)))
-        }
-        return barnDetaljer
     }
 
     private fun hentVedlegg(vedleggUrls: List<URL>, fnr: Fodselsnummer) : List<Vedlegg> {
