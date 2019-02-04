@@ -1,8 +1,13 @@
 package no.nav.helse.general
 
+import io.ktor.client.HttpClient
+import io.ktor.client.call.call
+import io.ktor.client.call.receive
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.url
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readText
 import io.ktor.http.*
 import io.prometheus.client.Counter
 import io.prometheus.client.Histogram
@@ -55,6 +60,36 @@ fun prepareHttpRequestBuilder(authorization : String? = null,
     }
     httpRequestBuilder.url(url)
     return httpRequestBuilder
+}
+
+suspend inline fun <reified T>monitoredHttpRequest(httpClient: HttpClient,
+                                                   httpRequest: HttpRequestBuilder,
+                                                   expectedStatusCodes : List<HttpStatusCode> = listOf(HttpStatusCode.OK),
+                                                   histogram: Histogram? = null) : T {
+
+    val builtHttpRequest =  httpRequest.build()
+    var httpResponse : HttpResponse? = null
+    try {
+        httpResponse = httpClient.call(httpRequest).response
+        if (expectedStatusCodes.contains(httpResponse.status)) {
+            try {
+                return httpResponse.receive()
+            } catch (cause: Throwable) {
+                throw HttpRequestException("Klarte ikke å mappe respons fra '${builtHttpRequest.method.value}@${builtHttpRequest.url}'. Mottok respons '${httpResponse.readText()}'", cause)
+            }
+        } else {
+            throw HttpRequestException("Mottok uventet '${httpResponse.status}' fra '${builtHttpRequest.method.value}@${builtHttpRequest.url}' med melding '${httpResponse.readText()}'")
+        }
+    } catch (cause: HttpRequestException) {
+        throw cause
+    } catch (cause: Throwable) {
+        throw HttpRequestException("Kommunikasjonsfeil mot '${builtHttpRequest.method.value}@${builtHttpRequest.url}'", cause)
+    } finally {
+        histogram?.startTimer()?.observeDuration()
+        try {
+            httpResponse?.close()
+        } catch (ignore: Throwable) {}
+    }
 }
 
 suspend fun <T>monitoredOperation(operation: suspend () -> T,

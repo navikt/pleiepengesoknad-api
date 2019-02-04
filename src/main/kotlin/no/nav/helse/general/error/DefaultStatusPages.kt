@@ -5,18 +5,14 @@ import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.prometheus.client.Counter
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.net.URI
 
 fun StatusPages.Configuration.defaultStatusPages(
     errorCounter: Counter
 ) {
 
-    val logger: Logger = LoggerFactory.getLogger("nav.defaultStatusPages")
-
     exception<Throwable> { cause ->
-        logger.info("something blew up", cause)
+        cause.getRootCause()
         val error = DefaultError(
             status = HttpStatusCode.InternalServerError.value,
             title = "Unhandled error."
@@ -26,6 +22,16 @@ fun StatusPages.Configuration.defaultStatusPages(
         throw cause
 
     }
+}
+
+fun Throwable.getRootCause() : Throwable {
+    var rootCause= this
+
+    while (rootCause.cause != null && rootCause.cause != rootCause) {
+        rootCause = rootCause.cause!!
+    }
+
+    return rootCause
 }
 
 internal fun initializeErrorCounter() : Counter {

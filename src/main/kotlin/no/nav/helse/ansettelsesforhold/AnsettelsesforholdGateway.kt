@@ -1,7 +1,6 @@
 package no.nav.helse.ansettelsesforhold
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
 import io.prometheus.client.Histogram
 import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.general.*
@@ -16,11 +15,6 @@ private val ansettelsesforholdOppslagHistogram = Histogram.build(
     "histogram_oppslag_ansettelsesforhold",
     "Tidsbruk for oppslag på arbeidsforhold for søker"
 ).register()
-
-private val ansettelsesforholdOppslagCounter = monitoredOperationtCounter(
-    name = "counter_oppslag_ansettelsesforhold",
-    help = "Antall oppslag gjort på arbeidsforhold for person"
-)
 
 class AnsettelsesforholdGateway(
     private val httpClient: HttpClient,
@@ -38,15 +32,13 @@ class AnsettelsesforholdGateway(
         val sparkelResponse = request(fnr, callId, fraOgMed, tilOgMed)
         val ansettelsesforhold = mutableListOf<Ansettelsesforhold>()
 
-        sparkelResponse.arbeidsforhold.forEach {arbeidsforhold ->
-            if (arbeidsforhold.arbeidsgiver.isOrganization()) {
-                ansettelsesforhold.add(
-                    Ansettelsesforhold(
-                        navn = arbeidsforhold.arbeidsgiver.navn!!,
-                        organisasjonsnummer = arbeidsforhold.arbeidsgiver.orgnummer!!
-                    )
+        sparkelResponse.organisasjoner.forEach {arbeidsforhold ->
+            ansettelsesforhold.add(
+                Ansettelsesforhold(
+                    navn = arbeidsforhold.navn,
+                    organisasjonsnummer = arbeidsforhold.organisasjonsnummer
                 )
-            }
+            )
         }
 
         return ansettelsesforhold.toList()
@@ -78,18 +70,13 @@ class AnsettelsesforholdGateway(
             apiGatewayApiKey = apiGatewayApiKey
         )
 
-        return monitoredOperation(
-            operation = { httpClient.get<SparkelResponse>(httpRequest) },
-            histogram = ansettelsesforholdOppslagHistogram,
-            counter = ansettelsesforholdOppslagCounter
+        return monitoredHttpRequest(
+            httpClient = httpClient,
+            httpRequest = httpRequest,
+            histogram = ansettelsesforholdOppslagHistogram
         )
     }
 }
 
-data class SparkelArbeidsGiver(val orgnummer: String?, val navn: String?) {
-    fun isOrganization() : Boolean {
-        return orgnummer != null && navn != null
-    }
-}
-data class SparkelArbeidsforhold(val arbeidsgiver: SparkelArbeidsGiver)
-data class SparkelResponse(val arbeidsforhold: Set<SparkelArbeidsforhold>) // Kan å samme arbeidsgiver flere ganger, så bruker Set istedenfor List
+data class SparkelArbeidsforhold(val organisasjonsnummer: String, val navn: String?)
+data class SparkelResponse(val organisasjoner: Set<SparkelArbeidsforhold>) // Kan å samme arbeidsgiver flere ganger, så bruker Set istedenfor List

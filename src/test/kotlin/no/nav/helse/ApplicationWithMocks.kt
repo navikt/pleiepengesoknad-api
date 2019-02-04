@@ -26,7 +26,7 @@ class ApplicationWithMocks {
                 "-P:nav.authorization.jwks_uri=${wireMockSerer.getJwksUri()}",
                 "-P:nav.gateways.sparkel_url=${wireMockSerer.getSparkelUrl()}",
                 "-P:nav.kafka.bootstrap_servers=${kafkaEnvironment.brokersURL}",
-                "-P:nav.kafka.username=user_${kafkaEnvironment.getProducerUsername()}",
+                "-P:nav.kafka.username=${kafkaEnvironment.getProducerUsername()}",
                 "-P:nav.kafka.password=${kafkaEnvironment.getProducerPassword()}",
                 "-P:nav.authorization.token_url=${wireMockSerer.getAuthorizationTokenUrl()}",
                 "-P:nav.gateways.aktoer_register_url=${wireMockSerer.getAktoerRegisterUrl()}",

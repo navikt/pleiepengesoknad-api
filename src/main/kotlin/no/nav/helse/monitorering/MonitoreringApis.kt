@@ -2,9 +2,6 @@ package no.nav.helse.monitorering
 
 import io.ktor.application.call
 import io.ktor.client.HttpClient
-import io.ktor.client.call.call
-import io.ktor.client.request.get
-import io.ktor.client.response.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.KtorExperimentalLocationsAPI
@@ -15,6 +12,8 @@ import io.ktor.routing.get
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.general.logger
+import no.nav.helse.general.monitoredHttpRequest
 import no.nav.helse.general.prepareHttpRequestBuilder
 import java.net.URL
 import java.util.*
@@ -52,14 +51,17 @@ fun Route.monitoreringApis(
 
         pingUrls.forEach { pu ->
             try {
-                val response = httpClient.call(pu.toString()).response
-                if (HttpStatusCode.OK != response.status) {
-                    errors.add("Tilkobling mot '$pu' feiler (med HTTP ${response.status})")
-                } else {
-                    success.add("Tilkobling mot '$pu' fungerer")
-                }
+                val httpRequest = prepareHttpRequestBuilder(
+                    url = pu
+                )
+                monitoredHttpRequest<Any>(
+                    httpClient = httpClient,
+                    httpRequest = httpRequest
+                )
+                success.add("Tilkobling mot '$pu' fungerer")
             } catch (cause: Throwable) {
-                errors.add("Tilkobling mot '$pu' feiler (med feilmeldingen '${cause.message}')")
+                logger.error("Readiness error", cause)
+                errors.add("${cause.message}")
             }
         }
 
@@ -69,14 +71,14 @@ fun Route.monitoreringApis(
                     url = pu,
                     apiGatewayApiKey = apiGatewayApiKey
                 )
-                val response = httpClient.get<HttpResponse>(httpRequest)
-                if (HttpStatusCode.OK != response.status) {
-                    errors.add("Tilkobling mot '$pu' feiler (med HTTP ${response.status})")
-                } else {
-                    success.add("Tilkobling mot '$pu' fungerer")
-                }
+                monitoredHttpRequest<Any>(
+                    httpClient = httpClient,
+                    httpRequest = httpRequest
+                )
+                success.add("Tilkobling mot '$pu' fungerer")
             } catch (cause: Throwable) {
-                errors.add("Tilkobling mot '$pu' feiler (med feilmeldingen '${cause.message}')")
+                logger.error("Readiness error", cause)
+                errors.add("${cause.message}")
             }
         }
 

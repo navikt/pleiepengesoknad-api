@@ -1,7 +1,6 @@
 package no.nav.helse.aktoer
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.prometheus.client.Histogram
 import no.nav.helse.general.*
@@ -22,11 +21,6 @@ private val getAktoerIdHistogram = Histogram.build(
     "histogram_hente_aktoer_id_fra_fnr",
     "Tidsbruk for henting av Aktør ID fra Fødselsnummer"
 ).register()
-
-private val getAktoerCounter = monitoredOperationtCounter(
-    name = "counter_hente_aktoer_id_fra_fnr",
-    help = "Antall Aktør ID'er hentet fra Fødselsnummer"
-)
 
 class AktoerGateway(
     private val httpClient: HttpClient,
@@ -57,9 +51,9 @@ class AktoerGateway(
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
         httpRequest.header("Nav-Personidenter", fnr.value)
 
-        val httpResponse = monitoredOperation(
-            operation = { httpClient.get<Map<String, IdentResponse>>(httpRequest) },
-            counter = getAktoerCounter,
+        val httpResponse = monitoredHttpRequest<Map<String, IdentResponse>>(
+            httpClient = httpClient,
+            httpRequest = httpRequest,
             histogram = getAktoerIdHistogram
         )
 

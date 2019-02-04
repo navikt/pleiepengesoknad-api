@@ -2,7 +2,12 @@ package no.nav.helse.systembruker
 
 import no.nav.helse.monitorering.Readiness
 import no.nav.helse.monitorering.ReadinessResult
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
+
+private val logger: Logger = LoggerFactory.getLogger("nav.SystemBrukerTokenService")
+
 
 class SystemBrukerTokenService(
     private val systemBrukerTokenGateway: SystemBrukerTokenGateway
@@ -13,6 +18,7 @@ class SystemBrukerTokenService(
             getToken()
             ReadinessResult(isOk = true, message = "Henting av Systembruker Access Token OK")
         } catch (cause: Throwable) {
+            logger.error("Readiness error", cause)
             ReadinessResult(isOk = false, message = "${cause.message}")
         }
     }
