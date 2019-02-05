@@ -40,7 +40,6 @@ GET @/soker -> 200 Response
     "etternavn": "MORSEN",
     "fornavn": "MOR",
     "mellomnavn": "HEISANN",
-    "kjonn": "kvinne",
     "fodselsnummer": "290990123456"
 }
 ```
