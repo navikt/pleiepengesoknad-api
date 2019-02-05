@@ -8,7 +8,7 @@ fun stubSparkelGetSoker() {
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)
-                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withHeader("Content-Type", "application/json")
                     .withBody(sparkelResponse)
             )
     )
@@ -32,7 +32,6 @@ fun expectedGetSokerJson(fodselsnummer: String) = """
         "etternavn": "MORSEN",
         "fornavn": "MOR",
         "mellomnavn": "HEISANN",
-        "kjonn": "kvinne",
         "fodselsnummer": "$fodselsnummer"
     }
 """.trimIndent()

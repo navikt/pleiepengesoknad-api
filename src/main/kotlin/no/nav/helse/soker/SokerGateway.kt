@@ -52,10 +52,9 @@ class SokerGateway(
             fornavn = response.fornavn,
             mellomnavn = response.mellomnavn,
             etternavn = response.etternavn,
-            kjonn = response.kjønn.toLowerCase(),
             fodselsnummer = fnr.value
         )
     }
 }
 
-data class SparkelResponse(val fornavn: String, val mellomnavn: String?, val etternavn: String, val kjønn : String)
+data class SparkelResponse(val fornavn: String, val mellomnavn: String?, val etternavn: String)
