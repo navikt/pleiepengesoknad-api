@@ -37,6 +37,7 @@ fun gyldigSoknad(
         handleRequest(HttpMethod.Post, "/soknad") {
             addHeader("Accept", "application/json")
             addHeader("Cookie", cookie.toString())
+            addHeader("Content-Type", "application/json")
             setBody(body(vedleggUrl1 = urlJpeg, vedleggUrl2 = urlPdf))
         }.apply {
             assertEquals(HttpStatusCode.Accepted, response.status())
@@ -53,6 +54,7 @@ fun obligatoriskeFelterIkkeSatt(
             with(handleRequest(HttpMethod.Post, "/soknad") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
+                addHeader("Content-Type", "application/json")
                 setBody("{}")
             }) {}
         }
@@ -82,6 +84,7 @@ private fun expectViolationException(
             with(handleRequest(HttpMethod.Post, "/soknad") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
+                addHeader("Content-Type", "application/json")
                 setBody(body)
             }) {}
         }

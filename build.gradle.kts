@@ -1,11 +1,11 @@
 import org.gradle.internal.impldep.org.fusesource.jansi.AnsiRenderer.test
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val logbackVersion = "1.2.1"
-val ktorVersion = "1.0.1"
-val jacksonVersion = "2.9.2"
+val logbackVersion = "1.2.3"
+val ktorVersion = "1.1.2"
+val jacksonVersion = "2.9.8"
 val wiremockVersion = "2.19.0"
-val logstashLogbackVersion = "5.2"
+val logstashLogbackVersion = "5.3"
 val kafkaVersion = "2.0.1"
 val prometheusVersion = "0.6.0"
 
@@ -30,7 +30,6 @@ dependencies {
     compile ("io.ktor:ktor-server-core:$ktorVersion")
     compile ("io.ktor:ktor-jackson:$ktorVersion")
     compile ("io.ktor:ktor-locations:$ktorVersion")
-    compile ("io.ktor:ktor-metrics:$ktorVersion")
     compile ("io.ktor:ktor-server-host-common:$ktorVersion")
 
     // Logging
@@ -60,7 +59,7 @@ dependencies {
     compile ("org.hibernate.validator:hibernate-validator-annotation-processor:6.0.13.Final")
     compile ("javax.el:javax.el-api:3.0.1-b06")
     compile ("org.glassfish.web:javax.el:2.2.6")
-    
+
     // Kafka
     compile("org.apache.kafka:kafka-clients:$kafkaVersion")
 
