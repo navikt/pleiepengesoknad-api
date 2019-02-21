@@ -14,11 +14,14 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
 import io.ktor.features.*
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
+import io.ktor.request.header
 import io.ktor.request.path
+import io.ktor.response.header
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.CollectorRegistry
@@ -60,6 +63,7 @@ import javax.validation.Validation
 import javax.validation.Validator
 
 private val logger: Logger = LoggerFactory.getLogger("nav.Application")
+private const val GENERATED_REQUEST_ID_PREFIX = "generated-"
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
 
@@ -104,14 +108,19 @@ fun Application.pleiepengesoknadapi() {
     }
 
     install(CallId) {
-        header("Nav-Call-Id")
-        generate { UUID.randomUUID().toString() }
+        generate { UUID.randomUUID().toString() } // CorrelationID skal oppstå i API'et.
     }
 
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
-        callIdMdc("call_id")
+        callIdMdc("correlation_id")
+
+        mdc("request_id") { call -> // Request ID kan sendes inn fra clienten
+            val requestId = call.request.header(HttpHeaders.XRequestId)?.removePrefix(GENERATED_REQUEST_ID_PREFIX) ?: "$GENERATED_REQUEST_ID_PREFIX${UUID.randomUUID()}"
+            call.response.header(HttpHeaders.XRequestId, requestId)
+            requestId
+        }
     }
 
     install(CORS) {
