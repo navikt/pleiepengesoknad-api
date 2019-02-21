@@ -8,6 +8,7 @@ val wiremockVersion = "2.19.0"
 val logstashLogbackVersion = "5.3"
 val kafkaVersion = "2.0.1"
 val prometheusVersion = "0.6.0"
+val hibernateVersion = "6.0.15.Final"
 
 val mainClass = "no.nav.helse.AppKt"
 
@@ -55,8 +56,8 @@ dependencies {
 
     // Validation
     compile ("javax.validation:validation-api:2.0.1.Final")
-    compile ("org.hibernate.validator:hibernate-validator:6.0.13.Final")
-    compile ("org.hibernate.validator:hibernate-validator-annotation-processor:6.0.13.Final")
+    compile ("org.hibernate.validator:hibernate-validator:$hibernateVersion")
+    compile ("org.hibernate.validator:hibernate-validator-annotation-processor:$hibernateVersion")
     compile ("javax.el:javax.el-api:3.0.1-b06")
     compile ("org.glassfish.web:javax.el:2.2.6")
 
