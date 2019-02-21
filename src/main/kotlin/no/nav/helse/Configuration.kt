@@ -101,12 +101,12 @@ data class Configuration(val config : ApplicationConfig) {
         return getString(key = "nav.kafka.password", secret = true)
     }
 
-    fun getServiceAccountUsername(): String {
-        return getString("nav.authorization.service_account.username")
+    fun getServiceAccountClientId(): String {
+        return getString("nav.authorization.service_account.client_id")
     }
 
-    fun getServiceAccountPassword(): String {
-        return getString(key = "nav.authorization.service_account.password", secret = true)
+    fun getServiceAccountClientSecret(): String {
+        return getString(key = "nav.authorization.service_account.client_secret", secret = true)
     }
 
     fun getServiceAccountScopes(): List<String> {

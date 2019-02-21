@@ -173,8 +173,8 @@ fun Application.pleiepengesoknadapi() {
 
         val systemBrukerTokenService = SystemBrukerTokenService(
             SystemBrukerTokenGateway(
-                username = configuration.getServiceAccountUsername(),
-                password = configuration.getServiceAccountPassword(),
+                clientId = configuration.getServiceAccountClientId(),
+                clientSecret = configuration.getServiceAccountClientSecret(),
                 scopes = configuration.getServiceAccountScopes(),
                 baseUrl = configuration.getAuthorizationServerTokenUrl(),
                 httpClient = httpClient,

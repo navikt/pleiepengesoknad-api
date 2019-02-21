@@ -14,8 +14,8 @@ private val getAccessTokenHistogram = Histogram.build(
 ).register()
 
 class SystemBrukerTokenGateway(
-    private val username: String,
-    password: String,
+    clientId: String,
+    clientSecret: String,
     scopes: List<String>,
     baseUrl: URL,
     apiGatewayApiKey: ApiGatewayApiKey,
@@ -33,7 +33,7 @@ class SystemBrukerTokenGateway(
         completeUrl = buildURL(baseUrl = baseUrl, queryParameters = queryParameters)
 
         httpRequestBuilder = prepareHttpRequestBuilder(
-            authorization = getAuthorizationHeader(username, password),
+            authorization = getAuthorizationHeader(clientId, clientSecret),
             url = completeUrl,
             apiGatewayApiKey = apiGatewayApiKey
         )
@@ -50,8 +50,8 @@ class SystemBrukerTokenGateway(
 
 data class Response(val accessToken : String, val expiresIn: Long)
 
-private fun getAuthorizationHeader(username : String, password: String) : String {
-    val auth = "$username:$password"
+private fun getAuthorizationHeader(clientId : String, clientSecret: String) : String {
+    val auth = "$clientId:$clientSecret"
     return "Basic ${Base64.getEncoder().encodeToString(auth.toByteArray())}"
 }
 
