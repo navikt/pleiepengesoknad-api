@@ -13,12 +13,12 @@ val hibernateVersion = "6.0.15.Final"
 val mainClass = "no.nav.helse.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.3.11"
+    kotlin("jvm") version "1.3.21"
 }
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.21")
     }
 }
 
@@ -119,5 +119,5 @@ tasks.named<Jar>("jar") {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "5.0"
+    gradleVersion = "5.2.1"
 }
