@@ -25,7 +25,7 @@ dependencies {
     compile(kotlin("stdlib-jdk8"))
 
     // Ktor Server
-    compile("io.ktor:ktor-server-netty:$ktorVersion")
+    compile ("io.ktor:ktor-server-netty:$ktorVersion")
     compile ("io.ktor:ktor-auth-jwt:$ktorVersion")
     compile ("io.ktor:ktor-server-core:$ktorVersion")
     compile ("io.ktor:ktor-jackson:$ktorVersion")
@@ -60,11 +60,7 @@ dependencies {
     compile ("org.hibernate.validator:hibernate-validator-annotation-processor:6.0.13.Final")
     compile ("javax.el:javax.el-api:3.0.1-b06")
     compile ("org.glassfish.web:javax.el:2.2.6")
-
-    // Vedlegg
-    compile("org.apache.pdfbox:pdfbox:2.0.13")
-    compile("org.apache.tika:tika-core:1.19.1")
-
+    
     // Kafka
     compile("org.apache.kafka:kafka-clients:$kafkaVersion")
 
