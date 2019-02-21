@@ -20,16 +20,24 @@ fun gyldigSoknad(
     cookie: Cookie
 ) {
     with(engine) {
-        val url = handleRequestUploadImage(
+        val urlJpeg = handleRequestUploadImage(
             cookie = cookie,
             vedlegg = "vedlegg/nav-logo.png".fromResources(),
             fileName = "nav-logo.png",
             contentType = "image/png"
         )
+
+        val urlPdf = handleRequestUploadImage(
+            cookie = cookie,
+            vedlegg = "vedlegg/test.pdf".fromResources(),
+            fileName = "test.pdf",
+            contentType = "application/pdf"
+        )
+
         handleRequest(HttpMethod.Post, "/soknad") {
             addHeader("Accept", "application/json")
             addHeader("Cookie", cookie.toString())
-            setBody(body(vedleggUrl = url))
+            setBody(body(vedleggUrl1 = urlJpeg, vedleggUrl2 = urlPdf))
         }.apply {
             assertEquals(HttpStatusCode.Accepted, response.status())
         }
@@ -58,7 +66,7 @@ fun ugyldigInformasjonOmBarn(
     expectViolationException(
         engine = engine,
         cookie = cookie,
-        body = body(fodselsnummer = "123", vedleggUrl = "http://localhost:8080/vedlegg/123123"),
+        body = body(fodselsnummer = "123", vedleggUrl1 = "http://localhost:8080/vedlegg/123123", vedleggUrl2 = "http://localhost:8080/vedlegg/123124"),
         numberOfExpectedViolations = 1
     )
 
@@ -87,7 +95,8 @@ private fun body(
     fodselsnummer: String? = "25099012345",
     fraOgMed: String? = "2018-10-10",
     tilOgMed: String? = "2019-10-10",
-    vedleggUrl: String) : String {
+    vedleggUrl1: String,
+    vedleggUrl2: String) : String {
 
     val body = """{
 
@@ -107,7 +116,7 @@ private fun body(
         ]
 
 	},
-	"vedlegg": ["$vedleggUrl"]
+	"vedlegg": ["$vedleggUrl1", "$vedleggUrl2"]
     }""".trimIndent()
     logger.info(body)
 
