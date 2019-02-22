@@ -2,9 +2,9 @@ package no.nav.helse.wiremock
 
 import com.github.tomakehurst.wiremock.client.WireMock
 
-fun stubSparkelGetAnsettelsesforhold() {
+fun stubSparkelGetArbeidsgivere() {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/arbeidsforhold/.*"))
+        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/arbeidsgivere/.*"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)
@@ -16,7 +16,7 @@ fun stubSparkelGetAnsettelsesforhold() {
 
 private val sparkelResponse = """
     {
-        "organisasjoner": [{
+        "arbeidsgivere": [{
             "organisasjonsnummer": "913548221",
             "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET"
         },{

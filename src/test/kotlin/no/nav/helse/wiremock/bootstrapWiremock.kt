@@ -45,7 +45,7 @@ fun bootstrapWiremock(port: Int? = null,
     stubSparkelReadiness()
     stubSparkelGetSoker()
     stubSparkelGetBarn()
-    stubSparkelGetAnsettelsesforhold()
+    stubSparkelGetArbeidsgivere()
 
     stubStsGetAccessToken()
 

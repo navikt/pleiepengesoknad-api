@@ -32,7 +32,7 @@ class AnsettelsesforholdGateway(
         val sparkelResponse = request(fnr, callId, fraOgMed, tilOgMed)
         val ansettelsesforhold = mutableListOf<Ansettelsesforhold>()
 
-        sparkelResponse.organisasjoner.forEach {arbeidsforhold ->
+        sparkelResponse.arbeidsgivere.forEach {arbeidsforhold ->
             ansettelsesforhold.add(
                 Ansettelsesforhold(
                     navn = arbeidsforhold.navn,
@@ -54,7 +54,7 @@ class AnsettelsesforholdGateway(
             baseUrl = baseUrl,
             pathParts = listOf(
                 "api",
-                "arbeidsforhold",
+                "arbeidsgivere",
                 aktoerService.getAktorId(fnr, callId).value
             ),
             queryParameters = mapOf(
@@ -79,4 +79,4 @@ class AnsettelsesforholdGateway(
 }
 
 data class SparkelArbeidsforhold(val organisasjonsnummer: String, val navn: String?)
-data class SparkelResponse(val organisasjoner: Set<SparkelArbeidsforhold>) // Kan å samme arbeidsgiver flere ganger, så bruker Set istedenfor List
+data class SparkelResponse(val arbeidsgivere: Set<SparkelArbeidsforhold>)
