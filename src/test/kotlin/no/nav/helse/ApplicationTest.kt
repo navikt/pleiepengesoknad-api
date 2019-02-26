@@ -11,7 +11,6 @@ import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.common.KafkaEnvironment
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdResponse
-import no.nav.helse.barn.BarnResponse
 import no.nav.helse.general.auth.CookieNotSetException
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.jackson.configureObjectMapper
@@ -42,16 +41,7 @@ class ApplicationTest {
         fun getConfig() : ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
-            val testConfig = ConfigFactory.parseMap(mutableMapOf(
-                Pair("nav.gateways.sparkel_url", wireMockServer.getSparkelUrl()),
-                Pair("nav.authorization.jwks_uri", wireMockServer.getJwksUri()),
-                Pair("nav.kafka.bootstrap_servers", kafkaEnvironment.brokersURL),
-                Pair("nav.kafka.username", kafkaEnvironment.getProducerUsername()),
-                Pair("nav.kafka.password", kafkaEnvironment.getProducerPassword()),
-                Pair("nav.authorization.token_url", wireMockServer.getAuthorizationTokenUrl()),
-                Pair("nav.gateways.aktoer_register_url", wireMockServer.getAktoerRegisterUrl())
-            ))
-
+            val testConfig = ConfigFactory.parseMap(TestConfiguration.asMap(wireMockServer = wireMockServer))
             val mergedConfig = testConfig.withFallback(fileConfig)
 
             return HoconApplicationConfig(mergedConfig)
@@ -169,12 +159,12 @@ class ApplicationTest {
                 addHeader("Cookie", cookie.toString())
             }) {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val expectedResponse : BarnResponse = objectMapper.readValue("""
+                val expectedResponse = objectMapper.readTree("""
                     {
                         "barn": []
                     }
                 """.trimIndent())
-                val actualResponse : BarnResponse = objectMapper.readValue(response.content!!)
+                val actualResponse = objectMapper.readTree(response.content!!)
                 assertEquals(expectedResponse, actualResponse)
             }
         }

@@ -14,6 +14,7 @@ private const val jwkSetPath = "/auth-mock/jwk-set"
 private const val sparkelPath = "/sparkel-mock"
 private const val authorizationServerPath = "/authorization-server-mock/token"
 private const val aktoerRegisterServerPath = "/aktoer-register-mock"
+private const val pleiepengesoknadProsesseringPath = "/pleiepengesoknad-prosessering-mock"
 
 
 fun bootstrapWiremock(port: Int? = null,
@@ -38,19 +39,24 @@ fun bootstrapWiremock(port: Int? = null,
     wireMockServer.start()
     WireMock.configureFor(wireMockServer.port())
 
+    // Auth
     authMockJwt()
     authMockCookie()
     authMockJwkSet()
-
-    stubSparkelReadiness()
-    stubSparkelGetSoker()
-    stubSparkelGetBarn()
-    stubSparkelGetArbeidsgivere()
-
     stubStsGetAccessToken()
 
+    // Sparkel
+    stubReadiness(basePath = sparkelPath)
+    stubSparkelGetSoker()
+    stubSparkelGetArbeidsgivere()
+
+    // Aktørregister
     aktoerRegisterGetAktoerId()
-    stubAktoerRegisterReadiness()
+    stubReadiness(basePath = aktoerRegisterServerPath, readinessPath = "internal/isAlive")
+
+    // Pleiepengsoknad-prosessering
+    stubLeggSoknadTilProsessering()
+    stubReadiness(basePath = pleiepengesoknadProsesseringPath)
 
     logger.info("Mock available on '{}'", wireMockServer.baseUrl())
     return wireMockServer
@@ -97,6 +103,27 @@ private fun aktoerRegisterGetAktoerId() {
     )
 }
 
+private fun stubReadiness(basePath: String,
+                          readinessPath : String = "isready") {
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlMatching(".*$basePath/$readinessPath"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withStatus(200)
+            )
+    )
+}
+
+private fun stubLeggSoknadTilProsessering() {
+    WireMock.stubFor(
+        WireMock.post(WireMock.urlMatching(".*$pleiepengesoknadProsesseringPath/v1/soknad"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withStatus(202)
+            )
+    )
+}
+
 fun WireMockServer.getJwksUri() : String {
     return baseUrl() + jwkSetPath
 }
@@ -108,6 +135,11 @@ fun WireMockServer.getSparkelUrl() : String {
 fun WireMockServer.getAuthorizationTokenUrl() : String {
     return baseUrl() + authorizationServerPath
 }
+
 fun WireMockServer.getAktoerRegisterUrl() : String {
     return baseUrl() + aktoerRegisterServerPath
+}
+
+fun WireMockServer.getPleiepengesoknadProsesseringUrl() : String {
+    return baseUrl() + pleiepengesoknadProsesseringPath
 }
