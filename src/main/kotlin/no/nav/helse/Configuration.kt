@@ -124,6 +124,14 @@ data class Configuration(val config : ApplicationConfig) {
         return URL(getString("nav.gateways.aktoer_register_url"))
     }
 
+    fun getPleiepengesoknadProsesseringBaseUrl(): URL {
+        return URL(getString("nav.gateways.pleiepengesoknad_prosessering_base_url"))
+    }
+
+    fun getPleiepengesoknadProsesserinReadinessUrl(): URL {
+        return buildURL(baseUrl = getPleiepengesoknadProsesseringBaseUrl(), pathParts = listOf("isready"))
+    }
+
     fun getAktoerRegisterReadinessUrl(): URL {
         return buildURL(baseUrl = getAktoerRegisterUrl(), pathParts = listOf("internal","isAlive"))
     }

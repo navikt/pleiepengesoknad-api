@@ -18,14 +18,20 @@ class VedleggService(
         return vedleggStorage.hentVedlegg(vedleggId)
     }
 
-    fun hentOgSlettVedlegg(vedleggUrl: URL, fnr: Fodselsnummer) : Vedlegg? {
-        val vedleggId = vedleggIdFromUrl(vedleggUrl)
-        val vedlegg = hentVedlegg(vedleggId = vedleggId, fnr = fnr)
-        if (vedlegg == null) {
-            logger.error("Vedlegg med ID '$vedleggId' ble ikke funnet ved opphenting")
+    fun hentOgSlettVedlegg(
+        vedleggUrls: List<URL>,
+        fnr: Fodselsnummer) : List<Vedlegg>
+    {
+        val vedleggList = mutableListOf<Vedlegg>()
+        vedleggUrls.forEach {
+            val vedleggId = vedleggIdFromUrl(it)
+            val vedlegg = hentVedlegg(vedleggId = vedleggId, fnr = fnr)
+            if (vedlegg != null) {
+                vedleggList.add(vedlegg)
+            }
+            slettVedleg(vedleggId = vedleggId, fnr = fnr)
         }
-        slettVedleg(vedleggId, fnr)
-        return vedlegg
+        return vedleggList
     }
 
     fun slettVedleg(vedleggId: VedleggId, fnr : Fodselsnummer) {

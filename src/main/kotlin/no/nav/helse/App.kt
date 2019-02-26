@@ -31,7 +31,6 @@ import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdGateway
 import no.nav.helse.ansettelsesforhold.AnsettelsesforholdService
 import no.nav.helse.ansettelsesforhold.ansettelsesforholdApis
-import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
@@ -46,7 +45,7 @@ import no.nav.helse.monitorering.monitoreringApis
 import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
-import no.nav.helse.soknad.SoknadKafkaProducer
+import no.nav.helse.soknad.PleiepengesoknadProsesseringGateway
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
 import no.nav.helse.systembruker.SystemBrukerTokenGateway
@@ -54,15 +53,12 @@ import no.nav.helse.systembruker.SystemBrukerTokenService
 import no.nav.helse.vedlegg.*
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import java.net.ProxySelector
 import java.util.*
 import javax.validation.Validation
 import javax.validation.Validator
 
-private val logger: Logger = LoggerFactory.getLogger("nav.Application")
 private const val GENERATED_REQUEST_ID_PREFIX = "generated-"
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
@@ -191,12 +187,12 @@ fun Application.pleiepengesoknadapi() {
             )
         )
 
-        val soknadKafkaProducer = SoknadKafkaProducer(
-            bootstrapServers = configuration.getKafkaBootstrapServers(),
-            username = configuration.getKafkaUsername(),
-            password = configuration.getKafkaPassword(),
-            objectMapper = objectMapper
-        )
+//        val soknadKafkaProducer = SoknadKafkaProducer(
+//            bootstrapServers = configuration.getKafkaBootstrapServers(),
+//            username = configuration.getKafkaUsername(),
+//            password = configuration.getKafkaPassword(),
+//            objectMapper = objectMapper
+//        )
 
         val vedleggService = VedleggService(
             vedleggStorage = InMemoryVedleggStorage()
@@ -215,7 +211,6 @@ fun Application.pleiepengesoknadapi() {
         monitoreringApis(
             collectorRegistry = collectorRegistry,
             readiness = listOf(
-                soknadKafkaProducer,
                 systemBrukerTokenService
             ),
             pingUrls = listOf(
@@ -223,7 +218,8 @@ fun Application.pleiepengesoknadapi() {
             ),
             apiGatewayPingUrls = listOf(
                 configuration.getSparkelReadinessUrl(),
-                configuration.getAktoerRegisterReadinessUrl()
+                configuration.getAktoerRegisterReadinessUrl(),
+                configuration.getPleiepengesoknadProsesserinReadinessUrl()
             ),
             apiGatewayApiKey = apiGatewayApiKey,
             httpClient = pinghHttpClient
@@ -235,9 +231,7 @@ fun Application.pleiepengesoknadapi() {
                 sokerService = sokerService
             )
 
-            barnApis(
-                barnService = BarnService()
-            )
+            barnApis()
 
             ansettelsesforholdApis(
                 service = AnsettelsesforholdService(
@@ -258,7 +252,12 @@ fun Application.pleiepengesoknadapi() {
             soknadApis(
                 validationHandler = validationHandler,
                 soknadService = SoknadService(
-                    soknadKafkaProducer = soknadKafkaProducer,
+                    pleiepengesoknadProsesseringGateway = PleiepengesoknadProsesseringGateway(
+                        httpClient = httpClient,
+                        systemBrukerTokenService = systemBrukerTokenService,
+                        baseUrl = configuration.getPleiepengesoknadProsesseringBaseUrl(),
+                        apiGatewayApiKey = apiGatewayApiKey
+                    ),
                     sokerService = sokerService,
                     vedleggService = vedleggService
                 )

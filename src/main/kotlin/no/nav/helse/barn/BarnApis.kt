@@ -6,39 +6,26 @@ import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import no.nav.helse.general.auth.getFodselsnummer
-import no.nav.helse.general.getCallId
-
+import java.time.LocalDate
 
 @KtorExperimentalLocationsAPI
-fun Route.barnApis(
-    barnService: BarnService
-) {
+fun Route.barnApis() {
 
     @Location("/barn")
     class getBarn
 
     get { _: getBarn ->
-
-        val kompletteBarn = barnService.getBarn(
-            fnr = call.getFodselsnummer(),
-            callId = call.getCallId()
-        )
-        call.respond(
-            toApiResponse(kompletteBarn)
-        )
+        call.respond(BarnResponse())
     }
 }
 
-private fun toApiResponse(kompletteBarn: List<KomplettBarn>) : BarnResponse {
-    val barn = mutableListOf<Barn>()
-    kompletteBarn.forEach {
-        barn.add(Barn(
-            fornavn = it.fornavn,
-            mellomnavn = it.mellomnavn,
-            etternavn = it.etternavn,
-            fodselsdato = it.fodselsdato
-        ))
-    }
-    return BarnResponse(barn = barn.toList())
-}
+private data class BarnResponse(
+    val barn: List<Barn> = listOf()
+)
+
+private data class Barn (
+    val fodselsdato : LocalDate,
+    val fornavn: String,
+    val mellomnavn: String? = null,
+    val etternavn: String
+)
