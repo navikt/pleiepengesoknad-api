@@ -25,7 +25,7 @@ private val loginExpiredType = URI.create("/errors/login-expired")
 private val loginRequiredType = URI.create("/errors/login-required")
 private val insufficientLevelType = URI.create("/errors/insufficient-authentication-level")
 
-private val logger: Logger = LoggerFactory.getLogger("nav.Application")
+private val logger: Logger = LoggerFactory.getLogger("nav.authorizationStatusPages")
 
 
 fun StatusPages.Configuration.authorizationStatusPages(
