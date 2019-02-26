@@ -1,6 +1,5 @@
 package no.nav.helse
 
-import com.auth0.jwt.exceptions.TokenExpiredException
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.typesafe.config.ConfigFactory
@@ -107,7 +106,7 @@ class ApplicationTest {
         }
     }
 
-    @Test(expected = TokenExpiredException::class)
+    @Test
     fun getAnsettelsesforholdExpiredToken() {
 
         val cookie = getAuthCookie(fnr, expiry = -(oneMinuteInMillis))
