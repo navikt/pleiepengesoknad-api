@@ -8,6 +8,8 @@ POST @ /soknad -> 202 Response
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
 - Ingen detaljer om barnet er påkrevd
+- barn.alternativ_id må være 11 siffer om det er satt
+- barn.fodslsnummer må være et gyldig norsk fødselsnummer om det er satt
 
 ```json
 {
