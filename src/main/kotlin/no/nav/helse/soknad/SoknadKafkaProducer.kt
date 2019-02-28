@@ -3,8 +3,7 @@ package no.nav.helse.soknad
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.prometheus.client.Histogram
 import kotlinx.serialization.toUtf8Bytes
-import no.nav.helse.general.monitoredOperation
-import no.nav.helse.general.monitoredOperationtCounter
+import no.nav.helse.general.Operation
 import no.nav.helse.monitorering.Readiness
 import no.nav.helse.monitorering.ReadinessResult
 import org.apache.kafka.clients.CommonClientConfigs
@@ -30,11 +29,6 @@ private val leggeTilBehandlingHistogram = Histogram.build(
     "Tidsbruk for å legge søknad til behandling"
 ).register()
 
-private val leggeTilBehandlingCounter = monitoredOperationtCounter(
-    name = "counter_legge_soknad_til_behandling",
-    help = "Antall søknader lagt til behandling"
-)
-
 class SoknadKafkaProducer(private val bootstrapServers : String,
                           username : String,
                           password : String,
@@ -48,7 +42,7 @@ class SoknadKafkaProducer(private val bootstrapServers : String,
         logger.trace("meldingsVersjon='${String(CURRENT_VERSION)}'")
         logger.trace("melding='$serializedKafkaMessage'")
 
-        monitoredOperation<RecordMetadata>(
+        Operation.monitoredOperation<RecordMetadata>(
             operation = {
                 try {
                     producer.send(
@@ -66,8 +60,7 @@ class SoknadKafkaProducer(private val bootstrapServers : String,
                     throw cause
                 }
             },
-            histogram = leggeTilBehandlingHistogram,
-            counter = leggeTilBehandlingCounter
+            histogram = leggeTilBehandlingHistogram
         )
     }
 

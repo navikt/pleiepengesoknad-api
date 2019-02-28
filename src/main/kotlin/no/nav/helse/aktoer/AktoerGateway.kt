@@ -1,7 +1,12 @@
 package no.nav.helse.aktoer
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
+import io.ktor.client.request.url
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.prometheus.client.Histogram
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.ApiGatewayApiKey
@@ -14,6 +19,8 @@ import java.net.URL
 /**
  * https://app-q1.adeo.no/aktoerregister/swagger-ui.html
  */
+
+private const val AKTOERREGISTER_CORRELATION_ID_HEADER = "Nav-Call-Id"
 
 private val logger: Logger = LoggerFactory.getLogger("nav.AktoerGateway")
 
@@ -28,7 +35,7 @@ class AktoerGateway(
     private val systemBrukerTokenService: SystemBrukerTokenService,
     private val apiGatewayApiKey: ApiGatewayApiKey
 ) {
-    private val completeUrl : URL = buildURL(
+    private val completeUrl : URL = HttpRequest.buildURL(
         baseUrl = baseUrl,
         pathParts = listOf("api","v1","identer"),
         queryParameters = mapOf(
@@ -41,17 +48,18 @@ class AktoerGateway(
         fnr: Fodselsnummer,
         callId: CallId
     ) : AktoerId {
-        val httpRequest = prepareHttpRequestBuilder(
-            authorization = systemBrukerTokenService.getAuthorizationHeader(),
-            url = completeUrl,
-            apiGatewayApiKey = apiGatewayApiKey,
-            callId = callId
-        )
 
+        val httpRequest = HttpRequestBuilder()
+        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader())
+        httpRequest.header(AKTOERREGISTER_CORRELATION_ID_HEADER, callId.value)
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
         httpRequest.header("Nav-Personidenter", fnr.value)
+        httpRequest.header(HttpHeaders.ContentType, ContentType.Application.Json)
+        httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
+        httpRequest.method = HttpMethod.Get
+        httpRequest.url(completeUrl)
 
-        val httpResponse = monitoredHttpRequest<Map<String, IdentResponse>>(
+        val httpResponse = HttpRequest.monitored<Map<String, IdentResponse>>(
             httpClient = httpClient,
             httpRequest = httpRequest,
             histogram = getAktoerIdHistogram

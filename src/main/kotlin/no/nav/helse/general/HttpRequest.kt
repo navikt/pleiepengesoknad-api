@@ -81,7 +81,7 @@ object HttpRequest {
             .trimmedPath(withBasePath)
 
         val url = urlBuilder.build().toURI().toURL()
-        log.info("Built URL '$url'")
+        log.trace("Built URL '$url'")
         return url
     }
 

@@ -2,6 +2,10 @@ package no.nav.helse.systembruker
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
+import io.ktor.client.request.url
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.prometheus.client.Histogram
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.ApiGatewayApiKey
@@ -21,7 +25,7 @@ class SystemBrukerTokenGateway(
     apiGatewayApiKey: ApiGatewayApiKey,
     private val httpClient: HttpClient
 ) {
-    private val httpRequestBuilder: HttpRequestBuilder
+    private val httpRequest: HttpRequestBuilder
     private val completeUrl : URL
 
     init {
@@ -30,19 +34,19 @@ class SystemBrukerTokenGateway(
             queryParameters["scope"] = getScopesAsSpaceDelimitedList(scopes)
         }
 
-        completeUrl = buildURL(baseUrl = baseUrl, queryParameters = queryParameters)
+        completeUrl = HttpRequest.buildURL(baseUrl = baseUrl, queryParameters = queryParameters)
 
-        httpRequestBuilder = prepareHttpRequestBuilder(
-            authorization = getAuthorizationHeader(clientId, clientSecret),
-            url = completeUrl,
-            apiGatewayApiKey = apiGatewayApiKey
-        )
+        httpRequest = HttpRequestBuilder()
+        httpRequest.header(HttpHeaders.Authorization, getAuthorizationHeader(clientId, clientSecret))
+        httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
+        httpRequest.method = HttpMethod.Get
+        httpRequest.url(completeUrl)
     }
 
     internal suspend fun getToken() : Response {
-        return monitoredHttpRequest(
+        return HttpRequest.monitored(
             httpClient = httpClient,
-            httpRequest = HttpRequestBuilder().takeFrom(httpRequestBuilder),
+            httpRequest = HttpRequestBuilder().takeFrom(httpRequest),
             histogram = getAccessTokenHistogram
         )
     }

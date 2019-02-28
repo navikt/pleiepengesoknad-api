@@ -2,8 +2,8 @@ package no.nav.helse
 
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.general.HttpRequest
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import no.nav.helse.general.buildURL
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -86,7 +86,7 @@ data class Configuration(val config : ApplicationConfig) {
     }
 
     fun getSparkelReadinessUrl() : URL {
-        return buildURL(baseUrl = getSparkelUrl(), pathParts = listOf("isready"))
+        return HttpRequest.buildURL(baseUrl = getSparkelUrl(), pathParts = listOf("isready"))
     }
 
     fun getKafkaBootstrapServers() : String {
@@ -129,11 +129,11 @@ data class Configuration(val config : ApplicationConfig) {
     }
 
     fun getPleiepengesoknadProsesserinReadinessUrl(): URL {
-        return buildURL(baseUrl = getPleiepengesoknadProsesseringBaseUrl(), pathParts = listOf("isready"))
+        return HttpRequest.buildURL(baseUrl = getPleiepengesoknadProsesseringBaseUrl(), pathParts = listOf("isready"))
     }
 
     fun getAktoerRegisterReadinessUrl(): URL {
-        return buildURL(baseUrl = getAktoerRegisterUrl(), pathParts = listOf("internal","isAlive"))
+        return HttpRequest.buildURL(baseUrl = getAktoerRegisterUrl(), pathParts = listOf("internal","isAlive"))
     }
 
     fun getApiGatewayApiKey() : ApiGatewayApiKey {

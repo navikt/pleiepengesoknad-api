@@ -5,7 +5,7 @@ import no.nav.helse.general.auth.Fodselsnummer
 import java.time.LocalDate
 
 class ArbeidsgiverService(
-    private val gateway: AnsettelsesforholdGateway
+    private val gateway: ArbeidsgiverGateway
 ) {
     suspend fun getAnsettelsesforhold(
         fnr: Fodselsnummer,

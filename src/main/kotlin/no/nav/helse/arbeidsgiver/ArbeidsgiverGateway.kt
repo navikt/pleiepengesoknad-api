@@ -1,6 +1,12 @@
 package no.nav.helse.arbeidsgiver
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.header
+import io.ktor.client.request.url
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.prometheus.client.Histogram
 import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.general.*
@@ -11,12 +17,14 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
+
 private val ansettelsesforholdOppslagHistogram = Histogram.build(
     "histogram_oppslag_ansettelsesforhold",
     "Tidsbruk for oppslag på arbeidsforhold for søker"
 ).register()
 
-class AnsettelsesforholdGateway(
+class ArbeidsgiverGateway(
     private val httpClient: HttpClient,
     private val baseUrl: URL,
     private val aktoerService: AktoerService,
@@ -50,7 +58,7 @@ class AnsettelsesforholdGateway(
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
     ) : SparkelResponse {
-        val url = buildURL(
+        val url = HttpRequest.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf(
                 "api",
@@ -63,14 +71,15 @@ class AnsettelsesforholdGateway(
             )
         )
 
-        val httpRequest = prepareHttpRequestBuilder(
-            authorization = systemBrukerTokenService.getAuthorizationHeader(),
-            url = url,
-            callId = callId,
-            apiGatewayApiKey = apiGatewayApiKey
-        )
+        val httpRequest = HttpRequestBuilder()
+        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader())
+        httpRequest.header(SPARKEL_CORRELATION_ID_HEADER, callId.value)
+        httpRequest.header(HttpHeaders.ContentType, ContentType.Application.Json)
+        httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
+        httpRequest.method = HttpMethod.Get
+        httpRequest.url(url)
 
-        return monitoredHttpRequest(
+        return HttpRequest.monitored(
             httpClient = httpClient,
             httpRequest = httpRequest,
             histogram = ansettelsesforholdOppslagHistogram

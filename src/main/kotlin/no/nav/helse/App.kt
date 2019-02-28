@@ -28,9 +28,9 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.helse.aktoer.AktoerGateway
 import no.nav.helse.aktoer.AktoerService
-import no.nav.helse.arbeidsgiver.AnsettelsesforholdGateway
+import no.nav.helse.arbeidsgiver.ArbeidsgiverGateway
 import no.nav.helse.arbeidsgiver.ArbeidsgiverService
-import no.nav.helse.arbeidsgiver.ansettelsesforholdApis
+import no.nav.helse.arbeidsgiver.arbeidsgiverApis
 import no.nav.helse.barn.barnApis
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
@@ -233,9 +233,9 @@ fun Application.pleiepengesoknadapi() {
 
             barnApis()
 
-            ansettelsesforholdApis(
+            arbeidsgiverApis(
                 service = ArbeidsgiverService(
-                    gateway = AnsettelsesforholdGateway(
+                    gateway = ArbeidsgiverGateway(
                         httpClient = httpClient,
                         aktoerService = aktoerService,
                         baseUrl = configuration.getSparkelUrl(),

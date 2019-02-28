@@ -13,7 +13,7 @@ import java.time.LocalDate
 private const val fraOgMedQueryName = "fra_og_med"
 private const val tilOgMedQueryName = "til_og_med"
 
-fun Route.ansettelsesforholdApis(
+fun Route.arbeidsgiverApis(
     service: ArbeidsgiverService
 ) {
 
