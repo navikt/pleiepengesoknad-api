@@ -88,7 +88,7 @@ private suspend fun MultiPartData.getVedlegg() : Vedlegg? {
             val vedlegg = Vedlegg(
                 content = partData.streamProvider().readBytes(),
                 contentType = partData.contentType.toString(),
-                title = partData.originalFileName?: "Ingen tittel"
+                title = partData.originalFileName?: "Ingen tittel tilgjengelig"
             )
             partData.dispose()
             return vedlegg

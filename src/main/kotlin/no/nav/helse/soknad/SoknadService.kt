@@ -43,10 +43,10 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
             relasjonTilBarnet = soknad.relasjonTilBarnet
         )
 
-        pleiepengesoknadProsesseringGateway.leggTilProsessering(
-            soknad = komplettSoknad,
-            callId = callId
-        )
+//        pleiepengesoknadProsesseringGateway.leggTilProsessering(
+//            soknad = komplettSoknad,
+//            callId = callId
+//        )
 
         logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
 
