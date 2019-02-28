@@ -77,6 +77,7 @@ fun Application.pleiepengesoknadapi() {
     val validationHandler = ValidationHandler(validator, objectMapper)
 
     val httpClient= HttpClient(Apache) {
+        expectSuccess = false
         install(JsonFeature) {
             serializer = JacksonSerializer{
                 configureObjectMapper(this)

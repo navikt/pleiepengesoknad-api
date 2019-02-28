@@ -2,6 +2,7 @@ package no.nav.helse.arbeidsgiver
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.client.request.url
 import io.ktor.http.ContentType
@@ -74,7 +75,7 @@ class ArbeidsgiverGateway(
         val httpRequest = HttpRequestBuilder()
         httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader())
         httpRequest.header(SPARKEL_CORRELATION_ID_HEADER, callId.value)
-        httpRequest.header(HttpHeaders.ContentType, ContentType.Application.Json)
+        httpRequest.accept(ContentType.Application.Json)
         httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
         httpRequest.method = HttpMethod.Get
         httpRequest.url(url)

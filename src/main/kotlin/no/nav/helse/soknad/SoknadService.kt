@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 private val logger: Logger = LoggerFactory.getLogger("nav.SoknadService")
 
@@ -31,7 +32,7 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
         logger.trace("Vedlegg hentet. Legger søknad til prosessering")
 
         val komplettSoknad = KomplettSoknad(
-            mottatt = LocalDate.now(ZoneOffset.UTC),
+            mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             fraOgMed = soknad.fraOgMed,
             tilOgMed = soknad.tilOgMed,
             soker = soker,

@@ -1,16 +1,18 @@
 package no.nav.helse.aktoer
 
 import io.ktor.client.HttpClient
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.header
-import io.ktor.client.request.url
+import io.ktor.client.call.receive
+import io.ktor.client.features.BadResponseStatusException
+import io.ktor.client.request.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.prometheus.client.Histogram
 import no.nav.helse.general.*
+import no.nav.helse.general.HttpRequest
 import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.Fodselsnummer
+import no.nav.helse.soker.SparkelResponse
 import no.nav.helse.systembruker.SystemBrukerTokenService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -54,9 +56,9 @@ class AktoerGateway(
         httpRequest.header(AKTOERREGISTER_CORRELATION_ID_HEADER, callId.value)
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
         httpRequest.header("Nav-Personidenter", fnr.value)
-        httpRequest.header(HttpHeaders.ContentType, ContentType.Application.Json)
         httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
         httpRequest.method = HttpMethod.Get
+        httpRequest.accept(ContentType.Application.Json)
         httpRequest.url(completeUrl)
 
         val httpResponse = HttpRequest.monitored<Map<String, IdentResponse>>(

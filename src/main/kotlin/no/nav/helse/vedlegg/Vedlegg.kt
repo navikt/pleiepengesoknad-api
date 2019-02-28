@@ -2,7 +2,8 @@ package no.nav.helse.vedlegg
 
 data class Vedlegg(
     val content: ByteArray,
-    val contentType: String
+    val contentType: String,
+    val title: String
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -13,6 +14,7 @@ data class Vedlegg(
 
         if (!content.contentEquals(other.content)) return false
         if (contentType != other.contentType) return false
+        if (title != other.title) return false
 
         return true
     }
@@ -20,6 +22,8 @@ data class Vedlegg(
     override fun hashCode(): Int {
         var result = content.contentHashCode()
         result = 31 * result + contentType.hashCode()
+        result = 31 * result + title.hashCode()
         return result
     }
+
 }
