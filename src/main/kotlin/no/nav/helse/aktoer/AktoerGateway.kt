@@ -52,7 +52,8 @@ class AktoerGateway(
     ) : AktoerId {
 
         val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader())
+        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader(callId))
+        httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
         httpRequest.header(AKTOERREGISTER_CORRELATION_ID_HEADER, callId.value)
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
         httpRequest.header("Nav-Personidenter", fnr.value)

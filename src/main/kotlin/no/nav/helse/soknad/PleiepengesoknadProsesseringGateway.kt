@@ -38,7 +38,7 @@ class PleiepengesoknadProsesseringGateway(
         callId: CallId
     ) {
         val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader())
+        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader(callId))
         httpRequest.header(HttpHeaders.XCorrelationId, callId.value)
         httpRequest.header(HttpHeaders.ContentType, ContentType.Application.Json)
         httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)

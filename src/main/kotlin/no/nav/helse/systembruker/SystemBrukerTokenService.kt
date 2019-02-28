@@ -1,13 +1,14 @@
 package no.nav.helse.systembruker
 
+import no.nav.helse.general.CallId
 import no.nav.helse.monitorering.Readiness
 import no.nav.helse.monitorering.ReadinessResult
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
+import java.util.*
 
 private val logger: Logger = LoggerFactory.getLogger("nav.SystemBrukerTokenService")
-
 
 class SystemBrukerTokenService(
     private val systemBrukerTokenGateway: SystemBrukerTokenGateway
@@ -15,7 +16,7 @@ class SystemBrukerTokenService(
 
     override suspend fun getResult(): ReadinessResult {
         return try {
-            getToken()
+            getToken(CallId(UUID.randomUUID().toString()))
             ReadinessResult(isOk = true, message = "Henting av Systembruker Access Token OK")
         } catch (cause: Throwable) {
             logger.error("Readiness error", cause)
@@ -26,20 +27,20 @@ class SystemBrukerTokenService(
     @Volatile private var cachedToken: String? = null
     @Volatile private var expiry: LocalDateTime? = null
 
-    private suspend fun getToken() : String {
+    private suspend fun getToken(callId: CallId) : String {
         if (hasCachedToken() && isCachedTokenValid()) {
             return cachedToken!!
         }
 
         clearCachedData()
 
-        val response = systemBrukerTokenGateway.getToken()
+        val response = systemBrukerTokenGateway.getToken(callId)
         setCachedData(response)
         return cachedToken!!
     }
 
-    suspend fun getAuthorizationHeader() : String {
-        return "Bearer ${getToken()}"
+    suspend fun getAuthorizationHeader(callId: CallId) : String {
+        return "Bearer ${getToken(callId)}"
     }
 
     private fun setCachedData(response: Response) {

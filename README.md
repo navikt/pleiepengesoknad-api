@@ -18,8 +18,8 @@ POST @ /soknad -> 202 Response
 		"fodselsnummer": "01011950021",
 		"alternativ_id": null
 	},
-    "relasjon_til_barnet": "mor",
-    "fra_og_med": "2019-10-10",
+	"relasjon_til_barnet": "mor",
+	"fra_og_med": "2019-10-10",
 	"til_og_med": "2019-11-10",
 	"arbeidsgivere": {
 		"organisasjoner": [{
@@ -31,11 +31,11 @@ POST @ /soknad -> 202 Response
 		}]
 	},
 	"vedlegg": [
-	    "http://pleiepengesoknad-api.nav.no/vedlegg/e2daa60b-2423-401c-aa33-b41dc6b630e7"
+		"http://pleiepengesoknad-api.nav.no/vedlegg/e2daa60b-2423-401c-aa33-b41dc6b630e7"
 	],
-	"medlemskap" : {
-        "har_bodd_i_utlandet_siste_12_mnd" : false,
-        "skal_bo_i_utlandet_neste_12_mnd" : true
+	"medlemskap": {
+		"har_bodd_i_utlandet_siste_12_mnd": false,
+		"skal_bo_i_utlandet_neste_12_mnd": true
 	}
 }
 ```

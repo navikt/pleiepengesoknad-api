@@ -2,10 +2,8 @@ package no.nav.helse.systembruker
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.client.request.url
-import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.prometheus.client.Histogram
@@ -37,7 +35,6 @@ class SystemBrukerTokenGateway(
         }
 
         completeUrl = HttpRequest.buildURL(baseUrl = baseUrl, queryParameters = queryParameters)
-
         httpRequest = HttpRequestBuilder()
         httpRequest.header(HttpHeaders.Authorization, getAuthorizationHeader(clientId, clientSecret))
         httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
@@ -45,10 +42,12 @@ class SystemBrukerTokenGateway(
         httpRequest.url(completeUrl)
     }
 
-    internal suspend fun getToken() : Response {
+    internal suspend fun getToken(callId: CallId) : Response {
+        val httpRequest = HttpRequestBuilder().takeFrom(httpRequest)
+        httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
         return HttpRequest.monitored(
             httpClient = httpClient,
-            httpRequest = HttpRequestBuilder().takeFrom(httpRequest),
+            httpRequest = httpRequest,
             histogram = getAccessTokenHistogram
         )
     }

@@ -24,12 +24,15 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
 
         logger.trace("Registrerer søknad. Henter søker")
         val soker = sokerService.getSoker(fnr = fnr, callId = callId)
-        logger.trace("Søker hentet. Henter vedlegg")
+        logger.trace("Søker hentet. Henter ${soknad.vedlegg.size} vedlegg")
         val vedlegg = vedleggService.hentVedlegg(
             vedleggUrls = soknad.vedlegg,
             fnr = fnr
         )
         logger.trace("Vedlegg hentet. Legger søknad til prosessering")
+        if (soknad.vedlegg.size != vedlegg.size) {
+            logger.warn("Mottok referanse til ${soknad.vedlegg.size} vedlegg, men fant bare ${vedlegg.size} som sendes til prosessering.")
+        }
 
         val komplettSoknad = KomplettSoknad(
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
