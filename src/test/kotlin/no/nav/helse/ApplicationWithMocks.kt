@@ -17,7 +17,12 @@ class ApplicationWithMocks {
 
             val wireMockSerer = bootstrapWiremock(8081)
 
-            val testArgs = TestConfiguration.asArray(TestConfiguration.asMap(wireMockServer = wireMockSerer))
+            val testArgs = TestConfiguration.asArray(
+                TestConfiguration.asMap(
+                    port = 8082,
+                    wireMockServer = wireMockSerer
+                )
+            )
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {
                 override fun run() {

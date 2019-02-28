@@ -13,11 +13,15 @@ object TestConfiguration {
         sparkelUrl: String? = wireMockServer?.getSparkelUrl(),
         aktoerRegisterBaseUrl : String? = wireMockServer?.getAktoerRegisterUrl(),
         pleiepengesoknadProsesseringUrl : String? = wireMockServer?.getPleiepengesoknadProsesseringUrl(),
-        corsAdresses : String = "http://localhost:8080"
+        corsAdresses : String = "http://localhost:8080",
+        issuer : String = "iss-localhost",
+        cookieName : String = "localhost-idtoken"
     ) : Map<String, String>{
         return mapOf(
             Pair("ktor.deployment.port","$port"),
             Pair("nav.authorization.token_url","$tokenUrl"),
+            Pair("nav.authorization.issuer", issuer),
+            Pair("nav.authorization.cookie_name", cookieName),
             Pair("nav.authorization.jwks_uri","$jwkSetUrl"),
             Pair("nav.gateways.sparkel_url","$sparkelUrl"),
             Pair("nav.gateways.aktoer_register_url", "$aktoerRegisterBaseUrl"),
