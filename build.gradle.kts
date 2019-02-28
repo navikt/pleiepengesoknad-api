@@ -72,7 +72,7 @@ dependencies {
 
     testCompile ("com.nimbusds:oauth2-oidc-sdk:5.56")
     testImplementation("no.nav:kafka-embedded-env:2.0.1")
-
+    testImplementation("org.everit.json:org.everit.json.schema:1.3.0")
 
 }
 

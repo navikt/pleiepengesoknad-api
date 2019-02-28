@@ -1,9 +1,6 @@
 package no.nav.helse
 
 import io.ktor.server.testing.withApplication
-import no.nav.helse.kafka.bootstrapKafka
-import no.nav.helse.kafka.getProducerPassword
-import no.nav.helse.kafka.getProducerUsername
 import no.nav.helse.wiremock.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,25 +16,13 @@ class ApplicationWithMocks {
         fun main(args: Array<String>) {
 
             val wireMockSerer = bootstrapWiremock(8081)
-            val kafkaEnvironment = bootstrapKafka()
 
-            val testArgs = arrayOf(
-                "-P:ktor.deployment.port=8082",
-                "-P:nav.authorization.jwks_uri=${wireMockSerer.getJwksUri()}",
-                "-P:nav.gateways.sparkel_url=${wireMockSerer.getSparkelUrl()}",
-                "-P:nav.kafka.bootstrap_servers=${kafkaEnvironment.brokersURL}",
-                "-P:nav.kafka.username=${kafkaEnvironment.getProducerUsername()}",
-                "-P:nav.kafka.password=${kafkaEnvironment.getProducerPassword()}",
-                "-P:nav.authorization.token_url=${wireMockSerer.getAuthorizationTokenUrl()}",
-                "-P:nav.gateways.aktoer_register_url=${wireMockSerer.getAktoerRegisterUrl()}",
-                "-P:nav.cors.addresses=http://localhost:8080"
-            )
+            val testArgs = TestConfiguration.asArray(TestConfiguration.asMap(wireMockServer = wireMockSerer))
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {
                 override fun run() {
                     logger.info("Tearing down")
                     wireMockSerer.stop()
-                    kafkaEnvironment.tearDown()
                     logger.info("Tear down complete")
                 }
             })

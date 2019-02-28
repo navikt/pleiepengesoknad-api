@@ -71,7 +71,7 @@ fun Route.vedleggApis(vedleggService: VedleggService) {
             if (vedlegg == null) {
                 call.respondVedleggNotAttached()
             } else {
-                if (vedlegg.size > MAX_VEDLEGG_SIZE) {
+                if (vedlegg.content.size > MAX_VEDLEGG_SIZE) {
                     call.respondVedleggTooLarge()
                 } else {
                     val vedleggId = vedleggService.lagreVedlegg(vedlegg, call.getFodselsnummer())

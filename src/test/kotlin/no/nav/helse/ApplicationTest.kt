@@ -1,6 +1,5 @@
 package no.nav.helse
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.ApplicationConfig
@@ -9,13 +8,9 @@ import io.ktor.http.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.common.KafkaEnvironment
-import no.nav.helse.ansettelsesforhold.AnsettelsesforholdResponse
 import no.nav.helse.general.auth.CookieNotSetException
 import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.jackson.configureObjectMapper
-import no.nav.helse.kafka.*
-import no.nav.helse.soker.Soker
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -36,7 +31,6 @@ class ApplicationTest {
     private companion object {
 
         val wireMockServer: WireMockServer = bootstrapWiremock()
-        val kafkaEnvironment: KafkaEnvironment = bootstrapKafka()
 
         fun getConfig() : ApplicationConfig {
 
@@ -63,7 +57,6 @@ class ApplicationTest {
         @JvmStatic
         fun tearDown() {
             logger.info("Tearing down")
-            kafkaEnvironment.tearDown()
             wireMockServer.stop()
             logger.info("Tear down complete")
         }
@@ -73,7 +66,7 @@ class ApplicationTest {
     @Test(expected = CookieNotSetException::class)
     fun getAnsettelsesforholdUnauthorizedTest() {
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
+            with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
                 addHeader("Accept", "application/json")
             }) {
                 assertEquals(HttpStatusCode.Unauthorized, response.status())
@@ -87,7 +80,7 @@ class ApplicationTest {
         val cookie = getAuthCookie(fnr, authLevel = "Level3")
 
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
+            with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
             }) {
@@ -103,7 +96,7 @@ class ApplicationTest {
         logger.debug("cookie={}", cookie.toString())
 
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
+            with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
             }) {
@@ -127,13 +120,13 @@ class ApplicationTest {
         val cookie = getAuthCookie(fnr)
 
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/ansettelsesforhold?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
+            with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
                 addHeader("Accept", "application/json")
                 addHeader("Cookie", cookie.toString())
             }) {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val expectedResponse : AnsettelsesforholdResponse = objectMapper.readValue(expectedGetAnsettelsesforholdJson)
-                val actualResponse : AnsettelsesforholdResponse = objectMapper.readValue(response.content!!)
+                val expectedResponse = objectMapper.readTree(expectedGetAnsettelsesforholdJson)
+                val actualResponse = objectMapper.readTree(response.content!!)
                 assertEquals(expectedResponse, actualResponse)
 
             }
@@ -214,8 +207,8 @@ class ApplicationTest {
                 addHeader("Cookie", cookie.toString())
             }) {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val expectedResponse : Soker = objectMapper.readValue(expectedGetSokerJson(fnr))
-                val actualResponse : Soker = objectMapper.readValue(response.content!!)
+                val expectedResponse = objectMapper.readTree(expectedGetSokerJson(fnr))
+                val actualResponse = objectMapper.readTree(response.content!!)
                 assertEquals(expectedResponse, actualResponse)
             }
         }

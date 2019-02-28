@@ -5,10 +5,13 @@ import no.nav.helse.vedlegg.Vedlegg
 import java.time.LocalDate
 
 data class KomplettSoknad(
-    val fraOgMed: LocalDate,
-    val tilOgMed: LocalDate,
+    val mottatt : LocalDate,
+    val fraOgMed : LocalDate,
+    val tilOgMed : LocalDate,
     val soker : Soker,
     val barn : BarnDetaljer,
-    val ansettelsesforhold: AnsettelsesforholdDetaljer,
-    val vedlegg: List<Vedlegg>
+    val arbeidsgivere: ArbeidsgiverDetailjer,
+    val vedlegg: List<Vedlegg>,
+    val medlemskap : Medlemskap,
+    val relasjonTilBarnet : String
 )

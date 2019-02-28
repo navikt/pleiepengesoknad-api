@@ -101,26 +101,33 @@ private fun body(
     vedleggUrl1: String,
     vedleggUrl2: String) : String {
 
-    val body = """{
-
-	"barn": {
-        "navn": "Santa Heisann Winter",
-		"fodselsnummer": "$fodselsnummer"
-	},
-    "relasjon_til_barnet": "mor",
-	"fra_og_med": "$fraOgMed",
-	"til_og_med": "$tilOgMed",
-	"ansettelsesforhold": {
-        "organisasjoner": [
-            {
-                "organisasjonsnummer": "897895478",
-		        "navn": "Bjeffefirmaet"
-            }
-        ]
-
-	},
-	"vedlegg": ["$vedleggUrl1", "$vedleggUrl2"]
-    }""".trimIndent()
+    val body = """
+    {
+        "barn": {
+            "navn": "Santa Heisann Winter",
+            "fodselsnummer": "$fodselsnummer"
+        },
+        "relasjon_til_barnet": "mor",
+        "fra_og_med": "$fraOgMed",
+        "til_og_med": "$tilOgMed",
+        "arbeidsgivere": {
+            "organisasjoner": [
+                {
+                    "organisasjonsnummer": "897895478",
+                    "navn": "Bjeffefirmaet"
+                }
+            ]
+        },
+        "vedlegg": [
+            "$vedleggUrl1",
+            "$vedleggUrl2"
+        ],
+        "medlemskap" : {
+            "har_bodd_i_utlandet_siste_12_mnd" : false,
+            "skal_bo_i_utlandet_neste_12_mnd" : true
+	    }
+    }
+    """.trimIndent()
     logger.info(body)
 
     return body

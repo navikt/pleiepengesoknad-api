@@ -1,4 +1,4 @@
-package no.nav.helse.ansettelsesforhold
+package no.nav.helse.arbeidsgiver
 
 import io.ktor.application.call
 import io.ktor.response.respond
@@ -14,17 +14,17 @@ private const val fraOgMedQueryName = "fra_og_med"
 private const val tilOgMedQueryName = "til_og_med"
 
 fun Route.ansettelsesforholdApis(
-    service: AnsettelsesforholdService
+    service: ArbeidsgiverService
 ) {
 
-    get("ansettelsesforhold") {
+    get("/arbeidsgiver") {
         val violations = validateQueryParameters(call.request.queryParameters[fraOgMedQueryName], call.request.queryParameters[tilOgMedQueryName])
 
         if (violations.isNotEmpty()) {
             throw ValidationException(violations)
         } else {
             call.respond(
-                AnsettelsesforholdResponse(
+                ArbeidsgiverResponse(
                     service.getAnsettelsesforhold(
                         fnr = call.getFodselsnummer(),
                         callId = call.getCallId(),
@@ -51,3 +51,7 @@ private fun validateQueryParameters(fraOgMed: String?, tilOgMed: String?) : List
     }
     return violations.toList()
 }
+
+data class ArbeidsgiverResponse (
+    val organisasjoner : List<Arbeidsgiver>
+)

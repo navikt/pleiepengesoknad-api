@@ -4,6 +4,12 @@ import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.soker.SokerService
 import no.nav.helse.vedlegg.VedleggService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.time.LocalDate
+import java.time.ZoneOffset
+
+private val logger: Logger = LoggerFactory.getLogger("nav.SoknadService")
 
 class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadProsesseringGateway,
                     val sokerService: SokerService,
@@ -15,21 +21,39 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
         callId: CallId
     ) {
 
+        logger.trace("Registrerer søknad. Henter søker")
+        val soker = sokerService.getSoker(fnr = fnr, callId = callId)
+        logger.trace("Søker hentet. Henter vedlegg")
+        val vedlegg = vedleggService.hentVedlegg(
+            vedleggUrls = soknad.vedlegg,
+            fnr = fnr
+        )
+        logger.trace("Vedlegg hentet. Legger søknad til prosessering")
+
         val komplettSoknad = KomplettSoknad(
+            mottatt = LocalDate.now(ZoneOffset.UTC),
             fraOgMed = soknad.fraOgMed,
             tilOgMed = soknad.tilOgMed,
-            soker = sokerService.getSoker(fnr = fnr, callId = callId),
+            soker = soker,
             barn = soknad.barn,
-            vedlegg = vedleggService.hentOgSlettVedlegg(
-                vedleggUrls = soknad.vedlegg,
-                fnr = fnr
-            ),
-            ansettelsesforhold = soknad.ansettelsesforhold
+            vedlegg = vedlegg,
+            arbeidsgivere = soknad.arbeidsgivere,
+            medlemskap = soknad.medlemskap,
+            relasjonTilBarnet = soknad.relasjonTilBarnet
         )
 
         pleiepengesoknadProsesseringGateway.leggTilProsessering(
             soknad = komplettSoknad,
             callId = callId
         )
+
+        logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
+
+        vedleggService.slettVedleg(
+            vedleggUrls = soknad.vedlegg,
+            fnr = fnr
+        )
+
+        logger.trace("Vedlegg slettet.")
     }
 }

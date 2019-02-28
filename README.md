@@ -4,7 +4,7 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 ## Endepunkt
 ### Sende inn søknad
 POST @ /soknad -> 202 Response
-- Listen med ansettelsesforhold inneholder data på samme format som GET @ /ansettelsesforhold
+- Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
 - Ingen detaljer om barnet er påkrevd
@@ -19,7 +19,7 @@ POST @ /soknad -> 202 Response
     "relasjon_til_barnet": "mor",
     "fra_og_med": "2019-10-10",
 	"til_og_med": "2019-11-10",
-	"ansettelsesforhold": {
+	"arbeidsgivere": {
 		"organisasjoner": [{
 			"navn": "Telenor",
 			"organisasjonsnummer": "973861778"
@@ -30,7 +30,11 @@ POST @ /soknad -> 202 Response
 	},
 	"vedlegg": [
 	    "http://pleiepengesoknad-api.nav.no/vedlegg/e2daa60b-2423-401c-aa33-b41dc6b630e7"
-	]
+	],
+	"medlemskap" : {
+        "har_bodd_i_utlandet_siste_12_mnd" : false,
+        "skal_bo_i_utlandet_neste_12_mnd" : true
+	}
 }
 ```
 ### Søker
@@ -97,9 +101,9 @@ GET @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasti
 #### Slette vedlegg
 DELETE @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasting -> 204 response
 
-### Hente ansettelsesforhold
+### Hente arbeidsgivere
 - Query parameter 'fra_og_til' og 'til_og_med' må settes til datoer
-GET @ /ansettelsesforhold?fra_og_med=2019-01-20&til_og_med=2019-01-30 -> 200 Response
+GET @ /arbeidsgiver?fra_og_med=2019-01-20&til_og_med=2019-01-30 -> 200 Response
 ```json
 {
   "organisasjoner" : [ {

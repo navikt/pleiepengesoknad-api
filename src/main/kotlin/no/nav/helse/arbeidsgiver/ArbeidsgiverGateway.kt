@@ -1,4 +1,4 @@
-package no.nav.helse.ansettelsesforhold
+package no.nav.helse.arbeidsgiver
 
 import io.ktor.client.HttpClient
 import io.prometheus.client.Histogram
@@ -28,13 +28,13 @@ class AnsettelsesforholdGateway(
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
-    ) : List<Ansettelsesforhold> {
+    ) : List<Arbeidsgiver> {
         val sparkelResponse = request(fnr, callId, fraOgMed, tilOgMed)
-        val ansettelsesforhold = mutableListOf<Ansettelsesforhold>()
+        val ansettelsesforhold = mutableListOf<Arbeidsgiver>()
 
         sparkelResponse.arbeidsgivere.forEach {arbeidsforhold ->
             ansettelsesforhold.add(
-                Ansettelsesforhold(
+                Arbeidsgiver(
                     navn = arbeidsforhold.navn,
                     organisasjonsnummer = arbeidsforhold.organisasjonsnummer
                 )

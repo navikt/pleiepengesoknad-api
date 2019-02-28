@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory
 
 private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 
-
 @KtorExperimentalLocationsAPI
 fun Route.soknadApis(
     validationHandler: ValidationHandler,
@@ -26,9 +25,11 @@ fun Route.soknadApis(
     class sendSoknad
 
     post { _ : sendSoknad ->
+        logger.trace("Mottatt ny søknad. Mapper søknad.")
         val soknad = call.receive<Soknad>()
-
+        logger.trace("Søknad mappet. Validerer")
         validationHandler.validate(soknad)
+        logger.trace("Validering OK. Registrerer søknad.")
 
         soknadService.registrer(
             soknad = soknad,
@@ -36,6 +37,7 @@ fun Route.soknadApis(
             callId = call.getCallId()
         )
 
+        logger.trace("Søknad registrert.")
         call.response.status(HttpStatusCode.Accepted)
     }
 }

@@ -1,10 +1,10 @@
-package no.nav.helse.ansettelsesforhold
+package no.nav.helse.arbeidsgiver
 
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
 import java.time.LocalDate
 
-class AnsettelsesforholdService(
+class ArbeidsgiverService(
     private val gateway: AnsettelsesforholdGateway
 ) {
     suspend fun getAnsettelsesforhold(
@@ -12,7 +12,7 @@ class AnsettelsesforholdService(
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
-    ) : List<Ansettelsesforhold> {
+    ) : List<Arbeidsgiver> {
         return gateway.getAnsettelsesforhold(fnr, callId, fraOgMed, tilOgMed)
     }
 }
