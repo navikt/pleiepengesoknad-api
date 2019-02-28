@@ -30,7 +30,7 @@ class ApplicationWithMocks {
 
             val q1OnlyMockLogin = TestConfiguration.asArray(TestConfiguration.asMap(
                 wireMockServer = wireMockSerer,
-                port = 8083,
+                port = 8082,
                 tokenUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token",
                 aktoerRegisterBaseUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/aktoer-register",
                 sparkelUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/sparkel",
