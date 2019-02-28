@@ -22,7 +22,7 @@ fun gyldigSoknad(
     with(engine) {
         val urlJpeg = handleRequestUploadImage(
             cookie = cookie,
-            vedlegg = "nav-logo.png".fromResources(),
+            vedlegg = "vedlegg/nav-logo.png".fromResources(),
             fileName = "nav-logo.png",
             contentType = "image/png"
         )
