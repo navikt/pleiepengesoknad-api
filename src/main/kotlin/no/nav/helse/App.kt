@@ -41,6 +41,7 @@ import no.nav.helse.general.error.initializeErrorCounter
 import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.general.validation.ValidationHandler
 import no.nav.helse.general.validation.validationStatusPages
+import no.nav.helse.monitorering.MONITORING_PATHS
 import no.nav.helse.monitorering.monitoreringApis
 import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
@@ -109,7 +110,7 @@ fun Application.pleiepengesoknadapi() {
 
     install(CallLogging) {
         level = Level.INFO
-        filter { call -> call.request.path().startsWith("/") }
+        filter { call -> !MONITORING_PATHS.contains(call.request.path()) }
         callIdMdc("correlation_id")
 
         mdc("request_id") { call -> // Request ID kan sendes inn fra clienten

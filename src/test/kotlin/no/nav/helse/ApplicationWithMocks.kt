@@ -17,12 +17,25 @@ class ApplicationWithMocks {
 
             val wireMockSerer = bootstrapWiremock(8081)
 
-            val testArgs = TestConfiguration.asArray(
+            val everythingMocked = TestConfiguration.asArray(
                 TestConfiguration.asMap(
                     port = 8082,
                     wireMockServer = wireMockSerer
                 )
             )
+
+            // Verdier som må settes utenom det som er satt i denne klassen med q1OnlyMockLogin:
+            // -Dnav.authorization.service_account.client_secret=
+            // -Dnav.authorization.api_gateway.api_key=
+
+            val q1OnlyMockLogin = TestConfiguration.asArray(TestConfiguration.asMap(
+                wireMockServer = wireMockSerer,
+                port = 8083,
+                tokenUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token",
+                aktoerRegisterBaseUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/aktoer-register",
+                sparkelUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/sparkel",
+                pleiepengesoknadProsesseringUrl = "http://localhost:8093"
+            ))
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {
                 override fun run() {
@@ -32,7 +45,7 @@ class ApplicationWithMocks {
                 }
             })
 
-            withApplication { no.nav.helse.main(testArgs) }
+            withApplication { no.nav.helse.main(q1OnlyMockLogin) }
         }
     }
 }

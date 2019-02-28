@@ -23,7 +23,11 @@ import java.net.URL
 import java.util.*
 
 private val logger: Logger = LoggerFactory.getLogger("nav.monitoreringApis")
+private const val ALIVE = "/isalive"
+private const val READY = "/isready"
+private const val METRICS = "/metrics"
 
+val MONITORING_PATHS = listOf(ALIVE, READY, METRICS)
 
 @KtorExperimentalLocationsAPI
 fun Route.monitoreringApis(
@@ -36,11 +40,11 @@ fun Route.monitoreringApis(
 ) {
 
 
-    get("/isalive") {
+    get(ALIVE) {
         call.respond(Response(status = "ALIVE", success = listOf("I am alive"), errors = emptyList()))
     }
 
-    get("/isready") {
+    get(READY) {
         call.respond(Response(status = "READY", success = listOf("I am ready"), errors = emptyList()))
     }
 
@@ -103,7 +107,7 @@ fun Route.monitoreringApis(
         )
     }
 
-    get("/metrics") {
+    get(METRICS) {
         val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: Collections.emptySet()
         call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
             TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
