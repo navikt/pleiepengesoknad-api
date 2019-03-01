@@ -73,7 +73,9 @@ fun StatusPages.Configuration.authorizationStatusPages(
             title = "Insufficient authentication level to perform request.",
             detail = cause.message
         ))
-        throw cause // Dette burde ikke skje, kaster videre
+        // Kan ha vært logget inn på en annen NAV-tjeneste som ikke krever nivå 4 i forkant
+        // og må nå logge inn på nytt. Trenger ikke kaste exception videre
+        logger.trace(cause.message)
     }
 
     exception<CookieNotSetException> { cause ->
@@ -84,6 +86,7 @@ fun StatusPages.Configuration.authorizationStatusPages(
             title = "Not logged in.",
             detail = cause.message
         ))
-        throw cause // Dette burde ikke skje, kaster videre
+        // Har ingen cookie satt, heller ikke en feil, kaster ikke exception videre
+        logger.trace(cause.message)
     }
 }

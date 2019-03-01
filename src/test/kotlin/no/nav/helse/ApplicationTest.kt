@@ -8,8 +8,6 @@ import io.ktor.http.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.helse.general.auth.CookieNotSetException
-import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
 import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
@@ -62,8 +60,7 @@ class ApplicationTest {
         }
     }
 
-
-    @Test(expected = CookieNotSetException::class)
+    @Test
     fun getAnsettelsesforholdUnauthorizedTest() {
         with(engine) {
             with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
@@ -74,7 +71,7 @@ class ApplicationTest {
         }
     }
 
-    @Test(expected = InsufficientAuthenticationLevelException::class)
+    @Test
     fun getAnsettelsesforholdWrongAuthenticationLevel() {
 
         val cookie = getAuthCookie(fnr, authLevel = "Level3")
