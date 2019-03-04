@@ -6,7 +6,6 @@ import no.nav.helse.soker.SokerService
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
@@ -46,10 +45,10 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
             relasjonTilBarnet = soknad.relasjonTilBarnet
         )
 
-//        pleiepengesoknadProsesseringGateway.leggTilProsessering(
-//            soknad = komplettSoknad,
-//            callId = callId
-//        )
+        pleiepengesoknadProsesseringGateway.leggTilProsessering(
+            soknad = komplettSoknad,
+            callId = callId
+        )
 
         logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
 
