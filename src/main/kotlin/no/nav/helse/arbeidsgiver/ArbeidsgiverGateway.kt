@@ -45,7 +45,7 @@ class ArbeidsgiverGateway(
             ansettelsesforhold.add(
                 Arbeidsgiver(
                     navn = arbeidsforhold.navn,
-                    organisasjonsnummer = arbeidsforhold.organisasjonsnummer
+                    organisasjonsnummer = arbeidsforhold.orgnummer
                 )
             )
         }
@@ -89,5 +89,5 @@ class ArbeidsgiverGateway(
     }
 }
 
-data class SparkelArbeidsforhold(val organisasjonsnummer: String, val navn: String?)
+data class SparkelArbeidsforhold(val orgnummer: String, val navn: String?)
 data class SparkelResponse(val arbeidsgivere: Set<SparkelArbeidsforhold>)

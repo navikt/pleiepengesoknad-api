@@ -17,13 +17,13 @@ fun stubSparkelGetArbeidsgivere() {
 private val sparkelResponse = """
     {
         "arbeidsgivere": [{
-            "organisasjonsnummer": "913548221",
+            "orgnummer": "913548221",
             "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET"
         },{
-            "organisasjonsnummer": "984054564",
+            "orgnummer": "984054564",
             "navn": "NAV, AVD WALDEMAR THRANES GATE"
         },{
-            "organisasjonsnummer": "984054564",
+            "orgnummer": "984054564",
             "navn": "NAV, AVD WALDEMAR THRANES GATE"
         }]
     }
