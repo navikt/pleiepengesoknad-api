@@ -44,6 +44,7 @@ class SokerGateway(
         val httpRequest = HttpRequestBuilder()
         httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader(callId))
         httpRequest.header(SPARKEL_CORRELATION_ID_HEADER, callId.value)
+        httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
         httpRequest.accept(ContentType.Application.Json)
         httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
         httpRequest.method = HttpMethod.Get
