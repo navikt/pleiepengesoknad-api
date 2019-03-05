@@ -5,6 +5,7 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 ### Sende inn søknad
 POST @ /soknad -> 202 Response
 - Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver
+- Listen med organisajoner i arbeidsfivere kan være tom
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
 - Ingen detaljer om barnet er påkrevd

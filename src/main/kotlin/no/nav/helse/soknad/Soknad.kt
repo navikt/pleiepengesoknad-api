@@ -21,7 +21,7 @@ data class Soknad (
     val medlemskap: Medlemskap
 )
 data class ArbeidsgiverDetailjer(
-    @get:NotEmpty val organisasjoner : List<Arbeidsgiver>
+    val organisasjoner : List<Arbeidsgiver>
 )
 
 data class Medlemskap(
