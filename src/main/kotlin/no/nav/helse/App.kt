@@ -12,6 +12,7 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
+import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
 import io.ktor.features.*
 import io.ktor.http.HttpHeaders
@@ -54,6 +55,7 @@ import no.nav.helse.systembruker.SystemBrukerTokenService
 import no.nav.helse.vedlegg.*
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
+import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 import java.net.ProxySelector
 import java.util.*
@@ -82,6 +84,10 @@ fun Application.pleiepengesoknadapi() {
             serializer = JacksonSerializer{
                 configureObjectMapper(this)
             }
+        }
+        install(Logging) {
+            level = LogLevel.BODY
+            logger = Logger.NAV_HTTP_CLEINT_TRACE
         }
         engine { customizeClient { setProxyRoutePlanner() } }
 
@@ -271,3 +277,11 @@ fun Application.pleiepengesoknadapi() {
 private fun HttpAsyncClientBuilder.setProxyRoutePlanner() {
     setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault()))
 }
+
+private val Logger.Companion.NAV_HTTP_CLEINT_TRACE: Logger
+    get() = object : Logger {
+        private val delegate = LoggerFactory.getLogger("nav.HttpClient")
+        override fun log(message: String) {
+            delegate.trace(message)
+        }
+    }

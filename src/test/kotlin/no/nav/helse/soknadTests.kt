@@ -104,7 +104,7 @@ private fun body(
     val body = """
     {
         "barn": {
-            "navn": "Santa Heisann Winter",
+            "navn": "Santa ÆØÅ Winter",
             "fodselsnummer": "$fodselsnummer"
         },
         "relasjon_til_barnet": "mor",

@@ -45,7 +45,7 @@ class ApplicationWithMocks {
                 }
             })
 
-            withApplication { no.nav.helse.main(q1OnlyMockLogin) }
+            withApplication { no.nav.helse.main(everythingMocked) }
         }
     }
 }

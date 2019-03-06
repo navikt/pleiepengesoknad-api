@@ -1,12 +1,12 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.helse.arbeidsgiver.Arbeidsgiver
 import org.hibernate.validator.constraints.Length
 import java.net.URL
 import java.time.LocalDate
 import javax.validation.Valid
 import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 
@@ -25,7 +25,9 @@ data class ArbeidsgiverDetailjer(
 )
 
 data class Medlemskap(
+    @JsonProperty("har_bodd_i_utlandet_siste_12_mnd")
     val harBoddIUtlandetSiste12Mnd : Boolean,
+    @JsonProperty("skal_bo_i_utlandet_neste_12_mnd")
     val skalBoIUtlandetNeste12Mnd : Boolean
 )
 
