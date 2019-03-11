@@ -24,6 +24,7 @@ import io.ktor.request.header
 import io.ktor.request.path
 import io.ktor.response.header
 import io.ktor.routing.Routing
+import io.ktor.routing.contentType
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
@@ -140,7 +141,7 @@ fun Application.pleiepengesoknadapi() {
         }
     }
 
-    val idTokenProviderBuilder = IdTokenProvider(cookieName = configuration.getCookieName())
+    val idTokenProvider = IdTokenProvider(cookieName = configuration.getCookieName())
 
     install(Authentication) {
         jwtFromCookie {
@@ -156,7 +157,7 @@ fun Application.pleiepengesoknadapi() {
                 }
                 return@validate JWTPrincipal(credentials.payload)
             }
-            withIdTokenProvider(idTokenProviderBuilder)
+            withIdTokenProvider(idTokenProvider)
         }
     }
 
@@ -203,7 +204,10 @@ fun Application.pleiepengesoknadapi() {
 //        )
 
         val vedleggService = VedleggService(
-            vedleggStorage = InMemoryVedleggStorage()
+            pleiepengerDokumentGateway = PleiepengerDokumentGateway(
+                httpClient = httpClient,
+                baseUrl = configuration.getPleiepengerDokumentUrl()
+            )
         )
 
         val sokerService =  SokerService(
@@ -254,10 +258,12 @@ fun Application.pleiepengesoknadapi() {
             )
 
             vedleggApis(
-                vedleggService = vedleggService
+                vedleggService = vedleggService,
+                idTokenProvider = idTokenProvider
             )
 
             soknadApis(
+                idTokenProvider = idTokenProvider,
                 validationHandler = validationHandler,
                 soknadService = SoknadService(
                     pleiepengesoknadProsesseringGateway = PleiepengesoknadProsesseringGateway(

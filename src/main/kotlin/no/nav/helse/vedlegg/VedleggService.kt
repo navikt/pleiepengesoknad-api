@@ -1,6 +1,11 @@
 package no.nav.helse.vedlegg
 
-import no.nav.helse.general.auth.Fodselsnummer
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import no.nav.helse.general.CallId
+import no.nav.helse.general.auth.IdToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -8,54 +13,87 @@ import java.net.URL
 private val logger: Logger = LoggerFactory.getLogger("nav.VedleggService")
 
 class VedleggService(
-    private val vedleggStorage: VedleggStorage
+    private val pleiepengerDokumentGateway: PleiepengerDokumentGateway
 ) {
-    fun lagreVedlegg(vedlegg: Vedlegg, fnr : Fodselsnummer) : VedleggId {
-        return vedleggStorage.lagreVedlegg(vedlegg)
+    suspend fun lagreVedlegg(
+        vedlegg: Vedlegg,
+        idToken: IdToken,
+        callId: CallId
+    ) : VedleggId {
+
+        return pleiepengerDokumentGateway.lagreVedlegg(
+            vedlegg = vedlegg,
+            idToken = idToken,
+            callId = callId
+        )
 
     }
-    fun hentVedlegg(vedleggId: VedleggId, fnr : Fodselsnummer) : Vedlegg? {
-        return vedleggStorage.hentVedlegg(vedleggId)
+
+    suspend fun hentVedlegg(
+        vedleggId: VedleggId,
+        idToken: IdToken,
+        callId: CallId
+    ) : Vedlegg? {
+
+        return pleiepengerDokumentGateway.hentVedlegg(
+            vedleggId = vedleggId,
+            idToken = idToken,
+            callId = callId
+        )
     }
 
-    fun hentVedlegg(
+    suspend fun hentVedlegg(
         vedleggUrls: List<URL>,
-        fnr: Fodselsnummer
+        idToken: IdToken,
+        callId: CallId
     ) : List<Vedlegg> {
-        val vedleggList = mutableListOf<Vedlegg>()
-        vedleggUrls.forEach {
-            val vedleggId = vedleggIdFromUrl(it)
-            val vedlegg = hentVedlegg(vedleggId = vedleggId, fnr = fnr)
-            if (vedlegg != null) {
-                vedleggList.add(vedlegg)
+        val vedlegg = coroutineScope {
+            val futures = mutableListOf<Deferred<Vedlegg?>>()
+            vedleggUrls.forEach {
+                futures.add(async { hentVedlegg(
+                    vedleggId = vedleggIdFromUrl(it),
+                    idToken = idToken,
+                    callId = callId
+                )})
+
             }
+            futures.awaitAll().filter { it != null }
         }
-        return vedleggList
+        return vedlegg.requireNoNulls()
     }
 
-    fun slettVedleg(
-        vedleggId : VedleggId,
-        fnr: Fodselsnummer
+    suspend fun slettVedleg(
+        vedleggId: VedleggId,
+        idToken: IdToken,
+        callId: CallId
     ) {
-        try { vedleggStorage.slettVedleg(vedleggId)} catch (cause: Throwable) {
-            logger.trace("Fikk ikke slettet vedlegg $vedleggId", cause)
-        }
+        pleiepengerDokumentGateway.slettVedlegg(
+            vedleggId = vedleggId,
+            idToken = idToken,
+            callId = callId
+        )
     }
 
-    fun slettVedleg(
+    suspend fun slettVedleg(
         vedleggUrls: List<URL>,
-        fnr: Fodselsnummer
+        idToken: IdToken,
+        callId: CallId
     ) {
-        vedleggUrls.forEach {
-            slettVedleg(
-                vedleggId = vedleggIdFromUrl(it),
-                fnr = fnr
-            )
+        coroutineScope {
+            val futures = mutableListOf<Deferred<Unit>>()
+            vedleggUrls.forEach {
+                futures.add(async { slettVedleg(
+                    vedleggId = vedleggIdFromUrl(it),
+                    idToken = idToken,
+                    callId = callId
+                )})
+
+            }
+            futures.awaitAll()
         }
     }
 
     private fun vedleggIdFromUrl(url: URL) : VedleggId {
-        val paths = url.path.split("/")
-        return VedleggId(paths[paths.size-1])
+        return VedleggId(url.path.substringAfterLast("/"))
     }
 }

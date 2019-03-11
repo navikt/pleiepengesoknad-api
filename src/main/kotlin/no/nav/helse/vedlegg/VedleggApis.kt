@@ -11,8 +11,9 @@ import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.routing.Route
-import no.nav.helse.general.auth.getFodselsnummer
+import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.error.DefaultError
+import no.nav.helse.general.getCallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -33,7 +34,10 @@ private val vedleggTooLargeType = URI.create("/errors/attachment-too-large")
 private const val vedleggTooLargeTitle = "Vedlegget var over maks tillatt størrelse på 8MB."
 
 @KtorExperimentalLocationsAPI
-fun Route.vedleggApis(vedleggService: VedleggService) {
+fun Route.vedleggApis(
+    vedleggService: VedleggService,
+    idTokenProvider: IdTokenProvider
+) {
 
     @Location("/vedlegg")
     class NyttVedleg
@@ -43,7 +47,13 @@ fun Route.vedleggApis(vedleggService: VedleggService) {
 
     get<EksisterendeVedlegg> { eksisterendeVedlegg ->
         val vedleggId = VedleggId(eksisterendeVedlegg.vedleggId)
-        val vedlegg = vedleggService.hentVedlegg(vedleggId, call.getFodselsnummer())
+        logger.info("Henter vedlegg")
+        logger.info("$vedleggId")
+        val vedlegg = vedleggService.hentVedlegg(
+            vedleggId = vedleggId,
+            idToken = idTokenProvider.getIdToken(call),
+            callId = call.getCallId()
+        )
 
         if (vedlegg == null) {
             call.respondVedleggNotFound(vedleggId)
@@ -57,11 +67,19 @@ fun Route.vedleggApis(vedleggService: VedleggService) {
     }
 
     delete<EksisterendeVedlegg> { eksisterendeVedlegg ->
-        vedleggService.slettVedleg(VedleggId(eksisterendeVedlegg.vedleggId), call.getFodselsnummer())
+        val vedleggId = VedleggId(eksisterendeVedlegg.vedleggId)
+        logger.info("Sletter vedlegg")
+        logger.info("$vedleggId")
+        vedleggService.slettVedleg(
+            vedleggId = vedleggId,
+            idToken = idTokenProvider.getIdToken(call),
+            callId = call.getCallId()
+        )
         call.respond(HttpStatusCode.NoContent)
     }
 
     post<NyttVedleg> { _ ->
+        logger.info("Lagrer vedlegg")
         if (!call.request.isFormMultipart()) {
             call.respondHasToBeMultiPart()
         } else {
@@ -74,7 +92,12 @@ fun Route.vedleggApis(vedleggService: VedleggService) {
                 if (vedlegg.content.size > MAX_VEDLEGG_SIZE) {
                     call.respondVedleggTooLarge()
                 } else {
-                    val vedleggId = vedleggService.lagreVedlegg(vedlegg, call.getFodselsnummer())
+                    val vedleggId = vedleggService.lagreVedlegg(
+                        vedlegg = vedlegg,
+                        idToken = idTokenProvider.getIdToken(call),
+                        callId = call.getCallId()
+                    )
+                    logger.info("$vedleggId")
                     call.respondVedlegg(vedleggId)
                 }
             }

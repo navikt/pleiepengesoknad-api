@@ -13,6 +13,7 @@ object TestConfiguration {
         sparkelUrl: String? = wireMockServer?.getSparkelUrl(),
         aktoerRegisterBaseUrl : String? = wireMockServer?.getAktoerRegisterUrl(),
         pleiepengesoknadProsesseringUrl : String? = wireMockServer?.getPleiepengesoknadProsesseringUrl(),
+        pleiepengerDokumentUrl : String? = wireMockServer?.getPleiepengerDokumentUrl(),
         corsAdresses : String = "http://localhost:8080",
         issuer : String = "iss-localhost",
         cookieName : String = "localhost-idtoken"
@@ -26,7 +27,8 @@ object TestConfiguration {
             Pair("nav.gateways.sparkel_url","$sparkelUrl"),
             Pair("nav.gateways.aktoer_register_url", "$aktoerRegisterBaseUrl"),
             Pair("nav.gateways.pleiepengesoknad_prosessering_base_url", "$pleiepengesoknadProsesseringUrl"),
-            Pair("nav.cors.addresses", corsAdresses)
+            Pair("nav.cors.addresses", corsAdresses),
+            Pair("nav.gateways.pleiepenger_dokument_url", "$pleiepengerDokumentUrl")
         )
     }
 

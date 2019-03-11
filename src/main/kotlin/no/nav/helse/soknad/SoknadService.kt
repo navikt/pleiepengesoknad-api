@@ -2,6 +2,7 @@ package no.nav.helse.soknad
 
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
+import no.nav.helse.general.auth.IdToken
 import no.nav.helse.soker.SokerService
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
@@ -18,6 +19,7 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
     suspend fun registrer(
         soknad: Soknad,
         fnr: Fodselsnummer,
+        idToken: IdToken,
         callId: CallId
     ) {
 
@@ -25,8 +27,9 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
         val soker = sokerService.getSoker(fnr = fnr, callId = callId)
         logger.trace("Søker hentet. Henter ${soknad.vedlegg.size} vedlegg")
         val vedlegg = vedleggService.hentVedlegg(
+            idToken = idToken,
             vedleggUrls = soknad.vedlegg,
-            fnr = fnr
+            callId = callId
         )
         logger.trace("Vedlegg hentet. Legger søknad til prosessering")
         if (soknad.vedlegg.size != vedlegg.size) {
@@ -54,7 +57,8 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
 
         vedleggService.slettVedleg(
             vedleggUrls = soknad.vedlegg,
-            fnr = fnr
+            callId = callId,
+            idToken = idToken
         )
 
         logger.trace("Vedlegg slettet.")

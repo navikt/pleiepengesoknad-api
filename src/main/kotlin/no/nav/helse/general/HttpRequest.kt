@@ -16,18 +16,20 @@ import java.net.URL
 private val log: Logger = LoggerFactory.getLogger("nav.HttpRequest")
 
 object HttpRequest {
-    suspend inline fun <reified T>monitored(
+    suspend inline fun <reified T> monitored(
         httpClient: HttpClient,
         httpRequest: HttpRequestBuilder,
         expectedStatusCodes : List<HttpStatusCode> = listOf(HttpStatusCode.OK),
         histogram: Histogram? = null) : T {
+
+        val receive = expectedStatusCodes.size == 1
         val builtHttpRequest =  httpRequest.build()
         var httpResponse : HttpResponse? = null
         try {
             httpResponse = httpClient.call(httpRequest).response
             if (expectedStatusCodes.contains(httpResponse.status)) {
                 try {
-                    return httpResponse.receive()
+                    return if (receive) httpResponse.receive() else httpResponse as T
                 } catch (cause: Throwable) {
                     throw HttpRequestException("Klarte ikke å mappe respons fra '${builtHttpRequest.method.value}@${builtHttpRequest.url}'. Mottok respons '${httpResponse.readText()}'", cause)
                 }
@@ -41,7 +43,7 @@ object HttpRequest {
         } finally {
             histogram?.startTimer()?.observeDuration()
             try {
-                httpResponse?.close()
+                if (receive) httpResponse?.close()
             } catch (ignore: Throwable) {}
         }
     }

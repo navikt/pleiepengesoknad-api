@@ -34,7 +34,8 @@ class ApplicationWithMocks {
                 tokenUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token",
                 aktoerRegisterBaseUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/aktoer-register",
                 sparkelUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/sparkel",
-                pleiepengesoknadProsesseringUrl = "http://localhost:8093"
+                pleiepengesoknadProsesseringUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/pleiepengesoknad-prosessering",
+                pleiepengerDokumentUrl = "https://pleiepenger-dokument.nais.oera-q.local"
             ))
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {

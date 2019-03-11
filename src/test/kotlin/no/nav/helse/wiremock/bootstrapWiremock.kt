@@ -17,6 +17,8 @@ private const val sparkelPath = "/sparkel-mock"
 private const val authorizationServerPath = "/authorization-server-mock/token"
 private const val aktoerRegisterServerPath = "/aktoer-register-mock"
 private const val pleiepengesoknadProsesseringPath = "/pleiepengesoknad-prosessering-mock"
+private const val pleiepengerDokumentPath = "/pleiepenger-dokument-mock"
+
 
 
 fun bootstrapWiremock(port: Int? = null,
@@ -25,6 +27,7 @@ fun bootstrapWiremock(port: Int? = null,
         .extensions(AuthMockJwtResponseTransformer())
         .extensions(AuthMockCookieResponseTransformer())
         .extensions(AktoerRegisterMockGetAktoerIdResponseTransformer())
+        .extensions(PleiepengerDokumentResponseTransformer())
 
     extensions.forEach {
         wireMockConfiguration.extensions(it)
@@ -59,6 +62,9 @@ fun bootstrapWiremock(port: Int? = null,
     // Pleiepengsoknad-prosessering
     stubLeggSoknadTilProsessering()
     stubReadiness(basePath = pleiepengesoknadProsesseringPath)
+
+    // Pleiepenger-dokument
+    stubPleiepengerDokument()
 
     logger.info("Mock available on '{}'", wireMockServer.baseUrl())
     return wireMockServer
@@ -126,6 +132,15 @@ private fun stubLeggSoknadTilProsessering() {
     )
 }
 
+private fun stubPleiepengerDokument() {
+    WireMock.stubFor(
+        WireMock.any(WireMock.urlMatching(".*$pleiepengerDokumentPath.*")).willReturn(
+            WireMock.aResponse()
+                .withTransformers("PleiepengerDokumentResponseTransformer")
+        )
+    )
+}
+
 fun WireMockServer.getJwksUri() : String {
     return baseUrl() + jwkSetPath
 }
@@ -144,4 +159,8 @@ fun WireMockServer.getAktoerRegisterUrl() : String {
 
 fun WireMockServer.getPleiepengesoknadProsesseringUrl() : String {
     return baseUrl() + pleiepengesoknadProsesseringPath
+}
+
+fun WireMockServer.getPleiepengerDokumentUrl() : String {
+    return baseUrl() + pleiepengerDokumentPath
 }

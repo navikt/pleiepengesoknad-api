@@ -7,6 +7,7 @@ import io.ktor.locations.Location
 import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.routing.Route
+import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.getFodselsnummer
 import no.nav.helse.general.getCallId
 import no.nav.helse.general.validation.ValidationHandler
@@ -18,7 +19,8 @@ private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 @KtorExperimentalLocationsAPI
 fun Route.soknadApis(
     validationHandler: ValidationHandler,
-    soknadService: SoknadService
+    soknadService: SoknadService,
+    idTokenProvider: IdTokenProvider
 ) {
 
     @Location("/soknad")
@@ -34,7 +36,8 @@ fun Route.soknadApis(
         soknadService.registrer(
             soknad = soknad,
             fnr = call.getFodselsnummer(),
-            callId = call.getCallId()
+            callId = call.getCallId(),
+            idToken = idTokenProvider.getIdToken(call)
         )
 
         logger.trace("Søknad registrert.")

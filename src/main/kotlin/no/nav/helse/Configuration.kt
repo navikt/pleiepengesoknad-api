@@ -124,6 +124,10 @@ data class Configuration(val config : ApplicationConfig) {
         return URL(getString("nav.gateways.aktoer_register_url"))
     }
 
+    fun getPleiepengerDokumentUrl(): URL {
+        return URL(getString("nav.gateways.pleiepenger_dokument_url"))
+    }
+
     fun getPleiepengesoknadProsesseringBaseUrl(): URL {
         return URL(getString("nav.gateways.pleiepengesoknad_prosessering_base_url"))
     }
