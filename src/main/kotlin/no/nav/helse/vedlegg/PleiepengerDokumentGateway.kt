@@ -27,7 +27,7 @@ class PleiepengerDokumentGateway(
 
     private val url = HttpRequest.buildURL(
         baseUrl = baseUrl,
-        pathParts = listOf("v1", "dokment")
+        pathParts = listOf("v1", "dokument")
     )
 
     suspend fun hentVedlegg(
