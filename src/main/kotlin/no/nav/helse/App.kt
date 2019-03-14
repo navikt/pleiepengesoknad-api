@@ -24,7 +24,6 @@ import io.ktor.request.header
 import io.ktor.request.path
 import io.ktor.response.header
 import io.ktor.routing.Routing
-import io.ktor.routing.contentType
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
@@ -195,13 +194,6 @@ fun Application.pleiepengesoknadapi() {
                 apiGatewayApiKey = apiGatewayApiKey
             )
         )
-
-//        val soknadKafkaProducer = SoknadKafkaProducer(
-//            bootstrapServers = configuration.getKafkaBootstrapServers(),
-//            username = configuration.getKafkaUsername(),
-//            password = configuration.getKafkaPassword(),
-//            objectMapper = objectMapper
-//        )
 
         val vedleggService = VedleggService(
             pleiepengerDokumentGateway = PleiepengerDokumentGateway(

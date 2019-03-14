@@ -105,9 +105,7 @@ class ApplicationTest {
     @Test
     fun sendSoknadTests() {
         val cookie = getAuthCookie(fnr)
-        //testAtDetLiggerMeldingPaaKoen(antallMeldinger = 0, kafkaEnvironment = kafkaEnvironment)
         gyldigSoknad(engine, cookie)
-        //testAtDetLiggerMeldingPaaKoen(antallMeldinger = 1, kafkaEnvironment = kafkaEnvironment)
         obligatoriskeFelterIkkeSatt(engine, cookie)
         ugyldigInformasjonOmBarn(engine, cookie)
     }

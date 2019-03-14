@@ -89,18 +89,6 @@ data class Configuration(val config : ApplicationConfig) {
         return HttpRequest.buildURL(baseUrl = getSparkelUrl(), pathParts = listOf("isready"))
     }
 
-    fun getKafkaBootstrapServers() : String {
-        return getString("nav.kafka.bootstrap_servers")
-    }
-
-    fun getKafkaUsername() : String {
-        return getString("nav.kafka.username")
-    }
-
-    fun getKafkaPassword() : String {
-        return getString(key = "nav.kafka.password", secret = true)
-    }
-
     fun getServiceAccountClientId(): String {
         return getString("nav.authorization.service_account.client_id")
     }

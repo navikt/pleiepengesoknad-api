@@ -6,7 +6,6 @@ val ktorVersion = "1.1.2"
 val jacksonVersion = "2.9.8"
 val wiremockVersion = "2.19.0"
 val logstashLogbackVersion = "5.3"
-val kafkaVersion = "2.0.1"
 val prometheusVersion = "0.6.0"
 val hibernateVersion = "6.0.15.Final"
 
@@ -61,8 +60,6 @@ dependencies {
     compile ("javax.el:javax.el-api:3.0.1-b06")
     compile ("org.glassfish.web:javax.el:2.2.6")
 
-    // Kafka
-    compile("org.apache.kafka:kafka-clients:$kafkaVersion")
 
     // Test
     testCompile ("com.github.tomakehurst:wiremock:$wiremockVersion")
@@ -71,7 +68,6 @@ dependencies {
     }
 
     testCompile ("com.nimbusds:oauth2-oidc-sdk:5.56")
-    testImplementation("no.nav:kafka-embedded-env:2.0.1")
     testImplementation("org.everit.json:org.everit.json.schema:1.3.0")
 
 }
