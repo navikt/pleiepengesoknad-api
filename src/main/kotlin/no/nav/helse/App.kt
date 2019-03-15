@@ -174,6 +174,9 @@ fun Application.pleiepengesoknadapi() {
 
     install(MonitorReceivedHttpRequestsFeature) {
         app = APP
+        overridePaths = mapOf(
+            Pair(Regex("/vedlegg/.+"), "/vedlegg")
+        )
     }
 
     install(Routing) {

@@ -5,6 +5,7 @@ import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.ApplicationFeature
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
+import io.ktor.request.ApplicationRequest
 import io.ktor.request.httpMethod
 import io.ktor.request.path
 import io.ktor.util.AttributeKey
@@ -40,11 +41,16 @@ class MonitorReceivedHttpRequestsFeature (
     class Configuration {
         var app : String? = null
         var skipPaths : List<String> = listOf("/isready", "/isalive", "/metrics", "/health")
+        var overridePaths : Map<Regex, String> = mapOf()
     }
 
     private suspend fun intercept(context: PipelineContext<Unit, ApplicationCall>) {
         val verb = context.context.request.httpMethod.value
-        val path = context.context.request.path()
+        val path = getPath(context.context.request)
+
+        configure.overridePaths.forEach {
+            path.matches(it.key)
+        }
 
         if (!configure.skipPaths.contains(path)) {
             try {
@@ -64,6 +70,16 @@ class MonitorReceivedHttpRequestsFeature (
         } else {
             context.proceed()
         }
+    }
+
+    private fun getPath(request: ApplicationRequest) : String {
+        val path = request.path()
+        configure.overridePaths.forEach {
+            if (path.matches(it.key)) {
+                return it.value
+            }
+        }
+        return path
     }
 
     companion object Feature :
