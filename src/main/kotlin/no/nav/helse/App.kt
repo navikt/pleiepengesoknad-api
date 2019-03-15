@@ -63,6 +63,7 @@ import javax.validation.Validation
 import javax.validation.Validator
 
 private const val GENERATED_REQUEST_ID_PREFIX = "generated-"
+private const val APP = "pleiepengesoknad-api"
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
 
@@ -170,6 +171,10 @@ fun Application.pleiepengesoknadapi() {
     }
 
     install(Locations)
+
+    install(MonitorReceivedHttpRequestsFeature) {
+        app = APP
+    }
 
     install(Routing) {
 
