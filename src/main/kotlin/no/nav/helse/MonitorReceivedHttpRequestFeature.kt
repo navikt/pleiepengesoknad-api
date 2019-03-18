@@ -8,6 +8,7 @@ import io.ktor.http.isSuccess
 import io.ktor.request.ApplicationRequest
 import io.ktor.request.httpMethod
 import io.ktor.request.path
+import io.ktor.response.ApplicationSendPipeline
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.Counter
@@ -44,7 +45,7 @@ class MonitorReceivedHttpRequestsFeature (
         var overridePaths : Map<Regex, String> = mapOf()
     }
 
-    private suspend fun intercept(context: PipelineContext<Unit, ApplicationCall>) {
+    private suspend fun interceptRequest(context: PipelineContext<Unit, ApplicationCall>) {
         val verb = context.context.request.httpMethod.value
         val path = getPath(context.context.request)
 
@@ -53,22 +54,29 @@ class MonitorReceivedHttpRequestsFeature (
         }
 
         if (!configure.skipPaths.contains(path)) {
-            try {
-                histogram.labels(configure.app, verb, path).startTimer().use {
-                    context.proceed()
-                }
-            } finally {
-                val httpStatusCode = (context.context.response.status() ?: HttpStatusCode.InternalServerError)
-                val httpStatusCodeString = httpStatusCode.value.toString()
-                val family = "${httpStatusCodeString[0]}xx"
-                val success = if (httpStatusCode.isSuccess()) "success" else "failure"
-
-                counter.labels(configure.app, verb, path, httpStatusCodeString).inc()
-                counter.labels(configure.app, verb, path, family).inc()
-                counter.labels(configure.app, verb, path, success).inc()
+            histogram.labels(configure.app, verb, path).startTimer().use {
+                context.proceed()
             }
         } else {
             context.proceed()
+        }
+    }
+
+    private suspend fun interceptResponse(context: PipelineContext<Any, ApplicationCall>) {
+        val verb = context.context.request.httpMethod.value
+        val path = getPath(context.context.request)
+
+        try {
+            context.proceed()
+        } finally {
+            val httpStatusCode = (context.context.response.status() ?: HttpStatusCode.InternalServerError)
+            val httpStatusCodeString = httpStatusCode.value.toString()
+            val family = "${httpStatusCodeString[0]}xx"
+            val success = if (httpStatusCode.isSuccess()) "success" else "failure"
+
+            counter.labels(configure.app, verb, path, httpStatusCodeString).inc()
+            counter.labels(configure.app, verb, path, family).inc()
+            counter.labels(configure.app, verb, path, success).inc()
         }
     }
 
@@ -90,9 +98,16 @@ class MonitorReceivedHttpRequestsFeature (
                 Configuration().apply(configure)
             )
 
-            pipeline.intercept(ApplicationCallPipeline.Call) {
-                result.intercept(this)
+            pipeline.intercept(ApplicationCallPipeline.Monitoring) {
+                result.interceptRequest(this)
             }
+
+
+            pipeline.sendPipeline.intercept(ApplicationSendPipeline.After) {
+                result.interceptResponse(this)
+            }
+
+
             return result
         }
 
