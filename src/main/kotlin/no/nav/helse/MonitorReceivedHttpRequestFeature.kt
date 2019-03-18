@@ -58,7 +58,7 @@ class MonitorReceivedHttpRequestsFeature (
                     context.proceed()
                 }
             } finally {
-                val httpStatusCode = (context.context.response.status() ?: HttpStatusCode.OK)
+                val httpStatusCode = (context.context.response.status() ?: HttpStatusCode.InternalServerError)
                 val httpStatusCodeString = httpStatusCode.value.toString()
                 val family = "${httpStatusCodeString[0]}xx"
                 val success = if (httpStatusCode.isSuccess()) "success" else "failure"
