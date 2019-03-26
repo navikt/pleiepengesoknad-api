@@ -14,10 +14,13 @@ import no.nav.helse.general.*
 import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.systembruker.SystemBrukerTokenService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+private val logger: Logger = LoggerFactory.getLogger("nav.ArbeidsgiverGateway")
 private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
 
 private val ansettelsesforholdOppslagHistogram = Histogram.build(
@@ -38,7 +41,10 @@ class ArbeidsgiverGateway(
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
     ) : List<Arbeidsgiver> {
-        val sparkelResponse = request(fnr, callId, fraOgMed, tilOgMed)
+        val sparkelResponse = try { request(fnr, callId, fraOgMed, tilOgMed) } catch (cause: Throwable) {
+            logger.error("Feil ved oppslag på arbeidsgivere. Returnerer tom liste med arbeidsgivere.", cause)
+            SparkelResponse(arbeidsgivere = setOf())
+        }
         val ansettelsesforhold = mutableListOf<Arbeidsgiver>()
 
         sparkelResponse.arbeidsgivere.forEach {arbeidsforhold ->
