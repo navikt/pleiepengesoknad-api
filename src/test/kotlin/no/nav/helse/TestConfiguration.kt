@@ -16,9 +16,12 @@ object TestConfiguration {
         pleiepengerDokumentUrl : String? = wireMockServer?.getPleiepengerDokumentUrl(),
         corsAdresses : String = "http://localhost:8080",
         issuer : String = "iss-localhost",
-        cookieName : String = "localhost-idtoken"
-    ) : Map<String, String>{
-        return mapOf(
+        cookieName : String = "localhost-idtoken",
+        apiGatewayKey : String? = "foo",
+        clientSecret : String? = "bar"
+    ) : Map<String, String> {
+
+        val map = mutableMapOf(
             Pair("ktor.deployment.port","$port"),
             Pair("nav.authorization.token_url","$tokenUrl"),
             Pair("nav.authorization.issuer", issuer),
@@ -30,6 +33,11 @@ object TestConfiguration {
             Pair("nav.cors.addresses", corsAdresses),
             Pair("nav.gateways.pleiepenger_dokument_url", "$pleiepengerDokumentUrl")
         )
+
+        if (apiGatewayKey != null) map["nav.authorization.api_gateway.api_key"] = apiGatewayKey
+        if (clientSecret != null) map["nav.authorization.service_account.client_secret"] = clientSecret
+
+        return map.toMap()
     }
 
     fun asArray(map : Map<String, String>) : Array<String>  {

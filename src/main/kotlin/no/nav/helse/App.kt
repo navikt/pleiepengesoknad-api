@@ -1,6 +1,7 @@
 package no.nav.helse
 
 import com.auth0.jwk.JwkProviderBuilder
+import com.fasterxml.jackson.databind.DeserializationFeature
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
@@ -14,17 +15,12 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
 import io.ktor.features.*
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
-import io.ktor.request.header
-import io.ktor.request.path
-import io.ktor.response.header
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
-import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.helse.aktoer.AktoerGateway
 import no.nav.helse.aktoer.AktoerService
@@ -32,17 +28,18 @@ import no.nav.helse.arbeidsgiver.ArbeidsgiverGateway
 import no.nav.helse.arbeidsgiver.ArbeidsgiverService
 import no.nav.helse.arbeidsgiver.arbeidsgiverApis
 import no.nav.helse.barn.barnApis
-import no.nav.helse.general.auth.IdTokenProvider
-import no.nav.helse.general.auth.InsufficientAuthenticationLevelException
-import no.nav.helse.general.auth.authorizationStatusPages
-import no.nav.helse.general.auth.jwtFromCookie
+import no.nav.helse.dusseldorf.ktor.client.*
+import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.dusseldorf.ktor.health.HealthRoute
+import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
+import no.nav.helse.dusseldorf.ktor.metrics.CallMonitoring
+import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
+import no.nav.helse.general.auth.*
 import no.nav.helse.general.error.defaultStatusPages
 import no.nav.helse.general.error.initializeErrorCounter
 import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.general.validation.ValidationHandler
 import no.nav.helse.general.validation.validationStatusPages
-import no.nav.helse.monitorering.MONITORING_PATHS
-import no.nav.helse.monitorering.monitoreringApis
 import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
@@ -52,28 +49,22 @@ import no.nav.helse.soknad.soknadApis
 import no.nav.helse.systembruker.SystemBrukerTokenGateway
 import no.nav.helse.systembruker.SystemBrukerTokenService
 import no.nav.helse.vedlegg.*
-import org.apache.http.impl.conn.SystemDefaultRoutePlanner
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder
-import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
-import java.net.ProxySelector
-import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.validation.Validation
 import javax.validation.Validator
-
-private const val GENERATED_REQUEST_ID_PREFIX = "generated-"
-private const val APP = "pleiepengesoknad-api"
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
 
 @KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 fun Application.pleiepengesoknadapi() {
-
-    val collectorRegistry = CollectorRegistry.defaultRegistry
+    val appId = environment.config.id()
+    logProxyProperties()
     DefaultExports.initialize()
 
     val configuration = Configuration(environment.config)
+    val apiGatewayApiKey = configuration.getApiGatewayApiKey()
+
     val objectMapper = configureObjectMapper()
     val validator : Validator = Validation.buildDefaultValidatorFactory().validator
     val validationHandler = ValidationHandler(validator, objectMapper)
@@ -99,27 +90,9 @@ fun Application.pleiepengesoknadapi() {
         }
     }
 
-    configuration.logIndirectlyUsedConfiguration()
-
     install(ContentNegotiation) {
         jackson {
-            configureObjectMapper(this)
-        }
-    }
-
-    install(CallId) {
-        generate { UUID.randomUUID().toString() } // CorrelationID skal oppstå i API'et.
-    }
-
-    install(CallLogging) {
-        level = Level.INFO
-        filter { call -> !MONITORING_PATHS.contains(call.request.path()) }
-        callIdMdc("correlation_id")
-
-        mdc("request_id") { call -> // Request ID kan sendes inn fra clienten
-            val requestId = call.request.header(HttpHeaders.XRequestId)?.removePrefix(GENERATED_REQUEST_ID_PREFIX) ?: "$GENERATED_REQUEST_ID_PREFIX${UUID.randomUUID()}"
-            call.response.header(HttpHeaders.XRequestId, requestId)
-            requestId
+            dusseldorfConfigured()
         }
     }
 
@@ -137,13 +110,13 @@ fun Application.pleiepengesoknadapi() {
     }
 
     val idTokenProvider = IdTokenProvider(cookieName = configuration.getCookieName())
+    val jwkProvider = JwkProviderBuilder(configuration.getJwksUrl())
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
 
     install(Authentication) {
         jwtFromCookie {
-            val jwkProvider = JwkProviderBuilder(configuration.getJwksUrl())
-                .cached(configuration.getJwkCacheSize(), configuration.getJwkCacheExpiryDuration(), configuration.getJwkCacheExpiryTimeUnit())
-                .rateLimited(configuration.getJwsJwkRateLimitBucketSize(), configuration.getJwkRateLimitRefillRate(), configuration.getJwkRateLimitRefillTimeUnit())
-                .build()
             verifier(jwkProvider, configuration.getIssuer())
             validate { credentials ->
                 val acr = credentials.payload.getClaim("acr").asString()
@@ -167,16 +140,44 @@ fun Application.pleiepengesoknadapi() {
 
     install(Locations)
 
-    install(MonitorReceivedHttpRequestsFeature) {
-        app = APP
+    install(CallMonitoring) {
+        app = appId
         overridePaths = mapOf(
             Pair(Regex("/vedlegg/.+"), "/vedlegg")
         )
     }
 
+    val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
+
+    val systemCredentialsProvider = Oauth2ClientCredentialsProvider(
+        monitoredHttpClient = MonitoredHttpClient(
+            source = appId,
+            destination = "nais-sts",
+            httpClient = HttpClient(Apache) {
+                install(JsonFeature) {
+                    serializer = JacksonSerializer {
+                        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    }
+                }
+                install (Logging) {
+                    sl4jLogger("nais-sts")
+                }
+                engine {
+                    customizeClient {
+                        setProxyRoutePlanner()
+                        addInterceptorLast(apiGatewayHttpRequestInterceptor)
+                    }
+                }
+            }
+        ),
+        tokenUrl = configuration.getAuthorizationServerTokenUrl(),
+        clientId = configuration.getServiceAccountClientId(),
+        clientSecret = configuration.getServiceAccountClientSecret(),
+        scopes = configuration.getServiceAccountScopes()
+    )
+
     install(Routing) {
 
-        val apiGatewayApiKey = configuration.getApiGatewayApiKey()
 
         val systemBrukerTokenService = SystemBrukerTokenService(
             SystemBrukerTokenGateway(
@@ -213,23 +214,6 @@ fun Application.pleiepengesoknadapi() {
                 apiGatewayApiKey = apiGatewayApiKey,
                 systemBrukerTokenService = systemBrukerTokenService
             )
-        )
-
-        monitoreringApis(
-            collectorRegistry = collectorRegistry,
-            readiness = listOf(
-                systemBrukerTokenService
-            ),
-            pingUrls = listOf(
-                configuration.getJwksUrl()
-            ),
-            apiGatewayPingUrls = listOf(
-                configuration.getSparkelReadinessUrl(),
-                configuration.getAktoerRegisterReadinessUrl(),
-                configuration.getPleiepengesoknadProsesserinReadinessUrl()
-            ),
-            apiGatewayApiKey = apiGatewayApiKey,
-            httpClient = pinghHttpClient
         )
 
         authenticate {
@@ -272,9 +256,22 @@ fun Application.pleiepengesoknadapi() {
                 )
             )
         }
-    }
-}
 
-private fun HttpAsyncClientBuilder.setProxyRoutePlanner() {
-    setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault()))
+        DefaultProbeRoutes()
+        MetricsRoute()
+        HealthRoute(
+            healthChecks = setOf(
+                SystemCredentialsProviderHealthCheck(systemCredentialsProvider)
+            )
+        )
+    }
+
+    install(CallId) {
+        generated()
+    }
+
+    install(CallLogging) {
+        correlationIdAndRequestIdInMdc()
+        logRequests()
+    }
 }

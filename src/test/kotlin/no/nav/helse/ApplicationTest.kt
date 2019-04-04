@@ -129,10 +129,19 @@ class ApplicationTest {
     }
 
     @Test
-    fun testDeepIsReadyReturnsOk() {
+    fun `test isready, isalive, health og metrics`() {
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/isready-deep")) {
+            handleRequest(HttpMethod.Get, "/isready") {}.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
+                handleRequest(HttpMethod.Get, "/isalive") {}.apply {
+                    assertEquals(HttpStatusCode.OK, response.status())
+                    handleRequest(HttpMethod.Get, "/metrics") {}.apply {
+                        assertEquals(HttpStatusCode.OK, response.status())
+                        handleRequest(HttpMethod.Get, "/health") {}.apply {
+                            assertEquals(HttpStatusCode.OK, response.status())
+                        }
+                    }
+                }
             }
         }
     }

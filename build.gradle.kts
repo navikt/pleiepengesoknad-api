@@ -27,6 +27,8 @@ dependencies {
     compile ( "no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
 
     compile("io.ktor:ktor-auth-jwt:$ktorVersion")
+    compile("io.ktor:ktor-locations:$ktorVersion")
+
 
     // Client
     compile ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")

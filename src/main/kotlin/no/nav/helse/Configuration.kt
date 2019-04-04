@@ -2,150 +2,74 @@ package no.nav.helse
 
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.helse.general.HttpRequest
+import no.nav.helse.dusseldorf.ktor.core.getOptionalList
+import no.nav.helse.dusseldorf.ktor.core.getRequiredString
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.net.URI
 import java.net.URL
-import java.util.concurrent.TimeUnit
-
-private val logger: Logger = LoggerFactory.getLogger("nav.Configuration")
 
 @KtorExperimentalAPI
 data class Configuration(val config : ApplicationConfig) {
-
-    private fun getString(key: String,
-                          secret: Boolean = false) : String  {
-        val stringValue = config.property(key).getString()
-        logger.info("{}={}", key, if (secret) "***" else stringValue)
-        return stringValue
-    }
-
-    private fun <T>getListFromCsv(key: String,
-                                  builder: (value: String) -> T) : List<T> {
-        val csv = getString(key)
-        val list = csv.replace(" ", "").split(",")
-        val builtList = mutableListOf<T>()
-        list.forEach { entry ->
-            logger.info("$key entry = $entry")
-            builtList.add(builder(entry))
-        }
-        return builtList.toList()
-
-    }
-
-
     fun getJwksUrl() : URL {
-        return URL(getString("nav.authorization.jwks_uri"))
+        return URL(config.getRequiredString("nav.authorization.jwks_uri", secret = false))
     }
 
     fun getIssuer() : String {
-        return getString("nav.authorization.issuer")
+        return config.getRequiredString("nav.authorization.issuer", secret = false)
     }
 
     fun getCookieName() : String {
-        return getString("nav.authorization.cookie_name")
-    }
-
-    fun getJwkCacheSize() : Long {
-        return getString("nav.authorization.jwk_cache.size").toLong()
-    }
-
-    fun getJwkCacheExpiryDuration() : Long {
-        return getString("nav.authorization.jwk_cache.expiry_duration").toLong()
-    }
-
-    fun getJwkCacheExpiryTimeUnit() : TimeUnit {
-        return TimeUnit.valueOf(getString("nav.authorization.jwk_cache.expiry_time_unit"))
-    }
-
-    fun getJwsJwkRateLimitBucketSize() : Long {
-        return getString("nav.authorization.jwk_rate_limit.bucket_size").toLong()
-    }
-
-    fun getJwkRateLimitRefillRate() : Long {
-        return getString("nav.authorization.jwk_rate_limit.refill_rate").toLong()
-    }
-
-    fun getJwkRateLimitRefillTimeUnit() : TimeUnit {
-        return TimeUnit.valueOf(getString("nav.authorization.jwk_rate_limit.refill_time_unit"))
+        return config.getRequiredString("nav.authorization.cookie_name", secret = false)
     }
 
     fun getWhitelistedCorsAddreses() : List<URI> {
-        return getListFromCsv(
+        return config.getOptionalList(
             key = "nav.cors.addresses",
             builder = { value ->
                 URI.create(value)
-            }
+            },
+            secret = false
         )
     }
 
     fun getSparkelUrl() : URL {
-        return URL(getString("nav.gateways.sparkel_url"))
-    }
-
-    fun getSparkelReadinessUrl() : URL {
-        return HttpRequest.buildURL(baseUrl = getSparkelUrl(), pathParts = listOf("isready"))
+        return URL(config.getRequiredString("nav.gateways.sparkel_url", secret = false))
     }
 
     fun getServiceAccountClientId(): String {
-        return getString("nav.authorization.service_account.client_id")
+        return config.getRequiredString("nav.authorization.service_account.client_id", secret = false)
     }
 
     fun getServiceAccountClientSecret(): String {
-        return getString(key = "nav.authorization.service_account.client_secret", secret = true)
+        return config.getRequiredString("nav.authorization.service_account.client_secret", secret = true)
     }
 
     fun getServiceAccountScopes(): List<String> {
-        return getListFromCsv(
-                key = "nav.authorization.service_account.scopes",
-                builder = { value -> value}
+        return config.getOptionalList(
+            key = "nav.authorization.service_account.scopes",
+            builder = { value -> value },
+            secret = false
         )
     }
 
     fun getAuthorizationServerTokenUrl(): URL {
-        return URL(getString("nav.authorization.token_url"))
+        return URL(config.getRequiredString("nav.authorization.token_url", secret = false))
     }
 
     fun getAktoerRegisterUrl(): URL {
-        return URL(getString("nav.gateways.aktoer_register_url"))
+        return URL(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))
     }
 
     fun getPleiepengerDokumentUrl(): URL {
-        return URL(getString("nav.gateways.pleiepenger_dokument_url"))
+        return URL(config.getRequiredString("nav.gateways.pleiepenger_dokument_url", secret = false))
     }
 
     fun getPleiepengesoknadProsesseringBaseUrl(): URL {
-        return URL(getString("nav.gateways.pleiepengesoknad_prosessering_base_url"))
-    }
-
-    fun getPleiepengesoknadProsesserinReadinessUrl(): URL {
-        return HttpRequest.buildURL(baseUrl = getPleiepengesoknadProsesseringBaseUrl(), pathParts = listOf("isready"))
-    }
-
-    fun getAktoerRegisterReadinessUrl(): URL {
-        return HttpRequest.buildURL(baseUrl = getAktoerRegisterUrl(), pathParts = listOf("internal","isAlive"))
+        return URL(config.getRequiredString("nav.gateways.pleiepengesoknad_prosessering_base_url", secret = false))
     }
 
     fun getApiGatewayApiKey() : ApiGatewayApiKey {
-        val apiKey = getString(key = "nav.authorization.api_gateway.api_key", secret = true)
+        val apiKey = config.getRequiredString(key = "nav.authorization.api_gateway.api_key", secret = true)
         return ApiGatewayApiKey(value = apiKey)
-    }
-
-    fun logIndirectlyUsedConfiguration() {
-        logger.info("# Indirectly used configuration")
-        val properties = System.getProperties()
-        logger.info("## System Properties")
-        properties.forEach { key, value ->
-            if (key is String && (key.startsWith(prefix = "http", ignoreCase = true) || key.startsWith(prefix = "https", ignoreCase = true))) {
-                    logger.info("$key=$value")
-            }
-        }
-        logger.info("## Environment variables")
-        val environmentVariables = System.getenv()
-        logger.info("HTTP_PROXY=${environmentVariables["HTTP_PROXY"]}")
-        logger.info("HTTPS_PROXY=${environmentVariables["HTTPS_PROXY"]}")
-        logger.info("NO_PROXY=${environmentVariables["NO_PROXY"]}")
     }
 }
