@@ -12,7 +12,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logging
 import io.ktor.features.*
 import io.ktor.http.HttpMethod
@@ -63,7 +62,6 @@ fun Application.pleiepengesoknadapi() {
     val configuration = Configuration(environment.config)
     val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
 
-
     val objectMapper = configureObjectMapper()
     val validator : Validator = Validation.buildDefaultValidatorFactory().validator
     val validationHandler = ValidationHandler(validator, objectMapper)
@@ -75,21 +73,13 @@ fun Application.pleiepengesoknadapi() {
                 configureObjectMapper(this)
             }
         }
-        engine { customizeClient {
-            setProxyRoutePlanner()
-            addInterceptorLast(apiGatewayHttpRequestInterceptor)
-        } }
-
-    }
-    val pinghHttpClient= HttpClient(Apache) {
         engine {
-            socketTimeout = 1_000  // Max time between TCP packets - default 10 seconds
-            connectTimeout = 1_000 // Max time to establish an HTTP connection - default 10 seconds
-            customizeClient { setProxyRoutePlanner() }
+            customizeClient {
+                setProxyRoutePlanner()
+                addInterceptorLast(apiGatewayHttpRequestInterceptor)
+            }
         }
-        install(Logging) {
-            level = LogLevel.BODY
-        }
+
     }
 
     install(ContentNegotiation) {
