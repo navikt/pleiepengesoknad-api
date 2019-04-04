@@ -1,10 +1,12 @@
 package no.nav.helse.wiremock
 
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.matching.AnythingPattern
 
 fun stubSparkelGetArbeidsgivere() {
     WireMock.stubFor(
         WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/arbeidsgivere/.*"))
+            .withHeader("x-nav-apiKey", AnythingPattern())
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)

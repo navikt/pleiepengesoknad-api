@@ -4,8 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.extension.Extension
-import com.github.tomakehurst.wiremock.matching.ContainsPattern
-import com.github.tomakehurst.wiremock.matching.StringValuePattern
+import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import no.nav.helse.ApplicationWithMocks
 import no.nav.security.oidc.test.support.JwkGenerator
 import org.slf4j.Logger
@@ -102,7 +101,9 @@ private fun authMockJwkSet() {
 
 private fun aktoerRegisterGetAktoerId() {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching("$aktoerRegisterServerPath/.*")).willReturn(
+        WireMock.get(WireMock.urlPathMatching("$aktoerRegisterServerPath/.*"))
+            .withHeader("x-nav-apiKey", AnythingPattern())
+            .willReturn(
             WireMock.aResponse()
                 .withHeader("Content-Type", "application/json")
                 .withStatus(200)
@@ -125,6 +126,7 @@ private fun stubReadiness(basePath: String,
 private fun stubLeggSoknadTilProsessering() {
     WireMock.stubFor(
         WireMock.post(WireMock.urlMatching(".*$pleiepengesoknadProsesseringPath/v1/soknad"))
+            .withHeader("x-nav-apiKey", AnythingPattern())
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(202)
@@ -134,7 +136,9 @@ private fun stubLeggSoknadTilProsessering() {
 
 private fun stubPleiepengerDokument() {
     WireMock.stubFor(
-        WireMock.any(WireMock.urlMatching(".*$pleiepengerDokumentPath.*")).willReturn(
+        WireMock.any(WireMock.urlMatching(".*$pleiepengerDokumentPath.*"))
+            .withHeader("x-nav-apiKey", AnythingPattern())
+            .willReturn(
             WireMock.aResponse()
                 .withTransformers("PleiepengerDokumentResponseTransformer")
         )

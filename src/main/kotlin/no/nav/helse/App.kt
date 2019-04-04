@@ -64,6 +64,8 @@ fun Application.pleiepengesoknadapi() {
 
     val configuration = Configuration(environment.config)
     val apiGatewayApiKey = configuration.getApiGatewayApiKey()
+    val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
+
 
     val objectMapper = configureObjectMapper()
     val validator : Validator = Validation.buildDefaultValidatorFactory().validator
@@ -76,7 +78,10 @@ fun Application.pleiepengesoknadapi() {
                 configureObjectMapper(this)
             }
         }
-        engine { customizeClient { setProxyRoutePlanner() } }
+        engine { customizeClient {
+            setProxyRoutePlanner()
+            addInterceptorLast(apiGatewayHttpRequestInterceptor)
+        } }
 
     }
     val pinghHttpClient= HttpClient(Apache) {
@@ -146,8 +151,6 @@ fun Application.pleiepengesoknadapi() {
             Pair(Regex("/vedlegg/.+"), "/vedlegg")
         )
     }
-
-    val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
 
     val systemCredentialsProvider = Oauth2ClientCredentialsProvider(
         monitoredHttpClient = MonitoredHttpClient(
