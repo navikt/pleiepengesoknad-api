@@ -46,8 +46,6 @@ import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.PleiepengesoknadProsesseringGateway
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
-import no.nav.helse.systembruker.SystemBrukerTokenGateway
-import no.nav.helse.systembruker.SystemBrukerTokenService
 import no.nav.helse.vedlegg.*
 import java.util.concurrent.TimeUnit
 import javax.validation.Validation
@@ -63,7 +61,6 @@ fun Application.pleiepengesoknadapi() {
     DefaultExports.initialize()
 
     val configuration = Configuration(environment.config)
-    val apiGatewayApiKey = configuration.getApiGatewayApiKey()
     val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
 
 
@@ -181,24 +178,11 @@ fun Application.pleiepengesoknadapi() {
 
     install(Routing) {
 
-
-        val systemBrukerTokenService = SystemBrukerTokenService(
-            SystemBrukerTokenGateway(
-                clientId = configuration.getServiceAccountClientId(),
-                clientSecret = configuration.getServiceAccountClientSecret(),
-                scopes = configuration.getServiceAccountScopes(),
-                baseUrl = configuration.getAuthorizationServerTokenUrl(),
-                httpClient = httpClient,
-                apiGatewayApiKey = apiGatewayApiKey
-            )
-        )
-
         val aktoerService = AktoerService(
             aktoerGateway = AktoerGateway(
                 httpClient = httpClient,
                 baseUrl = configuration.getAktoerRegisterUrl(),
-                systemBrukerTokenService = systemBrukerTokenService,
-                apiGatewayApiKey = apiGatewayApiKey
+                systemCredentialsProvider = systemCredentialsProvider
             )
         )
 
@@ -214,8 +198,7 @@ fun Application.pleiepengesoknadapi() {
                 httpClient = httpClient,
                 baseUrl = configuration.getSparkelUrl(),
                 aktoerService = aktoerService,
-                apiGatewayApiKey = apiGatewayApiKey,
-                systemBrukerTokenService = systemBrukerTokenService
+                systemCredentialsProvider = systemCredentialsProvider
             )
         )
 
@@ -233,8 +216,7 @@ fun Application.pleiepengesoknadapi() {
                         httpClient = httpClient,
                         aktoerService = aktoerService,
                         baseUrl = configuration.getSparkelUrl(),
-                        systemBrukerTokenService = systemBrukerTokenService,
-                        apiGatewayApiKey = apiGatewayApiKey
+                        systemCredentialsProvider = systemCredentialsProvider
                     )
                 )
             )
@@ -250,9 +232,8 @@ fun Application.pleiepengesoknadapi() {
                 soknadService = SoknadService(
                     pleiepengesoknadProsesseringGateway = PleiepengesoknadProsesseringGateway(
                         httpClient = httpClient,
-                        systemBrukerTokenService = systemBrukerTokenService,
                         baseUrl = configuration.getPleiepengesoknadProsesseringBaseUrl(),
-                        apiGatewayApiKey = apiGatewayApiKey
+                        systemCredentialsProvider = systemCredentialsProvider
                     ),
                     sokerService = sokerService,
                     vedleggService = vedleggService

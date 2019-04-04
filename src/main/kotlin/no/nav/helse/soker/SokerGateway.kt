@@ -10,10 +10,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.prometheus.client.Histogram
 import no.nav.helse.aktoer.AktoerService
+import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.general.*
-import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.systembruker.SystemBrukerTokenService
 import java.net.URL
 
 private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
@@ -27,8 +26,7 @@ class SokerGateway(
     private val httpClient: HttpClient,
     private val baseUrl: URL,
     private val aktoerService: AktoerService,
-    private val systemBrukerTokenService: SystemBrukerTokenService,
-    private val apiGatewayApiKey: ApiGatewayApiKey
+    private val systemCredentialsProvider: SystemCredentialsProvider
 ) {
     suspend fun getSoker(fnr: Fodselsnummer,
                          callId : CallId) : Soker {
@@ -42,11 +40,10 @@ class SokerGateway(
         )
 
         val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader(callId))
+        httpRequest.header(HttpHeaders.Authorization, systemCredentialsProvider.getAuthorizationHeader())
         httpRequest.header(SPARKEL_CORRELATION_ID_HEADER, callId.value)
         httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
         httpRequest.accept(ContentType.Application.Json)
-        httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
         httpRequest.method = HttpMethod.Get
         httpRequest.url(url)
 

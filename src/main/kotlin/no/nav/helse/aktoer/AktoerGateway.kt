@@ -1,19 +1,15 @@
 package no.nav.helse.aktoer
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
-import io.ktor.client.features.BadResponseStatusException
 import io.ktor.client.request.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.prometheus.client.Histogram
+import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.general.*
 import no.nav.helse.general.HttpRequest
-import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.soker.SparkelResponse
-import no.nav.helse.systembruker.SystemBrukerTokenService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -34,8 +30,7 @@ private val getAktoerIdHistogram = Histogram.build(
 class AktoerGateway(
     private val httpClient: HttpClient,
     baseUrl: URL,
-    private val systemBrukerTokenService: SystemBrukerTokenService,
-    private val apiGatewayApiKey: ApiGatewayApiKey
+    private val systemCredentialsProvider: SystemCredentialsProvider
 ) {
     private val completeUrl : URL = HttpRequest.buildURL(
         baseUrl = baseUrl,
@@ -52,12 +47,11 @@ class AktoerGateway(
     ) : AktoerId {
 
         val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader(callId))
+        httpRequest.header(HttpHeaders.Authorization, systemCredentialsProvider.getAuthorizationHeader())
         httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
         httpRequest.header(AKTOERREGISTER_CORRELATION_ID_HEADER, callId.value)
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
         httpRequest.header("Nav-Personidenter", fnr.value)
-        httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
         httpRequest.method = HttpMethod.Get
         httpRequest.accept(ContentType.Application.Json)
         httpRequest.url(completeUrl)

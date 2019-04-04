@@ -10,10 +10,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.prometheus.client.Histogram
 import no.nav.helse.aktoer.AktoerService
+import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.general.*
-import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.Fodselsnummer
-import no.nav.helse.systembruker.SystemBrukerTokenService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -32,8 +31,7 @@ class ArbeidsgiverGateway(
     private val httpClient: HttpClient,
     private val baseUrl: URL,
     private val aktoerService: AktoerService,
-    private val systemBrukerTokenService: SystemBrukerTokenService,
-    private val apiGatewayApiKey: ApiGatewayApiKey
+    private val systemCredentialsProvider: SystemCredentialsProvider
 ) {
     suspend fun getAnsettelsesforhold(
         fnr: Fodselsnummer,
@@ -79,11 +77,10 @@ class ArbeidsgiverGateway(
         )
 
         val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader(callId))
+        httpRequest.header(HttpHeaders.Authorization, systemCredentialsProvider.getAuthorizationHeader())
         httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
         httpRequest.header(SPARKEL_CORRELATION_ID_HEADER, callId.value)
         httpRequest.accept(ContentType.Application.Json)
-        httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
         httpRequest.method = HttpMethod.Get
         httpRequest.url(url)
 

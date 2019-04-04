@@ -10,10 +10,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.prometheus.client.Histogram
+import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.general.CallId
 import no.nav.helse.general.HttpRequest
-import no.nav.helse.general.auth.ApiGatewayApiKey
-import no.nav.helse.systembruker.SystemBrukerTokenService
 import java.net.URL
 
 private val leggTilProsesseringHistogram = Histogram.build(
@@ -24,8 +23,7 @@ private val leggTilProsesseringHistogram = Histogram.build(
 class PleiepengesoknadProsesseringGateway(
     private val httpClient: HttpClient,
     baseUrl : URL,
-    private val systemBrukerTokenService: SystemBrukerTokenService,
-    private val apiGatewayApiKey: ApiGatewayApiKey
+    private val systemCredentialsProvider: SystemCredentialsProvider
 ){
 
     private val komplettUrl = HttpRequest.buildURL(
@@ -38,10 +36,9 @@ class PleiepengesoknadProsesseringGateway(
         callId: CallId
     ) {
         val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemBrukerTokenService.getAuthorizationHeader(callId))
+        httpRequest.header(HttpHeaders.Authorization, systemCredentialsProvider.getAuthorizationHeader())
         httpRequest.header(HttpHeaders.XCorrelationId, callId.value)
         httpRequest.header(HttpHeaders.ContentType, ContentType.Application.Json)
-        httpRequest.header(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
         httpRequest.method = HttpMethod.Post
         httpRequest.body = soknad
         httpRequest.url(komplettUrl)
