@@ -1,12 +1,9 @@
 import org.gradle.internal.impldep.org.fusesource.jansi.AnsiRenderer.test
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val logbackVersion = "1.2.3"
-val ktorVersion = "1.1.2"
-val jacksonVersion = "2.9.8"
+val ktorVersion = ext.get("ktorVersion").toString()
+val dusseldorfKtorVersion = "1.1.3.2d0b51a"
 val wiremockVersion = "2.19.0"
-val logstashLogbackVersion = "5.3"
-val prometheusVersion = "0.6.0"
 val hibernateVersion = "6.0.15.Final"
 
 val mainClass = "no.nav.helse.AppKt"
@@ -16,42 +13,25 @@ plugins {
 }
 
 buildscript {
+    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/2d0b51a6956d1ff797e37527232211027f6970ff/gradle/dusseldorf-ktor.gradle.kts")
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.21")
     }
 }
 
 dependencies {
-    compile(kotlin("stdlib-jdk8"))
+    // Server
+    compile ( "no.nav.helse:dusseldorf-ktor-core:$dusseldorfKtorVersion")
+    compile ( "no.nav.helse:dusseldorf-ktor-jackson:$dusseldorfKtorVersion")
+    compile ( "no.nav.helse:dusseldorf-ktor-metrics:$dusseldorfKtorVersion")
+    compile ( "no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
 
-    // Ktor Server
-    compile ("io.ktor:ktor-server-netty:$ktorVersion")
-    compile ("io.ktor:ktor-auth-jwt:$ktorVersion")
-    compile ("io.ktor:ktor-server-core:$ktorVersion")
-    compile ("io.ktor:ktor-jackson:$ktorVersion")
-    compile ("io.ktor:ktor-locations:$ktorVersion")
-    compile ("io.ktor:ktor-server-host-common:$ktorVersion")
+    compile("io.ktor:ktor-auth-jwt:$ktorVersion")
 
-    // Logging
-    compile ( "ch.qos.logback:logback-classic:$logbackVersion")
-    compile ("net.logstash.logback:logstash-logback-encoder:$logstashLogbackVersion")
-
-    // Prometheus
-    compile("io.prometheus:simpleclient_common:$prometheusVersion")
-    compile("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-
-    // Ktor Client
-    compile ("io.ktor:ktor-client-core:$ktorVersion")
-    compile ("io.ktor:ktor-client-core-jvm:$ktorVersion")
-    compile ("io.ktor:ktor-client-apache:$ktorVersion")
-
+    // Client
+    compile ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
     compile ("io.ktor:ktor-client-json-jvm:$ktorVersion")
     compile ("io.ktor:ktor-client-jackson:$ktorVersion")
-    compile ("io.ktor:ktor-client-logging-jvm:$ktorVersion")
-
-    // JSON Serialization
-    compile ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-
 
     // Validation
     compile ("javax.validation:validation-api:2.0.1.Final")
