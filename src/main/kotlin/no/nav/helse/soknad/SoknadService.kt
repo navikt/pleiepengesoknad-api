@@ -22,7 +22,6 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
         idToken: IdToken,
         callId: CallId
     ) {
-
         logger.trace("Registrerer søknad. Henter søker")
         val soker = sokerService.getSoker(fnr = fnr, callId = callId)
         logger.trace("Søker hentet. Henter ${soknad.vedlegg.size} vedlegg")

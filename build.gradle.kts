@@ -35,14 +35,6 @@ dependencies {
     compile ("io.ktor:ktor-client-json-jvm:$ktorVersion")
     compile ("io.ktor:ktor-client-jackson:$ktorVersion")
 
-    // Validation
-    compile ("javax.validation:validation-api:2.0.1.Final")
-    compile ("org.hibernate.validator:hibernate-validator:$hibernateVersion")
-    compile ("org.hibernate.validator:hibernate-validator-annotation-processor:$hibernateVersion")
-    compile ("javax.el:javax.el-api:3.0.1-b06")
-    compile ("org.glassfish.web:javax.el:2.2.6")
-
-
     // Test
     testCompile ("com.github.tomakehurst:wiremock:$wiremockVersion")
     testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {

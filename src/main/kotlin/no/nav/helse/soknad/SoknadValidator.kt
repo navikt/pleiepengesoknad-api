@@ -1,35 +1,196 @@
 package no.nav.helse.soknad
 
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
+import no.nav.helse.dusseldorf.ktor.core.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-class SoknadValidator : ConstraintValidator<ValidSoknad, Soknad> {
+class FraOgMedTilOgMedValidator {
+    companion object {
+        internal fun validate(
+            fraOgMed : String?,
+            tilOgMed : String?,
+            parameterType: ParameterType
+        ) : Set<Violation> {
+            val violations = mutableSetOf<Violation>()
+            val parsedFraOgMed = parseDate(fraOgMed)
+            val parsedTilOgMed = parseDate(tilOgMed)
 
-    override fun isValid(value: Soknad?, context: ConstraintValidatorContext?): Boolean {
-        var valid = true
-
-        if (value!!.tilOgMed.isBefore(value.fraOgMed)) {
-            valid = withError(context, "Startdato kan ikke være før sluttdato")
-        }
-
-        value.vedlegg.forEach { url ->
-            if (!url.path.matches(Regex("/vedlegg/.*"))) {
-                valid = withError(context, "$url matcher peker ikke på et gyldig vedlegg")
+            if (parsedFraOgMed == null) {
+                violations.add(
+                    Violation(
+                        parameterName = "fra_og_med",
+                        parameterType = parameterType,
+                        reason = "Må settes og være på gyldig format (YYYY-MM-DD)",
+                        invalidValue = fraOgMed
+                    )
+                )
             }
+            if (parsedTilOgMed == null) {
+                violations.add(
+                    Violation(
+                        parameterName = "til_og_med",
+                        parameterType = parameterType,
+                        reason = "Må settes og være på og gyldig format (YYYY-MM-DD)",
+                        invalidValue = tilOgMed
+                    )
+                )
+            }
+
+            if (violations.isNotEmpty()) return violations
+            return validate(
+                fraOgMed = parsedFraOgMed!!,
+                tilOgMed = parsedTilOgMed!!,
+                parameterType = parameterType
+            )
+
         }
 
-        return valid
+        internal fun validate(
+            fraOgMed: LocalDate,
+            tilOgMed: LocalDate,
+            parameterType: ParameterType
+        ) : Set<Violation> {
+            val violations = mutableSetOf<Violation>()
+
+            if (!tilOgMed.isAfter(fraOgMed)) {
+                violations.add(
+                    Violation(
+                        parameterName = "fra_og_med",
+                        parameterType = parameterType,
+                        reason = "Fra og med må være før til og med.",
+                        invalidValue = DateTimeFormatter.ISO_DATE.format(fraOgMed)
+                    )
+                )
+                violations.add(
+                    Violation(
+                        parameterName = "til_og_med",
+                        parameterType = parameterType,
+                        reason = "Til og med må være etter fra og med.",
+                        invalidValue = DateTimeFormatter.ISO_DATE.format(tilOgMed)
+                    )
+                )
+            }
+
+            return violations
+        }
+
+        private fun parseDate(date: String?) : LocalDate? {
+            if (date == null) return null
+            return try { LocalDate.parse(date) } catch (cause : Throwable) { null }
+        }
+    }
+}
+
+internal fun Soknad.validate() {
+    val violations = mutableSetOf<Violation>()
+
+    // Relasjon til barnet
+    if (relasjonTilBarnet.erBlankEllerLengreEnn(100)) {
+        violations.add(
+            Violation(
+                parameterName = "relasjon_til_barnet",
+                parameterType = ParameterType.ENTITY,
+                reason = "Relasjon til barnet kan ikke være tom og være mindre enn 100 tegn.",
+                invalidValue = relasjonTilBarnet
+            )
+        )
     }
 
-    private fun withError(
-        context: ConstraintValidatorContext?,
-        error: String) : Boolean {
-        context!!.disableDefaultConstraintViolation()
-        context
-            .buildConstraintViolationWithTemplate(error)
-            .addPropertyNode("soknad")
-            .addConstraintViolation()
-        return false
+    // Barnet
+    if (barn.fodselsnummer != null && !barn.fodselsnummer.erGyldigFodselsnummer()) {
+        violations.add(
+            Violation(
+                parameterName = "barn.fodselsnummer",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig fødselsnummer.",
+                invalidValue = barn.fodselsnummer
+            )
+        )
+    }
+
+    if (barn.alternativId != null && (barn.alternativId.erBlankEllerLengreEnn(50) || !barn.alternativId.erKunSiffer())) {
+        violations.add(
+            Violation(
+                parameterName = "barn.alternativ_id",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig alternativ id. Kan kun inneholde tall og være maks 50 lang.",
+                invalidValue = barn.alternativId
+            )
+        )
+    }
+
+    if (barn.navn.erBlankEllerLengreEnn(100)) {
+        violations.add(
+            Violation(
+                parameterName = "barn.navn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
+                invalidValue = barn.navn
+            )
+        )
+    }
+
+
+    // Arbeidsgivere
+    arbeidsgivere.organisasjoner.mapIndexed { index, organisasjon ->
+        if (!organisasjon.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].organisasjonsnummer",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ikke gyldig organisasjonsnummer.",
+                    invalidValue = organisasjon.organisasjonsnummer
+                )
+            )
+        }
+        if (organisasjon.navn != null && organisasjon.navn.erBlankEllerLengreEnn(100)) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].navn",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
+                    invalidValue = organisasjon.navn
+                )
+            )
+        }
+    }
+
+    // Datoer
+    violations.addAll(FraOgMedTilOgMedValidator.validate(
+        fraOgMed = fraOgMed,
+        tilOgMed = tilOgMed,
+        parameterType = ParameterType.ENTITY
+    ))
+
+    // Vedlegg
+    if (vedlegg.isEmpty()) {
+        violations.add(
+            Violation(
+                parameterName = "vedlegg",
+                parameterType = ParameterType.ENTITY,
+                reason = "Det må sendes minst et vedlegg.",
+                invalidValue = vedlegg
+            )
+        )
+    }
+
+    vedlegg.mapIndexed { index, url ->
+        if (!url.path.matches(Regex("/vedlegg/.*"))) {
+            Violation(
+                parameterName = "vedlegg[$index]",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig vedlegg URL.",
+                invalidValue = url
+            )
+        }
+    }
+
+    // Ser om det er noen valideringsfeil
+    if (violations.isNotEmpty()) {
+        throw Throwblem(ValidationProblemDetails(violations))
     }
 
 }
+
+
+private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength

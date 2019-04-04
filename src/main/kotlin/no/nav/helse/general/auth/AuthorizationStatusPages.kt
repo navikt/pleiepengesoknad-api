@@ -7,9 +7,7 @@ import io.ktor.application.call
 import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.prometheus.client.Counter
 import no.nav.helse.general.error.DefaultError
-import no.nav.helse.general.error.monitorException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -28,12 +26,9 @@ private val insufficientLevelType = URI.create("/errors/insufficient-authenticat
 private val logger: Logger = LoggerFactory.getLogger("nav.authorizationStatusPages")
 
 
-fun StatusPages.Configuration.authorizationStatusPages(
-    errorCounter: Counter
-) {
+fun StatusPages.Configuration.authorizationStatusPages() {
 
     exception<JWTVerificationException> { cause ->
-        monitorException(cause, defaultType, errorCounter)
         call.respond(HttpStatusCode.Unauthorized, DefaultError(
             status = HttpStatusCode.Unauthorized.value,
             type = defaultType,
@@ -43,7 +38,6 @@ fun StatusPages.Configuration.authorizationStatusPages(
     }
 
     exception<SigningKeyNotFoundException> { cause ->
-        monitorException(cause, loginExpiredType, errorCounter)
         call.respond(HttpStatusCode.Unauthorized, DefaultError(
             status = HttpStatusCode.Unauthorized.value,
             type = loginExpiredType,
@@ -55,7 +49,6 @@ fun StatusPages.Configuration.authorizationStatusPages(
     }
 
     exception<TokenExpiredException> { cause ->
-        monitorException(cause, loginExpiredType, errorCounter)
         call.respond(HttpStatusCode.Unauthorized, DefaultError(
             status = HttpStatusCode.Unauthorized.value,
             type = loginExpiredType,
@@ -66,7 +59,6 @@ fun StatusPages.Configuration.authorizationStatusPages(
     }
 
     exception<InsufficientAuthenticationLevelException> { cause ->
-        monitorException(cause, insufficientLevelType, errorCounter)
         call.respond(HttpStatusCode.Forbidden, DefaultError(
             status = HttpStatusCode.Forbidden.value,
             type = insufficientLevelType,
@@ -79,7 +71,6 @@ fun StatusPages.Configuration.authorizationStatusPages(
     }
 
     exception<CookieNotSetException> { cause ->
-        monitorException(cause, loginRequiredType, errorCounter)
         call.respond(HttpStatusCode.Unauthorized, DefaultError(
             status = HttpStatusCode.Unauthorized.value,
             type = loginRequiredType,

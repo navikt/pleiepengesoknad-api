@@ -4,10 +4,12 @@ import io.ktor.application.call
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
+import no.nav.helse.dusseldorf.ktor.core.ParameterType
+import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.general.auth.getFodselsnummer
 import no.nav.helse.general.getCallId
-import no.nav.helse.general.validation.ValidationException
-import no.nav.helse.general.validation.Violation
+import no.nav.helse.soknad.FraOgMedTilOgMedValidator
 import java.time.LocalDate
 
 private const val fraOgMedQueryName = "fra_og_med"
@@ -18,10 +20,14 @@ fun Route.arbeidsgiverApis(
 ) {
 
     get("/arbeidsgiver") {
-        val violations = validateQueryParameters(call.request.queryParameters[fraOgMedQueryName], call.request.queryParameters[tilOgMedQueryName])
+        val violations = FraOgMedTilOgMedValidator.validate(
+            fraOgMed = call.request.queryParameters[fraOgMedQueryName],
+            tilOgMed = call.request.queryParameters[tilOgMedQueryName],
+            parameterType = ParameterType.QUERY
+        )
 
         if (violations.isNotEmpty()) {
-            throw ValidationException(violations)
+            throw Throwblem(ValidationProblemDetails(violations))
         } else {
             call.respond(
                 ArbeidsgiverResponse(
@@ -35,21 +41,6 @@ fun Route.arbeidsgiverApis(
             )
         }
     }
-}
-
-private fun validateQueryParameters(fraOgMed: String?, tilOgMed: String?) : List<Violation> {
-    val violations = mutableListOf<Violation>()
-    try {
-        LocalDate.parse(fraOgMed)
-    } catch (cause: Throwable) {
-        violations.add(Violation(name = "fra_og_med", reason = "Ikke gyldig format (YYYY-MM-DD)", invalidValue = fraOgMed))
-    }
-    try {
-        LocalDate.parse(tilOgMed)
-    } catch (cause: Throwable) {
-        violations.add(Violation(name = "til_og_med", reason = "Ikke gyldig format (YYYY-MM-DD)", invalidValue = tilOgMed))
-    }
-    return violations.toList()
 }
 
 data class ArbeidsgiverResponse (

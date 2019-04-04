@@ -30,15 +30,12 @@ import no.nav.helse.barn.barnApis
 import no.nav.helse.dusseldorf.ktor.client.*
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
+import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.CallMonitoring
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.general.auth.*
-import no.nav.helse.general.error.defaultStatusPages
-import no.nav.helse.general.error.initializeErrorCounter
 import no.nav.helse.general.jackson.configureObjectMapper
-import no.nav.helse.general.validation.ValidationHandler
-import no.nav.helse.general.validation.validationStatusPages
 import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
@@ -47,8 +44,6 @@ import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.*
 import java.util.concurrent.TimeUnit
-import javax.validation.Validation
-import javax.validation.Validator
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
 
@@ -61,10 +56,6 @@ fun Application.pleiepengesoknadapi() {
 
     val configuration = Configuration(environment.config)
     val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
-
-    val objectMapper = configureObjectMapper()
-    val validator : Validator = Validation.buildDefaultValidatorFactory().validator
-    val validationHandler = ValidationHandler(validator, objectMapper)
 
     val httpClient= HttpClient(Apache) {
         expectSuccess = false
@@ -121,13 +112,11 @@ fun Application.pleiepengesoknadapi() {
         }
     }
 
-    val errorCounter = initializeErrorCounter()
-
     install(StatusPages) {
-        defaultStatusPages(errorCounter)
-        authorizationStatusPages(errorCounter)
-        validationStatusPages(errorCounter)
-        vedleggStatusPages(errorCounter)
+        DefaultStatusPages()
+        JacksonStatusPages()
+        authorizationStatusPages()
+        vedleggStatusPages()
     }
 
     install(Locations)
@@ -218,7 +207,6 @@ fun Application.pleiepengesoknadapi() {
 
             soknadApis(
                 idTokenProvider = idTokenProvider,
-                validationHandler = validationHandler,
                 soknadService = SoknadService(
                     pleiepengesoknadProsesseringGateway = PleiepengesoknadProsesseringGateway(
                         httpClient = httpClient,
