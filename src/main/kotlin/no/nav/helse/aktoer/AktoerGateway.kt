@@ -1,11 +1,10 @@
 package no.nav.helse.aktoer
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.prometheus.client.Histogram
+import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.general.*
 import no.nav.helse.general.HttpRequest
@@ -22,13 +21,8 @@ private const val AKTOERREGISTER_CORRELATION_ID_HEADER = "Nav-Call-Id"
 
 private val logger: Logger = LoggerFactory.getLogger("nav.AktoerGateway")
 
-private val getAktoerIdHistogram = Histogram.build(
-    "histogram_hente_aktoer_id_fra_fnr",
-    "Tidsbruk for henting av Aktør ID fra Fødselsnummer"
-).register()
-
 class AktoerGateway(
-    private val httpClient: HttpClient,
+    private val monitoredHttpClient : MonitoredHttpClient,
     baseUrl: URL,
     private val systemCredentialsProvider: SystemCredentialsProvider
 ) {
@@ -56,10 +50,8 @@ class AktoerGateway(
         httpRequest.accept(ContentType.Application.Json)
         httpRequest.url(completeUrl)
 
-        val httpResponse = HttpRequest.monitored<Map<String, IdentResponse>>(
-            httpClient = httpClient,
-            httpRequest = httpRequest,
-            histogram = getAktoerIdHistogram
+        val httpResponse = monitoredHttpClient.requestAndReceive<Map<String, IdentResponse>>(
+            httpRequestBuilder = httpRequest
         )
 
         if (!httpResponse.containsKey(fnr.value)) {

@@ -1,27 +1,20 @@
 package no.nav.helse.soknad
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.url
-import io.ktor.client.response.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.prometheus.client.Histogram
+import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.general.CallId
 import no.nav.helse.general.HttpRequest
 import java.net.URL
 
-private val leggTilProsesseringHistogram = Histogram.build(
-    "histogram_legge_soknad_til_prosessering",
-    "Tidsbruk for å legge søknad til prosessering"
-).register()
-
 class PleiepengesoknadProsesseringGateway(
-    private val httpClient: HttpClient,
+    private val monitoredHttpClient: MonitoredHttpClient,
     baseUrl : URL,
     private val systemCredentialsProvider: SystemCredentialsProvider
 ){
@@ -43,11 +36,9 @@ class PleiepengesoknadProsesseringGateway(
         httpRequest.body = soknad
         httpRequest.url(komplettUrl)
 
-        HttpRequest.monitored<HttpResponse>(
-            httpClient = httpClient,
-            httpRequest = httpRequest,
-            expectedStatusCodes = listOf(HttpStatusCode.Accepted),
-            histogram = leggTilProsesseringHistogram
-        )
+        monitoredHttpClient.request(
+            httpRequestBuilder = httpRequest,
+            expectedHttpResponseCodes = setOf(HttpStatusCode.Accepted)
+        ).use {}
     }
 }

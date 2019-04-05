@@ -1,18 +1,12 @@
 package no.nav.helse
 
 import com.auth0.jwk.JwkProviderBuilder
-import com.fasterxml.jackson.databind.DeserializationFeature
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTPrincipal
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.logging.Logging
 import io.ktor.features.*
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
@@ -35,7 +29,6 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.CallMonitoring
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.general.auth.*
-import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
@@ -55,23 +48,6 @@ fun Application.pleiepengesoknadapi() {
     DefaultExports.initialize()
 
     val configuration = Configuration(environment.config)
-    val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
-
-    val httpClient= HttpClient(Apache) {
-        expectSuccess = false
-        install(JsonFeature) {
-            serializer = JacksonSerializer{
-                configureObjectMapper(this)
-            }
-        }
-        engine {
-            customizeClient {
-                setProxyRoutePlanner()
-                addInterceptorLast(apiGatewayHttpRequestInterceptor)
-            }
-        }
-
-    }
 
     install(ContentNegotiation) {
         jackson {
@@ -127,38 +103,23 @@ fun Application.pleiepengesoknadapi() {
         )
     }
 
+    val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
+    val sparkelClient = Clients.sparkelClient(apiGatewayHttpRequestInterceptor)
+
     val systemCredentialsProvider = Oauth2ClientCredentialsProvider(
-        monitoredHttpClient = MonitoredHttpClient(
-            source = appId,
-            destination = "nais-sts",
-            httpClient = HttpClient(Apache) {
-                install(JsonFeature) {
-                    serializer = JacksonSerializer {
-                        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    }
-                }
-                install (Logging) {
-                    sl4jLogger("nais-sts")
-                }
-                engine {
-                    customizeClient {
-                        setProxyRoutePlanner()
-                        addInterceptorLast(apiGatewayHttpRequestInterceptor)
-                    }
-                }
-            }
-        ),
+        monitoredHttpClient = Clients.stsClient(apiGatewayHttpRequestInterceptor),
         tokenUrl = configuration.getAuthorizationServerTokenUrl(),
         clientId = configuration.getServiceAccountClientId(),
         clientSecret = configuration.getServiceAccountClientSecret(),
         scopes = configuration.getServiceAccountScopes()
     )
 
+
     install(Routing) {
 
         val aktoerService = AktoerService(
             aktoerGateway = AktoerGateway(
-                httpClient = httpClient,
+                monitoredHttpClient = Clients.aktoerRegisterClient(apiGatewayHttpRequestInterceptor),
                 baseUrl = configuration.getAktoerRegisterUrl(),
                 systemCredentialsProvider = systemCredentialsProvider
             )
@@ -166,14 +127,14 @@ fun Application.pleiepengesoknadapi() {
 
         val vedleggService = VedleggService(
             pleiepengerDokumentGateway = PleiepengerDokumentGateway(
-                httpClient = httpClient,
+                monitoredHttpClient = Clients.pleiepengerDokumentClient(),
                 baseUrl = configuration.getPleiepengerDokumentUrl()
             )
         )
 
-        val sokerService =  SokerService(
+        val sokerService = SokerService(
             sokerGateway = SokerGateway(
-                httpClient = httpClient,
+                monitoredHttpClient = sparkelClient,
                 baseUrl = configuration.getSparkelUrl(),
                 aktoerService = aktoerService,
                 systemCredentialsProvider = systemCredentialsProvider
@@ -191,7 +152,7 @@ fun Application.pleiepengesoknadapi() {
             arbeidsgiverApis(
                 service = ArbeidsgiverService(
                     gateway = ArbeidsgiverGateway(
-                        httpClient = httpClient,
+                        monitoredHttpClient = sparkelClient,
                         aktoerService = aktoerService,
                         baseUrl = configuration.getSparkelUrl(),
                         systemCredentialsProvider = systemCredentialsProvider
@@ -208,7 +169,7 @@ fun Application.pleiepengesoknadapi() {
                 idTokenProvider = idTokenProvider,
                 soknadService = SoknadService(
                     pleiepengesoknadProsesseringGateway = PleiepengesoknadProsesseringGateway(
-                        httpClient = httpClient,
+                        monitoredHttpClient = Clients.pleiepengesoknadProsesseringClient(apiGatewayHttpRequestInterceptor),
                         baseUrl = configuration.getPleiepengesoknadProsesseringBaseUrl(),
                         systemCredentialsProvider = systemCredentialsProvider
                     ),

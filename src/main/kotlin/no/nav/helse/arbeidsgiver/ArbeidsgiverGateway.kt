@@ -1,6 +1,5 @@
 package no.nav.helse.arbeidsgiver
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
 import io.ktor.client.request.header
@@ -8,8 +7,8 @@ import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.prometheus.client.Histogram
 import no.nav.helse.aktoer.AktoerService
+import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
@@ -22,17 +21,13 @@ import java.time.format.DateTimeFormatter
 private val logger: Logger = LoggerFactory.getLogger("nav.ArbeidsgiverGateway")
 private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
 
-private val ansettelsesforholdOppslagHistogram = Histogram.build(
-    "histogram_oppslag_ansettelsesforhold",
-    "Tidsbruk for oppslag på arbeidsforhold for søker"
-).register()
-
 class ArbeidsgiverGateway(
-    private val httpClient: HttpClient,
+    private val monitoredHttpClient: MonitoredHttpClient,
     private val baseUrl: URL,
     private val aktoerService: AktoerService,
     private val systemCredentialsProvider: SystemCredentialsProvider
 ) {
+
     suspend fun getAnsettelsesforhold(
         fnr: Fodselsnummer,
         callId: CallId,
@@ -84,10 +79,8 @@ class ArbeidsgiverGateway(
         httpRequest.method = HttpMethod.Get
         httpRequest.url(url)
 
-        return HttpRequest.monitored(
-            httpClient = httpClient,
-            httpRequest = httpRequest,
-            histogram = ansettelsesforholdOppslagHistogram
+        return monitoredHttpClient.requestAndReceive(
+            httpRequestBuilder = httpRequest
         )
     }
 }

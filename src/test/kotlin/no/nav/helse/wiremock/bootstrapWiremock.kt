@@ -137,7 +137,6 @@ private fun stubLeggSoknadTilProsessering() {
 private fun stubPleiepengerDokument() {
     WireMock.stubFor(
         WireMock.any(WireMock.urlMatching(".*$pleiepengerDokumentPath.*"))
-            .withHeader("x-nav-apiKey", AnythingPattern())
             .willReturn(
             WireMock.aResponse()
                 .withTransformers("PleiepengerDokumentResponseTransformer")

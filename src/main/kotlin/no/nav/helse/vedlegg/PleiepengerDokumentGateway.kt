@@ -1,15 +1,14 @@
 package no.nav.helse.vedlegg
 
-import io.ktor.client.HttpClient
 import io.ktor.client.call.receive
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.url
-import io.ktor.client.response.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.HttpRequest
 import no.nav.helse.general.auth.IdToken
@@ -21,7 +20,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.PleiepengerDokumentGat
 
 
 class PleiepengerDokumentGateway(
-    private val httpClient : HttpClient,
+    private val monitoredHttpClient: MonitoredHttpClient,
     baseUrl : URL
 ) {
 
@@ -47,16 +46,15 @@ class PleiepengerDokumentGateway(
             httpMethod = HttpMethod.Get
         )
 
-        val httpResponse = HttpRequest.monitored<HttpResponse>(
-            httpClient = httpClient,
-            httpRequest = httpRequest,
-            expectedStatusCodes = listOf(HttpStatusCode.OK, HttpStatusCode.NotFound)
+        val httpResponse = monitoredHttpClient.request(
+            httpRequestBuilder = httpRequest,
+            expectedHttpResponseCodes = setOf(HttpStatusCode.OK, HttpStatusCode.NotFound)
+
         )
 
-        return if (httpResponse.status == HttpStatusCode.NotFound) null else {
-            httpResponse.use { it ->
-                it.receive<Vedlegg>()
-            }
+        return httpResponse.use {
+            if (it.status == HttpStatusCode.NotFound) null
+            else it.receive()
         }
     }
 
@@ -72,10 +70,9 @@ class PleiepengerDokumentGateway(
             httpMethod = HttpMethod.Post
         ).body(vedlegg)
 
-        val response = HttpRequest.monitored<CreatedResponseEntity>(
-            httpClient = httpClient,
-            httpRequest = httpRequest,
-            expectedStatusCodes = listOf(HttpStatusCode.Created)
+        val response = monitoredHttpClient.requestAndReceive<CreatedResponseEntity>(
+            httpRequestBuilder = httpRequest,
+            expectedHttpResponseCodes = setOf(HttpStatusCode.Created)
         )
 
         return VedleggId(response.id)
@@ -99,11 +96,10 @@ class PleiepengerDokumentGateway(
         )
 
         return try {
-            HttpRequest.monitored<HttpResponse>(
-                httpClient = httpClient,
-                httpRequest = httpRequest,
-                expectedStatusCodes = listOf(HttpStatusCode.NoContent)
-            )
+            monitoredHttpClient.request(
+                httpRequestBuilder = httpRequest,
+                expectedHttpResponseCodes = setOf(HttpStatusCode.NoContent)
+            ).use { }
             true
         } catch (cause: Throwable) {
             false
