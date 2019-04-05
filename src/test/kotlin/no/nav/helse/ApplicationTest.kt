@@ -9,6 +9,7 @@ import io.ktor.http.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
+import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -21,6 +22,8 @@ import java.util.*
 private const val fnr = "290990123456"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 private val logger: Logger = LoggerFactory.getLogger("nav.ApplicationTest")
+// Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
+private val gyldigFodselsnummerA = "02119970078"
 
 @KtorExperimentalAPI
 class ApplicationTest {
@@ -193,18 +196,110 @@ class ApplicationTest {
     }
 
     @Test
-    fun sendSoknadTests() {
-        val cookie = getAuthCookie(fnr)
-        gyldigSoknad(engine, cookie)
-        //obligatoriskeFelterIkkeSatt(engine, cookie)
-        //ugyldigInformasjonOmBarn(engine, cookie)
+    fun `Sende soknad`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = Soknad.body(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                vedleggUrl2 = pdfUrl
+            )
+
+        )
+    }
+
+    @Test
+    fun `Sende soknad med ugylidge parametre gir feil`() {
+        val forlangtNavn = Soknad.forLangtNavn()
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedCode = HttpStatusCode.BadRequest,
+            requestEntity = """
+                {
+                    "barn": {
+                        "navn": "$forlangtNavn",
+                        "fodselsnummer": "29099012345"
+                    },
+                    "relasjon_til_barnet": "mor",
+                    "fra_og_med": "1990-09-29",
+                    "til_og_med": "1990-09-28",
+                    "arbeidsgivere": {
+                        "organisasjoner": [
+                            {
+                                "organisasjonsnummer": "12",
+                                "navn": "$forlangtNavn"
+                            }
+                        ]
+                    },
+                    "vedlegg": [],
+                    "medlemskap" : {
+                        "har_bodd_i_utlandet_siste_12_mnd" : false,
+                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                    }
+                }
+                """.trimIndent(),
+            expectedResponse = """
+                {
+                    "type": "/problem-details/invalid-request-parameters",
+                    "title": "invalid-request-parameters",
+                    "status": 400,
+                    "detail": "Requesten inneholder ugyldige paramtere.",
+                    "instance": "about:blank",
+                    "invalid_parameters": [{
+                        "type": "entity",
+                        "name": "barn.fodselsnummer",
+                        "reason": "Ikke gyldig fødselsnummer.",
+                        "invalid_value": "29099012345"
+                    }, {
+                        "type": "entity",
+                        "name": "barn.navn",
+                        "reason": "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
+                        "invalid_value": "$forlangtNavn"
+                    }, {
+                        "type": "entity",
+                        "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
+                        "reason": "Ikke gyldig organisasjonsnummer.",
+                        "invalid_value": "12"
+                    }, {
+                        "type": "entity",
+                        "name": "arbeidsgivere.organisasjoner[0].navn",
+                        "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
+                        "invalid_value": "$forlangtNavn"
+                    }, {
+                        "type": "entity",
+                        "name": "fra_og_med",
+                        "reason": "Fra og med må være før til og med.",
+                        "invalid_value": "1990-09-29"
+                    }, {
+                        "type": "entity",
+                        "name": "til_og_med",
+                        "reason": "Til og med må være etter fra og med.",
+                        "invalid_value": "1990-09-28"
+                    }, {
+                        "type": "entity",
+                        "name": "vedlegg",
+                        "reason": "Det må sendes minst et vedlegg.",
+                        "invalid_value": []
+                    }]
+                }
+            """.trimIndent()
+        )
     }
 
 
     @Test
     fun `Test haandtering av vedlegg`() {
         val cookie = getAuthCookie(fnr)
-        val jpeg = "vedlegg/iPhone_6.jpg".fromResources()
+        val jpeg = "vedlegg/iPhone_6.jpg".fromResources().readBytes()
 
         with(engine) {
             // LASTER OPP VEDLEGG
@@ -233,6 +328,28 @@ class ApplicationTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun `Test opplasting av ikke stottet vedleggformat`() {
+        engine.handleRequestUploadImage(
+            cookie = getAuthCookie(gyldigFodselsnummerA),
+            vedlegg = "jwkset.json".fromResources().readBytes(),
+            contentType = "application/json",
+            fileName = "jwkset.json",
+            expectedCode = HttpStatusCode.BadRequest
+        )
+    }
+
+    @Test
+    fun `Test opplasting av for stort vedlegg` () {
+        engine.handleRequestUploadImage(
+            cookie = getAuthCookie(gyldigFodselsnummerA),
+            vedlegg = ByteArray(8 * 1024 * 1024 + 10),
+            contentType = "image/png",
+            fileName = "big_picture.png",
+            expectedCode = HttpStatusCode.PayloadTooLarge
+        )
     }
 
     private fun requestAndAssert(httpMethod: HttpMethod,

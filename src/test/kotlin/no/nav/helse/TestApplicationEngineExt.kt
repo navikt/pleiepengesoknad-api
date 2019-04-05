@@ -7,13 +7,15 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import kotlinx.io.streams.asInput
+import no.nav.helse.dusseldorf.ktor.core.fromResources
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 fun TestApplicationEngine.handleRequestUploadImage(cookie: Cookie,
-                                                   vedlegg: ByteArray = "vedlegg/iPhone_6.jpg".fromResources(),
+                                                   vedlegg: ByteArray = "vedlegg/iPhone_6.jpg".fromResources().readBytes(),
                                                    fileName: String = "iPhone_6.jpg",
-                                                   contentType: String = "image/jpeg") : String {
+                                                   contentType: String = "image/jpeg",
+                                                   expectedCode: HttpStatusCode = HttpStatusCode.Created) : String {
     val boundary = "***vedlegg***"
 
     handleRequest(HttpMethod.Post, "/vedlegg") {
@@ -45,13 +47,33 @@ fun TestApplicationEngine.handleRequestUploadImage(cookie: Cookie,
             )
         )
     }.apply {
-        assertEquals(HttpStatusCode.Created, response.status())
-        val locationHeader= response.headers[HttpHeaders.Location]
-        assertNotNull(locationHeader)
-        return locationHeader
+        assertEquals(expectedCode, response.status())
+        return if (expectedCode == HttpStatusCode.Created) {
+            val locationHeader= response.headers[HttpHeaders.Location]
+            assertNotNull(locationHeader)
+            locationHeader
+        } else ""
     }
 }
 
-fun String.fromResources() : ByteArray {
-    return Thread.currentThread().contextClassLoader.getResource(this).readBytes()
+fun TestApplicationEngine.jpegUrl(
+    cookie: Cookie
+) : String {
+    return handleRequestUploadImage(
+        cookie = cookie,
+        vedlegg = "vedlegg/nav-logo.png".fromResources().readBytes(),
+        fileName = "nav-logo.png",
+        contentType = "image/png"
+    )
+}
+
+fun TestApplicationEngine.pdUrl(
+    cookie: Cookie
+) : String {
+    return handleRequestUploadImage(
+        cookie = cookie,
+        vedlegg = "vedlegg/test.pdf".fromResources().readBytes(),
+        fileName = "test.pdf",
+        contentType = "application/pdf"
+    )
 }

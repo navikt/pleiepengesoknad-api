@@ -116,7 +116,6 @@ fun Application.pleiepengesoknadapi() {
         DefaultStatusPages()
         JacksonStatusPages()
         authorizationStatusPages()
-        vedleggStatusPages()
     }
 
     install(Locations)

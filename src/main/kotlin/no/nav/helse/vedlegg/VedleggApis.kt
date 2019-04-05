@@ -11,27 +11,22 @@ import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.routing.Route
+import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.respondProblemDetails
 import no.nav.helse.general.auth.IdTokenProvider
-import no.nav.helse.general.error.DefaultError
 import no.nav.helse.general.getCallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URI
 
 private val logger: Logger = LoggerFactory.getLogger("nav.vedleggApis")
 private const val MAX_VEDLEGG_SIZE = 8 * 1024 * 1024
+private val supportedContentTypes = listOf("application/pdf", "image/jpeg", "image/png")
 
-private val hasToBeMultipartType = URI.create("/errors/multipart-form-required")
-private const val hasToBeMultipartTitle = "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt."
-
-private val vedleggNotFoundType = URI.create("/errors/attachment-not-found")
-private const val vedleggNotFoundTitle = "Inget vedlegg funnet med etterspurt ID."
-
-private val vedleggNotAttachedType = URI.create("/errors/attachment-not-attached")
-private const val vedleggNotAttachedTitle = "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt."
-
-private val vedleggTooLargeType = URI.create("/errors/attachment-too-large")
-private const val vedleggTooLargeTitle = "Vedlegget var over maks tillatt størrelse på 8MB."
+private val hasToBeMultupartTypeProblemDetails = DefaultProblemDetails(title = "multipart-form-required", status = 400, detail = "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt.")
+private val vedleggNotFoundProblemDetails = DefaultProblemDetails(title = "attachment-not-found", status = 404, detail = "Inget vedlegg funnet med etterspurt ID.")
+private val vedleggNotAttachedProblemDetails = DefaultProblemDetails(title = "attachment-not-attached", status = 400, detail = "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt.")
+private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachment-too-large", status = 413, detail = "edlegget var over maks tillatt størrelse på 8MB.")
+private val vedleggContentTypeNotSupportedProblemDetails = DefaultProblemDetails(title = "attachment-content-type-not-supported", status = 400, detail = "Vedleggets type må være en av $supportedContentTypes")
 
 @KtorExperimentalLocationsAPI
 fun Route.vedleggApis(
@@ -56,7 +51,7 @@ fun Route.vedleggApis(
         )
 
         if (vedlegg == null) {
-            call.respondVedleggNotFound(vedleggId)
+            call.respondProblemDetails(vedleggNotFoundProblemDetails)
         } else {
             call.respondBytes(
                 bytes = vedlegg.content,
@@ -81,16 +76,18 @@ fun Route.vedleggApis(
     post<NyttVedleg> { _ ->
         logger.info("Lagrer vedlegg")
         if (!call.request.isFormMultipart()) {
-            call.respondHasToBeMultiPart()
+            call.respondProblemDetails(hasToBeMultupartTypeProblemDetails)
         } else {
             val multipart = call.receiveMultipart()
             val vedlegg = multipart.getVedlegg()
 
             if (vedlegg == null) {
-                call.respondVedleggNotAttached()
+                call.respondProblemDetails(vedleggNotAttachedProblemDetails)
+            } else if(!vedlegg.isSupportedContentType()) {
+                call.respondProblemDetails(vedleggContentTypeNotSupportedProblemDetails)
             } else {
                 if (vedlegg.content.size > MAX_VEDLEGG_SIZE) {
-                    call.respondVedleggTooLarge()
+                    call.respondProblemDetails(vedleggTooLargeProblemDetails)
                 } else {
                     val vedleggId = vedleggService.lagreVedlegg(
                         vedlegg = vedlegg,
@@ -104,6 +101,7 @@ fun Route.vedleggApis(
         }
     }
 }
+
 
 private suspend fun MultiPartData.getVedlegg() : Vedlegg? {
     for (partData in readAllParts()) {
@@ -121,46 +119,8 @@ private suspend fun MultiPartData.getVedlegg() : Vedlegg? {
     return null
 }
 
-private suspend fun ApplicationCall.respondVedleggTooLarge() {
-    respond(
-        HttpStatusCode.PayloadTooLarge, DefaultError(
-            status = HttpStatusCode.PayloadTooLarge.value,
-            type = vedleggTooLargeType,
-            title = vedleggTooLargeTitle
-        )
-    )
-}
 
-private suspend fun ApplicationCall.respondVedleggNotAttached() {
-    respond(
-        HttpStatusCode.BadRequest, DefaultError(
-            status = HttpStatusCode.BadRequest.value,
-            type = vedleggNotAttachedType,
-            title = vedleggNotAttachedTitle
-        )
-    )
-}
-
-private suspend fun ApplicationCall.respondHasToBeMultiPart() {
-    respond(
-        HttpStatusCode.BadRequest, DefaultError(
-            status = HttpStatusCode.BadRequest.value,
-            type = hasToBeMultipartType,
-            title = hasToBeMultipartTitle
-        )
-    )
-}
-
-private suspend fun ApplicationCall.respondVedleggNotFound(vedleggId : VedleggId) {
-    respond(
-        HttpStatusCode.NotFound, DefaultError(
-            status = HttpStatusCode.NotFound.value,
-            type = vedleggNotFoundType,
-            title = vedleggNotFoundTitle,
-            detail = "Vedlegg med ID ${vedleggId.value} ikke funnet."
-        )
-    )
-}
+private fun Vedlegg.isSupportedContentType(): Boolean = supportedContentTypes.contains(contentType.toLowerCase())
 
 private fun ApplicationRequest.isFormMultipart(): Boolean {
     return contentType().withoutParameters().match(ContentType.MultiPart.FormData)
