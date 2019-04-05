@@ -1,6 +1,5 @@
 package no.nav.helse.vedlegg
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.features.origin
@@ -14,7 +13,6 @@ import io.ktor.response.respondBytes
 import io.ktor.routing.Route
 import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.respondProblemDetails
-import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import org.slf4j.Logger
