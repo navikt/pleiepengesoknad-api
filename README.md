@@ -58,31 +58,41 @@ POST @/vedlegg -> 201 Response med 'Location' header satt til vedlegget
 ##### Feilmeldinger
 ```json
 {
-  "type" : "/errors/multipart-form-required",
-  "title" : "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt.",
-  "status" : 400,
-  "detail" : null,
-  "instance" : "about:blank"
+	"type": "/problem-details/multipart-form-required",
+	"title": "multipart-form-required",
+	"status": 400,
+	"detail": "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt.",
+	"instance": "about:blank"
 }
 ```
 
 ```json
 {
-  "type" : "/errors/attachment-not-attached",
-  "title" : "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt.",
-  "status" : 400,
-  "detail" : null,
-  "instance" : "about:blank"
+	"type": "/problem-details/attachment-not-attached",
+	"title": "attachment-not-attached",
+	"status": 400,
+	"detail": "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt.",
+	"instance": "about:blank"
 }
 ```
 
 ```json
 {
-  "type" : "/errors/attachment-too-large",
-  "title" : "Vedlegget var over maks tillatt størrelse på 8MB.",
-  "status" : 413,
-  "detail" : null,
-  "instance" : "about:blank"
+	"type": "/problem-details/attachment-too-large",
+	"title": "attachment-too-large",
+	"status": 413,
+	"detail": "edlegget var over maks tillatt størrelse på 8MB.",
+	"instance": "about:blank"
+}
+```
+
+```json
+{
+	"type": "/problem-details/attachment-content-type-not-supported",
+	"title": "attachment-content-type-not-supported",
+	"status": 400,
+	"detail": "Vedleggets type må være en av [application/pdf, image/jpeg, image/png]",
+	"instance": "about:blank"
 }
 ```
 
@@ -93,11 +103,11 @@ GET @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved opplasti
 ##### Feilmeldinger
 ```json
 {
-  "type" : "/errors/attachment-not-found",
-  "title" : "Inget vedlegg funnet med etterspurt ID.",
-  "status" : 404,
-  "detail" : "Vedlegg med ID 123 ikke funnet.",
-  "instance" : "about:blank"
+	"type": "/problem-details/attachment-not-found",
+	"title": "attachment-not-found",
+	"status": 404,
+	"detail": "Inget vedlegg funnet med etterspurt ID.",
+	"instance": "about:blank"
 }
 ```
 
@@ -149,81 +159,49 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
 
 ```json
 {
-    "type": "/error/invalid-json",
-    "title": "The provided entity is not a valid JSON object.",
-    "status": 400,
-    "detail": null,
-    "instance": "about:blank"
+	"type": "/problem-details/invalid-json-entity",
+	"title": "invalid-json-entity",
+	"status": 400,
+	"detail": "Request entityen inneholder ugyldig JSON.",
+	"instance": "about:blank"
+}
+```
+
+```json
+{
+	"type": "/problem-details/invalid-request-parameters",
+	"title": "invalid-request-parameters",
+	"status": 400,
+	"detail": "Requesten inneholder ugylidge parametre.",
+	"instance": "about:blank",
+	"invalid_parameters": [{
+		"type": "query",
+		"name": "fra_og_med",
+		"reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
+		"invalid_value": null
+	}, {
+		"type": "query",
+		"name": "til_og_med",
+		"reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
+		"invalid_value": null
+	}]
 }
 ```
 
 ### HTTP 401
-```json
-{
-  "type" : "/errors/login-expired",
-  "title" : "The login has expired.",
-  "status" : 401,
-  "detail" : "The Token has expired on Tue Dec 18 13:13:39 CET 2018.",
-  "instance" : "about:blank"
-}
-```
-```json
-{
-  "type" : "/errors/login-required",
-  "title" : "Not logged in",
-  "status" : 401,
-  "detail" : "No cookie with name 'localhost-idtoken' set on request",
-  "instance" : "about:blank"
-}
-```
-
-```json
-{
-  "type" : "/errors/invalid-login",
-  "title" : "The Claim 'iss' value doesn't match the required one.",
-  "status" : 401,
-  "detail" : null,
-  "instance" : "about:blank"
-}
-```
+Ikke autentisert. Ingen payload i resposnen.
 
 ### HTTP 403
-```json
-{
-  "type" : "/errors/insufficient-authentication-level",
-  "title" : "Insufficient authentication level to perform request.",
-  "status" : 401,
-  "detail" : "Requires authentication Level4, was 'Level2'",
-  "instance" : "about:blank"
-}
-```
-
-### HTTP 422
-```json
-{
-    "type": "/errors/invalid-parameters",
-    "title": "The provided JSON object contains invalid formatted parameters.",
-    "status": 422,
-    "detail": null,
-    "instance": "about:blank",
-    "invalid_parameters": [
-        {
-            "name": "dato",
-            "reason": "must be a past date",
-            "invalid_value": "2018-12-18T20:43:32Z"
-        }
-    ]
-}
-```
+Ikke autorisert til å fullføre requesten. Ingen payload i responsen.
 
 ### HTTP 500
 ```json
 {
-  "type" : "about:blank",
-  "title" : "Unhandled error",
-  "status" : 500,
-  "detail" : null,
-  "instance" : "about:blank"
+	"type": "/problem-details/unhandled-error",
+	"title": "unhandled-error",
+	"status": 500,
+	"detail": "En uhåndtert feil har oppstått.",
+	"instance": "about:blank"
 }
 ```
 

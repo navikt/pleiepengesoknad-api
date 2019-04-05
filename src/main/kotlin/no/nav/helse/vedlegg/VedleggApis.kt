@@ -1,5 +1,6 @@
 package no.nav.helse.vedlegg
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.features.origin
@@ -13,6 +14,7 @@ import io.ktor.response.respondBytes
 import io.ktor.routing.Route
 import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.respondProblemDetails
+import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import org.slf4j.Logger
@@ -27,6 +29,7 @@ private val vedleggNotFoundProblemDetails = DefaultProblemDetails(title = "attac
 private val vedleggNotAttachedProblemDetails = DefaultProblemDetails(title = "attachment-not-attached", status = 400, detail = "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt.")
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachment-too-large", status = 413, detail = "edlegget var over maks tillatt størrelse på 8MB.")
 private val vedleggContentTypeNotSupportedProblemDetails = DefaultProblemDetails(title = "attachment-content-type-not-supported", status = 400, detail = "Vedleggets type må være en av $supportedContentTypes")
+
 
 @KtorExperimentalLocationsAPI
 fun Route.vedleggApis(
