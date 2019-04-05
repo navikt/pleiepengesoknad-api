@@ -7,9 +7,11 @@ import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.Url
 import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
+import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
 import java.net.URL
@@ -24,7 +26,7 @@ class SokerGateway(
 ) {
     suspend fun getSoker(fnr: Fodselsnummer,
                          callId : CallId) : Soker {
-        val url = HttpRequest.buildURL(
+        val url = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf(
                 "api",

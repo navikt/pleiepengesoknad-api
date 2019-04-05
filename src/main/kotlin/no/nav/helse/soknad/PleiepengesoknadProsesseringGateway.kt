@@ -3,14 +3,11 @@ package no.nav.helse.soknad
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.url
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
+import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.general.CallId
-import no.nav.helse.general.HttpRequest
 import java.net.URL
 
 class PleiepengesoknadProsesseringGateway(
@@ -19,7 +16,7 @@ class PleiepengesoknadProsesseringGateway(
     private val systemCredentialsProvider: SystemCredentialsProvider
 ){
 
-    private val komplettUrl = HttpRequest.buildURL(
+    private val komplettUrl = Url.buildURL(
         baseUrl = baseUrl,
         pathParts = listOf("v1", "soknad")
     )

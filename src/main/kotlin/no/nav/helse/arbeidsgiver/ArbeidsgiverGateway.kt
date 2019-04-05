@@ -7,9 +7,11 @@ import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.Url
 import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
+import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
 import org.slf4j.Logger
@@ -58,7 +60,7 @@ class ArbeidsgiverGateway(
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
     ) : SparkelResponse {
-        val url = HttpRequest.buildURL(
+        val url = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf(
                 "api",
@@ -66,8 +68,8 @@ class ArbeidsgiverGateway(
                 aktoerService.getAktorId(fnr, callId).value
             ),
             queryParameters = mapOf(
-                Pair("fom", DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed)),
-                Pair("tom", DateTimeFormatter.ISO_LOCAL_DATE.format(tilOgMed))
+                Pair("fom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed))),
+                Pair("tom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(tilOgMed)))
             )
         )
 

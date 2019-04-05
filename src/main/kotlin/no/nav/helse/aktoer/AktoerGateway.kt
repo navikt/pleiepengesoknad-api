@@ -4,10 +4,11 @@ import io.ktor.client.request.*
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.Url
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
+import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.general.*
-import no.nav.helse.general.HttpRequest
 import no.nav.helse.general.auth.Fodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,12 +27,12 @@ class AktoerGateway(
     baseUrl: URL,
     private val systemCredentialsProvider: SystemCredentialsProvider
 ) {
-    private val completeUrl : URL = HttpRequest.buildURL(
+    private val completeUrl : URL = Url.buildURL(
         baseUrl = baseUrl,
         pathParts = listOf("api","v1","identer"),
         queryParameters = mapOf(
-            Pair("gjeldende", "true"),
-            Pair("identgruppe", "AktoerId")
+            Pair("gjeldende", listOf("true")),
+            Pair("identgruppe", listOf("AktoerId"))
         )
     )
 

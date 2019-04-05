@@ -4,13 +4,10 @@ import io.ktor.client.call.receive
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.url
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
+import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.general.CallId
-import no.nav.helse.general.HttpRequest
 import no.nav.helse.general.auth.IdToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,7 +21,7 @@ class PleiepengerDokumentGateway(
     baseUrl : URL
 ) {
 
-    private val url = HttpRequest.buildURL(
+    private val url = Url.buildURL(
         baseUrl = baseUrl,
         pathParts = listOf("v1", "dokument")
     )
@@ -34,7 +31,7 @@ class PleiepengerDokumentGateway(
         idToken: IdToken,
         callId: CallId) : Vedlegg? {
 
-        val urlMedId = HttpRequest.buildURL(
+        val urlMedId = Url.buildURL(
             baseUrl = url,
             pathParts = listOf(vedleggId.value)
         )
@@ -83,7 +80,7 @@ class PleiepengerDokumentGateway(
         idToken: IdToken,
         callId: CallId) : Boolean {
 
-        val urlMedId = HttpRequest.buildURL(
+        val urlMedId = Url.buildURL(
             baseUrl = url,
             pathParts = listOf(vedleggId.value)
         )

@@ -1,11 +1,12 @@
 package no.nav.helse.wiremock
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.common.FileSource
 import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.*
-import no.nav.helse.general.jackson.configureObjectMapper
+import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.vedlegg.Vedlegg
 import no.nav.helse.vedlegg.VedleggId
 import java.util.*
@@ -14,7 +15,7 @@ import kotlin.IllegalStateException
 class PleiepengerDokumentResponseTransformer() : ResponseTransformer() {
 
     val storage = mutableMapOf<VedleggId, Vedlegg>()
-    val objectMapper = configureObjectMapper()
+    val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
 
     override fun getName(): String {
         return "PleiepengerDokumentResponseTransformer"
