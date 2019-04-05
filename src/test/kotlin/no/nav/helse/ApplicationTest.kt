@@ -1,6 +1,7 @@
 package no.nav.helse
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.HoconApplicationConfig
@@ -8,10 +9,10 @@ import io.ktor.http.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.helse.general.jackson.configureObjectMapper
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
@@ -23,8 +24,6 @@ private val logger: Logger = LoggerFactory.getLogger("nav.ApplicationTest")
 
 @KtorExperimentalAPI
 class ApplicationTest {
-
-    private val objectMapper = configureObjectMapper()
 
     private companion object {
 
@@ -61,74 +60,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun getAnsettelsesforholdUnauthorizedTest() {
-        with(engine) {
-            with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
-                addHeader("Accept", "application/json")
-            }) {
-                assertEquals(HttpStatusCode.Unauthorized, response.status())
-            }
-        }
-    }
-
-    @Test
-    fun getAnsettelsesforholdWrongAuthenticationLevel() {
-
-        val cookie = getAuthCookie(fnr, authLevel = "Level3")
-
-        with(engine) {
-            with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
-                addHeader("Accept", "application/json")
-                addHeader("Cookie", cookie.toString())
-            }) {
-                assertEquals(HttpStatusCode.Forbidden, response.status())
-            }
-        }
-    }
-
-    @Test
-    fun getAnsettelsesforholdExpiredToken() {
-
-        val cookie = getAuthCookie(fnr, expiry = -(oneMinuteInMillis))
-        logger.debug("cookie={}", cookie.toString())
-
-        with(engine) {
-            with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
-                addHeader("Accept", "application/json")
-                addHeader("Cookie", cookie.toString())
-            }) {
-                assertEquals(HttpStatusCode.Unauthorized, response.status())
-            }
-        }
-    }
-
-    @Test
-    fun sendSoknadTests() {
-        val cookie = getAuthCookie(fnr)
-        gyldigSoknad(engine, cookie)
-        //obligatoriskeFelterIkkeSatt(engine, cookie)
-        //ugyldigInformasjonOmBarn(engine, cookie)
-    }
-
-    @Test
-    fun getAnsettelsesforholdAuthorizedTest() {
-        val cookie = getAuthCookie(fnr)
-
-        with(engine) {
-            with(handleRequest(HttpMethod.Get, "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30") {
-                addHeader("Accept", "application/json")
-                addHeader("Cookie", cookie.toString())
-            }) {
-                assertEquals(HttpStatusCode.OK, response.status())
-                val expectedResponse = objectMapper.readTree(expectedGetAnsettelsesforholdJson)
-                val actualResponse = objectMapper.readTree(response.content!!)
-                assertEquals(expectedResponse, actualResponse)
-
-            }
-        }
-    }
-
-    @Test
     fun `test isready, isalive, health og metrics`() {
         with(engine) {
             handleRequest(HttpMethod.Get, "/isready") {}.apply {
@@ -147,28 +78,131 @@ class ApplicationTest {
     }
 
     @Test
-    fun testGetBarnIsEmptyList() {
-        val cookie = getAuthCookie(fnr)
-
-        with(engine) {
-            with(handleRequest(HttpMethod.Get, "/barn") {
-                addHeader("Accept", "application/json")
-                addHeader("Cookie", cookie.toString())
-            }) {
-                assertEquals(HttpStatusCode.OK, response.status())
-                val expectedResponse = objectMapper.readTree("""
-                    {
-                        "barn": []
-                    }
-                """.trimIndent())
-                val actualResponse = objectMapper.readTree(response.content!!)
-                assertEquals(expectedResponse, actualResponse)
-            }
-        }
+    fun `Hente arbedisgivere uten cookie satt`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.Unauthorized,
+            expectedResponse = null,
+            leggTilCookie = false
+        )
     }
 
     @Test
-    fun testHaandteringAvVedlegg() {
+    fun `Hente arbreidsgivere med for lav ID level`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.Forbidden,
+            expectedResponse = null,
+            cookie = getAuthCookie(fnr, authLevel = "Level3")
+        )
+    }
+
+    @Test
+    fun `Hente arbeidsgivere med en utloept cookie`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.Unauthorized,
+            expectedResponse = null,
+            cookie = getAuthCookie(fnr, expiry = -(oneMinuteInMillis))
+        )
+    }
+
+    @Test
+    fun `Hente arbeidsgivere med ugyldig format paa til og fra`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=heisann&til_og_med=hadet",
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse = """
+                {
+                    "type": "/problem-details/invalid-request-parameters",
+                    "title": "invalid-request-parameters",
+                    "status": 400,
+                    "detail": "Requesten inneholder ugyldige paramtere.",
+                    "instance": "about:blank",
+                    "invalid_parameters": [{
+                        "type": "query",
+                        "name": "fra_og_med",
+                        "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
+                        "invalid_value": "heisann"
+                    }, {
+                        "type": "query",
+                        "name": "til_og_med",
+                        "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
+                        "invalid_value": "hadet"
+                    }]
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `Hente arbeidsgivere uten til og fra satt`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver",
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse = """
+                {
+                    "type": "/problem-details/invalid-request-parameters",
+                    "title": "invalid-request-parameters",
+                    "status": 400,
+                    "detail": "Requesten inneholder ugyldige paramtere.",
+                    "instance": "about:blank",
+                    "invalid_parameters": [{
+                        "type": "query",
+                        "name": "fra_og_med",
+                        "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
+                        "invalid_value": null
+                    }, {
+                        "type": "query",
+                        "name": "til_og_med",
+                        "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
+                        "invalid_value": null
+                    }]
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `Henting av barn gir en tom liste`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/barn",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = """
+                {
+                    "barn" : []
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `Hente soeker`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/soker",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = expectedGetSokerJson(fnr)
+        )
+    }
+
+    @Test
+    fun sendSoknadTests() {
+        val cookie = getAuthCookie(fnr)
+        gyldigSoknad(engine, cookie)
+        //obligatoriskeFelterIkkeSatt(engine, cookie)
+        //ugyldigInformasjonOmBarn(engine, cookie)
+    }
+
+
+    @Test
+    fun `Test haandtering av vedlegg`() {
         val cookie = getAuthCookie(fnr)
         val jpeg = "vedlegg/iPhone_6.jpg".fromResources()
 
@@ -201,19 +235,29 @@ class ApplicationTest {
         }
     }
 
-    @Test
-    fun testHentSoker() {
-        val cookie = getAuthCookie(fnr)
-
+    private fun requestAndAssert(httpMethod: HttpMethod,
+                                 path : String,
+                                 requestEntity : String? = null,
+                                 expectedResponse : String?,
+                                 expectedCode : HttpStatusCode,
+                                 leggTilCookie : Boolean = true,
+                                 cookie : Cookie = getAuthCookie(fnr)) {
         with(engine) {
-            with(handleRequest(HttpMethod.Get, "/soker") {
-                addHeader("Accept", "application/json")
-                addHeader("Cookie", cookie.toString())
-            }) {
-                assertEquals(HttpStatusCode.OK, response.status())
-                val expectedResponse = objectMapper.readTree(expectedGetSokerJson(fnr))
-                val actualResponse = objectMapper.readTree(response.content!!)
-                assertEquals(expectedResponse, actualResponse)
+            handleRequest(httpMethod, path) {
+                if (leggTilCookie) addHeader(HttpHeaders.Cookie, cookie.toString())
+                logger.info("Request Entity = $requestEntity")
+                addHeader(HttpHeaders.Accept, "application/json")
+                if (requestEntity != null) addHeader(HttpHeaders.ContentType, "application/json")
+                if (requestEntity != null) setBody(requestEntity)
+            }.apply {
+                logger.info("Response Entity = ${response.content}")
+                logger.info("Expected Entity = $expectedResponse")
+                assertEquals(expectedCode, response.status())
+                if (expectedResponse != null) {
+                    JSONAssert.assertEquals(expectedResponse, response.content!!, true)
+                } else {
+                    assertEquals(expectedResponse, response.content)
+                }
             }
         }
     }

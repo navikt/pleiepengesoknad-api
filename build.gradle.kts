@@ -41,6 +41,7 @@ dependencies {
         exclude(group = "org.eclipse.jetty")
     }
 
+    testCompile("org.skyscreamer:jsonassert:1.5.0")
     testCompile ("com.nimbusds:oauth2-oidc-sdk:5.56")
     testImplementation("org.everit.json:org.everit.json.schema:1.3.0")
 
