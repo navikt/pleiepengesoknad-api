@@ -7,6 +7,7 @@ fun stubStsGetAccessToken() {
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching("/authorization-server-mock/token.*"))
             .withHeader("x-nav-apiKey", AnythingPattern())
+            .withHeader("X-Correlation-ID", AnythingPattern())
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)

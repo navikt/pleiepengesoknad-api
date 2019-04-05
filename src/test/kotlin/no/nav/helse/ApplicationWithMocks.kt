@@ -35,7 +35,9 @@ class ApplicationWithMocks {
                 aktoerRegisterBaseUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/aktoer-register",
                 sparkelUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/sparkel",
                 pleiepengesoknadProsesseringUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/pleiepengesoknad-prosessering",
-                pleiepengerDokumentUrl = "https://pleiepenger-dokument.nais.oera-q.local"
+                pleiepengerDokumentUrl = "https://pleiepenger-dokument.nais.oera-q.local",
+                apiGatewayKey = null,
+                clientSecret = null
             ))
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {
@@ -46,7 +48,7 @@ class ApplicationWithMocks {
                 }
             })
 
-            withApplication { no.nav.helse.main(everythingMocked) }
+            withApplication { no.nav.helse.main(q1OnlyMockLogin) }
         }
     }
 }

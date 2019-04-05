@@ -6,11 +6,15 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.Logging
+import io.ktor.http.HttpHeaders
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.setProxyRoutePlanner
 import no.nav.helse.dusseldorf.ktor.client.sl4jLogger
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
+import org.apache.http.HttpRequest
 import org.apache.http.HttpRequestInterceptor
+import org.apache.http.protocol.HttpContext
+import java.util.*
 
 class Clients {
     companion object {
@@ -58,6 +62,7 @@ class Clients {
                 engine {
                     customizeClient {
                         setProxyRoutePlanner()
+                        addInterceptorLast(CorrelationIdInterceptor())
                         addInterceptorLast(apiGatewayHttpRequestInterceptor)
                     }
                 }
@@ -133,4 +138,11 @@ class Clients {
             }
         )
     }
+}
+
+private class CorrelationIdInterceptor : HttpRequestInterceptor {
+    override fun process(request: HttpRequest?, context: HttpContext?) {
+        request!!.addHeader(HttpHeaders.XCorrelationId, UUID.randomUUID().toString())
+    }
+
 }
