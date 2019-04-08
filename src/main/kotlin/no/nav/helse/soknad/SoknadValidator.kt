@@ -1,8 +1,13 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.vedlegg.Vedlegg
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
+private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
+private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachments-too-large", status = 413, detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB.")
+
 
 class FraOgMedTilOgMedValidator {
     companion object {
@@ -190,6 +195,13 @@ internal fun Soknad.validate() {
         throw Throwblem(ValidationProblemDetails(violations))
     }
 
+}
+
+internal fun List<Vedlegg>.validerTotalStorresle() {
+    val totalSize = sumBy { it.content.size }
+    if (totalSize > MAX_VEDLEGG_SIZE) {
+        throw Throwblem(vedleggTooLargeProblemDetails)
+    }
 }
 
 

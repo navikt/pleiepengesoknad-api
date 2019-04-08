@@ -30,6 +30,9 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
             vedleggUrls = soknad.vedlegg,
             callId = callId
         )
+        logger.trace("Validerer totale størreslen på vedleggene.")
+        vedlegg.validerTotalStorresle()
+
         logger.trace("Vedlegg hentet. Legger søknad til prosessering")
         if (soknad.vedlegg.size != vedlegg.size) {
             logger.warn("Mottok referanse til ${soknad.vedlegg.size} vedlegg, men fant bare ${vedlegg.size} som sendes til prosessering.")

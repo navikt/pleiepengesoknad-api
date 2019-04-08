@@ -40,6 +40,18 @@ POST @ /soknad -> 202 Response
 	}
 }
 ```
+
+#### Feilmeldinger
+```json
+{
+	"type": "/problem-details/attachments-too-large",
+	"title": "attachments-too-large",
+	"status": 413,
+	"detail": "Totale størreslsen på alle vedlegg overstiger maks på 24 MB.",
+	"instance": "about:blank"
+}
+```
+
 ### Søker
 GET @/soker -> 200 Response
 ```json
@@ -81,7 +93,7 @@ POST @/vedlegg -> 201 Response med 'Location' header satt til vedlegget
 	"type": "/problem-details/attachment-too-large",
 	"title": "attachment-too-large",
 	"status": 413,
-	"detail": "edlegget var over maks tillatt størrelse på 8MB.",
+	"detail": "vedlegget var over maks tillatt størrelse på 8MB.",
 	"instance": "about:blank"
 }
 ```
