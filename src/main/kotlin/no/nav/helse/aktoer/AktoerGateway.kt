@@ -1,18 +1,17 @@
 package no.nav.helse.aktoer
 
 import io.ktor.client.request.*
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.Url
+import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.dusseldorf.ktor.client.buildURL
+import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
+import java.time.Duration
 
 /**
  * https://app-q1.adeo.no/aktoerregister/swagger-ui.html
@@ -51,9 +50,7 @@ class AktoerGateway(
         httpRequest.accept(ContentType.Application.Json)
         httpRequest.url(completeUrl)
 
-        val httpResponse = monitoredHttpClient.requestAndReceive<Map<String, IdentResponse>>(
-            httpRequestBuilder = httpRequest
-        )
+        val httpResponse = request(httpRequest)
 
         if (!httpResponse.containsKey(fnr.value)) {
             throw IllegalStateException("Svar fra '$completeUrl' inneholdt ikke data om det forsespurte fødselsnummeret.")
@@ -72,6 +69,22 @@ class AktoerGateway(
         val aktoerId = AktoerId(identResponse.identer[0].ident)
         logger.info("Resolved AktørID $aktoerId")
         return aktoerId
+    }
+
+    private suspend fun request(
+        httpRequest: HttpRequestBuilder
+    ) : Map<String, IdentResponse> {
+        return Retry.retry(
+            operation = "hente-aktoer-id",
+            tries = 3,
+            initialDelay = Duration.ofMillis(100),
+            maxDelay = Duration.ofMillis(300),
+            logger = logger
+        ) {
+            monitoredHttpClient.requestAndReceive<Map<String, IdentResponse>>(
+                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest)
+            )
+        }
     }
 }
 

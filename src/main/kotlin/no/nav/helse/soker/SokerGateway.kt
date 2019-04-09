@@ -4,19 +4,22 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.client.request.url
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
-import io.ktor.http.Url
+import io.ktor.http.*
 import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.dusseldorf.ktor.client.buildURL
+import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.Fodselsnummer
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URL
+import java.time.Duration
 
 private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
+private val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
+
 
 class SokerGateway(
     private val monitoredHttpClient: MonitoredHttpClient,
@@ -43,9 +46,7 @@ class SokerGateway(
         httpRequest.method = HttpMethod.Get
         httpRequest.url(url)
 
-        val response = monitoredHttpClient.requestAndReceive<SparkelResponse>(
-            httpRequestBuilder = httpRequest
-        )
+        val response = request(httpRequest)
 
         return Soker(
             fornavn = response.fornavn,
@@ -53,6 +54,22 @@ class SokerGateway(
             etternavn = response.etternavn,
             fodselsnummer = fnr.value
         )
+    }
+
+    private suspend fun request(
+        httpRequest: HttpRequestBuilder
+    ) : SparkelResponse {
+        return Retry.retry(
+            operation = "hente-soker",
+            tries = 3,
+            initialDelay = Duration.ofMillis(100),
+            maxDelay = Duration.ofMillis(300),
+            logger = logger
+        ) {
+            monitoredHttpClient.requestAndReceive<SparkelResponse>(
+                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest)
+            )
+        }
     }
 }
 

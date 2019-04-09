@@ -7,11 +7,13 @@ import io.ktor.client.request.url
 import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.buildURL
+import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
+import java.time.Duration
 
 private val logger: Logger = LoggerFactory.getLogger("nav.PleiepengerDokumentGateway")
 
@@ -43,13 +45,20 @@ class PleiepengerDokumentGateway(
             httpMethod = HttpMethod.Get
         )
 
-        val httpResponse = monitoredHttpClient.request(
-            httpRequestBuilder = httpRequest,
-            expectedHttpResponseCodes = setOf(HttpStatusCode.OK, HttpStatusCode.NotFound)
+        val response = Retry.retry(
+            operation = "hente-vedlegg",
+            tries = 3,
+            initialDelay = Duration.ofMillis(100),
+            maxDelay = Duration.ofMillis(300),
+            logger = logger
+        ) {
+            monitoredHttpClient.request(
+                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest),
+                expectedHttpResponseCodes = setOf(HttpStatusCode.OK, HttpStatusCode.NotFound)
+            )
+        }
 
-        )
-
-        return httpResponse.use {
+        return response.use {
             if (it.status == HttpStatusCode.NotFound) null
             else it.receive()
         }
@@ -67,10 +76,18 @@ class PleiepengerDokumentGateway(
             httpMethod = HttpMethod.Post
         ).body(vedlegg)
 
-        val response = monitoredHttpClient.requestAndReceive<CreatedResponseEntity>(
-            httpRequestBuilder = httpRequest,
-            expectedHttpResponseCodes = setOf(HttpStatusCode.Created)
-        )
+        val response = Retry.retry(
+            operation = "lagre-vedlegg",
+            tries = 3,
+            initialDelay = Duration.ofMillis(100),
+            maxDelay = Duration.ofMillis(300),
+            logger = logger
+        ) {
+            monitoredHttpClient.requestAndReceive<CreatedResponseEntity>(
+                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest),
+                expectedHttpResponseCodes = setOf(HttpStatusCode.Created)
+            )
+        }
 
         return VedleggId(response.id)
     }
@@ -93,10 +110,18 @@ class PleiepengerDokumentGateway(
         )
 
         return try {
-            monitoredHttpClient.request(
-                httpRequestBuilder = httpRequest,
-                expectedHttpResponseCodes = setOf(HttpStatusCode.NoContent)
-            ).use { }
+            Retry.retry(
+                operation = "slett-vedlegg",
+                tries = 3,
+                initialDelay = Duration.ofMillis(100),
+                maxDelay = Duration.ofMillis(300),
+                logger = logger
+            ) {
+                monitoredHttpClient.request(
+                    httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest),
+                    expectedHttpResponseCodes = setOf(HttpStatusCode.NoContent)
+                ).use {}
+            }
             true
         } catch (cause: Throwable) {
             false
