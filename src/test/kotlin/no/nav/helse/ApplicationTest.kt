@@ -240,6 +240,7 @@ class ApplicationTest {
                             }
                         ]
                     },
+                    "grad": 120,
                     "vedlegg": [],
                     "medlemskap" : {
                         "har_bodd_i_utlandet_siste_12_mnd" : false,
@@ -289,6 +290,11 @@ class ApplicationTest {
                         "name": "vedlegg",
                         "reason": "Det må sendes minst et vedlegg.",
                         "invalid_value": []
+                    }, {
+                        "type": "entity",
+                        "name": "grad",
+                        "reason": "Grad må være mellom 20 og 100.",
+                        "invalid_value": 120
                     }]
                 }
             """.trimIndent()

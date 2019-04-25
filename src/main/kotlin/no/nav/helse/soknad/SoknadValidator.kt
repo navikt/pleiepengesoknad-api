@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachments-too-large", status = 413, detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB.")
+private const val MIN_GRAD = 20
+private const val MAX_GRAD = 100
 
 
 class FraOgMedTilOgMedValidator {
@@ -177,6 +179,18 @@ internal fun Soknad.validate() {
                 invalidValue = vedlegg
             )
         )
+    }
+
+    // Grad
+    if (grad < MIN_GRAD || grad > MAX_GRAD) {
+        violations.add(
+            Violation(
+                parameterName = "grad",
+                parameterType = ParameterType.ENTITY,
+                reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
+                invalidValue = grad
+
+        ))
     }
 
     vedlegg.mapIndexed { index, url ->

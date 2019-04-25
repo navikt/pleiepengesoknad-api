@@ -12,7 +12,11 @@ data class Soknad (
     val vedlegg : List<URL>,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
-    val medlemskap: Medlemskap
+    val medlemskap: Medlemskap,
+    val harMedsoker : Boolean,
+    val grad : Int,
+    val erSelvstendigNaeringsdrivendeEllerFrilanser : Boolean,
+    val forventesAtBarnetKanVaereIEtablertTilsynsOrdning: Boolean
 )
 data class ArbeidsgiverDetailjer(
     val organisasjoner : List<Arbeidsgiver>
@@ -30,3 +34,12 @@ data class BarnDetaljer(
     val alternativId: String?,
     val navn: String
 )
+
+/*
+{
+    "grad": 100,
+    "er_medsoker": true,
+    "er_selvstendig_naeringsdrivende_eller_frilanser": false,
+    "forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning": false
+}
+ */
