@@ -30,13 +30,13 @@ fun StatusPages.Configuration.authorizationStatusPages() {
         logger.error("Klarte ikke å verifiere JWT", cause)
     }
 
-    exception<SigningKeyNotFoundException> { cause ->
+    exception<SigningKeyNotFoundException> {
         call.respond(HttpStatusCode.Unauthorized)
         // Etterssom issuer har rullert nøkler vet vi at toknet uansett har expiret, så gir samme feilmelding som på expired token.
         logger.trace("Fant ikke nøkkelen på JWT url for å verifisere signatur på tokenet. Issuer har rullert nøkler siden dette tokenet ble issuet => Expired Token.")
     }
 
-    exception<TokenExpiredException> { cause ->
+    exception<TokenExpiredException> {
         call.respond(HttpStatusCode.Unauthorized)
         logger.trace("Tokenet er ikke lenger gylidig.")
     }

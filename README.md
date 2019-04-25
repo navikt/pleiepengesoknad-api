@@ -11,6 +11,7 @@ POST @ /soknad -> 202 Response
 - Ingen detaljer om barnet er påkrevd
 - barn.alternativ_id må være 11 siffer om det er satt
 - barn.fodslsnummer må være et gyldig norsk fødselsnummer om det er satt
+- grad må være satt til en verdi større eller lik 20 og mindre eller lik 100
 
 ```json
 {
@@ -37,7 +38,11 @@ POST @ /soknad -> 202 Response
 	"medlemskap": {
 		"har_bodd_i_utlandet_siste_12_mnd": false,
 		"skal_bo_i_utlandet_neste_12_mnd": true
-	}
+	},
+	"har_medsoker": true,
+	"er_selvstendig_naeringsdrivende_eller_frilanser": false,
+	"forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning": false,
+	"grad": 100
 }
 ```
 

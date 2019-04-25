@@ -13,10 +13,11 @@ data class Soknad (
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
-    val harMedsoker : Boolean,
+    val harMedsoker : Boolean? = null,
     val grad : Int,
-    val erSelvstendigNaeringsdrivendeEllerFrilanser : Boolean,
-    val forventesAtBarnetKanVaereIEtablertTilsynsOrdning: Boolean
+    val erSelvstendigNaeringsdrivendeEllerFrilanser : Boolean? = null,
+    @JsonProperty("forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning")
+    val forventesAtBarnetKanVaereIEtablertTilsynsordning: Boolean? = null
 )
 data class ArbeidsgiverDetailjer(
     val organisasjoner : List<Arbeidsgiver>
@@ -24,9 +25,9 @@ data class ArbeidsgiverDetailjer(
 
 data class Medlemskap(
     @JsonProperty("har_bodd_i_utlandet_siste_12_mnd")
-    val harBoddIUtlandetSiste12Mnd : Boolean,
+    val harBoddIUtlandetSiste12Mnd : Boolean? = null,
     @JsonProperty("skal_bo_i_utlandet_neste_12_mnd")
-    val skalBoIUtlandetNeste12Mnd : Boolean
+    val skalBoIUtlandetNeste12Mnd : Boolean? = null
 )
 
 data class BarnDetaljer(
@@ -34,12 +35,3 @@ data class BarnDetaljer(
     val alternativId: String?,
     val navn: String
 )
-
-/*
-{
-    "grad": 100,
-    "er_medsoker": true,
-    "er_selvstendig_naeringsdrivende_eller_frilanser": false,
-    "forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning": false
-}
- */

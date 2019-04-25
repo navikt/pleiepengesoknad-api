@@ -242,10 +242,7 @@ class ApplicationTest {
                     },
                     "grad": 120,
                     "vedlegg": [],
-                    "medlemskap" : {
-                        "har_bodd_i_utlandet_siste_12_mnd" : false,
-                        "skal_bo_i_utlandet_neste_12_mnd" : true
-                    }
+                    "medlemskap" : {}
                 }
                 """.trimIndent(),
             expectedResponse = """
@@ -295,7 +292,32 @@ class ApplicationTest {
                         "name": "grad",
                         "reason": "Grad må være mellom 20 og 100.",
                         "invalid_value": 120
-                    }]
+                    },{
+                        "type": "entity",
+                        "name": "medlemskap.har_bodd_i_utlandet_siste_12_mnd",
+                        "reason": "Må settes til true eller false.",
+                        "invalid_value": null
+	                },{
+                        "type": "entity",
+                        "name": "medlemskap.skal_bo_i_utlandet_neste_12_mnd",
+                        "reason": "Må settes til true eller false.",
+                        "invalid_value": null
+	                },{
+                        "type": "entity",
+                        "name": "har_medsoker",
+                        "reason": "Må settes til true eller false.",
+                        "invalid_value": null
+	                },{
+                        "type": "entity",
+                        "name": "er_selvstendig_naeringsdrivende_eller_frilanser",
+                        "reason": "Må settes til true eller false.",
+                        "invalid_value": null
+	                },{
+                        "type": "entity",
+                        "name": "forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning",
+                        "reason": "Må settes til true eller false.",
+                        "invalid_value": null
+	                }]
                 }
             """.trimIndent()
         )
