@@ -47,7 +47,10 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
             vedlegg = vedlegg,
             arbeidsgivere = soknad.arbeidsgivere,
             medlemskap = soknad.medlemskap,
-            relasjonTilBarnet = soknad.relasjonTilBarnet
+            relasjonTilBarnet = soknad.relasjonTilBarnet,
+            grad = soknad.grad,
+            erSelvstendigNaeringsdrivendeEllerFrilanser = soknad.erSelvstendigNaeringsdrivendeEllerFrilanser!!,
+            forventesAtBarnetKanVaereIEtablertTilsynsordning = soknad.forventesAtBarnetKanVaereIEtablertTilsynsordning!!
         )
 
         pleiepengesoknadProsesseringGateway.leggTilProsessering(
