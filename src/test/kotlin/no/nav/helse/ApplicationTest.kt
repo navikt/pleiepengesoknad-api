@@ -226,7 +226,7 @@ class ApplicationTest {
             requestEntity = """
                 {
                     "barn": {
-                        "navn": "$forlangtNavn",
+                        "navn": "",
                         "fodselsnummer": "29099012345"
                     },
                     "relasjon_til_barnet": "mor",
@@ -261,7 +261,7 @@ class ApplicationTest {
                         "type": "entity",
                         "name": "barn.navn",
                         "reason": "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
-                        "invalid_value": "$forlangtNavn"
+                        "invalid_value": ""
                     }, {
                         "type": "entity",
                         "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",

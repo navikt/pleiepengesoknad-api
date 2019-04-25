@@ -13,7 +13,6 @@ class Soknad {
             return """
                 {
                     "barn": {
-                        "navn": "Santa ÆØÅ Winter",
                         "fodselsnummer": "$fodselsnummer"
                     },
                     "relasjon_til_barnet": "mor",
@@ -23,7 +22,7 @@ class Soknad {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
-                                "navn": "Bjeffefirmaet"
+                                "navn": "Bjeffefirmaet ÆÆÅ"
                             }
                         ]
                     },

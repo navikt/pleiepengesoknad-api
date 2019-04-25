@@ -126,7 +126,7 @@ internal fun Soknad.validate() {
         )
     }
 
-    if (barn.navn.erBlankEllerLengreEnn(100)) {
+    if (barn.navn != null && barn.navn.erBlankEllerLengreEnn(100)) {
         violations.add(
             Violation(
                 parameterName = "barn.navn",

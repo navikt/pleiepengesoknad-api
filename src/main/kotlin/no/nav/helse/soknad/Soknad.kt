@@ -33,5 +33,5 @@ data class Medlemskap(
 data class BarnDetaljer(
     val fodselsnummer: String?,
     val alternativId: String?,
-    val navn: String
+    val navn: String?
 )
