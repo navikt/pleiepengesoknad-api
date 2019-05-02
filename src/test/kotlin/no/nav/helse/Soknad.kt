@@ -35,9 +35,7 @@ class Soknad {
                         "skal_bo_i_utlandet_neste_12_mnd" : true
                     },
                     "grad": 100,
-                    "har_medsoker": true,
-	                "er_selvstendig_naeringsdrivende_eller_frilanser": false,
-	                "forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning": false
+                    "har_medsoker": true
                 }
                 """.trimIndent()
         }

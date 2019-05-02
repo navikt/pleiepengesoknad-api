@@ -14,10 +14,7 @@ data class Soknad (
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
     val harMedsoker : Boolean? = null,
-    val grad : Int,
-    val erSelvstendigNaeringsdrivendeEllerFrilanser : Boolean? = null,
-    @JsonProperty("forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning")
-    val forventesAtBarnetKanVaereIEtablertTilsynsordning: Boolean? = null
+    val grad : Int
 )
 data class ArbeidsgiverDetailjer(
     val organisasjoner : List<Arbeidsgiver>

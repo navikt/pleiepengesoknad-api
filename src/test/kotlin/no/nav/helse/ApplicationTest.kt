@@ -307,16 +307,6 @@ class ApplicationTest {
                         "name": "har_medsoker",
                         "reason": "Må settes til true eller false.",
                         "invalid_value": null
-	                },{
-                        "type": "entity",
-                        "name": "er_selvstendig_naeringsdrivende_eller_frilanser",
-                        "reason": "Må settes til true eller false.",
-                        "invalid_value": null
-	                },{
-                        "type": "entity",
-                        "name": "forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning",
-                        "reason": "Må settes til true eller false.",
-                        "invalid_value": null
 	                }]
                 }
             """.trimIndent()

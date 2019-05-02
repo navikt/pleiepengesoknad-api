@@ -207,8 +207,6 @@ internal fun Soknad.validate() {
     if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.har_bodd_i_utlandet_siste_12_mnd")
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
     if (harMedsoker == null) booleanIkkeSatt("har_medsoker")
-    if (erSelvstendigNaeringsdrivendeEllerFrilanser == null) booleanIkkeSatt("er_selvstendig_naeringsdrivende_eller_frilanser")
-    if (forventesAtBarnetKanVaereIEtablertTilsynsordning == null) booleanIkkeSatt("forventes_at_barnet_kan_vaere_i_etablert_tilsynsordning")
 
     vedlegg.mapIndexed { index, url ->
         if (!url.path.matches(Regex("/vedlegg/.*"))) {
