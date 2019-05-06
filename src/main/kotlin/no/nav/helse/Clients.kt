@@ -37,6 +37,9 @@ class Clients {
                     sl4jLogger("sparkel")
                 }
                 engine {
+                    response.apply {
+                        defaultCharset = Charsets.UTF_8
+                    }
                     customizeClient {
                         setProxyRoutePlanner()
                         addInterceptorLast(apiGatewayHttpRequestInterceptor)

@@ -18,7 +18,7 @@ class ApplicationWithoutMocks {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            System.setProperty("http.nonProxyHosts", "localhost|login.microsoftonline.com")
+            System.setProperty("http.nonProxyHosts", "localhost|login.microsoftonline.com|api-gw-q1.oera.no")
             System.setProperty("http.proxyHost", "127.0.0.1")
             System.setProperty("http.proxyPort", "5001")
             System.setProperty("https.proxyHost", "127.0.0.1")
