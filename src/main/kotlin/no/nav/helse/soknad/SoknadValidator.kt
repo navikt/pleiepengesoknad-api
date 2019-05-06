@@ -213,7 +213,7 @@ internal fun Soknad.validate() {
                 parameterName = "har_bekreftet_opplysninger",
                 parameterType = ParameterType.ENTITY,
                 reason = "Opplysningene må bekreftes for å sende inn søknad.",
-                invalidValue = null
+                invalidValue = false
 
             ))
     }
@@ -223,7 +223,7 @@ internal fun Soknad.validate() {
                 parameterName = "har_forstatt_rettigheter_og_plikter",
                 parameterType = ParameterType.ENTITY,
                 reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
-                invalidValue = null
+                invalidValue = false
 
             ))
     }
