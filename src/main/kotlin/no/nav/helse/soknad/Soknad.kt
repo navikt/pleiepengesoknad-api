@@ -14,6 +14,8 @@ data class Soknad (
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
     val harMedsoker : Boolean? = null,
+    val harForstattRettigheterOgPlikter : Boolean,
+    val harBekreftetOpplysninger : Boolean,
     val grad : Int
 )
 data class ArbeidsgiverDetailjer(

@@ -207,6 +207,26 @@ internal fun Soknad.validate() {
     if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.har_bodd_i_utlandet_siste_12_mnd")
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
     if (harMedsoker == null) booleanIkkeSatt("har_medsoker")
+    if (!harBekreftetOpplysninger) {
+        violations.add(
+            Violation(
+                parameterName = "har_bekreftet_opplysninger",
+                parameterType = ParameterType.ENTITY,
+                reason = "Opplysningene må bekreftes for å sende inn søknad.",
+                invalidValue = null
+
+            ))
+    }
+    if (!harForstattRettigheterOgPlikter) {
+        violations.add(
+            Violation(
+                parameterName = "har_forstatt_rettigheter_og_plikter",
+                parameterType = ParameterType.ENTITY,
+                reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
+                invalidValue = null
+
+            ))
+    }
 
     vedlegg.mapIndexed { index, url ->
         if (!url.path.matches(Regex("/vedlegg/.*"))) {

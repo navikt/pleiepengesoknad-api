@@ -242,7 +242,8 @@ class ApplicationTest {
                     },
                     "grad": 120,
                     "vedlegg": [],
-                    "medlemskap" : {}
+                    "medlemskap" : {},
+                    "har_forstatt_rettigheter_og_plikter": false
                 }
                 """.trimIndent(),
             expectedResponse = """
@@ -306,6 +307,16 @@ class ApplicationTest {
                         "type": "entity",
                         "name": "har_medsoker",
                         "reason": "Må settes til true eller false.",
+                        "invalid_value": null
+	                },{
+                        "type": "entity",
+                        "name": "har_bekreftet_opplysninger",
+                        "reason": "Opplysningene må bekreftes for å sende inn søknad.",
+                        "invalid_value": null
+	                },{
+                        "type": "entity",
+                        "name": "har_forstatt_rettigheter_og_plikter",
+                        "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                         "invalid_value": null
 	                }]
                 }

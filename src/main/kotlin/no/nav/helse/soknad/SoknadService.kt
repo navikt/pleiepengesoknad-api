@@ -49,7 +49,9 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
             medlemskap = soknad.medlemskap,
             relasjonTilBarnet = soknad.relasjonTilBarnet,
             grad = soknad.grad,
-            harMedsoker = soknad.harMedsoker!!
+            harMedsoker = soknad.harMedsoker!!,
+            harBekreftetOpplysninger = soknad.harBekreftetOpplysninger,
+            harForstattRettigheterOgPlikter = soknad.harForstattRettigheterOgPlikter
         )
 
         pleiepengesoknadProsesseringGateway.leggTilProsessering(

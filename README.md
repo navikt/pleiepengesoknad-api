@@ -12,6 +12,7 @@ POST @ /soknad -> 202 Response
 - barn.alternativ_id må være 11 siffer om det er satt
 - barn.fodslsnummer må være et gyldig norsk fødselsnummer om det er satt
 - grad må være satt til en verdi større eller lik 20 og mindre eller lik 100
+- 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
 
 ```json
 {
@@ -40,6 +41,8 @@ POST @ /soknad -> 202 Response
 		"skal_bo_i_utlandet_neste_12_mnd": true
 	},
 	"har_medsoker": true,
+	"har_bekreftet_opplysninger" : true,
+	"har_forstatt_rettigheter_og_plikter": true,
 	"grad": 100
 }
 ```

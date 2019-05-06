@@ -16,5 +16,7 @@ data class KomplettSoknad(
     val medlemskap : Medlemskap,
     val relasjonTilBarnet : String,
     val grad : Int,
-    val harMedsoker : Boolean
+    val harMedsoker : Boolean,
+    val harForstattRettigheterOgPlikter : Boolean,
+    val harBekreftetOpplysninger : Boolean
 )
