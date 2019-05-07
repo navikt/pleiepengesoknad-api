@@ -1,9 +1,12 @@
 package no.nav.helse.soknad
 
+import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.soker.SokerService
+import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,7 +27,11 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
     ) {
         logger.trace("Registrerer søknad. Henter søker")
         val soker = sokerService.getSoker(fnr = fnr, callId = callId)
-        logger.trace("Søker hentet. Henter ${soknad.vedlegg.size} vedlegg")
+
+        logger.trace("Søker hentet. Validerer om søkeren.")
+        soker.validate()
+
+        logger.trace("Validert Søker. Henter ${soknad.vedlegg.size} vedlegg")
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
             vedleggUrls = soknad.vedlegg,
@@ -69,4 +76,6 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
 
         logger.trace("Vedlegg slettet.")
     }
+
+
 }

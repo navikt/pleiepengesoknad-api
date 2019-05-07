@@ -24,6 +24,7 @@ private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 private val logger: Logger = LoggerFactory.getLogger("nav.ApplicationTest")
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
+private val ikkeMyndigDato = "2050-12-12"
 
 @KtorExperimentalAPI
 class ApplicationTest {
@@ -196,6 +197,22 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Hente soeker som ikke er myndig`() {
+        stubSparkelGetSoker(fodselsdato = ikkeMyndigDato)
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/soker",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = expectedGetSokerJson(
+                fodselsnummer = fnr,
+                fodselsdato = ikkeMyndigDato,
+                myndig = false
+            )
+        )
+        stubSparkelGetSoker()
+    }
+
+    @Test
     fun `Sende soknad`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
@@ -214,6 +231,37 @@ class ApplicationTest {
             )
 
         )
+    }
+
+    @Test
+    fun `Sende soknad ikke myndig`() {
+        stubSparkelGetSoker(fodselsdato = ikkeMyndigDato)
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                    "type": "/problem-details/unauthorized",
+                    "title": "unauthorized",
+                    "status": 403,
+                    "detail": "Søkeren er ikke myndig og kan ikke sende inn søknaden.",
+                    "instance": "about:blank"
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.Forbidden,
+            cookie = cookie,
+            requestEntity = Soknad.body(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                vedleggUrl2 = pdfUrl
+            )
+
+        )
+        stubSparkelGetSoker()
     }
 
     @Test

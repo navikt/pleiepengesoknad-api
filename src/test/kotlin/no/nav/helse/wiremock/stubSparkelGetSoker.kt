@@ -3,7 +3,9 @@ package no.nav.helse.wiremock
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 
-fun stubSparkelGetSoker() {
+fun stubSparkelGetSoker(
+    fodselsdato : String = "1997-05-25"
+) {
     WireMock.stubFor(
         WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/person/.*"))
             .withHeader("x-nav-apiKey", AnythingPattern())
@@ -11,14 +13,14 @@ fun stubSparkelGetSoker() {
                 WireMock.aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
-                    .withBody(sparkelResponse)
+                    .withBody(sparkelResponse(fodselsdato))
             )
     )
 }
 
-private val sparkelResponse = """
+private fun sparkelResponse(fodselsdato: String) : String = """
     {
-        "fdato": "1997-05-25",
+        "fdato": "$fodselsdato",
         "etternavn": "MORSEN",
         "mellomnavn": "HEISANN",
         "id": {
@@ -29,11 +31,17 @@ private val sparkelResponse = """
     }
 """.trimIndent()
 
-fun expectedGetSokerJson(fodselsnummer: String) = """
+fun expectedGetSokerJson(
+    fodselsnummer: String,
+    fodselsdato: String = "1997-05-25",
+    myndig : Boolean = true) = """
     {
         "etternavn": "MORSEN",
         "fornavn": "MOR",
         "mellomnavn": "HEISANN",
-        "fodselsnummer": "$fodselsnummer"
+        "fodselsnummer": "$fodselsnummer",
+        "fodselsdato": "$fodselsdato",
+        "myndig": $myndig
     }
 """.trimIndent()
+

@@ -1,6 +1,7 @@
 package no.nav.helse
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JacksonSerializer
@@ -31,6 +32,7 @@ class Clients {
                 install(JsonFeature) {
                     serializer = JacksonSerializer {
                         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                        registerModule(JavaTimeModule())
                     }
                 }
                 install (Logging) {

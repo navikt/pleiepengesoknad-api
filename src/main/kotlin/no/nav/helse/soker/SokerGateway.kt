@@ -16,6 +16,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
 import java.time.Duration
+import java.time.LocalDate
 
 private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
 private val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
@@ -52,7 +53,8 @@ class SokerGateway(
             fornavn = response.fornavn,
             mellomnavn = response.mellomnavn,
             etternavn = response.etternavn,
-            fodselsnummer = fnr.value
+            fodselsnummer = fnr.value,
+            fodselsdato = response.fdato
         )
     }
 
@@ -73,4 +75,4 @@ class SokerGateway(
     }
 }
 
-data class SparkelResponse(val fornavn: String, val mellomnavn: String?, val etternavn: String)
+data class SparkelResponse(val fornavn: String, val mellomnavn: String?, val etternavn: String, val fdato: LocalDate)
