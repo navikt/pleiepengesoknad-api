@@ -57,6 +57,15 @@ POST @ /soknad -> 202 Response
 	"instance": "about:blank"
 }
 ```
+```json
+{
+    "type": "/problem-details/unauthorized",
+    "title": "unauthorized",
+    "status": 403,
+    "detail": "Søkeren er ikke myndig og kan ikke sende inn søknaden.",
+    "instance": "about:blank"
+}
+```
 
 ### Søker
 GET @/soker -> 200 Response
@@ -65,7 +74,9 @@ GET @/soker -> 200 Response
     "etternavn": "MORSEN",
     "fornavn": "MOR",
     "mellomnavn": "HEISANN",
-    "fodselsnummer": "290990123456"
+    "fodselsnummer": "290990123456",
+    "fodseldato": "1997-10-05",
+    "myndig": true
 }
 ```
 
