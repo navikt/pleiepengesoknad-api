@@ -58,13 +58,14 @@ class FraOgMedTilOgMedValidator {
             parameterType: ParameterType
         ) : Set<Violation> {
             val violations = mutableSetOf<Violation>()
+            if (fraOgMed.isEqual(tilOgMed)) return violations
 
             if (!tilOgMed.isAfter(fraOgMed)) {
                 violations.add(
                     Violation(
                         parameterName = "fra_og_med",
                         parameterType = parameterType,
-                        reason = "Fra og med må være før til og med.",
+                        reason = "Fra og med må være før eller lik til og med.",
                         invalidValue = DateTimeFormatter.ISO_DATE.format(fraOgMed)
                     )
                 )
@@ -72,7 +73,7 @@ class FraOgMedTilOgMedValidator {
                     Violation(
                         parameterName = "til_og_med",
                         parameterType = parameterType,
-                        reason = "Til og med må være etter fra og med.",
+                        reason = "Til og med må være etter eller lik fra og med.",
                         invalidValue = DateTimeFormatter.ISO_DATE.format(tilOgMed)
                     )
                 )

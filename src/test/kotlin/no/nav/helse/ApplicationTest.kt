@@ -324,12 +324,12 @@ class ApplicationTest {
                     }, {
                         "type": "entity",
                         "name": "fra_og_med",
-                        "reason": "Fra og med må være før til og med.",
+                        "reason": "Fra og med må være før eller lik til og med.",
                         "invalid_value": "1990-09-29"
                     }, {
                         "type": "entity",
                         "name": "til_og_med",
-                        "reason": "Til og med må være etter fra og med.",
+                        "reason": "Til og med må være etter eller lik fra og med.",
                         "invalid_value": "1990-09-28"
                     }, {
                         "type": "entity",
