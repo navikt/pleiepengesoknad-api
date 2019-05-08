@@ -25,8 +25,8 @@ class Clients {
             source = "pleiepengesoknad-api",
             destination = "sparkel",
             overridePaths = mapOf(
-                Regex("/api/arbeidsgivere/.+") to "/api/arbeidsgivere",
-                Regex("/api/person/.+") to "/api/person"
+                Regex(".+/api/arbeidsgivere/.+") to "/api/arbeidsgivere",
+                Regex(".+/api/person/.+") to "/api/person"
             ),
             httpClient = HttpClient(Apache) {
                 install(JsonFeature) {
