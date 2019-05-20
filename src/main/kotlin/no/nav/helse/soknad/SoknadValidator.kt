@@ -231,11 +231,12 @@ internal fun Soknad.validate() {
 
     vedlegg.mapIndexed { index, url ->
         if (!url.path.matches(Regex("/vedlegg/.*"))) {
-            Violation(
-                parameterName = "vedlegg[$index]",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke gyldig vedlegg URL.",
-                invalidValue = url
+                violations.add(Violation(
+                    parameterName = "vedlegg[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ikke gyldig vedlegg URL.",
+                    invalidValue = url
+                )
             )
         }
     }
