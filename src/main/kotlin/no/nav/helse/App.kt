@@ -37,9 +37,13 @@ import no.nav.helse.soknad.PleiepengesoknadProsesseringGateway
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.*
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
+
+private val logger: Logger = LoggerFactory.getLogger("nav.pleiepengesoknadapi")
 
 @KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
@@ -80,9 +84,10 @@ fun Application.pleiepengesoknadapi() {
             realm = appId
             verifier(jwkProvider, configuration.getIssuer())
             authHeader { call ->
-                idTokenProvider
+                val idToken = idTokenProvider
                     .getIdToken(call)
-                    .medValidertLevel("Level4")
+                logger.info("IdToken JTI='${idToken.getId()}'")
+                idToken.medValidertLevel("Level4")
                     .somHttpAuthHeader()
             }
             validate { credentials ->

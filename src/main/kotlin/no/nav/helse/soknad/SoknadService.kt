@@ -1,7 +1,5 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
-import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.general.auth.IdToken
