@@ -117,9 +117,20 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
-            expectedCode = HttpStatusCode.Unauthorized,
+            expectedCode = HttpStatusCode.Forbidden,
             expectedResponse = null,
             cookie = getAuthCookie(fnr, authLevel = "Level3")
+        )
+    }
+
+    @Test
+    fun `Hente arbreidsgivere med ugyldig format på ID-Token`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.Unauthorized,
+            expectedResponse = null,
+            cookie = Cookie(listOf("localhost-idtoken=ikkeJwt", "Path=/", "Domain=localhost"))
         )
     }
 

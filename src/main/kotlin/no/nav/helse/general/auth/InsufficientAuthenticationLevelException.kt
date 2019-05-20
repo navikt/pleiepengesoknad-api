@@ -2,4 +2,4 @@ package no.nav.helse.general.auth
 
 import java.lang.RuntimeException
 
-class InsufficientAuthenticationLevelException(acr : String) : RuntimeException(String.format("Requires authentication Level4, was '%s'", acr))
+class InsufficientAuthenticationLevelException(actualAcr : String, requiredAcr : String) : RuntimeException("Innloggingen er på nivå '$actualAcr'. Denne tjenesten krever '$requiredAcr'")

@@ -2,4 +2,4 @@ package no.nav.helse.general.auth
 
 import java.lang.RuntimeException
 
-class CookieNotSetException(cookieName : String) : RuntimeException(String.format("No cookie with name '%s' set on request", cookieName))
+class CookieNotSetException(cookieName : String) : RuntimeException("Ingen cookie med navnet '$cookieName' satt.")

@@ -77,14 +77,15 @@ fun Application.pleiepengesoknadapi() {
 
     install(Authentication) {
         jwt {
-            verifier(jwkProvider, configuration.getIssuer())
-            authHeader { call -> idTokenProvider.getIdTokenAsHttpAuthHeaderOrNull(call) }
             realm = appId
+            verifier(jwkProvider, configuration.getIssuer())
+            authHeader { call ->
+                idTokenProvider
+                    .getIdToken(call)
+                    .medValidertLevel("Level4")
+                    .somHttpAuthHeader()
+            }
             validate { credentials ->
-                val acr = credentials.payload.getClaim("acr").asString()
-                if ("Level4" != acr) {
-                    throw InsufficientAuthenticationLevelException(acr)
-                }
                 return@validate JWTPrincipal(credentials.payload)
             }
         }
