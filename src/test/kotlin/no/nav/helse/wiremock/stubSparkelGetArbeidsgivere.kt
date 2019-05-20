@@ -20,25 +20,12 @@ private val sparkelResponse = """
     {
         "arbeidsgivere": [{
             "orgnummer": "913548221",
-            "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET"
+            "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ"
         },{
             "orgnummer": "984054564",
             "navn": "NAV, AVD WALDEMAR THRANES GATE"
         },{
             "orgnummer": "984054564",
-            "navn": "NAV, AVD WALDEMAR THRANES GATE"
-        }]
-    }
-""".trimIndent()
-
-// Er 3 entries i response fra Sparkel. Men 2 er samme organisasjon, dermed er det bare 2 i expected.
-val expectedGetAnsettelsesforholdJson = """
-    {
-        "organisasjoner": [{
-            "organisasjonsnummer": "913548221",
-            "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET"
-        },{
-            "organisasjonsnummer": "984054564",
             "navn": "NAV, AVD WALDEMAR THRANES GATE"
         }]
     }

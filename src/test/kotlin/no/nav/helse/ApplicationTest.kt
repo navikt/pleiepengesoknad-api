@@ -82,6 +82,26 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Hente arbedisgivere`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = """
+            {
+                "organisasjoner": [{
+                    "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
+                    "organisasjonsnummer": "913548221"
+                }, {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564"
+                }]
+            }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun `Hente arbedisgivere uten cookie satt`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
