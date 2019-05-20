@@ -182,6 +182,20 @@ internal fun Soknad.validate() {
         )
     }
 
+    vedlegg.mapIndexed { index, url ->
+        // Kan oppstå url = null etter Jackson deserialisering
+        if (url == null || !url.path.matches(Regex("/vedlegg/.*"))) {
+            violations.add(
+                Violation(
+                    parameterName = "vedlegg[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ikke gyldig vedlegg URL.",
+                    invalidValue = url
+                )
+            )
+        }
+    }
+
     // Grad
     if (grad < MIN_GRAD || grad > MAX_GRAD) {
         violations.add(
@@ -227,18 +241,6 @@ internal fun Soknad.validate() {
                 invalidValue = false
 
             ))
-    }
-
-    vedlegg.mapIndexed { index, url ->
-        if (!url.path.matches(Regex("/vedlegg/.*"))) {
-                violations.add(Violation(
-                    parameterName = "vedlegg[$index]",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Ikke gyldig vedlegg URL.",
-                    invalidValue = url
-                )
-            )
-        }
     }
 
     // Ser om det er noen valideringsfeil

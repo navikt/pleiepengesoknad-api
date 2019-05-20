@@ -289,7 +289,10 @@ class ApplicationTest {
                         ]
                     },
                     "grad": 120,
-                    "vedlegg": [],
+                    "vedlegg": [
+                        "http://localhost:8080/ikke-vedlegg/123",
+                        null
+                    ],
                     "medlemskap" : {},
                     "har_forstatt_rettigheter_og_plikter": false
                 }
@@ -333,9 +336,14 @@ class ApplicationTest {
                         "invalid_value": "1990-09-28"
                     }, {
                         "type": "entity",
-                        "name": "vedlegg",
-                        "reason": "Det må sendes minst et vedlegg.",
-                        "invalid_value": []
+                        "name": "vedlegg[0]",
+                        "reason": "Ikke gyldig vedlegg URL.",
+                        "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
+                    }, {
+                        "type": "entity",
+                        "name": "vedlegg[1]",
+                        "reason": "Ikke gyldig vedlegg URL.",
+                        "invalid_value": null
                     }, {
                         "type": "entity",
                         "name": "grad",
