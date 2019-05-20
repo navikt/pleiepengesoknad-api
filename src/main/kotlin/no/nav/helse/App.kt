@@ -7,6 +7,7 @@ import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTPrincipal
+import io.ktor.auth.jwt.jwt
 import io.ktor.features.*
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
@@ -75,8 +76,10 @@ fun Application.pleiepengesoknadapi() {
         .build()
 
     install(Authentication) {
-        jwtFromCookie {
+        jwt {
             verifier(jwkProvider, configuration.getIssuer())
+            authHeader { call -> idTokenProvider.getIdTokenAsHttpAuthHeaderOrNull(call) }
+            realm = appId
             validate { credentials ->
                 val acr = credentials.payload.getClaim("acr").asString()
                 if ("Level4" != acr) {
@@ -84,7 +87,6 @@ fun Application.pleiepengesoknadapi() {
                 }
                 return@validate JWTPrincipal(credentials.payload)
             }
-            withIdTokenProvider(idTokenProvider)
         }
     }
 

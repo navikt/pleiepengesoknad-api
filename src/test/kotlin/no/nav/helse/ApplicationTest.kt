@@ -117,7 +117,7 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
-            expectedCode = HttpStatusCode.Forbidden,
+            expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
             cookie = getAuthCookie(fnr, authLevel = "Level3")
         )
