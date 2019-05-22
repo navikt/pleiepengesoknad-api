@@ -6,6 +6,7 @@ import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
+import io.ktor.auth.authentication
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.*
@@ -84,10 +85,9 @@ fun Application.pleiepengesoknadapi() {
             realm = appId
             verifier(jwkProvider, configuration.getIssuer())
             authHeader { call ->
-                val idToken = idTokenProvider
+                idTokenProvider
                     .getIdToken(call)
-                logger.info("IdToken JTI='${idToken.getId()}'")
-                idToken.medValidertLevel("Level4")
+                    .medValidertLevel("Level4")
                     .somHttpAuthHeader()
             }
             validate { credentials ->
@@ -203,5 +203,9 @@ fun Application.pleiepengesoknadapi() {
     install(CallLogging) {
         correlationIdAndRequestIdInMdc()
         logRequests()
+        mdc("id_token_jti") { call ->
+            try { idTokenProvider.getIdToken(call).getId() }
+            catch (cause: Throwable) { null }
+        }
     }
 }
