@@ -197,6 +197,7 @@ fun Application.pleiepengesoknadapi() {
                         systemCredentialsProvider = systemCredentialsProvider
                     ),
                     sokerService = sokerService,
+                    personService = personService,
                     vedleggService = vedleggService
                 )
             )

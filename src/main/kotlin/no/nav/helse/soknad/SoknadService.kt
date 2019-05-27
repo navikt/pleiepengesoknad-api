@@ -1,8 +1,11 @@
 package no.nav.helse.soknad
 
+import no.nav.helse.aktoer.AktoerId
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.general.auth.IdToken
+import no.nav.helse.person.Person
+import no.nav.helse.person.PersonService
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.VedleggService
@@ -13,9 +16,10 @@ import java.time.ZonedDateTime
 
 private val logger: Logger = LoggerFactory.getLogger("nav.SoknadService")
 
-class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadProsesseringGateway,
-                    val sokerService: SokerService,
-                    val vedleggService: VedleggService) {
+class SoknadService(private val pleiepengesoknadProsesseringGateway: PleiepengesoknadProsesseringGateway,
+                    private val sokerService: SokerService,
+                    private val personService: PersonService,
+                    private val vedleggService: VedleggService) {
 
     suspend fun registrer(
         soknad: Soknad,
@@ -52,7 +56,7 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
                 fodselsnummer = soknad.barn.fodselsnummer,
                 alternativId = soknad.barn.alternativId,
                 aktoerId = soknad.barn.aktoerId,
-                navn = barnetsNavn(soknad.barn)
+                navn = barnetsNavn(soknad.barn, callId)
             ),
             vedlegg = vedlegg,
             arbeidsgivere = soknad.arbeidsgivere,
@@ -80,11 +84,13 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
         logger.trace("Vedlegg slettet.")
     }
 
-    private suspend fun barnetsNavn(barn: BarnDetaljer): String? {
+    private suspend fun barnetsNavn(barn: BarnDetaljer, callId: CallId): String? {
         return if (barn.aktoerId == null) barn.navn
         else try {
-            // TODO: hente navn.
-            null
+            personService.hentPerson(
+                aktoerId = AktoerId(barn.aktoerId),
+                callId = callId
+            ).sammensattNavn()
         } catch (cause: Throwable) {
             logger.error("Feil ved oppslag på barnet", cause)
             null
@@ -92,4 +98,5 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
     }
 }
 
-private fun Soknad.relasjon(): String = if (relasjonTilBarnet.isNullOrBlank()) "Forelder" else relasjonTilBarnet
+private fun Person.sammensattNavn() = if (mellomnavn == null) "$fornavn $etternavn" else "$fornavn $mellomnavn $etternavn"
+private fun Soknad.relasjon() = if (relasjonTilBarnet.isNullOrBlank()) "Forelder" else relasjonTilBarnet
