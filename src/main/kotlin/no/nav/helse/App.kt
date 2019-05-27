@@ -22,6 +22,8 @@ import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.arbeidsgiver.ArbeidsgiverGateway
 import no.nav.helse.arbeidsgiver.ArbeidsgiverService
 import no.nav.helse.arbeidsgiver.arbeidsgiverApis
+import no.nav.helse.barn.BarnGateway
+import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
 import no.nav.helse.dusseldorf.ktor.client.*
 import no.nav.helse.dusseldorf.ktor.core.*
@@ -155,7 +157,16 @@ fun Application.pleiepengesoknadapi() {
                 sokerService = sokerService
             )
 
-            barnApis()
+            barnApis(
+                barnService = BarnService(
+                    barnGateway = BarnGateway(
+                        monitoredHttpClient = sparkelClient,
+                        baseUrl = configuration.getSparkelUrl(),
+                        aktoerService = aktoerService,
+                        systemCredentialsProvider = systemCredentialsProvider
+                    )
+                )
+            )
 
             arbeidsgiverApis(
                 service = ArbeidsgiverService(

@@ -204,17 +204,45 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Henting av barn gir en tom liste`() {
+    fun `Henting av barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
-                {
-                    "barn" : []
-                }
+            {
+                "barn": [{
+                    "fodselsdato": "2000-08-27",
+                    "fornavn": "BARN",
+                    "mellomnavn": "EN",
+                    "etternavn": "BARNESEN",
+                    "aktoer_id": "1000000000001"
+                }, {
+                    "fodselsdato": "2001-04-10",
+                    "fornavn": "BARN",
+                    "mellomnavn": "TO",
+                    "etternavn": "BARNESEN",
+                    "aktoer_id": "1000000000002"
+                }]
+            }
             """.trimIndent()
         )
+    }
+
+    @Test
+    fun `Har ingen registrerte barn`() {
+        stubSparkelGetBarn(harBarn = false)
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/barn",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = """
+            {
+                "barn": []
+            }
+            """.trimIndent()
+        )
+        stubSparkelGetBarn(harBarn = true)
     }
 
     @Test

@@ -6,26 +6,29 @@ import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import java.time.LocalDate
+import no.nav.helse.general.auth.getFodselsnummer
+import no.nav.helse.general.getCallId
 
 @KtorExperimentalLocationsAPI
-fun Route.barnApis() {
+fun Route.barnApis(
+    barnService: BarnService
+) {
 
     @Location("/barn")
     class getBarn
 
     get { _: getBarn ->
-        call.respond(BarnResponse())
+        call.respond(
+            BarnResponse(
+                barnService.hentNaaverendeBarn(
+                    fnr = call.getFodselsnummer(),
+                    callId = call.getCallId()
+                ).map { it.tilDto() }
+            )
+        )
     }
 }
 
 private data class BarnResponse(
-    val barn: List<Barn> = listOf()
-)
-
-private data class Barn (
-    val fodselsdato : LocalDate,
-    val fornavn: String,
-    val mellomnavn: String? = null,
-    val etternavn: String
+    val barn: List<BarnDTO>
 )

@@ -7,7 +7,7 @@ fun stubSparkelGetSoker(
     fodselsdato : String = "1997-05-25"
 ) {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/person/.*"))
+        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/person/.\\d+"))
             .withHeader("x-nav-apiKey", AnythingPattern())
             .willReturn(
                 WireMock.aResponse()

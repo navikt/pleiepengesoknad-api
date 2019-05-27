@@ -53,6 +53,7 @@ fun bootstrapWiremock(port: Int? = null,
     stubReadiness(basePath = sparkelPath)
     stubSparkelGetSoker()
     stubSparkelGetArbeidsgivere()
+    stubSparkelGetBarn()
 
     // Aktørregister
     aktoerRegisterGetAktoerId()
