@@ -5,12 +5,15 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 ### Sende inn søknad
 POST @ /soknad -> 202 Response
 - Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver
-- Listen med organisajoner i arbeidsfivere kan være tom
+- Listen med organisajoner i arbeidsgivere kan være tom
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
-- Ingen detaljer om barnet er påkrevd
+- Det må settes kun 1 ID på barnet (alternativ_id, aktoer_id eller fodselsnummer)
 - barn.alternativ_id må være 11 siffer om det er satt
-- barn.fodslsnummer må være et gyldig norsk fødselsnummer om det er satt
+- barn.fodslsnummer må være et gyldig norsk fødselsnummer om den er satt
+- barn.aktoer_id må være sattil en gyldig Aktør ID om den er satt
+- barn.navn er kun påkrevd om 'barn.fodselsnummer' er satt
+- relasjon_til_barnet er ikke påkrevd om 'barn.aktoer_id' er satt, ellers påkrevd
 - grad må være satt til en verdi større eller lik 20 og mindre eller lik 100
 - 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
 
@@ -19,7 +22,8 @@ POST @ /soknad -> 202 Response
 	"barn": {
 		"navn": "Iben Olafsson Hansen",
 		"fodselsnummer": "01011950021",
-		"alternativ_id": null
+		"alternativ_id": null,
+		"aktoer_id": null
 	},
 	"relasjon_til_barnet": "mor",
 	"fra_og_med": "2019-10-10",
@@ -162,17 +166,19 @@ GET @ /arbeidsgiver?fra_og_med=2019-01-20&til_og_med=2019-01-30 -> 200 Response
 GET @ /barn -> 200 Response
 ```json
 {
-  "barn" : [ {
-    "fodselsdato" : "1990-09-29",
-    "fornavn" : "Santa",
-    "mellomnavn" : "Claus",
-    "etternavn" : "Winter"
-  }, {
-    "fodselsdato" : "1966-06-06",
-    "fornavn" : "George",
-    "mellomnavn" : null,
-    "etternavn" : "Costanza"
-  } ]
+    "barn": [{
+        "fodselsdato": "2000-08-27",
+        "fornavn": "BARN",
+        "mellomnavn": "EN",
+        "etternavn": "BARNESEN",
+        "aktoer_id": "1000000000001"
+    }, {
+        "fodselsdato": "2001-04-10",
+        "fornavn": "BARN",
+        "mellomnavn": "TO",
+        "etternavn": "BARNESEN",
+        "aktoer_id": "1000000000002"
+    }]
 }
 ```
 

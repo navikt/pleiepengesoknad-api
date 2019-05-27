@@ -5,6 +5,7 @@ import no.nav.helse.soknad.BarnDetaljer
 import no.nav.helse.soknad.validate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class BarnValidationTest {
 
@@ -16,7 +17,7 @@ class BarnValidationTest {
             aktoerId = null,
             navn = null
         )
-        barn.validate(null).assertFeilPaa(listOf("barn", "relasjon_til_barn"))
+        barn.validate(null).assertFeilPaa(listOf("barn", "relasjon_til_barnet"))
     }
 
     @Test
@@ -67,8 +68,9 @@ class BarnValidationTest {
 
 private fun MutableSet<Violation>.assertFeilPaa(parameterNames : List<String> = emptyList()) {
     assertEquals(size, parameterNames.size)
+
     forEach {
-        parameterNames.contains(it.parameterName)
+        assertTrue(parameterNames.contains(it.parameterName))
     }
 
 }
