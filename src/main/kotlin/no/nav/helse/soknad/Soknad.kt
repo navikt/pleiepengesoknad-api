@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 data class Soknad (
     val barn : BarnDetaljer,
-    val relasjonTilBarnet : String,
+    val relasjonTilBarnet : String? = null,
     val arbeidsgivere : ArbeidsgiverDetailjer,
     val vedlegg : List<URL>,
     val fraOgMed: LocalDate,
@@ -32,5 +32,6 @@ data class Medlemskap(
 data class BarnDetaljer(
     val fodselsnummer: String?,
     val alternativId: String?,
+    val aktoerId: String?,
     val navn: String?
 )

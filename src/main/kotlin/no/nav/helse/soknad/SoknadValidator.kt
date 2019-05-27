@@ -90,54 +90,7 @@ class FraOgMedTilOgMedValidator {
 }
 
 internal fun Soknad.validate() {
-    val violations = mutableSetOf<Violation>()
-
-    // Relasjon til barnet
-    if (relasjonTilBarnet.erBlankEllerLengreEnn(100)) {
-        violations.add(
-            Violation(
-                parameterName = "relasjon_til_barnet",
-                parameterType = ParameterType.ENTITY,
-                reason = "Relasjon til barnet kan ikke være tom og være mindre enn 100 tegn.",
-                invalidValue = relasjonTilBarnet
-            )
-        )
-    }
-
-    // Barnet
-    if (barn.fodselsnummer != null && !barn.fodselsnummer.erGyldigFodselsnummer()) {
-        violations.add(
-            Violation(
-                parameterName = "barn.fodselsnummer",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke gyldig fødselsnummer.",
-                invalidValue = barn.fodselsnummer
-            )
-        )
-    }
-
-    if (barn.alternativId != null && (barn.alternativId.erBlankEllerLengreEnn(50) || !barn.alternativId.erKunSiffer())) {
-        violations.add(
-            Violation(
-                parameterName = "barn.alternativ_id",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke gyldig alternativ id. Kan kun inneholde tall og være maks 50 lang.",
-                invalidValue = barn.alternativId
-            )
-        )
-    }
-
-    if (barn.navn != null && barn.navn.erBlankEllerLengreEnn(100)) {
-        violations.add(
-            Violation(
-                parameterName = "barn.navn",
-                parameterType = ParameterType.ENTITY,
-                reason = "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
-                invalidValue = barn.navn
-            )
-        )
-    }
-
+    val violations = barn.validate(relasjonTilBarnet)
 
     // Arbeidsgivere
     arbeidsgivere.organisasjoner.mapIndexed { index, organisasjon ->
@@ -249,6 +202,74 @@ internal fun Soknad.validate() {
     }
 
 }
+
+internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Violation> {
+
+    val violations = mutableSetOf<Violation>()
+
+    if (!bareEnIdSatt()) {
+        violations.add(
+            Violation(
+                parameterName = "barn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Må settes enten 'aktoer_id', 'fodselsnummer' eller 'alternativ_id' på barnet. Flere ID'er kan ikke settes samtidig.",
+                invalidValue = null
+            )
+        )
+    }
+
+    if (fodselsnummer != null && !fodselsnummer.erGyldigFodselsnummer()) {
+        violations.add(
+            Violation(
+                parameterName = "barn.fodselsnummer",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig fødselsnummer.",
+                invalidValue = fodselsnummer
+            )
+        )
+    }
+
+    if (alternativId != null && (alternativId.erBlankEllerLengreEnn(50) || !alternativId.erKunSiffer())) {
+        violations.add(
+            Violation(
+                parameterName = "barn.alternativ_id",
+                parameterType = ParameterType.ENTITY,
+                reason = "Ikke gyldig alternativ id. Kan kun inneholde tall og være maks 50 lang.",
+                invalidValue = alternativId
+            )
+        )
+    }
+
+
+    val kreverNavnPaaBarnet = fodselsnummer != null
+    if (kreverNavnPaaBarnet && (navn == null || navn.erBlankEllerLengreEnn(100))) {
+        violations.add(
+            Violation(
+                parameterName = "barn.navn",
+                parameterType = ParameterType.ENTITY,
+                reason = "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
+                invalidValue = navn
+            )
+        )
+    }
+
+    val kreverRelasjonPaaBarnet = aktoerId == null
+    if (kreverRelasjonPaaBarnet && (relasjonTilBarnet == null || relasjonTilBarnet.erBlankEllerLengreEnn(100))) {
+        violations.add(
+            Violation(
+                parameterName = "relasjon_til_barnet",
+                parameterType = ParameterType.ENTITY,
+                reason = "Relasjon til barnet kan ikke være tom og være mindre enn 100 tegn.",
+                invalidValue = relasjonTilBarnet
+            )
+        )
+    }
+
+
+    return violations
+}
+
+private fun BarnDetaljer.bareEnIdSatt() = listOfNotNull(aktoerId, fodselsnummer, alternativId).size == 1
 
 internal fun List<Vedlegg>.validerTotalStorresle() {
     val totalSize = sumBy { it.content.size }

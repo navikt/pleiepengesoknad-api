@@ -283,7 +283,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = Soknad.body(
+            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -313,7 +313,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.Forbidden,
             cookie = cookie,
-            requestEntity = Soknad.body(
+            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -324,8 +324,28 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Sende soknad med AktørID som ID på barnet`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedAktoerIdPaaBarn(
+                aktoerId = "10000000001",
+                vedleggUrl1 = jpegUrl,
+                vedleggUrl2 = pdfUrl
+            )
+        )
+    }
+
+    @Test
     fun `Sende soknad med ugylidge parametre gir feil`() {
-        val forlangtNavn = Soknad.forLangtNavn()
+        val forlangtNavn = SoknadUtils.forLangtNavn()
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = "/soknad",

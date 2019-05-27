@@ -48,11 +48,16 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
             fraOgMed = soknad.fraOgMed,
             tilOgMed = soknad.tilOgMed,
             soker = soker,
-            barn = soknad.barn,
+            barn = BarnDetaljer(
+                fodselsnummer = soknad.barn.fodselsnummer,
+                alternativId = soknad.barn.alternativId,
+                aktoerId = soknad.barn.aktoerId,
+                navn = barnetsNavn(soknad.barn)
+            ),
             vedlegg = vedlegg,
             arbeidsgivere = soknad.arbeidsgivere,
             medlemskap = soknad.medlemskap,
-            relasjonTilBarnet = soknad.relasjonTilBarnet,
+            relasjonTilBarnet = soknad.relasjon(),
             grad = soknad.grad,
             harMedsoker = soknad.harMedsoker!!,
             harBekreftetOpplysninger = soknad.harBekreftetOpplysninger,
@@ -75,5 +80,16 @@ class SoknadService(val pleiepengesoknadProsesseringGateway: PleiepengesoknadPro
         logger.trace("Vedlegg slettet.")
     }
 
-
+    private suspend fun barnetsNavn(barn: BarnDetaljer): String? {
+        return if (barn.aktoerId == null) barn.navn
+        else try {
+            // TODO: hente navn.
+            null
+        } catch (cause: Throwable) {
+            logger.error("Feil ved oppslag på barnet", cause)
+            null
+        }
+    }
 }
+
+private fun Soknad.relasjon(): String = if (relasjonTilBarnet.isNullOrBlank()) "Forelder" else relasjonTilBarnet
