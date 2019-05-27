@@ -65,7 +65,7 @@ class PersonGateway(
         httpRequest: HttpRequestBuilder
     ) : SparkelResponse {
         return Retry.retry(
-            operation = "hente-soker",
+            operation = "hente-person",
             tries = 3,
             initialDelay = Duration.ofMillis(100),
             maxDelay = Duration.ofMillis(300),
