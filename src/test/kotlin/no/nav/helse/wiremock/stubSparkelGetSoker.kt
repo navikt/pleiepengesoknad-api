@@ -21,13 +21,14 @@ fun stubSparkelGetSoker(
 private fun sparkelResponse(fodselsdato: String) : String = """
     {
         "fdato": "$fodselsdato",
-        "etternavn": "MORSEN",
+        "statsborgerskap": "NOR",
         "mellomnavn": "HEISANN",
-        "id": {
-            "aktor": "1060877738241"
-        },
+        "etternavn": "MORSEN",
+        "aktørId": "1060877738241",
+        "bostedsland": "NOR",
         "fornavn": "MOR",
-        "kjønn": "KVINNE"
+        "kjønn": "KVINNE",
+        "status": "BOSA"
     }
 """.trimIndent()
 
