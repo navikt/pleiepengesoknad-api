@@ -10,6 +10,13 @@ class AktoerService(
         fnr: Fodselsnummer,
         callId: CallId
     ): AktoerId {
-        return aktoerGateway.getAktoerId(fnr, callId)
+        return aktoerGateway.hentAktoerId(fnr, callId)
+    }
+
+    suspend fun getFodselsnummer(
+        aktoerId: AktoerId,
+        callId: CallId
+    ): Fodselsnummer {
+        return aktoerGateway.hentFodselsnummer(aktoerId, callId)
     }
 }

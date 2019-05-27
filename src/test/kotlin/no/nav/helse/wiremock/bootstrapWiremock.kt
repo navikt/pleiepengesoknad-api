@@ -25,7 +25,7 @@ fun bootstrapWiremock(port: Int? = null,
     val wireMockConfiguration = WireMockConfiguration.options()
         .extensions(AuthMockJwtResponseTransformer())
         .extensions(AuthMockCookieResponseTransformer())
-        .extensions(AktoerRegisterMockGetAktoerIdResponseTransformer())
+        .extensions(AktoerRegisterResponseTransformer())
         .extensions(PleiepengerDokumentResponseTransformer())
 
     extensions.forEach {
@@ -108,7 +108,7 @@ private fun aktoerRegisterGetAktoerId() {
             WireMock.aResponse()
                 .withHeader("Content-Type", "application/json")
                 .withStatus(200)
-                .withTransformers("aktoer-register-mock-get-aktoer-id")
+                .withTransformers("aktoer-register")
         )
     )
 }

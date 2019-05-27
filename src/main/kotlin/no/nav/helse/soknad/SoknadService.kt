@@ -1,6 +1,7 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.aktoer.AktoerId
+import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.general.auth.IdToken
@@ -19,6 +20,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.SoknadService")
 class SoknadService(private val pleiepengesoknadProsesseringGateway: PleiepengesoknadProsesseringGateway,
                     private val sokerService: SokerService,
                     private val personService: PersonService,
+                    private val aktoerService: AktoerService,
                     private val vedleggService: VedleggService) {
 
     suspend fun registrer(
@@ -53,7 +55,7 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
             tilOgMed = soknad.tilOgMed,
             soker = soker,
             barn = BarnDetaljer(
-                fodselsnummer = soknad.barn.fodselsnummer,
+                fodselsnummer = barnetsFodselsnummer(soknad.barn, callId),
                 alternativId = soknad.barn.alternativId,
                 aktoerId = soknad.barn.aktoerId,
                 navn = barnetsNavn(soknad.barn, callId)
@@ -84,17 +86,28 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
         logger.trace("Vedlegg slettet.")
     }
 
+    private suspend fun barnetsFodselsnummer(barn: BarnDetaljer, callId: CallId): String? {
+        return barn.fodselsnummer ?: if (barn.aktoerId != null)  try {
+            aktoerService.getFodselsnummer(
+                aktoerId = AktoerId(barn.aktoerId),
+                callId = callId
+            ).value
+        } catch (cause: Throwable) {
+            logger.error("Feil ved oppslag på barnets fødselsnummer.", cause)
+            null
+        } else null
+    }
+
     private suspend fun barnetsNavn(barn: BarnDetaljer, callId: CallId): String? {
-        return if (barn.aktoerId == null) barn.navn
-        else try {
+        return barn.navn ?: if (barn.aktoerId != null) try {
             personService.hentPerson(
                 aktoerId = AktoerId(barn.aktoerId),
                 callId = callId
             ).sammensattNavn()
         } catch (cause: Throwable) {
-            logger.error("Feil ved oppslag på barnet", cause)
+            logger.error("Feil ved oppslag på barnets navn.", cause)
             null
-        }
+        } else null
     }
 }
 

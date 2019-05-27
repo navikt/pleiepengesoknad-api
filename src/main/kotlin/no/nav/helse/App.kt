@@ -198,7 +198,8 @@ fun Application.pleiepengesoknadapi() {
                     ),
                     sokerService = sokerService,
                     personService = personService,
-                    vedleggService = vedleggService
+                    vedleggService = vedleggService,
+                    aktoerService = aktoerService
                 )
             )
         }

@@ -43,6 +43,17 @@ class BarnValidationTest {
     }
 
     @Test
+    fun `Om relasjon på barnet og navn sendes samme med Aktør ID må det være gyldige verdier`() {
+        val barn = BarnDetaljer(
+            fodselsnummer = null,
+            alternativId = null,
+            aktoerId = "10000001",
+            navn = SoknadUtils.forLangtNavn()
+        )
+        barn.validate("").assertFeilPaa(listOf("relasjon_til_barnet","barn.navn"))
+    }
+
+    @Test
     fun `Når Fødselsnummer settes som ID på barnet kreves det både relasjon til barnet og navn`() {
         val barn = BarnDetaljer(
             fodselsnummer = "02119970078",

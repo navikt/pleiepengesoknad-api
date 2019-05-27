@@ -6,22 +6,32 @@ import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
 
-class AktoerRegisterMockGetAktoerIdResponseTransformer : ResponseTransformer() {
+private val identMap = mapOf(
+    "AktoerId" to "12345",
+    "NorskIdent" to "678910"
+)
+
+class AktoerRegisterResponseTransformer : ResponseTransformer() {
     override fun transform(
         request: Request?,
         response: Response?,
         files: FileSource?,
         parameters: Parameters?
     ): Response {
-        val fnr = request!!.getHeader("Nav-Personidenter")
+        val personIdent = request!!.getHeader("Nav-Personidenter")
+        val identGruppe = request.queryParameter("identgruppe").firstValue()
+
 
         return Response.Builder.like(response)
-            .body(getResponse(fnr))
+            .body(getResponse(
+                personIdent = personIdent,
+                identGruppe = identGruppe
+            ))
             .build()
     }
 
     override fun getName(): String {
-        return "aktoer-register-mock-get-aktoer-id"
+        return "aktoer-register"
     }
 
     override fun applyGlobally(): Boolean {
@@ -30,13 +40,16 @@ class AktoerRegisterMockGetAktoerIdResponseTransformer : ResponseTransformer() {
 
 }
 
-private fun getResponse(fnr: String) = """
+private fun getResponse(
+    personIdent: String,
+    identGruppe: String
+) = """
 {
-  "$fnr": {
+  "$personIdent": {
     "identer": [
       {
-        "ident": "12345",
-        "identgruppe": "AktoerId",
+        "ident": "${identMap[identGruppe]}",
+        "identgruppe": "$identGruppe",
         "gjeldende": true
       }
     ],

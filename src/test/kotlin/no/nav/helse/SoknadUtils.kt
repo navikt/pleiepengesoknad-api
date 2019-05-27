@@ -52,7 +52,6 @@ class SoknadUtils {
                     "barn": {
                         "aktoer_id": "$aktoerId"
                     },
-                    "relasjon_til_barnet": "",
                     "fra_og_med": "2018-10-10",
                     "til_og_med": "2019-10-10",
                     "arbeidsgivere": {

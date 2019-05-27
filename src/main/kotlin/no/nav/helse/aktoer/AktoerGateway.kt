@@ -26,7 +26,7 @@ class AktoerGateway(
     baseUrl: URL,
     private val systemCredentialsProvider: SystemCredentialsProvider
 ) {
-    private val completeUrl : URL = Url.buildURL(
+    private val aktoerIdUrl : URL = Url.buildURL(
         baseUrl = baseUrl,
         pathParts = listOf("api","v1","identer"),
         queryParameters = mapOf(
@@ -35,47 +35,78 @@ class AktoerGateway(
         )
     )
 
-    suspend fun getAktoerId(
-        fnr: Fodselsnummer,
+    private val fodselsnummerUrl : URL = Url.buildURL(
+        baseUrl = baseUrl,
+        pathParts = listOf("api","v1","identer"),
+        queryParameters = mapOf(
+            Pair("gjeldende", listOf("true")),
+            Pair("identgruppe", listOf("NorskIdent"))
+        )
+    )
+
+    private suspend fun get(
+        url: URL,
+        personIdent: String,
         callId: CallId
-    ) : AktoerId {
+    ) : String {
 
         val httpRequest = HttpRequestBuilder()
         httpRequest.header(HttpHeaders.Authorization, systemCredentialsProvider.getAuthorizationHeader())
         httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
         httpRequest.header(AKTOERREGISTER_CORRELATION_ID_HEADER, callId.value)
         httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
-        httpRequest.header("Nav-Personidenter", fnr.value)
+        httpRequest.header("Nav-Personidenter", personIdent)
         httpRequest.method = HttpMethod.Get
         httpRequest.accept(ContentType.Application.Json)
-        httpRequest.url(completeUrl)
+        httpRequest.url(url)
 
         val httpResponse = request(httpRequest)
 
-        if (!httpResponse.containsKey(fnr.value)) {
-            throw IllegalStateException("Svar fra '$completeUrl' inneholdt ikke data om det forsespurte fødselsnummeret.")
+        if (!httpResponse.containsKey(personIdent)) {
+            throw IllegalStateException("Svar fra '$url' inneholdt ikke data om det forsespurte ident.")
         }
 
-        val identResponse =  httpResponse.get(key = fnr.value)
+        val identResponse =  httpResponse.get(key = personIdent)
 
         if (identResponse!!.feilmelding!= null) {
             logger.warn("Mottok feilmelding fra AktørRegister : '${identResponse.feilmelding}'")
         }
 
         if (identResponse.identer.size != 1) {
-            throw IllegalStateException("Fikk ${identResponse.identer.size} AktørID'er for det forsespurte fødselsnummeret mot '$completeUrl'")
+            throw IllegalStateException("Fikk ${identResponse.identer.size} Identer for den forsespurte ID'en mot '$url'")
         }
 
-        val aktoerId = AktoerId(identResponse.identer[0].ident)
-        logger.info("Resolved AktørID $aktoerId")
-        return aktoerId
+        return identResponse.identer[0].ident
     }
+
+    suspend fun hentAktoerId(
+        fnr: Fodselsnummer,
+        callId: CallId
+    ) : AktoerId {
+        return AktoerId(get(
+            url = aktoerIdUrl,
+            personIdent = fnr.value,
+            callId = callId
+        ))
+    }
+
+    suspend fun hentFodselsnummer(
+        aktoerId: AktoerId,
+        callId: CallId
+    ) : Fodselsnummer {
+        return Fodselsnummer(get(
+            url = fodselsnummerUrl,
+            personIdent = aktoerId.value,
+            callId = callId
+        ))
+    }
+
 
     private suspend fun request(
         httpRequest: HttpRequestBuilder
     ) : Map<String, IdentResponse> {
         return Retry.retry(
-            operation = "hente-aktoer-id",
+            operation = "hente-identer",
             tries = 3,
             initialDelay = Duration.ofMillis(100),
             maxDelay = Duration.ofMillis(300),
@@ -86,6 +117,7 @@ class AktoerGateway(
             )
         }
     }
+
 }
 
 data class Ident(val ident: String, val identgruppe: String)

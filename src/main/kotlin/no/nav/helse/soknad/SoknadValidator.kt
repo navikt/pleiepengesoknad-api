@@ -242,7 +242,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
 
 
     val kreverNavnPaaBarnet = fodselsnummer != null
-    if (kreverNavnPaaBarnet && (navn == null || navn.erBlankEllerLengreEnn(100))) {
+    if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
         violations.add(
             Violation(
                 parameterName = "barn.navn",
@@ -254,7 +254,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     }
 
     val kreverRelasjonPaaBarnet = aktoerId == null
-    if (kreverRelasjonPaaBarnet && (relasjonTilBarnet == null || relasjonTilBarnet.erBlankEllerLengreEnn(100))) {
+    if ((kreverRelasjonPaaBarnet || relasjonTilBarnet != null) && (relasjonTilBarnet == null || relasjonTilBarnet.erBlankEllerLengreEnn(100))) {
         violations.add(
             Violation(
                 parameterName = "relasjon_til_barnet",
