@@ -207,12 +207,12 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
 
     val violations = mutableSetOf<Violation>()
 
-    if (!bareEnIdSatt()) {
+    if (!gyldigAntallIder()) {
         violations.add(
             Violation(
                 parameterName = "barn",
                 parameterType = ParameterType.ENTITY,
-                reason = "Må settes enten 'aktoer_id', 'fodselsnummer' eller 'alternativ_id' på barnet. Flere ID'er kan ikke settes samtidig.",
+                reason = "Kan kun sette en av 'aktoer_id', 'fodselsnummer' eller 'alternativ_id' på barnet.",
                 invalidValue = null
             )
         )
@@ -269,7 +269,10 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     return violations
 }
 
-private fun BarnDetaljer.bareEnIdSatt() = listOfNotNull(aktoerId, fodselsnummer, alternativId).size == 1
+private fun BarnDetaljer.gyldigAntallIder() : Boolean {
+    val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer, alternativId).size
+    return antallIderSatt == 0 || antallIderSatt == 1
+}
 
 internal fun List<Vedlegg>.validerTotalStorresle() {
     val totalSize = sumBy { it.content.size }

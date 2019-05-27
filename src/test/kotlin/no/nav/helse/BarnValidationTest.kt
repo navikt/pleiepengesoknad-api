@@ -17,7 +17,7 @@ class BarnValidationTest {
             aktoerId = null,
             navn = null
         )
-        barn.validate(null).assertFeilPaa(listOf("barn", "relasjon_til_barnet"))
+        barn.validate(null).assertFeilPaa(listOf("relasjon_til_barnet"))
     }
 
     @Test

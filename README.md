@@ -8,7 +8,7 @@ POST @ /soknad -> 202 Response
 - Listen med organisajoner i arbeidsgivere kan være tom
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
-- Det må settes kun 1 ID på barnet (alternativ_id, aktoer_id eller fodselsnummer)
+- Det kan settes kun 1 ID på barnet (alternativ_id, aktoer_id eller fodselsnummer) - Kan også sendes uten ID
 - barn.alternativ_id må være 11 siffer om det er satt
 - barn.fodslsnummer må være et gyldig norsk fødselsnummer om den er satt
 - barn.aktoer_id må være sattil en gyldig Aktør ID om den er satt
