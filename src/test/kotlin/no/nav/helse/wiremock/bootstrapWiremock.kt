@@ -51,7 +51,7 @@ fun bootstrapWiremock(port: Int? = null,
 
     // Sparkel
     stubReadiness(basePath = sparkelPath)
-    stubSparkelGetSoker()
+    stubSparkelGetPerson()
     stubSparkelGetArbeidsgivere()
     stubSparkelGetBarn()
 

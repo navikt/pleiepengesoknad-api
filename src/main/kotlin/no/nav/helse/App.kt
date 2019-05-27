@@ -6,7 +6,6 @@ import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
-import io.ktor.auth.authentication
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.*
@@ -33,7 +32,8 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.CallMonitoring
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.general.auth.*
-import no.nav.helse.soker.SokerGateway
+import no.nav.helse.person.PersonGateway
+import no.nav.helse.person.PersonService
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.PleiepengesoknadProsesseringGateway
@@ -142,13 +142,17 @@ fun Application.pleiepengesoknadapi() {
             )
         )
 
-        val sokerService = SokerService(
-            sokerGateway = SokerGateway(
+        val personService = PersonService(
+            personGateway = PersonGateway(
                 monitoredHttpClient = sparkelClient,
                 baseUrl = configuration.getSparkelUrl(),
-                aktoerService = aktoerService,
                 systemCredentialsProvider = systemCredentialsProvider
-            )
+            ),
+            aktoerService = aktoerService
+        )
+
+        val sokerService = SokerService(
+            personService = personService
         )
 
         authenticate {

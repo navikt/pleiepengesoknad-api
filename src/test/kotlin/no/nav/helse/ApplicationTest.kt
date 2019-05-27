@@ -257,7 +257,7 @@ class ApplicationTest {
 
     @Test
     fun `Hente soeker som ikke er myndig`() {
-        stubSparkelGetSoker(fodselsdato = ikkeMyndigDato)
+        stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/soker",
@@ -268,7 +268,7 @@ class ApplicationTest {
                 myndig = false
             )
         )
-        stubSparkelGetSoker()
+        stubSparkelGetPerson()
     }
 
     @Test
@@ -294,7 +294,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad ikke myndig`() {
-        stubSparkelGetSoker(fodselsdato = ikkeMyndigDato)
+        stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -320,7 +320,7 @@ class ApplicationTest {
             )
 
         )
-        stubSparkelGetSoker()
+        stubSparkelGetPerson()
     }
 
     @Test

@@ -3,7 +3,7 @@ package no.nav.helse.wiremock
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 
-fun stubSparkelGetSoker(
+fun stubSparkelGetPerson(
     fodselsdato : String = "1997-05-25"
 ) {
     WireMock.stubFor(
