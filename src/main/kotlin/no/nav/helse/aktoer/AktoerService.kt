@@ -13,10 +13,10 @@ class AktoerService(
         return aktoerGateway.hentAktoerId(fnr, callId)
     }
 
-    suspend fun getFodselsnummer(
+    suspend fun getNorskIdent(
         aktoerId: AktoerId,
         callId: CallId
-    ): Fodselsnummer {
-        return aktoerGateway.hentFodselsnummer(aktoerId, callId)
+    ): NorskIdent {
+        return aktoerGateway.hentNorskIdent(aktoerId, callId)
     }
 }

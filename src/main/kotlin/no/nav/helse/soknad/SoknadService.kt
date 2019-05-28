@@ -2,6 +2,8 @@ package no.nav.helse.soknad
 
 import no.nav.helse.aktoer.AktoerId
 import no.nav.helse.aktoer.AktoerService
+import no.nav.helse.aktoer.AlternativId
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.general.auth.IdToken
@@ -49,14 +51,17 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
             logger.warn("Mottok referanse til ${soknad.vedlegg.size} vedlegg, men fant bare ${vedlegg.size} som sendes til prosessering.")
         }
 
+        logger.trace("Henter barnets norske ident")
+        val barnetsNorskeIdent = barnetsNorskeIdent(soknad.barn, callId)
+
         val komplettSoknad = KomplettSoknad(
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             fraOgMed = soknad.fraOgMed,
             tilOgMed = soknad.tilOgMed,
             soker = soker,
             barn = BarnDetaljer(
-                fodselsnummer = barnetsFodselsnummer(soknad.barn, callId),
-                alternativId = soknad.barn.alternativId,
+                fodselsnummer = if (barnetsNorskeIdent is no.nav.helse.aktoer.Fodselsnummer) barnetsNorskeIdent.getValue() else null,
+                alternativId = if (barnetsNorskeIdent is AlternativId) barnetsNorskeIdent.getValue() else null,
                 aktoerId = soknad.barn.aktoerId,
                 navn = barnetsNavn(soknad.barn, callId)
             ),
@@ -86,18 +91,24 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
         logger.trace("Vedlegg slettet.")
     }
 
-    private suspend fun barnetsFodselsnummer(barn: BarnDetaljer, callId: CallId): String? {
-        return barn.fodselsnummer ?: if (barn.aktoerId != null)  try {
-            aktoerService.getFodselsnummer(
-                aktoerId = AktoerId(barn.aktoerId),
-                callId = callId
-            ).value
-        } catch (cause: Throwable) {
-            logger.error("Feil ved oppslag på barnets fødselsnummer.", cause)
-            null
-        } else null
+    private suspend fun barnetsNorskeIdent(barn: BarnDetaljer, callId: CallId) : NorskIdent? {
+        return when {
+            barn.fodselsnummer != null -> no.nav.helse.aktoer.Fodselsnummer(barn.fodselsnummer)
+            barn.alternativId != null -> AlternativId(barn.alternativId)
+            barn.aktoerId != null -> {
+                try {
+                    aktoerService.getNorskIdent(
+                        aktoerId = (AktoerId(barn.aktoerId)),
+                        callId = callId
+                    )
+                } catch (cause: Throwable) {
+                    logger.error("Feil på oppslag på barnets norske ident.", cause)
+                    null
+                }
+            }
+            else -> null
+        }
     }
-
     private suspend fun barnetsNavn(barn: BarnDetaljer, callId: CallId): String? {
         return barn.navn ?: if (barn.aktoerId != null) try {
             personService.hentPerson(

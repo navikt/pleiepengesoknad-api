@@ -90,21 +90,20 @@ class AktoerGateway(
         ))
     }
 
-    suspend fun hentFodselsnummer(
+    suspend fun hentNorskIdent(
         aktoerId: AktoerId,
         callId: CallId
-    ) : Fodselsnummer {
-        return Fodselsnummer(get(
+    ) : NorskIdent {
+        return get(
             url = fodselsnummerUrl,
             personIdent = aktoerId.value,
             callId = callId
-        ))
+        ).tilNorskIdent()
     }
-
 
     private suspend fun request(
         httpRequest: HttpRequestBuilder
-    ) : Map<String, IdentResponse> {
+    ) : Map<String, AktoerRegisterIdentResponse> {
         return Retry.retry(
             operation = "hente-identer",
             tries = 3,
@@ -112,7 +111,7 @@ class AktoerGateway(
             maxDelay = Duration.ofMillis(300),
             logger = logger
         ) {
-            monitoredHttpClient.requestAndReceive<Map<String, IdentResponse>>(
+            monitoredHttpClient.requestAndReceive<Map<String, AktoerRegisterIdentResponse>>(
                 httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest)
             )
         }
@@ -120,5 +119,5 @@ class AktoerGateway(
 
 }
 
-data class Ident(val ident: String, val identgruppe: String)
-data class IdentResponse(val feilmelding : String?, val identer : List<Ident>)
+data class AktoerRegisgerIdent(val ident: String, val identgruppe: String)
+data class AktoerRegisterIdentResponse(val feilmelding : String?, val identer : List<AktoerRegisgerIdent>)
