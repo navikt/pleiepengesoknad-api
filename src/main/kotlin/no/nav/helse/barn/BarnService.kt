@@ -1,7 +1,7 @@
 package no.nav.helse.barn
 
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.Fodselsnummer
 
 class BarnService(
     private val barnGateway: BarnGateway
@@ -17,11 +17,11 @@ class BarnService(
     }
 
     internal suspend fun hentNaaverendeBarn(
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         callId: CallId
     ) =
         barnGateway.hentBarn(
-            fnr = fnr,
+            norskIdent = norskIdent,
             callId = callId)
             .filter { it.status.toUpperCase() != STATUS_DOED }
             .filter { !FILTRER_BORT_DISKRESJONSKODER.contains(it.diskresjonskode?.toUpperCase()) }

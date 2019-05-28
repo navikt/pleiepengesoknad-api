@@ -2,8 +2,8 @@ package no.nav.helse.person
 
 import no.nav.helse.aktoer.AktoerId
 import no.nav.helse.aktoer.AktoerService
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.Fodselsnummer
 
 class PersonService(
     private val aktoerService: AktoerService,
@@ -15,7 +15,7 @@ class PersonService(
     ) = personGateway.hentPerson(aktoerId, callId)
 
     suspend fun hentPerson(
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         callId: CallId
-    ) = personGateway.hentPerson(aktoerService.getAktorId(fnr, callId), callId)
+    ) = personGateway.hentPerson(aktoerService.getAktorId(norskIdent, callId), callId)
 }

@@ -7,7 +7,7 @@ import io.ktor.routing.get
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
-import no.nav.helse.general.auth.getFodselsnummer
+import no.nav.helse.general.auth.getNorskIdent
 import no.nav.helse.general.getCallId
 import no.nav.helse.soknad.FraOgMedTilOgMedValidator
 import java.time.LocalDate
@@ -32,7 +32,7 @@ fun Route.arbeidsgiverApis(
             call.respond(
                 ArbeidsgiverResponse(
                     service.getAnsettelsesforhold(
-                        fnr = call.getFodselsnummer(),
+                        norskIdent = call.getNorskIdent(),
                         callId = call.getCallId(),
                         fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
                         tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])

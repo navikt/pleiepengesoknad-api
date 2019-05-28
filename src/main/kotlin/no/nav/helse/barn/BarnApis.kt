@@ -6,7 +6,7 @@ import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import no.nav.helse.general.auth.getFodselsnummer
+import no.nav.helse.general.auth.getNorskIdent
 import no.nav.helse.general.getCallId
 
 @KtorExperimentalLocationsAPI
@@ -21,7 +21,7 @@ fun Route.barnApis(
         call.respond(
             BarnResponse(
                 barnService.hentNaaverendeBarn(
-                    fnr = call.getFodselsnummer(),
+                    norskIdent = call.getNorskIdent(),
                     callId = call.getCallId()
                 ).map { it.tilDto() }
             )

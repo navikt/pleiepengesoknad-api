@@ -1,11 +1,7 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.aktoer.AktoerId
-import no.nav.helse.aktoer.AktoerService
-import no.nav.helse.aktoer.AlternativId
-import no.nav.helse.aktoer.NorskIdent
+import no.nav.helse.aktoer.*
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.Fodselsnummer
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.person.Person
 import no.nav.helse.person.PersonService
@@ -27,12 +23,12 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
 
     suspend fun registrer(
         soknad: Soknad,
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         idToken: IdToken,
         callId: CallId
     ) {
         logger.trace("Registrerer søknad. Henter søker")
-        val soker = sokerService.getSoker(fnr = fnr, callId = callId)
+        val soker = sokerService.getSoker(norskIdent = norskIdent, callId = callId)
 
         logger.trace("Søker hentet. Validerer om søkeren.")
         soker.validate()
@@ -60,7 +56,7 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
             tilOgMed = soknad.tilOgMed,
             soker = soker,
             barn = BarnDetaljer(
-                fodselsnummer = if (barnetsNorskeIdent is no.nav.helse.aktoer.Fodselsnummer) barnetsNorskeIdent.getValue() else null,
+                fodselsnummer = if (barnetsNorskeIdent is Fodselsnummer) barnetsNorskeIdent.getValue() else null,
                 alternativId = if (barnetsNorskeIdent is AlternativId) barnetsNorskeIdent.getValue() else null,
                 aktoerId = soknad.barn.aktoerId,
                 navn = barnetsNavn(soknad.barn, callId)
@@ -93,7 +89,7 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
 
     private suspend fun barnetsNorskeIdent(barn: BarnDetaljer, callId: CallId) : NorskIdent? {
         return when {
-            barn.fodselsnummer != null -> no.nav.helse.aktoer.Fodselsnummer(barn.fodselsnummer)
+            barn.fodselsnummer != null -> Fodselsnummer(barn.fodselsnummer)
             barn.alternativId != null -> AlternativId(barn.alternativId)
             barn.aktoerId != null -> {
                 try {

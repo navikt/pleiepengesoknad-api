@@ -9,7 +9,7 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import no.nav.helse.general.auth.IdTokenProvider
-import no.nav.helse.general.auth.getFodselsnummer
+import no.nav.helse.general.auth.getNorskIdent
 import no.nav.helse.general.getCallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -34,7 +34,7 @@ fun Route.soknadApis(
 
         soknadService.registrer(
             soknad = soknad,
-            fnr = call.getFodselsnummer(),
+            norskIdent = call.getNorskIdent(),
             callId = call.getCallId(),
             idToken = idTokenProvider.getIdToken(call)
         )

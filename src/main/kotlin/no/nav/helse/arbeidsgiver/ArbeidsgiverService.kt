@@ -1,18 +1,18 @@
 package no.nav.helse.arbeidsgiver
 
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.Fodselsnummer
 import java.time.LocalDate
 
 class ArbeidsgiverService(
     private val gateway: ArbeidsgiverGateway
 ) {
     suspend fun getAnsettelsesforhold(
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
     ) : List<Arbeidsgiver> {
-        return gateway.getAnsettelsesforhold(fnr, callId, fraOgMed, tilOgMed)
+        return gateway.getAnsettelsesforhold(norskIdent, callId, fraOgMed, tilOgMed)
     }
 }

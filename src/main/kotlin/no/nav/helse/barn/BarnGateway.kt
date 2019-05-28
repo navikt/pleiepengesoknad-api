@@ -10,12 +10,12 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.Url
 import no.nav.helse.aktoer.AktoerId
 import no.nav.helse.aktoer.AktoerService
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.Fodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -32,7 +32,7 @@ class BarnGateway(
     private val systemCredentialsProvider: SystemCredentialsProvider
 ) {
     suspend fun hentBarn(
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         callId : CallId
     ) : List<Barn> {
         val url = Url.buildURL(
@@ -40,7 +40,7 @@ class BarnGateway(
             pathParts = listOf(
                 "api",
                 "person",
-                aktoerService.getAktorId(fnr, callId).value,
+                aktoerService.getAktorId(norskIdent, callId).value,
                 "barn"
             )
         )

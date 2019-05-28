@@ -1,16 +1,15 @@
 package no.nav.helse.aktoer
 
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.Fodselsnummer
 
 class AktoerService(
     private val aktoerGateway: AktoerGateway
 ){
     suspend fun getAktorId(
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         callId: CallId
     ): AktoerId {
-        return aktoerGateway.hentAktoerId(fnr, callId)
+        return aktoerGateway.hentAktoerId(norskIdent, callId)
     }
 
     suspend fun getNorskIdent(

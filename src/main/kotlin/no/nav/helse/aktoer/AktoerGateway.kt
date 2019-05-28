@@ -7,7 +7,6 @@ import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.general.*
-import no.nav.helse.general.auth.Fodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -80,12 +79,12 @@ class AktoerGateway(
     }
 
     suspend fun hentAktoerId(
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         callId: CallId
     ) : AktoerId {
         return AktoerId(get(
             url = aktoerIdUrl,
-            personIdent = fnr.value,
+            personIdent = norskIdent.getValue(),
             callId = callId
         ))
     }

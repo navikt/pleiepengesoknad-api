@@ -9,12 +9,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.Url
 import no.nav.helse.aktoer.AktoerService
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.general.*
-import no.nav.helse.general.auth.Fodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -33,12 +33,12 @@ class ArbeidsgiverGateway(
 ) {
 
     suspend fun getAnsettelsesforhold(
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
     ) : List<Arbeidsgiver> {
-        val sparkelResponse = try { request(fnr, callId, fraOgMed, tilOgMed) } catch (cause: Throwable) {
+        val sparkelResponse = try { request(norskIdent, callId, fraOgMed, tilOgMed) } catch (cause: Throwable) {
             logger.error("Feil ved oppslag på arbeidsgivere. Returnerer tom liste med arbeidsgivere.", cause)
             SparkelResponse(arbeidsgivere = setOf())
         }
@@ -57,7 +57,7 @@ class ArbeidsgiverGateway(
     }
 
     private suspend fun request(
-        fnr: Fodselsnummer,
+        norskIdent: NorskIdent,
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
@@ -67,7 +67,7 @@ class ArbeidsgiverGateway(
             pathParts = listOf(
                 "api",
                 "arbeidsgivere",
-                aktoerService.getAktorId(fnr, callId).value
+                aktoerService.getAktorId(norskIdent, callId).value
             ),
             queryParameters = mapOf(
                 Pair("fom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed))),
