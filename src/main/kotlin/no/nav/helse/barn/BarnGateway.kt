@@ -62,7 +62,8 @@ class BarnGateway(
                 mellomnavn = sparkelBarn.mellomnavn,
                 etternavn = sparkelBarn.etternavn,
                 fodselsdato = sparkelBarn.fdato,
-                status = sparkelBarn.status
+                status = sparkelBarn.status,
+                diskresjonskode = sparkelBarn.diskresjonskode
             )
         }
     }
@@ -85,4 +86,6 @@ class BarnGateway(
 }
 
 data class SparkelResponse(val barn: List<SparkelBarn>)
-data class SparkelBarn(val fornavn: String, val mellomnavn: String?, val etternavn: String, val fdato: LocalDate, val status: String, val aktørId: String)
+data class SparkelBarn(
+    val fornavn: String, val mellomnavn: String?, val etternavn: String,
+    val fdato: LocalDate, val status: String, val aktørId: String, val diskresjonskode: String?)

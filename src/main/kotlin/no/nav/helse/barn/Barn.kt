@@ -9,7 +9,8 @@ data class Barn (
     val mellomnavn: String? = null,
     val etternavn: String,
     val aktoerId: AktoerId,
-    val status : String
+    val status : String,
+    val diskresjonskode : String?
 )
 
 fun Barn.tilDto() = BarnDTO(

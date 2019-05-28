@@ -45,27 +45,50 @@ private val sparkelResponseHarBarn = """
             "aktørId": "1000000000002",
             "fornavn": "BARN",
             "kjønn": "KVINNE",
-            "status": "FØDR"
+            "status": "FØDR",
+            "diskresjonskode": "UFB"
         },
-                {
+        {
             "fdato": "2010-04-10",
             "statsborgerskap": "NOR",
             "mellomnavn": "TRE",
             "etternavn": "BARNESEN",
-            "aktørId": "1000000000002",
+            "aktørId": "1000000000003",
             "fornavn": "BARN",
             "kjønn": "KVINNE",
             "status": "DØD"
         },
-                {
+        {
             "fdato": "2010-04-10",
             "statsborgerskap": "NOR",
             "mellomnavn": "FIRE",
             "etternavn": "BARNESEN",
-            "aktørId": "1000000000002",
+            "aktørId": "1000000000004",
             "fornavn": "BARN",
             "kjønn": "KVINNE",
             "status": "DØD"
+        },
+        {
+            "fdato": "2016-04-10",
+            "statsborgerskap": "NOR",
+            "mellomnavn": "FEM",
+            "etternavn": "BARNESEN",
+            "aktørId": "1000000000005",
+            "fornavn": "BARN",
+            "kjønn": "KVINNE",
+            "status": "BOSA",
+            "diskresjonskode": "SPSF"
+        },
+        {
+            "fdato": "2016-04-12",
+            "statsborgerskap": "NOR",
+            "mellomnavn": "SEKS",
+            "etternavn": "BARNESEN",
+            "aktørId": "1000000000006",
+            "fornavn": "BARN",
+            "kjønn": "MANN",
+            "status": "BOSA",
+            "diskresjonskode": "SPFO"
         }
     ]
 }
