@@ -363,6 +363,40 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Sende soknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+                "type": "/problem-details/invalid-request-parameters",
+                "title": "invalid-request-parameters",
+                "status": 400,
+                "detail": "Requesten inneholder ugyldige paramtere.",
+                "instance": "about:blank",
+                "invalid_parameters": [{
+                    "type": "entity",
+                    "name": "vedlegg",
+                    "reason": "Mottok referanse til 2 vedlegg, men fant kun 1 vedlegg.",
+                    "invalid_value": ["$jpegUrl", "http://localhost:1337/vedlegg/1"]
+                }]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                vedleggUrl2 = "http://localhost:1337/vedlegg/1"
+            )
+
+        )
+    }
+
+    @Test
     fun `Sende soknad med ugylidge parametre gir feil`() {
         val forlangtNavn = SoknadUtils.forLangtNavn()
         requestAndAssert(

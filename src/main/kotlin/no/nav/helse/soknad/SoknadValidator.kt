@@ -2,6 +2,7 @@ package no.nav.helse.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
+import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -274,7 +275,25 @@ private fun BarnDetaljer.gyldigAntallIder() : Boolean {
     return antallIderSatt == 0 || antallIderSatt == 1
 }
 
-internal fun List<Vedlegg>.validerTotalStorresle() {
+internal fun List<Vedlegg>.validerVedlegg(vedleggUrler: List<URL>) {
+    if (size != vedleggUrler.size) {
+        throw Throwblem(
+            ValidationProblemDetails(
+                violations = setOf(
+                    Violation(
+                        parameterName = "vedlegg",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
+                        invalidValue = vedleggUrler
+                    )
+                )
+            )
+        )
+    }
+    validerTotalStorresle()
+}
+
+private fun List<Vedlegg>.validerTotalStorresle() {
     val totalSize = sumBy { it.content.size }
     if (totalSize > MAX_VEDLEGG_SIZE) {
         throw Throwblem(vedleggTooLargeProblemDetails)

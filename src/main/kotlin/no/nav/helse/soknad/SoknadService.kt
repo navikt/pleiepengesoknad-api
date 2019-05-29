@@ -33,22 +33,20 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
         logger.trace("Søker hentet. Validerer om søkeren.")
         soker.validate()
 
-        logger.trace("Validert Søker. Henter ${soknad.vedlegg.size} vedlegg")
+        logger.trace("Validert Søker. Henter ${soknad.vedlegg.size} vedlegg.")
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
             vedleggUrls = soknad.vedlegg,
             callId = callId
         )
-        logger.trace("Validerer totale størreslen på vedleggene.")
-        vedlegg.validerTotalStorresle()
 
-        logger.trace("Vedlegg hentet. Legger søknad til prosessering")
-        if (soknad.vedlegg.size != vedlegg.size) {
-            logger.warn("Mottok referanse til ${soknad.vedlegg.size} vedlegg, men fant bare ${vedlegg.size} som sendes til prosessering.")
-        }
+        logger.trace("Vedlegg hentet. Validerer vedleggene.")
+        vedlegg.validerVedlegg(soknad.vedlegg)
 
         logger.trace("Henter barnets norske ident")
         val barnetsNorskeIdent = barnetsNorskeIdent(soknad.barn, callId)
+
+        logger.trace("Legger søknad til prosessering")
 
         val komplettSoknad = KomplettSoknad(
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
