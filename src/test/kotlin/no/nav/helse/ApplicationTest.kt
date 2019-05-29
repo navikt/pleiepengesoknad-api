@@ -366,6 +366,7 @@ class ApplicationTest {
     fun `Sende soknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
+        val finnesIkkeUrl = jpegUrl.substringBeforeLast("/").plus("/").plus(UUID.randomUUID().toString())
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -381,7 +382,7 @@ class ApplicationTest {
                     "type": "entity",
                     "name": "vedlegg",
                     "reason": "Mottok referanse til 2 vedlegg, men fant kun 1 vedlegg.",
-                    "invalid_value": ["$jpegUrl", "http://localhost:1337/vedlegg/1"]
+                    "invalid_value": ["$jpegUrl", "$finnesIkkeUrl"]
                 }]
             }
             """.trimIndent(),
@@ -390,9 +391,8 @@ class ApplicationTest {
             requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = "http://localhost:1337/vedlegg/1"
+                vedleggUrl2 = finnesIkkeUrl
             )
-
         )
     }
 
