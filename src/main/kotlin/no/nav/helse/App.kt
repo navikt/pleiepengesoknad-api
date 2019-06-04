@@ -85,7 +85,10 @@ fun Application.pleiepengesoknadapi() {
     install(Authentication) {
         jwt {
             realm = appId
-            verifier(jwkProvider, configuration.getIssuer())
+            verifier(jwkProvider, configuration.getIssuer()) {
+                acceptNotBefore(10)
+                acceptIssuedAt(10)
+            }
             authHeader { call ->
                 idTokenProvider
                     .getIdToken(call)
