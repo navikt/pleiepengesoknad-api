@@ -7,12 +7,10 @@ import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.dusseldorf.ktor.client.buildURL
-import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.general.CallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
-import java.time.Duration
 
 private val logger: Logger = LoggerFactory.getLogger("nav.PleiepengesoknadProsesseringGateway")
 
@@ -44,17 +42,9 @@ class PleiepengesoknadProsesseringGateway(
     }
 
     private suspend fun request(httpRequest: HttpRequestBuilder) {
-        Retry.retry(
-            operation = "send-soknad",
-            tries = 3,
-            initialDelay = Duration.ofMillis(100),
-            maxDelay = Duration.ofMillis(300),
-            logger = logger
-        ) {
-            monitoredHttpClient.request(
-                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest),
-                expectedHttpResponseCodes = setOf(HttpStatusCode.Accepted)
-            ).use {}
-        }
+        monitoredHttpClient.request(
+            httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest),
+            expectedHttpResponseCodes = setOf(HttpStatusCode.Accepted)
+        ).use {}
     }
 }
