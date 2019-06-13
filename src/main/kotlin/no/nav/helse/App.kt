@@ -1,9 +1,9 @@
 package no.nav.helse
 
 import com.auth0.jwk.JwkProviderBuilder
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.application.log
+import com.github.kittinunf.fuel.core.FuelManager
+import com.github.kittinunf.fuel.core.Request
+import io.ktor.application.*
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTPrincipal
@@ -13,6 +13,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
+import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
@@ -24,13 +25,12 @@ import no.nav.helse.arbeidsgiver.arbeidsgiverApis
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
-import no.nav.helse.dusseldorf.ktor.client.*
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
-import no.nav.helse.dusseldorf.ktor.metrics.CallMonitoring
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
+import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.helse.general.auth.*
 import no.nav.helse.person.PersonGateway
 import no.nav.helse.person.PersonService
@@ -56,6 +56,7 @@ fun Application.pleiepengesoknadapi() {
     DefaultExports.initialize()
 
     val configuration = Configuration(environment.config)
+    addApiGatewayFuelInterceptor(configuration.getApiGatewayApiKey())
 
     install(ContentNegotiation) {
         jackson {
@@ -108,13 +109,6 @@ fun Application.pleiepengesoknadapi() {
     }
 
     install(Locations)
-
-    install(CallMonitoring) {
-        app = appId
-        overridePaths = mapOf(
-            Pair(Regex("/vedlegg/.+"), "/vedlegg")
-        )
-    }
 
     val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
     val sparkelClient = Clients.sparkelClient(apiGatewayHttpRequestInterceptor)
@@ -216,6 +210,15 @@ fun Application.pleiepengesoknadapi() {
         )
     }
 
+    install(MicrometerMetrics) {
+        init(appId)
+    }
+
+
+    intercept(ApplicationCallPipeline.Monitoring) {
+        call.request.log()
+    }
+
     install(CallId) {
         generated()
     }
@@ -226,6 +229,17 @@ fun Application.pleiepengesoknadapi() {
         mdc("id_token_jti") { call ->
             try { idTokenProvider.getIdToken(call).getId() }
             catch (cause: Throwable) { null }
+        }
+    }
+}
+
+private fun addApiGatewayFuelInterceptor(apiGatewayApiKey: ApiGatewayApiKey) {
+    FuelManager.instance.addRequestInterceptor { next: (Request) -> Request ->
+        { req: Request ->
+            if (req.url.path.contains("helse-reverse-proxy", true)) {
+                req.header(mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
+            }
+            next(req)
         }
     }
 }
