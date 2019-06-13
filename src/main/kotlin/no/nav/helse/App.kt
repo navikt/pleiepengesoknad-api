@@ -113,7 +113,6 @@ fun Application.pleiepengesoknadapi() {
 
     install(Locations)
 
-    val apiGatewayHttpRequestInterceptor = ApiGatewayHttpRequestInterceptor(configuration.getApiGatewayApiKey())
     val sparkelClient = Clients.sparkelClient(apiGatewayHttpRequestInterceptor)
 
     val systemCredentialsProvider = Oauth2ClientCredentialsProvider(
@@ -129,9 +128,8 @@ fun Application.pleiepengesoknadapi() {
 
         val aktoerService = AktoerService(
             aktoerGateway = AktoerGateway(
-                monitoredHttpClient = Clients.aktoerRegisterClient(apiGatewayHttpRequestInterceptor),
                 baseUrl = configuration.getAktoerRegisterUrl(),
-                systemCredentialsProvider = systemCredentialsProvider
+                authorizationService = authorizationServiceResolver.aktoerRegister()
             )
         )
 

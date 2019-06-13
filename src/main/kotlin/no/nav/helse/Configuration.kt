@@ -56,9 +56,7 @@ data class Configuration(val config : ApplicationConfig) {
         return URL(config.getRequiredString("nav.authorization.token_url", secret = false))
     }
 
-    fun getAktoerRegisterUrl(): URL {
-        return URL(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))
-    }
+    fun getAktoerRegisterUrl() = URI(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))
 
     fun getPleiepengerDokumentUrl(): URL {
         return URL(config.getRequiredString("nav.gateways.pleiepenger_dokument_url", secret = false))

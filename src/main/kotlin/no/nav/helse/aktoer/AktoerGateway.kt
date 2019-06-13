@@ -1,68 +1,97 @@
 package no.nav.helse.aktoer
 
-import io.ktor.client.request.*
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
+import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.*
-import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
-import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
+
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.*
+import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URL
+import java.net.URI
 import java.time.Duration
 
 /**
  * https://app-q1.adeo.no/aktoerregister/swagger-ui.html
  */
 
-private const val AKTOERREGISTER_CORRELATION_ID_HEADER = "Nav-Call-Id"
-
-private val logger: Logger = LoggerFactory.getLogger("nav.AktoerGateway")
-
 class AktoerGateway(
-    private val monitoredHttpClient : MonitoredHttpClient,
-    baseUrl: URL,
-    private val systemCredentialsProvider: SystemCredentialsProvider
+    baseUrl: URI,
+    private val authorizationService: AuthorizationService
 ) {
-    private val aktoerIdUrl : URL = Url.buildURL(
+
+    private companion object {
+        private const val HENTE_AKTOER_ID_OPERATION = "hente-aktoer-id"
+        private val logger: Logger = LoggerFactory.getLogger(AktoerGateway::class.java)
+    }
+
+    private val aktoerIdUrl = Url.buildURL(
         baseUrl = baseUrl,
         pathParts = listOf("api","v1","identer"),
         queryParameters = mapOf(
             Pair("gjeldende", listOf("true")),
             Pair("identgruppe", listOf("AktoerId"))
         )
-    )
+    ).toString()
 
-    private val fodselsnummerUrl : URL = Url.buildURL(
+    private val fodselsnummerUrl = Url.buildURL(
         baseUrl = baseUrl,
         pathParts = listOf("api","v1","identer"),
         queryParameters = mapOf(
             Pair("gjeldende", listOf("true")),
             Pair("identgruppe", listOf("NorskIdent"))
         )
-    )
+    ).toString()
+
+    private val objectMapper = configuredObjectMapper()
 
     private suspend fun get(
-        url: URL,
+        url: String,
         personIdent: String,
         callId: CallId
     ) : String {
+        val authorizationHeader = authorizationService.getAuthorizationHeader()
 
-        val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemCredentialsProvider.getAuthorizationHeader())
-        httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
-        httpRequest.header(AKTOERREGISTER_CORRELATION_ID_HEADER, callId.value)
-        httpRequest.header("Nav-Consumer-Id", "pleiepengesoknad-api")
-        httpRequest.header("Nav-Personidenter", personIdent)
-        httpRequest.method = HttpMethod.Get
-        httpRequest.accept(ContentType.Application.Json)
-        httpRequest.url(url)
+        val httpRequest = url
+            .httpGet()
+            .header(
+                HttpHeaders.Authorization to authorizationHeader,
+                HttpHeaders.Accept to "application/json",
+                "Nav-Consumer-Id" to "pleiepengesoknad-prosessering",
+                "Nav-Personidenter" to personIdent,
+                "Nav-Call-Id" to callId.value
+            )
 
-        val httpResponse = request(httpRequest)
+        val httpResponse = Retry.retry(
+            operation = HENTE_AKTOER_ID_OPERATION,
+            initialDelay = Duration.ofMillis(200),
+            factor = 2.0
+        ) {
+            val (request,_, result) = Operation.monitored(
+                app = "pleiepengesoknad-api",
+                operation = HENTE_AKTOER_ID_OPERATION,
+                resultResolver = { 200 == it.second.statusCode }
+            ) { httpRequest.awaitStringResponseResult() }
+            result.fold(
+                { success -> objectMapper.readValue<Map<String,AktoerRegisterIdentResponse>>(success)},
+                { error ->
+                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                    logger.error(error.toString())
+                    throw IllegalStateException("Feil ved henting av Aktør ID.")
+                }
+            )
+        }
+
 
         if (!httpResponse.containsKey(personIdent)) {
-            throw IllegalStateException("Svar fra '$url' inneholdt ikke data om det forsespurte ident.")
+            throw IllegalStateException("Svar fra '$url' inneholdt ikke data om det forsespurte fødselsnummeret.")
         }
 
         val identResponse =  httpResponse.get(key = personIdent)
@@ -71,11 +100,17 @@ class AktoerGateway(
             logger.warn("Mottok feilmelding fra AktørRegister : '${identResponse.feilmelding}'")
         }
 
-        if (identResponse.identer.size != 1) {
-            throw IllegalStateException("Fikk ${identResponse.identer.size} Identer for den forsespurte ID'en mot '$url'")
+        if (identResponse.identer == null) {
+            throw IllegalStateException("Fikk 0 AktørID'er for det forsespurte fødselsnummeret mot '$url'")
         }
 
-        return identResponse.identer[0].ident
+        if (identResponse.identer.size != 1) {
+            throw IllegalStateException("Fikk ${identResponse.identer.size} AktørID'er for det forsespurte fødselsnummeret mot '$url'")
+        }
+
+        val aktoerId = AktoerId(identResponse.identer[0].ident)
+        logger.trace("Resolved AktørID $aktoerId")
+        return aktoerId.value
     }
 
     suspend fun hentAktoerId(
@@ -99,24 +134,13 @@ class AktoerGateway(
             callId = callId
         ).tilNorskIdent()
     }
-
-    private suspend fun request(
-        httpRequest: HttpRequestBuilder
-    ) : Map<String, AktoerRegisterIdentResponse> {
-        return Retry.retry(
-            operation = "hente-identer",
-            tries = 3,
-            initialDelay = Duration.ofMillis(100),
-            maxDelay = Duration.ofMillis(300),
-            logger = logger
-        ) {
-            monitoredHttpClient.requestAndReceive<Map<String, AktoerRegisterIdentResponse>>(
-                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest)
-            )
-        }
+    private fun configuredObjectMapper() : ObjectMapper {
+        val objectMapper = jacksonObjectMapper()
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        return objectMapper
     }
 
 }
 
-data class AktoerRegisgerIdent(val ident: String, val identgruppe: String)
-data class AktoerRegisterIdentResponse(val feilmelding : String?, val identer : List<AktoerRegisgerIdent>)
+data class AktoerRegisterIdent(val ident: String, val identgruppe: String)
+data class AktoerRegisterIdentResponse(val feilmelding : String?, val identer : List<AktoerRegisterIdent>?)

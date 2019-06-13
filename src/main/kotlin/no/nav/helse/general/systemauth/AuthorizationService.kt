@@ -2,7 +2,7 @@ package no.nav.helse.general.systemauth
 
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 
-internal class AuthorizationService (
+class AuthorizationService (
     private val accessTokenClient : CachedAccessTokenClient,
     private val scopes : Set<String>
 ) {
