@@ -12,6 +12,7 @@ import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.net.URI
 import java.net.URL
 import java.time.Duration
 
@@ -19,8 +20,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.PleiepengerDokumentGat
 
 
 class PleiepengerDokumentGateway(
-    private val monitoredHttpClient: MonitoredHttpClient,
-    baseUrl : URL
+    baseUrl : URI
 ) {
 
     private val url = Url.buildURL(

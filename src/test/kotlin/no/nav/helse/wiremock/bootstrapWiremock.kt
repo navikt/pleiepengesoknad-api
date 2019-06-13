@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory
 
 private val logger: Logger = LoggerFactory.getLogger("nav.bootstrap")
 private const val jwkSetPath = "/auth-mock/jwk-set"
-private const val sparkelPath = "/sparkel-mock"
-private const val authorizationServerPath = "/authorization-server-mock/token"
-private const val aktoerRegisterServerPath = "/aktoer-register-mock"
-private const val pleiepengesoknadProsesseringPath = "/pleiepengesoknad-prosessering-mock"
+private const val sparkelPath = "/helse-reverse-proxy/sparkel-mock"
+private const val authorizationServerPath = "/helse-reverse-proxy/authorization-server-mock/token"
+private const val aktoerRegisterServerPath = "/helse-reverse-proxy/aktoer-register-mock"
+private const val pleiepengesoknadProsesseringPath = "/helse-reverse-proxy/pleiepengesoknad-prosessering-mock"
 private const val pleiepengerDokumentPath = "/pleiepenger-dokument-mock"
 
 

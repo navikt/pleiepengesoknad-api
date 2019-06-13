@@ -113,17 +113,6 @@ fun Application.pleiepengesoknadapi() {
 
     install(Locations)
 
-    val sparkelClient = Clients.sparkelClient(apiGatewayHttpRequestInterceptor)
-
-    val systemCredentialsProvider = Oauth2ClientCredentialsProvider(
-        monitoredHttpClient = Clients.stsClient(apiGatewayHttpRequestInterceptor),
-        tokenUrl = configuration.getAuthorizationServerTokenUrl(),
-        clientId = configuration.getServiceAccountClientId(),
-        clientSecret = configuration.getServiceAccountClientSecret(),
-        scopes = configuration.getServiceAccountScopes()
-    )
-
-
     install(Routing) {
 
         val aktoerService = AktoerService(
