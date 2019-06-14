@@ -32,9 +32,7 @@ data class Configuration(val config : ApplicationConfig) {
         )
     }
 
-    fun getSparkelUrl() : URL {
-        return URL(config.getRequiredString("nav.gateways.sparkel_url", secret = false))
-    }
+    fun getSparkelUrl() = URI(config.getRequiredString("nav.gateways.sparkel_url", secret = false))
 
     fun getServiceAccountClientId(): String {
         return config.getRequiredString("nav.authorization.service_account.client_id", secret = false)

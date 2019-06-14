@@ -1,27 +1,36 @@
 package no.nav.helse.vedlegg
 
-import io.ktor.client.call.receive
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.header
-import io.ktor.client.request.url
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
+import com.github.kittinunf.fuel.httpDelete
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.httpPost
 import io.ktor.http.*
-import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
 import no.nav.helse.dusseldorf.ktor.client.buildURL
-import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.core.Retry.Companion.retry
+import no.nav.helse.dusseldorf.ktor.metrics.Operation.Companion.monitored
+import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.ByteArrayInputStream
 import java.net.URI
-import java.net.URL
 import java.time.Duration
-
-private val logger: Logger = LoggerFactory.getLogger("nav.PleiepengerDokumentGateway")
-
 
 class PleiepengerDokumentGateway(
     baseUrl : URI
 ) {
+
+    private companion object {
+        private val logger: Logger = LoggerFactory.getLogger(PleiepengerDokumentGateway::class.java)
+        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
+        private const val SLETTE_VEDLEGG_OPERATION = "slette-vedlegg"
+        private const val HENTE_VEDLEGG_OPERATION = "hente-vedlegg"
+        private const val LAGRE_VEDLEGG_OPERATION = "lagre-vedlegg"
+    }
 
     private val url = Url.buildURL(
         baseUrl = baseUrl,
@@ -38,58 +47,79 @@ class PleiepengerDokumentGateway(
             pathParts = listOf(vedleggId.value)
         )
 
-        val httpRequest = httpRequest(
-            idToken = idToken,
-            callId = callId,
-            url = urlMedId,
-            httpMethod = HttpMethod.Get
-        )
+        val httpRequest = urlMedId
+            .toString()
+            .httpGet()
+            .header(
+                HttpHeaders.Authorization to "Bearer ${idToken.value}",
+                HttpHeaders.Accept to "application/json",
+                HttpHeaders.XCorrelationId to callId.value
+            )
 
-        val response = Retry.retry(
-            operation = "hente-vedlegg",
-            tries = 3,
-            initialDelay = Duration.ofMillis(100),
-            maxDelay = Duration.ofMillis(300),
+        return retry(
+            operation = HENTE_VEDLEGG_OPERATION,
+            initialDelay = Duration.ofMillis(200),
+            factor = 2.0,
             logger = logger
         ) {
-            monitoredHttpClient.request(
-                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest),
-                expectedHttpResponseCodes = setOf(HttpStatusCode.OK, HttpStatusCode.NotFound)
-            )
-        }
+            val (request, response, result) = monitored(
+                app = "pleiepengesoknad-api",
+                operation = HENTE_VEDLEGG_OPERATION,
+                resultResolver = { 200 == it.second.statusCode }
+            ) { httpRequest.awaitStringResponseResult() }
 
-        return response.use {
-            if (it.status == HttpStatusCode.NotFound) null
-            else it.receive()
-        }
+            result.fold(
+                { success -> ResolvedVedlegg(objectMapper.readValue<Vedlegg>(success))},
+                { error ->
+                    if (404 == response.statusCode) ResolvedVedlegg()
+                    else {
+                        logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                        logger.error(error.toString())
+                        throw IllegalStateException("Feil ved henting av vedlegg.")
+                    }
+                }
+            )
+        }.vedlegg
     }
 
     suspend fun lagreVedlegg(
         vedlegg: Vedlegg,
         idToken: IdToken,
-        callId: CallId) : VedleggId {
+        callId: CallId
+    ): VedleggId {
+        val body = objectMapper.writeValueAsBytes(vedlegg)
 
-        val httpRequest = httpRequest(
-            idToken = idToken,
-            callId = callId,
-            url = url,
-            httpMethod = HttpMethod.Post
-        ).body(vedlegg)
-
-        val response = Retry.retry(
-            operation = "lagre-vedlegg",
-            tries = 3,
-            initialDelay = Duration.ofMillis(100),
-            maxDelay = Duration.ofMillis(300),
+        return retry(
+            operation = LAGRE_VEDLEGG_OPERATION,
+            initialDelay = Duration.ofMillis(200),
+            factor = 2.0,
             logger = logger
         ) {
-            monitoredHttpClient.requestAndReceive<CreatedResponseEntity>(
-                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest),
-                expectedHttpResponseCodes = setOf(HttpStatusCode.Created)
-            )
+            val (request, _, result) = monitored(
+                app = "pleiepengesoknad-api",
+                operation = LAGRE_VEDLEGG_OPERATION,
+                resultResolver = { 201 == it.second.statusCode }
+            ) {
+                url
+                    .toString()
+                    .httpPost()
+                    .body({ ByteArrayInputStream(body) })
+                    .header(
+                        HttpHeaders.Authorization to "Bearer ${idToken.value}",
+                        HttpHeaders.ContentType to "application/json",
+                        HttpHeaders.Accept to "application/json",
+                        HttpHeaders.XCorrelationId to callId.value
+                    )
+                    .awaitStringResponseResult()
+            }
+            result.fold(
+                { success -> VedleggId(objectMapper.readValue<CreatedResponseEntity>(success).id) },
+                { error ->
+                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                    logger.error(error.toString())
+                    throw IllegalStateException("Feil ved lagring av vedlegg.")
+                })
         }
-
-        return VedleggId(response.id)
     }
 
     suspend fun slettVedlegg(
@@ -102,51 +132,46 @@ class PleiepengerDokumentGateway(
             pathParts = listOf(vedleggId.value)
         )
 
-        val httpRequest = httpRequest(
-            idToken = idToken,
-            callId = callId,
-            url = urlMedId,
-            httpMethod = HttpMethod.Delete
-        )
+        val httpRequest = urlMedId
+            .toString()
+            .httpDelete()
+            .header(
+                HttpHeaders.Authorization to "Bearer ${idToken.value}",
+                HttpHeaders.XCorrelationId to callId.value
+            )
 
-        return try {
-            Retry.retry(
-                operation = "slett-vedlegg",
-                tries = 3,
-                initialDelay = Duration.ofMillis(100),
-                maxDelay = Duration.ofMillis(300),
-                logger = logger
-            ) {
-                monitoredHttpClient.request(
-                    httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest),
-                    expectedHttpResponseCodes = setOf(HttpStatusCode.NoContent)
-                ).use {}
-            }
-            true
-        } catch (cause: Throwable) {
+        return try { requestSlettVedlegg(httpRequest)}
+        catch (cause: Throwable) {
+            logger.error("Fikk ikke slettet vedlegg.")
             false
         }
     }
 
-    private fun httpRequest(
-        idToken: IdToken,
-        callId: CallId,
-        url: URL,
-        httpMethod: HttpMethod
-    ) : HttpRequestBuilder {
-        val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, "Bearer ${idToken.value}")
-        httpRequest.header(HttpHeaders.XCorrelationId, callId.value)
-        httpRequest.method = httpMethod
-        httpRequest.url(url)
-        return httpRequest
+    private suspend fun requestSlettVedlegg(
+        httpRequest: Request
+    ) : Boolean = retry(
+            operation = SLETTE_VEDLEGG_OPERATION,
+            initialDelay = Duration.ofMillis(200),
+            factor = 2.0,
+            logger = logger
+    ) {
+        val (request, _, result) = monitored(
+            app = "pleiepengesoknad-api",
+            operation = SLETTE_VEDLEGG_OPERATION,
+            resultResolver = { 204 == it.second.statusCode }
+        ) { httpRequest.awaitStringResponseResult() }
+
+        result.fold(
+            { success -> true },
+            { error -> {
+                logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                logger.error(error.toString())
+                throw IllegalStateException("Feil ved sletting av vedlegg.")
+            }}
+        )
+        false
     }
 }
 
-private fun HttpRequestBuilder.body(vedlegg: Vedlegg): HttpRequestBuilder {
-    header(HttpHeaders.ContentType, ContentType.Application.Json)
-    body = vedlegg
-    return this
-}
-
 data class CreatedResponseEntity(val id : String)
+private data class ResolvedVedlegg(val vedlegg: Vedlegg? = null)

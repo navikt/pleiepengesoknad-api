@@ -151,10 +151,9 @@ fun Application.pleiepengesoknadapi() {
             barnApis(
                 barnService = BarnService(
                     barnGateway = BarnGateway(
-                        monitoredHttpClient = sparkelClient,
                         baseUrl = configuration.getSparkelUrl(),
                         aktoerService = aktoerService,
-                        systemCredentialsProvider = systemCredentialsProvider
+                        authorizationService = authorizationServiceResolver.sparkel()
                     )
                 )
             )
@@ -162,10 +161,9 @@ fun Application.pleiepengesoknadapi() {
             arbeidsgiverApis(
                 service = ArbeidsgiverService(
                     gateway = ArbeidsgiverGateway(
-                        monitoredHttpClient = sparkelClient,
                         aktoerService = aktoerService,
                         baseUrl = configuration.getSparkelUrl(),
-                        systemCredentialsProvider = systemCredentialsProvider
+                        authorizationService = authorizationServiceResolver.sparkel()
                     )
                 )
             )

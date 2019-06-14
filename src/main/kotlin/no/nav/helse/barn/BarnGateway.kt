@@ -83,7 +83,7 @@ class BarnGateway(
     ) : SparkelResponse {
         return Retry.retry(
             operation = HENTE_BARN_OPEARTION,
-            initialDelay = Duration.ofMillis(100),
+            initialDelay = Duration.ofMillis(200),
             factor = 2.0,
             logger = logger
         ) {
