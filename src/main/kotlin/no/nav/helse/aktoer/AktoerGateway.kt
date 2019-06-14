@@ -1,7 +1,6 @@
 package no.nav.helse.aktoer
 
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
@@ -30,6 +29,9 @@ class AktoerGateway(
     private companion object {
         private const val HENTE_AKTOER_ID_OPERATION = "hente-aktoer-id"
         private val logger: Logger = LoggerFactory.getLogger(AktoerGateway::class.java)
+        private val objectMapper = jacksonObjectMapper().apply {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        }
     }
 
     private val aktoerIdUrl = Url.buildURL(
@@ -49,8 +51,6 @@ class AktoerGateway(
             Pair("identgruppe", listOf("NorskIdent"))
         )
     ).toString()
-
-    private val objectMapper = configuredObjectMapper()
 
     private suspend fun get(
         url: String,
@@ -134,12 +134,6 @@ class AktoerGateway(
             callId = callId
         ).tilNorskIdent()
     }
-    private fun configuredObjectMapper() : ObjectMapper {
-        val objectMapper = jacksonObjectMapper()
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        return objectMapper
-    }
-
 }
 
 data class AktoerRegisterIdent(val ident: String, val identgruppe: String)

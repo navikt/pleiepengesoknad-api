@@ -28,7 +28,7 @@ class ArbeidsgiverGateway(
 ) {
 
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger("nav.ArbeidsgiverGateway")
+        private val logger: Logger = LoggerFactory.getLogger(ArbeidsgiverGateway::class.java)
         private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
         private const val HENTE_ARBEIDSGIVERE_OPERATION = "hente-arbeidsgivere"
         private val objectMapper = jacksonObjectMapper().apply {
