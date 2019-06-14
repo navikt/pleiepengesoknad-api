@@ -1,39 +1,44 @@
 package no.nav.helse.person
 
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.accept
-import io.ktor.client.request.header
-import io.ktor.client.request.url
-import io.ktor.http.ContentType
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
+import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
 import io.ktor.http.Url
 import no.nav.helse.aktoer.AktoerId
-import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
-import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.CallId
+import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URL
+import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 
-
-private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
-private val logger: Logger = LoggerFactory.getLogger("nav.PersonGateway")
-
-
 class PersonGateway(
-    private val monitoredHttpClient: MonitoredHttpClient,
-    private val baseUrl: URL,
-    private val systemCredentialsProvider: SystemCredentialsProvider
+    private val baseUrl: URI,
+    private val authorizationService: AuthorizationService
 ) {
+
+    private companion object {
+        private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
+        private val logger: Logger = LoggerFactory.getLogger("nav.PersonGateway")
+        private const val HENTE_PERSON_OPERATION = "hente-person"
+        private val objectMapper = jacksonObjectMapper().apply {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        }
+    }
+
     suspend fun hentPerson(
         aktoerId: AktoerId,
         callId : CallId
     ) : Person {
+        val authorizationHeader = authorizationService.getAuthorizationHeader()
+
         val url = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf(
@@ -43,38 +48,45 @@ class PersonGateway(
             )
         )
 
-        val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemCredentialsProvider.getAuthorizationHeader())
-        httpRequest.header(SPARKEL_CORRELATION_ID_HEADER, callId.value)
-        httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
-        httpRequest.accept(ContentType.Application.Json)
-        httpRequest.method = HttpMethod.Get
-        httpRequest.url(url)
 
-        val response = request(httpRequest)
+        val httpRequest = url
+            .toString()
+            .httpGet()
+            .header(
+                SPARKEL_CORRELATION_ID_HEADER to callId.value,
+                HttpHeaders.Accept to "application/json",
+                HttpHeaders.Authorization to authorizationHeader
+            )
 
-        return Person(
-            fornavn = response.fornavn,
-            mellomnavn = response.mellomnavn,
-            etternavn = response.etternavn,
-            fodselsdato = response.fdato
-        )
-    }
 
-    private suspend fun request(
-        httpRequest: HttpRequestBuilder
-    ) : SparkelResponse {
-        return Retry.retry(
-            operation = "hente-person",
-            tries = 3,
-            initialDelay = Duration.ofMillis(100),
-            maxDelay = Duration.ofMillis(300),
+        val sparkelResponse = Retry.retry(
+            operation = HENTE_PERSON_OPERATION,
+            initialDelay = Duration.ofMillis(200),
+            factor = 2.0,
             logger = logger
         ) {
-            monitoredHttpClient.requestAndReceive<SparkelResponse>(
-                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest)
+            val (request, _, result) = Operation.monitored(
+                app = "pleiepengesoknad-api",
+                operation = HENTE_PERSON_OPERATION,
+                resultResolver = { 200 == it.second.statusCode }
+            ) { httpRequest.awaitStringResponseResult() }
+
+            result.fold(
+                { success -> objectMapper.readValue<SparkelResponse>(success)},
+                { error ->
+                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                    logger.error(error.toString())
+                    throw IllegalStateException("Feil ved henting av person")
+                }
             )
         }
+
+        return Person(
+            fornavn = sparkelResponse.fornavn,
+            mellomnavn = sparkelResponse.mellomnavn,
+            etternavn = sparkelResponse.etternavn,
+            fodselsdato = sparkelResponse.fdato
+        )
     }
 }
 
