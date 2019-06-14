@@ -10,6 +10,7 @@ import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.*
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
@@ -26,8 +27,11 @@ import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
 import no.nav.helse.dusseldorf.ktor.auth.clients
+import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
+import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
+import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
@@ -81,7 +85,7 @@ fun Application.pleiepengesoknadapi() {
     }
 
     val idTokenProvider = IdTokenProvider(cookieName = configuration.getCookieName())
-    val jwkProvider = JwkProviderBuilder(configuration.getJwksUrl())
+    val jwkProvider = JwkProviderBuilder(configuration.getJwksUrl().toURL())
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
@@ -124,7 +128,6 @@ fun Application.pleiepengesoknadapi() {
 
         val vedleggService = VedleggService(
             pleiepengerDokumentGateway = PleiepengerDokumentGateway(
-                monitoredHttpClient = Clients.pleiepengerDokumentClient(),
                 baseUrl = configuration.getPleiepengerDokumentUrl()
             )
         )
@@ -192,8 +195,13 @@ fun Application.pleiepengesoknadapi() {
         DefaultProbeRoutes()
         MetricsRoute()
         HealthRoute(
-            healthChecks = setOf(
-                SystemCredentialsProviderHealthCheck(systemCredentialsProvider)
+            healthService = HealthService(
+                healthChecks = setOf(
+                    authorizationServiceResolver,
+                    HttpRequestHealthCheck(mapOf(
+                        configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false)
+                    ))
+                )
             )
         )
     }
@@ -225,7 +233,7 @@ private fun addApiGatewayFuelInterceptor(apiGatewayApiKey: ApiGatewayApiKey) {
     FuelManager.instance.addRequestInterceptor { next: (Request) -> Request ->
         { req: Request ->
             if (req.url.path.contains("helse-reverse-proxy", true)) {
-                req.header(mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
+                req.appendHeader(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
             }
             next(req)
         }

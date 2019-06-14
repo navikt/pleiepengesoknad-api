@@ -10,9 +10,7 @@ import java.net.URL
 
 @KtorExperimentalAPI
 data class Configuration(val config : ApplicationConfig) {
-    fun getJwksUrl() : URL {
-        return URL(config.getRequiredString("nav.authorization.jwks_uri", secret = false))
-    }
+    fun getJwksUrl() = URI(config.getRequiredString("nav.authorization.jwks_uri", secret = false))
 
     fun getIssuer() : String {
         return config.getRequiredString("nav.authorization.issuer", secret = false)
@@ -56,13 +54,9 @@ data class Configuration(val config : ApplicationConfig) {
 
     fun getAktoerRegisterUrl() = URI(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))
 
-    fun getPleiepengerDokumentUrl(): URL {
-        return URL(config.getRequiredString("nav.gateways.pleiepenger_dokument_url", secret = false))
-    }
+    fun getPleiepengerDokumentUrl() = URI(config.getRequiredString("nav.gateways.pleiepenger_dokument_url", secret = false))
 
-    fun getPleiepengesoknadProsesseringBaseUrl(): URL {
-        return URL(config.getRequiredString("nav.gateways.pleiepengesoknad_prosessering_base_url", secret = false))
-    }
+    fun getPleiepengesoknadProsesseringBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_prosessering_base_url", secret = false))
 
     fun getApiGatewayApiKey() : ApiGatewayApiKey {
         val apiKey = config.getRequiredString(key = "nav.authorization.api_gateway.api_key", secret = true)
