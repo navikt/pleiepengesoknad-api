@@ -88,7 +88,8 @@ class ArbeidsgiverGateway(
         return Retry.retry(
             operation = HENTE_ARBEIDSGIVERE_OPERATION,
             initialDelay = Duration.ofMillis(200),
-            factor = 2.0
+            factor = 2.0,
+            logger = logger
         ) {
             val (request, _, result) = Operation.monitored(
                 app = "pleiepengesoknad-api",

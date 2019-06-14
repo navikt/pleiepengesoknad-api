@@ -1,40 +1,49 @@
 package no.nav.helse.barn
 
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.accept
-import io.ktor.client.request.header
-import io.ktor.client.request.url
-import io.ktor.http.ContentType
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
+import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
 import io.ktor.http.Url
 import no.nav.helse.aktoer.AktoerId
 import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.aktoer.NorskIdent
-import no.nav.helse.dusseldorf.ktor.client.MonitoredHttpClient
-import no.nav.helse.dusseldorf.ktor.client.SystemCredentialsProvider
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.CallId
+import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URL
+import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 
-private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
-private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
-
 class BarnGateway(
-    private val monitoredHttpClient: MonitoredHttpClient,
-    private val baseUrl: URL,
+    private val baseUrl: URI,
     private val aktoerService: AktoerService,
-    private val systemCredentialsProvider: SystemCredentialsProvider
+    private val authorizationService: AuthorizationService
 ) {
-    suspend fun hentBarn(
+
+    private companion object {
+        private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
+        private const val HENTE_BARN_OPEARTION = "hente-barn"
+        private val logger: Logger = LoggerFactory.getLogger(BarnGateway::class.java)
+        private val objectMapper = jacksonObjectMapper().apply {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        }
+    }
+
+    internal suspend fun hentBarn(
         norskIdent: NorskIdent,
         callId : CallId
     ) : List<Barn> {
+
+        val authorizationHeader = authorizationService.getAuthorizationHeader()
+
         val url = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf(
@@ -45,13 +54,14 @@ class BarnGateway(
             )
         )
 
-        val httpRequest = HttpRequestBuilder()
-        httpRequest.header(HttpHeaders.Authorization, systemCredentialsProvider.getAuthorizationHeader())
-        httpRequest.header(SPARKEL_CORRELATION_ID_HEADER, callId.value)
-        httpRequest.header(HttpHeaders.XCorrelationId, callId.value) // For proxy
-        httpRequest.accept(ContentType.Application.Json)
-        httpRequest.method = HttpMethod.Get
-        httpRequest.url(url)
+        val httpRequest = url
+            .toString()
+            .httpGet()
+            .header(
+                SPARKEL_CORRELATION_ID_HEADER to callId.value,
+                HttpHeaders.Authorization to authorizationHeader,
+                HttpHeaders.Accept to "application/json"
+            )
 
         val response = request(httpRequest)
 
@@ -69,17 +79,26 @@ class BarnGateway(
     }
 
     private suspend fun request(
-        httpRequest: HttpRequestBuilder
+        httpRequest: Request
     ) : SparkelResponse {
         return Retry.retry(
-            operation = "hente-barn",
-            tries = 3,
+            operation = HENTE_BARN_OPEARTION,
             initialDelay = Duration.ofMillis(100),
-            maxDelay = Duration.ofMillis(300),
+            factor = 2.0,
             logger = logger
         ) {
-            monitoredHttpClient.requestAndReceive<SparkelResponse>(
-                httpRequestBuilder = HttpRequestBuilder().takeFrom(httpRequest)
+            val (request, _, result) = Operation.monitored(
+                app = "pleiepengesoknad-api",
+                operation = HENTE_BARN_OPEARTION
+            ) { httpRequest.awaitStringResponseResult() }
+
+            result.fold(
+                { success -> objectMapper.readValue<SparkelResponse>(success) },
+                { error ->
+                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                    logger.error(error.toString())
+                    throw IllegalStateException("Feil ved henting av barn")
+                }
             )
         }
     }
