@@ -89,7 +89,8 @@ class BarnGateway(
         ) {
             val (request, _, result) = Operation.monitored(
                 app = "pleiepengesoknad-api",
-                operation = HENTE_BARN_OPEARTION
+                operation = HENTE_BARN_OPEARTION,
+                resultResolver = { 200 == it.second.statusCode }
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(

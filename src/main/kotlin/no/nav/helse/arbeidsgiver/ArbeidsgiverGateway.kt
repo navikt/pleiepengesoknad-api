@@ -93,7 +93,8 @@ class ArbeidsgiverGateway(
         ) {
             val (request, _, result) = Operation.monitored(
                 app = "pleiepengesoknad-api",
-                operation = HENTE_ARBEIDSGIVERE_OPERATION
+                operation = HENTE_ARBEIDSGIVERE_OPERATION,
+                resultResolver = { 200 == it.second.statusCode }
             ) { httpReqeust.awaitStringResponseResult() }
 
             result.fold(
