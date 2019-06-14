@@ -1,6 +1,7 @@
 package no.nav.helse.person
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
@@ -30,6 +31,7 @@ class PersonGateway(
         private const val HENTE_PERSON_OPERATION = "hente-person"
         private val objectMapper = jacksonObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            registerModule(JavaTimeModule())
         }
     }
 

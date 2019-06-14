@@ -11,6 +11,7 @@ import io.ktor.auth.jwt.jwt
 import io.ktor.features.*
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
 import io.ktor.jackson.jackson
 import io.ktor.locations.KtorExperimentalLocationsAPI
 import io.ktor.locations.Locations
@@ -29,6 +30,7 @@ import no.nav.helse.barn.barnApis
 import no.nav.helse.dusseldorf.ktor.auth.clients
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
+import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
@@ -134,9 +136,8 @@ fun Application.pleiepengesoknadapi() {
 
         val personService = PersonService(
             personGateway = PersonGateway(
-                monitoredHttpClient = sparkelClient,
                 baseUrl = configuration.getSparkelUrl(),
-                systemCredentialsProvider = systemCredentialsProvider
+                authorizationService = authorizationServiceResolver.sparkel()
             ),
             aktoerService = aktoerService
         )
@@ -199,7 +200,8 @@ fun Application.pleiepengesoknadapi() {
                 healthChecks = setOf(
                     authorizationServiceResolver,
                     HttpRequestHealthCheck(mapOf(
-                        configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false)
+                        configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false),
+                        Url.buildURL(baseUrl = configuration.getPleiepengerDokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
                     ))
                 )
             )
