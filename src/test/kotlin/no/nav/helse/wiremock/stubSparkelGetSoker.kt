@@ -2,6 +2,7 @@ package no.nav.helse.wiremock
 
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
+import io.ktor.http.HttpHeaders
 
 fun stubSparkelGetPerson(
     fodselsdato : String = "1997-05-25"
@@ -9,6 +10,7 @@ fun stubSparkelGetPerson(
     WireMock.stubFor(
         WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/person/.\\d+"))
             .withHeader("x-nav-apiKey", AnythingPattern())
+            .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)

@@ -23,7 +23,9 @@ object TestConfiguration {
 
         val map = mutableMapOf(
             Pair("ktor.deployment.port","$port"),
-            Pair("nav.authorization.token_url","$tokenUrl"),
+            Pair("nav.auth.clients.0.alias", "nais-sts"),
+            Pair("nav.auth.clients.0.client_id", "srvpleiepengesokna"),
+            Pair("nav.auth.clients.0.token_endpoint", "$tokenUrl"),
             Pair("nav.authorization.issuer", issuer),
             Pair("nav.authorization.cookie_name", cookieName),
             Pair("nav.authorization.jwks_uri","$jwkSetUrl"),
@@ -35,7 +37,7 @@ object TestConfiguration {
         )
 
         if (apiGatewayKey != null) map["nav.authorization.api_gateway.api_key"] = apiGatewayKey
-        if (clientSecret != null) map["nav.authorization.service_account.client_secret"] = clientSecret
+        if (clientSecret != null) map["nav.auth.clients.0.client_secret"] = clientSecret
 
         return map.toMap()
     }

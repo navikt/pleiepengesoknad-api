@@ -1,6 +1,7 @@
 package no.nav.helse.barn
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.core.Request
@@ -34,6 +35,7 @@ class BarnGateway(
         private val logger: Logger = LoggerFactory.getLogger(BarnGateway::class.java)
         private val objectMapper = jacksonObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            registerModule(JavaTimeModule())
         }
     }
 
