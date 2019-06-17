@@ -236,9 +236,6 @@ private fun addApiGatewayFuelInterceptor(apiGatewayApiKey: ApiGatewayApiKey) {
             if (req.url.path.contains("helse-reverse-proxy", true)) {
                 req.appendHeader(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
             }
-            else {
-                println("neida")
-            }
             next(req)
         }
     }

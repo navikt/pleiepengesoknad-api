@@ -66,6 +66,8 @@ fun bootstrapWiremock(port: Int? = null,
 
     // Pleiepenger-dokument
     stubPleiepengerDokument()
+    stubReadiness(basePath = pleiepengerDokumentPath, readinessPath = "health")
+
 
     logger.info("Mock available on '{}'", wireMockServer.baseUrl())
     return wireMockServer
