@@ -10,17 +10,17 @@ import java.net.URL
 
 @KtorExperimentalAPI
 data class Configuration(val config : ApplicationConfig) {
-    fun getJwksUrl() = URI(config.getRequiredString("nav.authorization.jwks_uri", secret = false))
+    internal fun getJwksUrl() = URI(config.getRequiredString("nav.authorization.jwks_uri", secret = false))
 
-    fun getIssuer() : String {
+    internal fun getIssuer() : String {
         return config.getRequiredString("nav.authorization.issuer", secret = false)
     }
 
-    fun getCookieName() : String {
+    internal fun getCookieName() : String {
         return config.getRequiredString("nav.authorization.cookie_name", secret = false)
     }
 
-    fun getWhitelistedCorsAddreses() : List<URI> {
+    internal fun getWhitelistedCorsAddreses() : List<URI> {
         return config.getOptionalList(
             key = "nav.cors.addresses",
             builder = { value ->
@@ -30,33 +30,13 @@ data class Configuration(val config : ApplicationConfig) {
         )
     }
 
-    fun getSparkelUrl() = URI(config.getRequiredString("nav.gateways.sparkel_url", secret = false))
+    internal fun getSparkelUrl() = URI(config.getRequiredString("nav.gateways.sparkel_url", secret = false))
 
-    fun getServiceAccountClientId(): String {
-        return config.getRequiredString("nav.authorization.service_account.client_id", secret = false)
-    }
+    internal fun getAktoerRegisterUrl() = URI(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))
 
-    fun getServiceAccountClientSecret(): String {
-        return config.getRequiredString("nav.authorization.service_account.client_secret", secret = true)
-    }
+    internal fun getPleiepengerDokumentUrl() = URI(config.getRequiredString("nav.gateways.pleiepenger_dokument_url", secret = false))
 
-    fun getServiceAccountScopes(): List<String> {
-        return config.getOptionalList(
-            key = "nav.authorization.service_account.scopes",
-            builder = { value -> value },
-            secret = false
-        )
-    }
-
-    fun getAuthorizationServerTokenUrl(): URL {
-        return URL(config.getRequiredString("nav.authorization.token_url", secret = false))
-    }
-
-    fun getAktoerRegisterUrl() = URI(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))
-
-    fun getPleiepengerDokumentUrl() = URI(config.getRequiredString("nav.gateways.pleiepenger_dokument_url", secret = false))
-
-    fun getPleiepengesoknadProsesseringBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_prosessering_base_url", secret = false))
+    internal fun getPleiepengesoknadProsesseringBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_prosessering_base_url", secret = false))
 
     fun getApiGatewayApiKey() : ApiGatewayApiKey {
         val apiKey = config.getRequiredString(key = "nav.authorization.api_gateway.api_key", secret = true)
