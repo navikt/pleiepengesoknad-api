@@ -54,7 +54,7 @@ class PleiepengesoknadProsesseringGateway(
         ) { httpRequet.awaitStringResponseResult() }
 
         result.fold(
-            { success -> },
+            { },
             { error ->
                 logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
                 logger.error(error.toString())
