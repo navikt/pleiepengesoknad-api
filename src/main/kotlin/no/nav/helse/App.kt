@@ -181,9 +181,8 @@ fun Application.pleiepengesoknadapi() {
                 idTokenProvider = idTokenProvider,
                 soknadService = SoknadService(
                     pleiepengesoknadProsesseringGateway = PleiepengesoknadProsesseringGateway(
-                        monitoredHttpClient = Clients.pleiepengesoknadProsesseringClient(apiGatewayHttpRequestInterceptor),
                         baseUrl = configuration.getPleiepengesoknadProsesseringBaseUrl(),
-                        systemCredentialsProvider = systemCredentialsProvider
+                        authorizationService = authorizationServiceResolver.pleiepengesoknadProsessering()
                     ),
                     sokerService = sokerService,
                     personService = personService,
