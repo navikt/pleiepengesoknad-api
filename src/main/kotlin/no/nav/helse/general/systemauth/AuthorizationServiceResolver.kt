@@ -32,8 +32,6 @@ internal class AuthorizationServiceResolver(
     private val cachedNaisStsAccessTokenClient = CachedAccessTokenClient(naisStsAccessTokenClient)
     private val naisStsAuthorizationService = AuthorizationService(cachedNaisStsAccessTokenClient, setOf("openid"))
 
-
-    internal fun pleiepengerDokument() = naisStsAuthorizationService
     internal fun aktoerRegister() = naisStsAuthorizationService
     internal fun sparkel() = naisStsAuthorizationService
     internal fun pleiepengesoknadProsessering() = naisStsAuthorizationService

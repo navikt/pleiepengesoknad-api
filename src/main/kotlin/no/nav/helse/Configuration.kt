@@ -6,7 +6,6 @@ import no.nav.helse.dusseldorf.ktor.core.getOptionalList
 import no.nav.helse.dusseldorf.ktor.core.getRequiredString
 import no.nav.helse.general.auth.ApiGatewayApiKey
 import java.net.URI
-import java.net.URL
 
 @KtorExperimentalAPI
 data class Configuration(val config : ApplicationConfig) {
@@ -38,7 +37,7 @@ data class Configuration(val config : ApplicationConfig) {
 
     internal fun getPleiepengesoknadProsesseringBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_prosessering_base_url", secret = false))
 
-    fun getApiGatewayApiKey() : ApiGatewayApiKey {
+    internal fun getApiGatewayApiKey() : ApiGatewayApiKey {
         val apiKey = config.getRequiredString(key = "nav.authorization.api_gateway.api_key", secret = true)
         return ApiGatewayApiKey(value = apiKey)
     }

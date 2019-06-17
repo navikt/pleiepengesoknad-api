@@ -35,12 +35,13 @@ class PleiepengesoknadProsesseringGateway(
     ) {
         val authorizationHeader = authorizationService.getAuthorizationHeader()
         val body = objectMapper.writeValueAsBytes(soknad)
+        val contentStream = { ByteArrayInputStream(body) }
 
         val httpRequet = komplettUrl
             .httpPost()
             .timeout(20_000)
             .timeoutRead(20_000)
-            .body( {ByteArrayInputStream(body)} )
+            .body(contentStream)
             .header(
                 HttpHeaders.ContentType to "application/json",
                 HttpHeaders.XCorrelationId to callId.value,

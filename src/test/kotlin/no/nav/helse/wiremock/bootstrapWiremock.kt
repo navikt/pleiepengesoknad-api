@@ -58,11 +58,10 @@ fun bootstrapWiremock(port: Int? = null,
 
     // Aktørregister
     aktoerRegisterGetAktoerId()
-    stubReadiness(basePath = aktoerRegisterServerPath, readinessPath = "internal/isAlive")
 
     // Pleiepengsoknad-prosessering
     stubLeggSoknadTilProsessering()
-    stubReadiness(basePath = pleiepengesoknadProsesseringPath)
+    stubReadiness(basePath = pleiepengesoknadProsesseringPath, readinessPath = "health")
 
     // Pleiepenger-dokument
     stubPleiepengerDokument()
