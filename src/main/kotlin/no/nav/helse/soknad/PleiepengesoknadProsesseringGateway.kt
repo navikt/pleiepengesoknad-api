@@ -49,7 +49,8 @@ class PleiepengesoknadProsesseringGateway(
 
         val (request, _, result) = Operation.monitored(
             app = "pleiepengesoknad-api",
-            operation = "sende-soknad-til-prosessering"
+            operation = "sende-soknad-til-prosessering",
+            resultResolver = { 202 == it.second.statusCode }
         ) { httpRequet.awaitStringResponseResult() }
 
         result.fold(
