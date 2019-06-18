@@ -100,10 +100,12 @@ class PleiepengerDokumentGateway(
                 operation = LAGRE_VEDLEGG_OPERATION,
                 resultResolver = { 201 == it.second.statusCode }
             ) {
+                val contentStream = { ByteArrayInputStream(body) }
+
                 url
                     .toString()
                     .httpPost()
-                    .body({ ByteArrayInputStream(body) })
+                    .body(contentStream)
                     .header(
                         HttpHeaders.Authorization to "Bearer ${idToken.value}",
                         HttpHeaders.ContentType to "application/json",
