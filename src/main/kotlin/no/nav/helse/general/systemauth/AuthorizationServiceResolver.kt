@@ -7,12 +7,14 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.Result
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 // Når Azure blir tatt i bruk her trengs et nytt parameter private val scopes : Map<String, Set<String>>
 internal class AuthorizationServiceResolver(
-    clients : Map<String, Client>
+    clients : Map<String, Client>,
+    apiGatewayApiKey: ApiGatewayApiKey
 ) : HealthCheck {
     private companion object {
         private const val NAIS_STS_ALIAS = "nais-sts"
@@ -26,7 +28,8 @@ internal class AuthorizationServiceResolver(
     private val naisStsAccessTokenClient = NaisStsAccessTokenClient(
         clientId = naisStsClient.clientId(),
         clientSecret = naisStsClient.clientSecret,
-        tokenEndpoint = naisStsClient.tokenEndpoint()
+        tokenEndpoint = naisStsClient.tokenEndpoint(),
+        apiGatewayApiKey = apiGatewayApiKey
     )
 
     private val cachedNaisStsAccessTokenClient = CachedAccessTokenClient(naisStsAccessTokenClient)

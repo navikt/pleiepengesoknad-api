@@ -13,6 +13,7 @@ import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.*
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,7 +25,8 @@ import java.time.format.DateTimeFormatter
 class ArbeidsgiverGateway(
     private val baseUrl: URI,
     private val aktoerService: AktoerService,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val apiGatewayApiKey: ApiGatewayApiKey
 ) {
 
     private companion object {
@@ -82,7 +84,8 @@ class ArbeidsgiverGateway(
             .header(
                 SPARKEL_CORRELATION_ID_HEADER to callId.value,
                 HttpHeaders.Authorization to authorizationHeader,
-                HttpHeaders.Accept to "application/json"
+                HttpHeaders.Accept to "application/json",
+                apiGatewayApiKey.headerKey to apiGatewayApiKey.value
             )
 
         return Retry.retry(

@@ -6,6 +6,7 @@ import io.ktor.http.Url
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenResponse
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import org.json.JSONObject
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -16,7 +17,8 @@ import java.util.*
 internal class NaisStsAccessTokenClient(
     tokenEndpoint: URI,
     clientId: String,
-    clientSecret: String
+    clientSecret: String,
+    private val apiGatewayApiKey: ApiGatewayApiKey
 ) : AccessTokenClient {
 
     private companion object {
@@ -32,7 +34,8 @@ internal class NaisStsAccessTokenClient(
     override fun getAccessToken(scopes: Set<String>): AccessTokenResponse {
         val (request, _, result) = url.httpGet()
             .header(
-                Headers.AUTHORIZATION to authorizationHeader
+                Headers.AUTHORIZATION to authorizationHeader,
+                apiGatewayApiKey.headerKey to apiGatewayApiKey.value
             ).responseString()
 
         return result.fold(

@@ -11,6 +11,7 @@ import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.*
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,7 +24,8 @@ import java.time.Duration
 
 class AktoerGateway(
     baseUrl: URI,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val apiGatewayApiKey: ApiGatewayApiKey
 ) {
 
     private companion object {
@@ -66,7 +68,8 @@ class AktoerGateway(
                 HttpHeaders.Accept to "application/json",
                 "Nav-Consumer-Id" to "pleiepengesoknad-prosessering",
                 "Nav-Personidenter" to personIdent,
-                "Nav-Call-Id" to callId.value
+                "Nav-Call-Id" to callId.value,
+                apiGatewayApiKey.headerKey to apiGatewayApiKey.value
             )
 
         val httpResponse = Retry.retry(

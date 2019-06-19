@@ -8,6 +8,7 @@ import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.CallId
+import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -16,7 +17,8 @@ import java.net.URI
 
 class PleiepengesoknadProsesseringGateway(
     baseUrl : URI,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val apiGatewayApiKey: ApiGatewayApiKey
 ){
 
     private companion object {
@@ -45,7 +47,8 @@ class PleiepengesoknadProsesseringGateway(
             .header(
                 HttpHeaders.ContentType to "application/json",
                 HttpHeaders.XCorrelationId to callId.value,
-                HttpHeaders.Authorization to authorizationHeader
+                HttpHeaders.Authorization to authorizationHeader,
+                apiGatewayApiKey.headerKey to apiGatewayApiKey.value
             )
 
         val (request, _, result) = Operation.monitored(

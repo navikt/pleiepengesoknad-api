@@ -1,8 +1,6 @@
 package no.nav.helse
 
 import com.auth0.jwk.JwkProviderBuilder
-import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.fuel.core.Request
 import io.ktor.application.*
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
@@ -64,8 +62,8 @@ fun Application.pleiepengesoknadapi() {
     DefaultExports.initialize()
 
     val configuration = Configuration(environment.config)
-    addApiGatewayFuelInterceptor(configuration.getApiGatewayApiKey())
-    val authorizationServiceResolver = AuthorizationServiceResolver(environment.config.clients())
+    val apiGatewayApiKey = configuration.getApiGatewayApiKey()
+    val authorizationServiceResolver = AuthorizationServiceResolver(environment.config.clients(), apiGatewayApiKey)
 
     install(ContentNegotiation) {
         jackson {
@@ -124,7 +122,8 @@ fun Application.pleiepengesoknadapi() {
         val aktoerService = AktoerService(
             aktoerGateway = AktoerGateway(
                 baseUrl = configuration.getAktoerRegisterUrl(),
-                authorizationService = authorizationServiceResolver.aktoerRegister()
+                authorizationService = authorizationServiceResolver.aktoerRegister(),
+                apiGatewayApiKey = apiGatewayApiKey
             )
         )
 
@@ -137,7 +136,8 @@ fun Application.pleiepengesoknadapi() {
         val personService = PersonService(
             personGateway = PersonGateway(
                 baseUrl = configuration.getSparkelUrl(),
-                authorizationService = authorizationServiceResolver.sparkel()
+                authorizationService = authorizationServiceResolver.sparkel(),
+                apiGatewayApiKey = apiGatewayApiKey
             ),
             aktoerService = aktoerService
         )
@@ -157,7 +157,8 @@ fun Application.pleiepengesoknadapi() {
                     barnGateway = BarnGateway(
                         baseUrl = configuration.getSparkelUrl(),
                         aktoerService = aktoerService,
-                        authorizationService = authorizationServiceResolver.sparkel()
+                        authorizationService = authorizationServiceResolver.sparkel(),
+                        apiGatewayApiKey = apiGatewayApiKey
                     )
                 )
             )
@@ -167,7 +168,8 @@ fun Application.pleiepengesoknadapi() {
                     gateway = ArbeidsgiverGateway(
                         aktoerService = aktoerService,
                         baseUrl = configuration.getSparkelUrl(),
-                        authorizationService = authorizationServiceResolver.sparkel()
+                        authorizationService = authorizationServiceResolver.sparkel(),
+                        apiGatewayApiKey = apiGatewayApiKey
                     )
                 )
             )
@@ -182,7 +184,8 @@ fun Application.pleiepengesoknadapi() {
                 soknadService = SoknadService(
                     pleiepengesoknadProsesseringGateway = PleiepengesoknadProsesseringGateway(
                         baseUrl = configuration.getPleiepengesoknadProsesseringBaseUrl(),
-                        authorizationService = authorizationServiceResolver.pleiepengesoknadProsessering()
+                        authorizationService = authorizationServiceResolver.pleiepengesoknadProsessering(),
+                        apiGatewayApiKey = apiGatewayApiKey
                     ),
                     sokerService = sokerService,
                     personService = personService,
@@ -227,17 +230,6 @@ fun Application.pleiepengesoknadapi() {
         mdc("id_token_jti") { call ->
             try { idTokenProvider.getIdToken(call).getId() }
             catch (cause: Throwable) { null }
-        }
-    }
-}
-
-private fun addApiGatewayFuelInterceptor(apiGatewayApiKey: ApiGatewayApiKey) {
-    FuelManager.instance.addRequestInterceptor { next: (Request) -> Request ->
-        { req: Request ->
-            if (req.url.path.contains("helse-reverse-proxy", true)) {
-                req.appendHeader(apiGatewayApiKey.headerKey, apiGatewayApiKey.value)
-            }
-            next(req)
         }
     }
 }
