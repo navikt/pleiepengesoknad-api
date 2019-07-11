@@ -15,7 +15,7 @@ import java.time.ZonedDateTime
 
 private val logger: Logger = LoggerFactory.getLogger("nav.SoknadService")
 
-class SoknadService(private val pleiepengesoknadProsesseringGateway: PleiepengesoknadProsesseringGateway,
+class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
                     private val sokerService: SokerService,
                     private val personService: PersonService,
                     private val aktoerService: AktoerService,
@@ -69,7 +69,7 @@ class SoknadService(private val pleiepengesoknadProsesseringGateway: Pleiepenges
             harForstattRettigheterOgPlikter = soknad.harForstattRettigheterOgPlikter
         )
 
-        pleiepengesoknadProsesseringGateway.leggTilProsessering(
+        pleiepengesoknadMottakGateway.leggTilProsessering(
             soknad = komplettSoknad,
             callId = callId
         )

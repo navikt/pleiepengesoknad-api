@@ -36,7 +36,7 @@ class ApplicationWithoutMocks {
                 cookieName = "selvbetjening-idtoken",
                 aktoerRegisterBaseUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/aktoer-register",
                 sparkelUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/sparkel",
-                pleiepengesoknadProsesseringUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/pleiepengesoknad-prosessering",
+                pleiepengesoknadMottakUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/pleiepengesoknad-mottak",
                 pleiepengerDokumentUrl = "https://pleiepenger-dokument.nais.oera-q.local",
                 apiGatewayKey = null,
                 clientSecret = null

@@ -35,7 +35,7 @@ data class Configuration(val config : ApplicationConfig) {
 
     internal fun getPleiepengerDokumentUrl() = URI(config.getRequiredString("nav.gateways.pleiepenger_dokument_url", secret = false))
 
-    internal fun getPleiepengesoknadProsesseringBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_prosessering_base_url", secret = false))
+    internal fun getPleiepengesoknadMottakBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_mottak_base_url", secret = false))
 
     internal fun getApiGatewayApiKey() : ApiGatewayApiKey {
         val apiKey = config.getRequiredString(key = "nav.authorization.api_gateway.api_key", secret = true)

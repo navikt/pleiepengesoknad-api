@@ -16,7 +16,7 @@ private const val jwkSetPath = "/auth-mock/jwk-set"
 private const val sparkelPath = "/helse-reverse-proxy/sparkel-mock"
 private const val authorizationServerPath = "/helse-reverse-proxy/authorization-server-mock/token"
 private const val aktoerRegisterServerPath = "/helse-reverse-proxy/aktoer-register-mock"
-private const val pleiepengesoknadProsesseringPath = "/helse-reverse-proxy/pleiepengesoknad-prosessering-mock"
+private const val pleiepengesoknadMottakPath = "/helse-reverse-proxy/pleiepengesoknad-mottak-mock"
 private const val pleiepengerDokumentPath = "/pleiepenger-dokument-mock"
 
 
@@ -59,9 +59,9 @@ fun bootstrapWiremock(port: Int? = null,
     // Aktørregister
     aktoerRegisterGetAktoerId()
 
-    // Pleiepengsoknad-prosessering
+    // Pleiepengsoknad-mottak
     stubLeggSoknadTilProsessering()
-    stubReadiness(basePath = pleiepengesoknadProsesseringPath, readinessPath = "health")
+    stubReadiness(basePath = pleiepengesoknadMottakPath, readinessPath = "health")
 
     // Pleiepenger-dokument
     stubPleiepengerDokument()
@@ -129,7 +129,7 @@ private fun stubReadiness(basePath: String,
 
 private fun stubLeggSoknadTilProsessering() {
     WireMock.stubFor(
-        WireMock.post(WireMock.urlMatching(".*$pleiepengesoknadProsesseringPath/v1/soknad"))
+        WireMock.post(WireMock.urlMatching(".*$pleiepengesoknadMottakPath/v1/soknad"))
             .withHeader("x-nav-apiKey", AnythingPattern())
             .willReturn(
                 WireMock.aResponse()
@@ -164,8 +164,8 @@ fun WireMockServer.getAktoerRegisterUrl() : String {
     return baseUrl() + aktoerRegisterServerPath
 }
 
-fun WireMockServer.getPleiepengesoknadProsesseringUrl() : String {
-    return baseUrl() + pleiepengesoknadProsesseringPath
+fun WireMockServer.getPleiepengesoknadMottakUrl() : String {
+    return baseUrl() + pleiepengesoknadMottakPath
 }
 
 fun WireMockServer.getPleiepengerDokumentUrl() : String {
