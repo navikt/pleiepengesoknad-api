@@ -251,4 +251,4 @@ Dette vil sette en cookie som gjør at du er autentisert og kommer forbi 401/403
 
 ## For NAV-ansatte
 
-Interne henvendelser kan sendes via Slack i kanalen #område-helse.
+Interne henvendelser kan sendes via Slack i kanalen #team-düsseldorf
