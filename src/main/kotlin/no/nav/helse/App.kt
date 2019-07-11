@@ -42,7 +42,7 @@ import no.nav.helse.person.PersonGateway
 import no.nav.helse.person.PersonService
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
-import no.nav.helse.soknad.PleiepengesoknadProsesseringGateway
+import no.nav.helse.soknad.PleiepengesoknadMottakGateway
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.*
@@ -182,8 +182,8 @@ fun Application.pleiepengesoknadapi() {
             soknadApis(
                 idTokenProvider = idTokenProvider,
                 soknadService = SoknadService(
-                    pleiepengesoknadProsesseringGateway = PleiepengesoknadProsesseringGateway(
-                        baseUrl = configuration.getPleiepengesoknadProsesseringBaseUrl(),
+                    pleiepengesoknadMottakGateway = PleiepengesoknadMottakGateway(
+                        baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
                         authorizationService = authorizationServiceResolver.pleiepengesoknadProsessering(),
                         apiGatewayApiKey = apiGatewayApiKey
                     ),

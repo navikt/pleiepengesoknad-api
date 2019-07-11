@@ -66,7 +66,7 @@ class AktoerGateway(
             .header(
                 HttpHeaders.Authorization to authorizationHeader,
                 HttpHeaders.Accept to "application/json",
-                "Nav-Consumer-Id" to "pleiepengesoknad-prosessering",
+                "Nav-Consumer-Id" to "pleiepengesoknad-api",
                 "Nav-Personidenter" to personIdent,
                 "Nav-Call-Id" to callId.value,
                 apiGatewayApiKey.headerKey to apiGatewayApiKey.value

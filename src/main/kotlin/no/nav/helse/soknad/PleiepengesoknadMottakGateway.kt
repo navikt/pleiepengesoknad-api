@@ -15,14 +15,14 @@ import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.net.URI
 
-class PleiepengesoknadProsesseringGateway(
+class PleiepengesoknadMottakGateway(
     baseUrl : URI,
     private val authorizationService: AuthorizationService,
     private val apiGatewayApiKey: ApiGatewayApiKey
 ){
 
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger(PleiepengesoknadProsesseringGateway::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(PleiepengesoknadMottakGateway::class.java)
         private val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
     }
 

@@ -53,7 +53,7 @@ spec:
       value: https://api-gw.oera.no/helse-reverse-proxy/sparkel
     - name: TOKEN_URL
       value: https://api-gw.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token
-    - name: PLEIEPENGESOKNAD_PROSESSERING_BASE_URL
-      value: https://api-gw.oera.no/helse-reverse-proxy/pleiepengesoknad-prosessering
+    - name: PLEIEPENGESOKNAD_MOTTAK_BASE_URL
+      value: https://api-gw.oera.no/helse-reverse-proxy/pleiepengesoknad-mottak
     - name: PLEIEPENGER_DOKUMENT_BASE_URL
       value: https://pleiepenger-dokument.nais.oera.no

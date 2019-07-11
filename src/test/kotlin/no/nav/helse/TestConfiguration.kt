@@ -12,7 +12,7 @@ object TestConfiguration {
         tokenUrl : String? = wireMockServer?.getAuthorizationTokenUrl(),
         sparkelUrl: String? = wireMockServer?.getSparkelUrl(),
         aktoerRegisterBaseUrl : String? = wireMockServer?.getAktoerRegisterUrl(),
-        pleiepengesoknadProsesseringUrl : String? = wireMockServer?.getPleiepengesoknadProsesseringUrl(),
+        pleiepengesoknadMottakUrl : String? = wireMockServer?.getPleiepengesoknadMottakUrl(),
         pleiepengerDokumentUrl : String? = wireMockServer?.getPleiepengerDokumentUrl(),
         corsAdresses : String = "http://localhost:8080",
         issuer : String = "iss-localhost",
@@ -31,7 +31,7 @@ object TestConfiguration {
             Pair("nav.authorization.jwks_uri","$jwkSetUrl"),
             Pair("nav.gateways.sparkel_url","$sparkelUrl"),
             Pair("nav.gateways.aktoer_register_url", "$aktoerRegisterBaseUrl"),
-            Pair("nav.gateways.pleiepengesoknad_prosessering_base_url", "$pleiepengesoknadProsesseringUrl"),
+            Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
             Pair("nav.cors.addresses", corsAdresses),
             Pair("nav.gateways.pleiepenger_dokument_url", "$pleiepengerDokumentUrl")
         )
