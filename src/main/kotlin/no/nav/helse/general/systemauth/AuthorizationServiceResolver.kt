@@ -37,7 +37,7 @@ internal class AuthorizationServiceResolver(
 
     internal fun aktoerRegister() = naisStsAuthorizationService
     internal fun sparkel() = naisStsAuthorizationService
-    internal fun pleiepengesoknadProsessering() = naisStsAuthorizationService
+    internal fun pleiepengesoknaMottak() = naisStsAuthorizationService
 
     override suspend fun check(): Result {
         return try {

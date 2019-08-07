@@ -184,7 +184,7 @@ fun Application.pleiepengesoknadapi() {
                 soknadService = SoknadService(
                     pleiepengesoknadMottakGateway = PleiepengesoknadMottakGateway(
                         baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
-                        authorizationService = authorizationServiceResolver.pleiepengesoknadProsessering(),
+                        authorizationService = authorizationServiceResolver.pleiepengesoknaMottak(),
                         apiGatewayApiKey = apiGatewayApiKey
                     ),
                     sokerService = sokerService,
