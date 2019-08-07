@@ -1,4 +1,9 @@
-# API for Selvbetjeningsløsning for søknad om pleiepenger
+# pleiepengesoknad-api 
+
+API for Selvbetjeningsløsning for søknad om pleiepenger
+
+[![CircleCI](https://circleci.com/gh/navikt/pleiepengesoknad-api/tree/master.svg?style=svg)](https://circleci.com/gh/navikt/pleiepengesoknad-api/tree/master)
+
 Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 
 ## Endepunkt
@@ -246,9 +251,10 @@ Kjør klassen ApplicationWithMocks som er en del av testkoden.
 Dette vil først starte en wiremock server som mocker ut alle eksterne http-kall.
 
 ### Logg inn
-Gå på `http://localhost:8081/auth-mock/cookie?subject={fodselsnummer}&redirect_location={url_to_client}`
+Gå på, eller legg inn følgende URL som URL til Login Service `http://localhost:8081/login-service/v1.0/login?redirect={REDIRECT_URL}&fnr={FNR}`
 Dette vil sette en cookie som gjør at du er autentisert og kommer forbi 401/403-feil.
 
-## For NAV-ansatte
+## Henvendelser
+Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på GitHub.
 
-Interne henvendelser kan sendes via Slack i kanalen #team-düsseldorf
+Interne henvendelser kan sendes via Slack i kanalen #team-düsseldorf.

@@ -11,10 +11,15 @@ import io.ktor.http.Url
 import no.nav.helse.aktoer.AktoerId
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.health.HealthCheck
+import no.nav.helse.dusseldorf.ktor.health.Healthy
+import no.nav.helse.dusseldorf.ktor.health.Result
+import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
+import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -23,9 +28,10 @@ import java.time.LocalDate
 
 class PersonGateway(
     private val baseUrl: URI,
-    private val authorizationService: AuthorizationService,
+    private val accessTokenClient: AccessTokenClient,
+    private val henteBarnScopes : Set<String> = setOf("openid"),
     private val apiGatewayApiKey: ApiGatewayApiKey
-) {
+) : HealthCheck {
 
     private companion object {
         private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
@@ -37,11 +43,23 @@ class PersonGateway(
         }
     }
 
+    private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
+
+    override suspend fun check(): Result {
+        return try {
+            accessTokenClient.getAccessToken(henteBarnScopes)
+            Healthy("PersonGateway", "Henting av access token for henting av person OK.")
+        } catch (cause: Throwable) {
+            logger.error("Feil ved henting av access token for henting av person", cause)
+            UnHealthy("PersonGateway", "Henting av access token for henting av person feilet.")
+        }
+    }
+
     suspend fun hentPerson(
         aktoerId: AktoerId,
         callId : CallId
     ) : Person {
-        val authorizationHeader = authorizationService.getAuthorizationHeader()
+        val authorizationHeader = cachedAccessTokenClient.getAccessToken(henteBarnScopes).asAuthoriationHeader()
 
         val url = Url.buildURL(
             baseUrl = baseUrl,

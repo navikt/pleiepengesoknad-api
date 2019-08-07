@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory
 import java.net.URI
 import java.util.*
 
-
 internal class NaisStsAccessTokenClient(
     tokenEndpoint: URI,
     clientId: String,

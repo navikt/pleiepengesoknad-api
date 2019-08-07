@@ -14,10 +14,15 @@ import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.health.HealthCheck
+import no.nav.helse.dusseldorf.ktor.health.Healthy
+import no.nav.helse.dusseldorf.ktor.health.Result
+import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
+import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -27,9 +32,10 @@ import java.time.LocalDate
 class BarnGateway(
     private val baseUrl: URI,
     private val aktoerService: AktoerService,
-    private val authorizationService: AuthorizationService,
+    private val accessTokenClient: AccessTokenClient,
+    private val henteBarnScopes : Set<String> = setOf("openid"),
     private val apiGatewayApiKey: ApiGatewayApiKey
-) {
+) : HealthCheck {
 
     private companion object {
         private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
@@ -41,12 +47,24 @@ class BarnGateway(
         }
     }
 
+    private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
+
+    override suspend fun check(): Result {
+        return try {
+            accessTokenClient.getAccessToken(henteBarnScopes)
+            Healthy("BarnGateway", "Henting av access token for henting av barn OK.")
+        } catch (cause: Throwable) {
+            logger.error("Feil ved henting av access token for henting av barn", cause)
+            UnHealthy("BarnGateway", "Henting av access token for henting av barn feilet.")
+        }
+    }
+
     internal suspend fun hentBarn(
         norskIdent: NorskIdent,
         callId : CallId
     ) : List<Barn> {
 
-        val authorizationHeader = authorizationService.getAuthorizationHeader()
+        val authorizationHeader = cachedAccessTokenClient.getAccessToken(henteBarnScopes).asAuthoriationHeader()
 
         val url = Url.buildURL(
             baseUrl = baseUrl,

@@ -1,14 +1,15 @@
 package no.nav.helse.wiremock
 
+import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.HttpHeaders
 
-fun stubSparkelGetPerson(
+internal fun WireMockServer.stubSparkelGetPerson(
     fodselsdato : String = "1997-05-25"
-) {
+) : WireMockServer {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/person/.\\d+"))
+        WireMock.get(WireMock.urlMatching(".*$sparkelPath/api/person/.\\d+"))
             .withHeader("x-nav-apiKey", AnythingPattern())
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .willReturn(
@@ -18,6 +19,7 @@ fun stubSparkelGetPerson(
                     .withBody(sparkelResponse(fodselsdato))
             )
     )
+    return this
 }
 
 private fun sparkelResponse(fodselsdato: String) : String = """

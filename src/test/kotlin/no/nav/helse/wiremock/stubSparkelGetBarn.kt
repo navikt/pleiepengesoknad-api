@@ -1,14 +1,15 @@
 package no.nav.helse.wiremock
 
+import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.HttpHeaders
 
-fun stubSparkelGetBarn(
+internal fun WireMockServer.stubSparkelGetBarn(
     harBarn : Boolean = true
-) {
+) : WireMockServer {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/person/.\\d+/barn"))
+        WireMock.get(WireMock.urlMatching(".*$sparkelPath/api/person/.\\d+/barn"))
             .withHeader("x-nav-apiKey", AnythingPattern())
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .willReturn(
@@ -18,6 +19,7 @@ fun stubSparkelGetBarn(
                     .withBody(if (harBarn) sparkelResponseHarBarn else sparkelResponseIngenBarn)
             )
     )
+    return this
 }
 
 private val sparkelResponseIngenBarn = """

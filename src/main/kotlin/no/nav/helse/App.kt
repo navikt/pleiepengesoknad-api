@@ -37,7 +37,7 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.helse.general.auth.*
-import no.nav.helse.general.systemauth.AuthorizationServiceResolver
+import no.nav.helse.general.systemauth.AccessTokenClientResolver
 import no.nav.helse.person.PersonGateway
 import no.nav.helse.person.PersonService
 import no.nav.helse.soker.SokerService
@@ -63,7 +63,7 @@ fun Application.pleiepengesoknadapi() {
 
     val configuration = Configuration(environment.config)
     val apiGatewayApiKey = configuration.getApiGatewayApiKey()
-    val authorizationServiceResolver = AuthorizationServiceResolver(environment.config.clients(), apiGatewayApiKey)
+    val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients(), apiGatewayApiKey)
 
     install(ContentNegotiation) {
         jackson {
@@ -76,6 +76,7 @@ fun Application.pleiepengesoknadapi() {
         method(HttpMethod.Get)
         method(HttpMethod.Post)
         method(HttpMethod.Delete)
+        allowNonSimpleContentTypes = true
         allowCredentials = true
         log.info("Configuring CORS")
         configuration.getWhitelistedCorsAddreses().forEach {
@@ -119,13 +120,12 @@ fun Application.pleiepengesoknadapi() {
 
     install(Routing) {
 
-        val aktoerService = AktoerService(
-            aktoerGateway = AktoerGateway(
-                baseUrl = configuration.getAktoerRegisterUrl(),
-                authorizationService = authorizationServiceResolver.aktoerRegister(),
-                apiGatewayApiKey = apiGatewayApiKey
-            )
+        val aktoerGateway = AktoerGateway(
+            baseUrl = configuration.getAktoerRegisterUrl(),
+            accessTokenClient = accessTokenClientResolver.aktoerRegister(),
+            apiGatewayApiKey = apiGatewayApiKey
         )
+        val aktoerService = AktoerService(aktoerGateway)
 
         val vedleggService = VedleggService(
             pleiepengerDokumentGateway = PleiepengerDokumentGateway(
@@ -133,17 +133,40 @@ fun Application.pleiepengesoknadapi() {
             )
         )
 
+        val personGateway = PersonGateway(
+            baseUrl = configuration.getSparkelUrl(),
+            accessTokenClient = accessTokenClientResolver.sparkel(),
+            apiGatewayApiKey = apiGatewayApiKey
+        )
+
         val personService = PersonService(
-            personGateway = PersonGateway(
-                baseUrl = configuration.getSparkelUrl(),
-                authorizationService = authorizationServiceResolver.sparkel(),
-                apiGatewayApiKey = apiGatewayApiKey
-            ),
+            personGateway = personGateway,
             aktoerService = aktoerService
         )
 
         val sokerService = SokerService(
             personService = personService
+        )
+
+        val barnGateway = BarnGateway(
+            baseUrl = configuration.getSparkelUrl(),
+            aktoerService = aktoerService,
+            accessTokenClient = accessTokenClientResolver.sparkel(),
+            apiGatewayApiKey = apiGatewayApiKey
+        )
+
+        val arbeidsgiverGateway = ArbeidsgiverGateway(
+            aktoerService = aktoerService,
+            baseUrl = configuration.getSparkelUrl(),
+            accessTokenClient = accessTokenClientResolver.sparkel(),
+            apiGatewayApiKey = apiGatewayApiKey
+        )
+
+        val pleiepengesoknadMottakGateway = PleiepengesoknadMottakGateway(
+            baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
+            accessTokenClient = accessTokenClientResolver.pleiepengesoknaMottak(),
+            sendeSoknadTilProsesseringScopes = configuration.getSendSoknadTilProsesseringScopes(),
+            apiGatewayApiKey = apiGatewayApiKey
         )
 
         authenticate {
@@ -154,23 +177,13 @@ fun Application.pleiepengesoknadapi() {
 
             barnApis(
                 barnService = BarnService(
-                    barnGateway = BarnGateway(
-                        baseUrl = configuration.getSparkelUrl(),
-                        aktoerService = aktoerService,
-                        authorizationService = authorizationServiceResolver.sparkel(),
-                        apiGatewayApiKey = apiGatewayApiKey
-                    )
+                    barnGateway = barnGateway
                 )
             )
 
             arbeidsgiverApis(
                 service = ArbeidsgiverService(
-                    gateway = ArbeidsgiverGateway(
-                        aktoerService = aktoerService,
-                        baseUrl = configuration.getSparkelUrl(),
-                        authorizationService = authorizationServiceResolver.sparkel(),
-                        apiGatewayApiKey = apiGatewayApiKey
-                    )
+                    gateway = arbeidsgiverGateway
                 )
             )
 
@@ -182,11 +195,7 @@ fun Application.pleiepengesoknadapi() {
             soknadApis(
                 idTokenProvider = idTokenProvider,
                 soknadService = SoknadService(
-                    pleiepengesoknadMottakGateway = PleiepengesoknadMottakGateway(
-                        baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
-                        authorizationService = authorizationServiceResolver.pleiepengesoknadProsessering(),
-                        apiGatewayApiKey = apiGatewayApiKey
-                    ),
+                    pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
                     sokerService = sokerService,
                     personService = personService,
                     vedleggService = vedleggService,
@@ -200,7 +209,11 @@ fun Application.pleiepengesoknadapi() {
         HealthRoute(
             healthService = HealthService(
                 healthChecks = setOf(
-                    authorizationServiceResolver,
+                    aktoerGateway,
+                    personGateway,
+                    barnGateway,
+                    arbeidsgiverGateway,
+                    pleiepengesoknadMottakGateway,
                     HttpRequestHealthCheck(mapOf(
                         configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false),
                         Url.buildURL(baseUrl = configuration.getPleiepengerDokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)

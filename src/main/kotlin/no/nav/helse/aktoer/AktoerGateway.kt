@@ -9,10 +9,15 @@ import io.ktor.http.*
 
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.health.HealthCheck
+import no.nav.helse.dusseldorf.ktor.health.Healthy
+import no.nav.helse.dusseldorf.ktor.health.Result
+import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
+import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -24,9 +29,10 @@ import java.time.Duration
 
 class AktoerGateway(
     baseUrl: URI,
-    private val authorizationService: AuthorizationService,
+    private val accessTokenClient: AccessTokenClient,
+    private val henteAktoerIdScopes : Set<String> = setOf("openid"),
     private val apiGatewayApiKey: ApiGatewayApiKey
-) {
+) : HealthCheck {
 
     private companion object {
         private const val HENTE_AKTOER_ID_OPERATION = "hente-aktoer-id"
@@ -54,12 +60,24 @@ class AktoerGateway(
         )
     ).toString()
 
+    private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
+
+    override suspend fun check(): Result {
+        return try {
+            accessTokenClient.getAccessToken(henteAktoerIdScopes)
+            Healthy("AktoerGateway", "Henting av access token for henting av AktørID OK.")
+        } catch (cause: Throwable) {
+            logger.error("Feil ved henting av access token for henting av AktørID", cause)
+            UnHealthy("AktoerGateway", "Henting av access token for henting av AktørID feilet.")
+        }
+    }
+
     private suspend fun get(
         url: String,
         personIdent: String,
         callId: CallId
     ) : String {
-        val authorizationHeader = authorizationService.getAuthorizationHeader()
+        val authorizationHeader = cachedAccessTokenClient.getAccessToken(henteAktoerIdScopes).asAuthoriationHeader()
 
         val httpRequest = url
             .httpGet()

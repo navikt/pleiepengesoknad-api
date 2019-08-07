@@ -3,6 +3,7 @@ package no.nav.helse
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.getOptionalList
+import no.nav.helse.dusseldorf.ktor.core.getRequiredList
 import no.nav.helse.dusseldorf.ktor.core.getRequiredString
 import no.nav.helse.general.auth.ApiGatewayApiKey
 import java.net.URI
@@ -41,4 +42,7 @@ data class Configuration(val config : ApplicationConfig) {
         val apiKey = config.getRequiredString(key = "nav.authorization.api_gateway.api_key", secret = true)
         return ApiGatewayApiKey(value = apiKey)
     }
+
+    private fun getScopesFor(operation: String) = config.getRequiredList("nav.auth.scopes.$operation", secret = false, builder = { it }).toSet()
+    internal fun getSendSoknadTilProsesseringScopes() = getScopesFor("sende-soknad-til-prosessering")
 }

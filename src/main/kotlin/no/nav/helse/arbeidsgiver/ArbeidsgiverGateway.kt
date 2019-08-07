@@ -11,10 +11,15 @@ import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.health.HealthCheck
+import no.nav.helse.dusseldorf.ktor.health.Healthy
+import no.nav.helse.dusseldorf.ktor.health.Result
+import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
+import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -25,9 +30,10 @@ import java.time.format.DateTimeFormatter
 class ArbeidsgiverGateway(
     private val baseUrl: URI,
     private val aktoerService: AktoerService,
-    private val authorizationService: AuthorizationService,
+    private val accessTokenClient: AccessTokenClient,
+    private val henteArbeidsgivereScopes : Set<String> = setOf("openid"),
     private val apiGatewayApiKey: ApiGatewayApiKey
-) {
+) : HealthCheck {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(ArbeidsgiverGateway::class.java)
@@ -35,6 +41,18 @@ class ArbeidsgiverGateway(
         private const val HENTE_ARBEIDSGIVERE_OPERATION = "hente-arbeidsgivere"
         private val objectMapper = jacksonObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        }
+    }
+
+    private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
+
+    override suspend fun check(): Result {
+        return try {
+            accessTokenClient.getAccessToken(henteArbeidsgivereScopes)
+            Healthy("ArbeidsgiverGateway", "Henting av access token for henting av arbeidsgivere OK.")
+        } catch (cause: Throwable) {
+            logger.error("Feil ved henting av access token for henting av arbeidsgivere", cause)
+            UnHealthy("ArbeidsgiverGateway", "Henting av access token for henting av arbeidsgivere feilet.")
         }
     }
 
@@ -63,7 +81,7 @@ class ArbeidsgiverGateway(
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
     ) : SparkelResponse {
-        val authorizationHeader = authorizationService.getAuthorizationHeader()
+        val authorizationHeader = cachedAccessTokenClient.getAccessToken(henteArbeidsgivereScopes).asAuthoriationHeader()
 
         val url = Url.buildURL(
             baseUrl = baseUrl,
