@@ -61,7 +61,7 @@ class AktoerGateway(
     ).toString()
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
-    
+
     override suspend fun check(): Result {
         return try {
             accessTokenClient.getAccessToken(henteAktoerIdScopes)
