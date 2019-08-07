@@ -74,7 +74,7 @@ class ArbeidsgiverGateway(
             )
         }
     }
-    
+
     private suspend fun request(
         norskIdent: NorskIdent,
         callId: CallId,
