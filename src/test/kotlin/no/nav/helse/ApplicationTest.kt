@@ -145,7 +145,6 @@ class ApplicationTest {
     }
 
     @Test
-    @Ignore("trenger-utvidet-test-support")
     fun `Hente arbeidsgivere med en utloept cookie`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
