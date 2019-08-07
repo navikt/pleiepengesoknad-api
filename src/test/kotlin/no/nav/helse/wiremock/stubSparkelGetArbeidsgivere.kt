@@ -1,12 +1,13 @@
 package no.nav.helse.wiremock
 
+import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.HttpHeaders
 
-fun stubSparkelGetArbeidsgivere() {
+internal fun WireMockServer.stubSparkelGetArbeidsgivere() : WireMockServer {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlMatching(".*/sparkel-mock/api/arbeidsgivere/.*"))
+        WireMock.get(WireMock.urlMatching(".*$sparkelPath/api/arbeidsgivere/.*"))
             .withHeader("x-nav-apiKey", AnythingPattern())
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .willReturn(
@@ -16,6 +17,7 @@ fun stubSparkelGetArbeidsgivere() {
                     .withBody(sparkelResponse)
             )
     )
+    return this
 }
 
 private val sparkelResponse = """

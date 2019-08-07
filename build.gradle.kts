@@ -30,7 +30,6 @@ dependencies {
     
     // Test
     testCompile ( "no.nav.helse:dusseldorf-ktor-test-support:$dusseldorfKtorVersion")
-    testCompile ("no.nav.security:oidc-test-support:0.2.18")
     testCompile ("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }

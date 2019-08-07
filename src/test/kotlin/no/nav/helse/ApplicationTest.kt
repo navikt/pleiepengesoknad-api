@@ -1,6 +1,5 @@
 package no.nav.helse
 
-import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.ApplicationConfig
@@ -10,6 +9,7 @@ import kotlin.test.*
 import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.fromResources
+import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -31,7 +31,17 @@ class ApplicationTest {
 
     private companion object {
 
-        val wireMockServer: WireMockServer = bootstrapWiremock()
+        val wireMockServer = WireMockBuilder()
+            .withAzureSupport()
+            .withNaisStsSupport()
+            .withLoginServiceSupport()
+            .pleiepengesoknadApiConfig()
+            .build()
+            .stubPleiepengerDokumentHealth()
+            .stubAktoerRegisterGetAktoerId()
+            .stubLeggSoknadTilProsessering()
+            .stubPleiepengerDokument()
+            .stubSparkelGetArbeidsgivere()
 
         fun getConfig() : ApplicationConfig {
 
@@ -119,7 +129,7 @@ class ApplicationTest {
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.Forbidden,
             expectedResponse = null,
-            cookie = getAuthCookie(fnr, authLevel = "Level3")
+            cookie = getAuthCookie(fnr = fnr, level = 3)
         )
     }
 
@@ -135,6 +145,7 @@ class ApplicationTest {
     }
 
     @Test
+    @Ignore("trenger-utvidet-test-support")
     fun `Hente arbeidsgivere med en utloept cookie`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
@@ -205,6 +216,8 @@ class ApplicationTest {
 
     @Test
     fun `Henting av barn`() {
+        wireMockServer.stubSparkelGetPerson()
+        wireMockServer.stubSparkelGetBarn()
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
@@ -231,7 +244,7 @@ class ApplicationTest {
 
     @Test
     fun `Har ingen registrerte barn`() {
-        stubSparkelGetBarn(harBarn = false)
+        wireMockServer.stubSparkelGetBarn(harBarn = false)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
@@ -242,7 +255,7 @@ class ApplicationTest {
             }
             """.trimIndent()
         )
-        stubSparkelGetBarn(harBarn = true)
+        wireMockServer.stubSparkelGetBarn(harBarn = true)
     }
 
     @Test
@@ -257,7 +270,7 @@ class ApplicationTest {
 
     @Test
     fun `Hente soeker som ikke er myndig`() {
-        stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
+        wireMockServer.stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/soker",
@@ -268,11 +281,13 @@ class ApplicationTest {
                 myndig = false
             )
         )
-        stubSparkelGetPerson()
+        wireMockServer.stubSparkelGetPerson()
     }
 
     @Test
     fun `Sende soknad`() {
+        wireMockServer.stubSparkelGetPerson()
+        wireMockServer.stubSparkelGetBarn()
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -294,7 +309,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad ikke myndig`() {
-        stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
+        wireMockServer.stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -320,7 +335,7 @@ class ApplicationTest {
             )
 
         )
-        stubSparkelGetPerson()
+        wireMockServer.stubSparkelGetPerson()
     }
 
     @Test

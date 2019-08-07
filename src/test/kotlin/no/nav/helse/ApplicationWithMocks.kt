@@ -1,54 +1,51 @@
 package no.nav.helse
 
 import io.ktor.server.testing.withApplication
+import no.nav.helse.dusseldorf.ktor.testsupport.asArguments
+import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.wiremock.*
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubAktoerRegisterGetAktoerId
+import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
+import no.nav.helse.wiremock.stubPleiepengerDokument
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-private val logger: Logger = LoggerFactory.getLogger("nav.ApplicationWithMocks")
-
 class ApplicationWithMocks {
-
-
     companion object {
+
+        private val logger: Logger = LoggerFactory.getLogger(ApplicationWithMocks::class.java)
 
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val wireMockSerer = bootstrapWiremock(8081)
+            val wireMockServer = WireMockBuilder()
+                .withPort(8081)
+                .withAzureSupport()
+                .withNaisStsSupport()
+                .withLoginServiceSupport()
+                .pleiepengesoknadApiConfig()
+                .build()
+                .stubPleiepengerDokumentHealth()
+                .stubAktoerRegisterGetAktoerId()
+                .stubLeggSoknadTilProsessering()
+                .stubPleiepengerDokument()
+                .stubSparkelGetArbeidsgivere()
 
-            val everythingMocked = TestConfiguration.asArray(
-                TestConfiguration.asMap(
-                    port = 8082,
-                    wireMockServer = wireMockSerer
-                )
-            )
-
-            // Verdier som må settes utenom det som er satt i denne klassen med q1OnlyMockLogin:
-            // -Dnav.authorization.service_account.client_secret=
-            // -Dnav.authorization.api_gateway.api_key=
-
-            val q1OnlyMockLogin = TestConfiguration.asArray(TestConfiguration.asMap(
-                wireMockServer = wireMockSerer,
+            val testArgs = TestConfiguration.asMap(
                 port = 8082,
-                tokenUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token",
-                aktoerRegisterBaseUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/aktoer-register",
-                sparkelUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/sparkel",
-                pleiepengesoknadMottakUrl = "https://api-gw-q1.oera.no/helse-reverse-proxy/pleiepengesoknad-mottak",
-                pleiepengerDokumentUrl = "https://pleiepenger-dokument.nais.oera-q.local",
-                apiGatewayKey = null,
-                clientSecret = null
-            ))
+                wireMockServer = wireMockServer
+            ).asArguments()
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {
                 override fun run() {
                     logger.info("Tearing down")
-                    wireMockSerer.stop()
+                    wireMockServer.stop()
                     logger.info("Tear down complete")
                 }
             })
 
-            withApplication { no.nav.helse.main(everythingMocked) }
+            withApplication { no.nav.helse.main(testArgs) }
         }
     }
 }
