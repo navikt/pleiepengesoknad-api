@@ -76,6 +76,7 @@ fun Application.pleiepengesoknadapi() {
         method(HttpMethod.Get)
         method(HttpMethod.Post)
         method(HttpMethod.Delete)
+        allowNonSimpleContentTypes = true
         allowCredentials = true
         log.info("Configuring CORS")
         configuration.getWhitelistedCorsAddreses().forEach {
