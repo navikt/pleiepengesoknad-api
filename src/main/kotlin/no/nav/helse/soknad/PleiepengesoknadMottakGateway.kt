@@ -5,11 +5,16 @@ import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpPost
 import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.buildURL
+import no.nav.helse.dusseldorf.ktor.health.HealthCheck
+import no.nav.helse.dusseldorf.ktor.health.Healthy
+import no.nav.helse.dusseldorf.ktor.health.Result
+import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
+import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import no.nav.helse.general.systemauth.AuthorizationService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
@@ -17,9 +22,10 @@ import java.net.URI
 
 class PleiepengesoknadMottakGateway(
     baseUrl : URI,
-    private val authorizationService: AuthorizationService,
+    private val accessTokenClient: AccessTokenClient,
+    private val sendeSoknadTilProsesseringScopes : Set<String>,
     private val apiGatewayApiKey: ApiGatewayApiKey
-){
+) : HealthCheck {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(PleiepengesoknadMottakGateway::class.java)
@@ -31,11 +37,24 @@ class PleiepengesoknadMottakGateway(
         pathParts = listOf("v1", "soknad")
     ).toString()
 
+    private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
+
+    override suspend fun check(): Result {
+        return try {
+            accessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes)
+            Healthy("PleiepengesoknadMottakGateway", "Henting av access token for å legge søknad til prosessering OK.")
+        } catch (cause: Throwable) {
+            logger.error("Feil ved henting av access token for å legge søknad til prosessering", cause)
+            UnHealthy("PleiepengesoknadMottakGateway", "Henting av access token for å legge søknad til prosessering.")
+        }
+    }
+
     suspend fun leggTilProsessering(
         soknad : KomplettSoknad,
         callId: CallId
     ) {
-        val authorizationHeader = authorizationService.getAuthorizationHeader()
+        val authorizationHeader = cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
+
         val body = objectMapper.writeValueAsBytes(soknad)
         val contentStream = { ByteArrayInputStream(body) }
 
