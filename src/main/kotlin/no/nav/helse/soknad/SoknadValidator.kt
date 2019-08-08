@@ -3,6 +3,7 @@ package no.nav.helse.soknad
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
+import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -10,7 +11,6 @@ private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachments-too-large", status = 413, detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB.")
 private const val MIN_GRAD = 20
 private const val MAX_GRAD = 100
-
 
 class FraOgMedTilOgMedValidator {
     companion object {
@@ -92,30 +92,7 @@ class FraOgMedTilOgMedValidator {
 
 internal fun Soknad.validate() {
     val violations = barn.validate(relasjonTilBarnet)
-
-    // Arbeidsgivere
-    arbeidsgivere.organisasjoner.mapIndexed { index, organisasjon ->
-        if (!organisasjon.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].organisasjonsnummer",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Ikke gyldig organisasjonsnummer.",
-                    invalidValue = organisasjon.organisasjonsnummer
-                )
-            )
-        }
-        if (organisasjon.navn != null && organisasjon.navn.erBlankEllerLengreEnn(100)) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].navn",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
-                    invalidValue = organisasjon.navn
-                )
-            )
-        }
-    }
+    violations.addAll(arbeidsgivere.organisasjoner.validate())
 
     // Datoer
     violations.addAll(FraOgMedTilOgMedValidator.validate(
@@ -270,6 +247,77 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     return violations
 }
 
+internal fun List<OrganisasjonDetaljer>.validate() : MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+
+    mapIndexed { index, organisasjon ->
+        if (!organisasjon.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].organisasjonsnummer",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ikke gyldig organisasjonsnummer.",
+                    invalidValue = organisasjon.organisasjonsnummer
+                )
+            )
+        }
+        if (organisasjon.navn != null && organisasjon.navn.erBlankEllerLengreEnn(100)) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].navn",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
+                    invalidValue = organisasjon.navn
+                )
+            )
+        }
+
+        if (organisasjon.normalArbeidsuke != null && organisasjon.redusertArbeidsuke == null) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsuke",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Må oppgis når 'normal_arbeidsuke' er oppgitt.",
+                    invalidValue = organisasjon.redusertArbeidsuke
+                )
+            )
+        }
+        if (organisasjon.normalArbeidsuke == null && organisasjon.redusertArbeidsuke != null) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].normal_arbeidsuke",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Må oppgis når 'redusert_arbeidsuke' er oppgitt.",
+                    invalidValue = organisasjon.normalArbeidsuke
+                )
+            )
+        }
+        if (organisasjon.normalArbeidsuke != null && organisasjon.redusertArbeidsuke != null) {
+            if (organisasjon.normalArbeidsuke.isNegative || organisasjon.normalArbeidsuke.isZero) {
+                violations.add(
+                    Violation(
+                        parameterName = "arbeidsgivere.organisasjoner[$index].normal_arbeidsuke",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Må være en positiv varighet.",
+                        invalidValue = organisasjon.normalArbeidsuke
+                    )
+                )
+            }
+            if (organisasjon.redusertArbeidsuke.isNegative || organisasjon.redusertArbeidsuke.erLengreEnn(organisasjon.normalArbeidsuke)) {
+                violations.add(
+                    Violation(
+                        parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsuke",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Må være 0 eller en positiv varighet, og en kortere enn 'normal_arbeidsuke'",
+                        invalidValue = organisasjon.redusertArbeidsuke
+                    )
+                )
+            }
+        }
+    }
+    return violations
+}
+
 private fun BarnDetaljer.gyldigAntallIder() : Boolean {
     val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer, alternativId).size
     return antallIderSatt == 0 || antallIderSatt == 1
@@ -300,5 +348,5 @@ private fun List<Vedlegg>.validerTotalStorresle() {
     }
 }
 
-
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
+private fun Duration.erLengreEnn(duration: Duration) = compareTo(duration) > 0

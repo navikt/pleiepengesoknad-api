@@ -27,8 +27,8 @@ class SoknadUtils {
                                 "navn": "Bjeffefirmaet ÆÆÅ"
                                 ${ if (medArbeidsukeDetaljer) 
                                 """
-                                    , "normal_arbeidsuke": 37.5
-                                    , "redusert_arbeidsuke": 20
+                                    , "normal_arbeidsuke": "PT30H15M"
+                                    , "redusert_arbeidsuke": "PT20H00M"
                                 """.trimIndent() 
                                 else ""}
                             }

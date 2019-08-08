@@ -2,6 +2,7 @@ package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
+import java.time.Duration
 import java.time.LocalDate
 
 data class Soknad (
@@ -38,6 +39,6 @@ data class BarnDetaljer(
 data class OrganisasjonDetaljer (
     val navn: String?,
     val organisasjonsnummer: String,
-    val normalArbeidsuke : Double?,
-    val redusertArbeidsuke: Double?
+    val normalArbeidsuke : Duration?,
+    val redusertArbeidsuke: Duration?
 )
