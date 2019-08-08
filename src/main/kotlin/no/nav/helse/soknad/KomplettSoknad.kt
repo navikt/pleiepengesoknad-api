@@ -11,7 +11,7 @@ data class KomplettSoknad(
     val tilOgMed : LocalDate,
     val soker : Soker,
     val barn : BarnDetaljer,
-    val arbeidsgivere: ArbeidsgiverDetailjer,
+    val arbeidsgivere: ArbeidsgiverDetaljer,
     val vedlegg: List<Vedlegg>,
     val medlemskap : Medlemskap,
     val relasjonTilBarnet : String,

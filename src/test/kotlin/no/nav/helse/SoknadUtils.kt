@@ -9,7 +9,8 @@ class SoknadUtils {
             fraOgMed: String? = "2018-10-10",
             tilOgMed: String? = "2019-10-10",
             vedleggUrl1: String,
-            vedleggUrl2: String) : String {
+            vedleggUrl2: String,
+            medArbeidsukeDetaljer: Boolean = false) : String {
             return """
                 {
                     "barn": {
@@ -24,6 +25,12 @@ class SoknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ"
+                                ${ if (medArbeidsukeDetaljer) 
+                                """
+                                    , "normal_arbeidsuke": 37.5
+                                    , "redusert_arbeidsuke": 20
+                                """.trimIndent() 
+                                else ""}
                             }
                         ]
                     },
