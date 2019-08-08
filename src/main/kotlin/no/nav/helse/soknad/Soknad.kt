@@ -37,8 +37,8 @@ data class BarnDetaljer(
 )
 
 data class OrganisasjonDetaljer (
-    val navn: String?,
+    val navn: String? = null,
     val organisasjonsnummer: String,
-    val normalArbeidsuke : Duration?,
-    val redusertArbeidsuke: Duration?
+    val normalArbeidsuke : Duration? = null,
+    val redusertArbeidsuke: Duration? = null
 )
