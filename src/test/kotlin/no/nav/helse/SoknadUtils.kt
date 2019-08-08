@@ -28,7 +28,7 @@ class SoknadUtils {
                                 ${ if (medArbeidsukeDetaljer) 
                                 """
                                     , "normal_arbeidsuke": "PT30H15M"
-                                    , "redusert_arbeidsuke": "PT20H00M"
+                                    , "redusert_arbeidsuke": "PT20H"
                                 """.trimIndent() 
                                 else ""}
                             }

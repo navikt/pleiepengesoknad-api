@@ -77,4 +77,23 @@ class ArbeidsgiverValidationTest {
         ))
         assertEquals(1, organisasjoner.validate().size)
     }
+
+    @Test
+    fun `Tre arbeidsgivere men kun feil paa en`() {
+        val organisasjoner = listOf(
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR,
+                redusertArbeidsuke = Duration.ofHours(7)
+            ),
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR,
+                normalArbeidsuke = Duration.ofHours(7),
+                redusertArbeidsuke = Duration.ofHours(6)
+            ),
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR
+            )
+        )
+        assertEquals(1, organisasjoner.validate().size)
+    }
 }
