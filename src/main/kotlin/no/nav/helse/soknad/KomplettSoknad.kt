@@ -6,6 +6,7 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 
 data class KomplettSoknad(
+    val sprak: Sprak?,
     val mottatt : ZonedDateTime,
     val fraOgMed : LocalDate,
     val tilOgMed : LocalDate,

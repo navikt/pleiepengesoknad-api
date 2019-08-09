@@ -5,7 +5,10 @@ import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
 
+enum class Sprak{nb, nn}
+
 data class Soknad (
+    val sprak: Sprak = Sprak.nb,
     val barn : BarnDetaljer,
     val relasjonTilBarnet : String? = null,
     val arbeidsgivere : ArbeidsgiverDetaljer,
