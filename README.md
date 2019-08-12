@@ -9,7 +9,7 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 ## Endepunkt
 ### Sende inn søknad
 POST @ /soknad -> 202 Response
-- sprak er en valgfri attributt. Om den settes må den være enten "nb" for Bokmål eller "nn" for Nynorsk. Om ingenting settes er default "nb"
+- sprak er en valgfri attributt. Om den settes må den være enten "nb" for Bokmål eller "nn" for Nynorsk.
 - Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver, med to valgfrie attributter (om en er satt må begge settes);
 - arbeidsgivere.organisasjoner[x].normal_arbeidsuke settes til varigheten på en normal arbeidsuke for søkeren hos arbeidsgiveren. (Se format i eget avsnitt)
 - arbeidsgivere.organisasjoner[x].redusert_arbeidsuke settes til varighet på arbeidsukene for søkeren hos arbeidsgiveren i perioden det søkes pleiepenger for. (Se format i eget avsnitt)
