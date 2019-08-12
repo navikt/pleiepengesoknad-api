@@ -9,8 +9,11 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 ## Endepunkt
 ### Sende inn søknad
 POST @ /soknad -> 202 Response
-- Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver
-- Listen med organisajoner i arbeidsgivere kan være tom
+- sprak er en valgfri attributt. Om den settes må den være enten "nb" for Bokmål eller "nn" for Nynorsk.
+- Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver, med to valgfrie attributter (om en er satt må begge settes);
+- arbeidsgivere.organisasjoner[x].normal_arbeidsuke settes til varigheten på en normal arbeidsuke for søkeren hos arbeidsgiveren. (Se format i eget avsnitt)
+- arbeidsgivere.organisasjoner[x].redusert_arbeidsuke settes til varighet på arbeidsukene for søkeren hos arbeidsgiveren i perioden det søkes pleiepenger for. (Se format i eget avsnitt)
+- Listen med organisajoner i arbeidsgivere kan være tom.
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
 - Det kan settes kun 1 ID på barnet (alternativ_id, aktoer_id eller fodselsnummer) - Kan også sendes uten ID
@@ -24,6 +27,7 @@ POST @ /soknad -> 202 Response
 
 ```json
 {
+	"sprak": "nb",
 	"barn": {
 		"navn": "Iben Olafsson Hansen",
 		"fodselsnummer": "01011950021",
@@ -36,7 +40,9 @@ POST @ /soknad -> 202 Response
 	"arbeidsgivere": {
 		"organisasjoner": [{
 			"navn": "Telenor",
-			"organisasjonsnummer": "973861778"
+			"organisasjonsnummer": "973861778",
+			"normal_arbeidsuke": "PT7H30M",
+			"redusert_arbeidsuke": "PT5H"
 		}, {
 			"navn": "Maxbo",
 			"organisasjonsnummer": "910831143"
@@ -187,11 +193,11 @@ GET @ /barn -> 200 Response
 }
 ```
 
-## Serialisering av datoer og tidspunkt
+## Serialisering av datoer, tidspunkt og varighet
 API'et returnerer på format ISO 8601
 - Dato: 2018-12-18
 - Tidspunkt: 2018-12-18T10:43:32Z
-
+- Varighet: PT7H30M (7 timer og 30 minutter), PT30M (30 minutter) PT0S (0)
 
 ## Feilsituasjoner
 API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/html/rfc7807)
@@ -251,7 +257,10 @@ Kjør klassen ApplicationWithMocks som er en del av testkoden.
 Dette vil først starte en wiremock server som mocker ut alle eksterne http-kall.
 
 ### Logg inn
-Gå på, eller legg inn følgende URL som URL til Login Service `http://localhost:8081/login-service/v1.0/login?redirect={REDIRECT_URL}&fnr={FNR}`
+Gå på, eller legg inn følgende URL som URL til Login Service 
+
+`http://localhost:8081/login-service/v1.0/login?redirect={REDIRECT_URL}&fnr={FNR}`
+
 Dette vil sette en cookie som gjør at du er autentisert og kommer forbi 401/403-feil.
 
 ## Henvendelser

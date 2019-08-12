@@ -1,14 +1,17 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import no.nav.helse.arbeidsgiver.Arbeidsgiver
 import java.net.URL
+import java.time.Duration
 import java.time.LocalDate
 
+enum class Sprak{nb, nn}
+
 data class Soknad (
+    val sprak: Sprak? = null,
     val barn : BarnDetaljer,
     val relasjonTilBarnet : String? = null,
-    val arbeidsgivere : ArbeidsgiverDetailjer,
+    val arbeidsgivere : ArbeidsgiverDetaljer,
     val vedlegg : List<URL>,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
@@ -18,8 +21,8 @@ data class Soknad (
     val harBekreftetOpplysninger : Boolean,
     val grad : Int
 )
-data class ArbeidsgiverDetailjer(
-    val organisasjoner : List<Arbeidsgiver>
+data class ArbeidsgiverDetaljer(
+    val organisasjoner : List<OrganisasjonDetaljer>
 )
 
 data class Medlemskap(
@@ -34,4 +37,11 @@ data class BarnDetaljer(
     val alternativId: String?,
     val aktoerId: String?,
     val navn: String?
+)
+
+data class OrganisasjonDetaljer (
+    val navn: String? = null,
+    val organisasjonsnummer: String,
+    val normalArbeidsuke : Duration? = null,
+    val redusertArbeidsuke: Duration? = null
 )

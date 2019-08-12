@@ -49,6 +49,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         logger.trace("Legger søknad til prosessering")
 
         val komplettSoknad = KomplettSoknad(
+            sprak = soknad.sprak,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             fraOgMed = soknad.fraOgMed,
             tilOgMed = soknad.tilOgMed,
