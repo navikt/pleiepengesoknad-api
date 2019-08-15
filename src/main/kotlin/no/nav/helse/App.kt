@@ -30,6 +30,7 @@ import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
@@ -48,6 +49,7 @@ import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
@@ -204,24 +206,32 @@ fun Application.pleiepengesoknadapi() {
             )
         }
 
+        val healthService = HealthService(
+            healthChecks = setOf(
+                aktoerGateway,
+                personGateway,
+                barnGateway,
+                arbeidsgiverGateway,
+                pleiepengesoknadMottakGateway,
+                HttpRequestHealthCheck(mapOf(
+                    configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false),
+                    Url.buildURL(baseUrl = configuration.getPleiepengerDokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
+                    Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value)),
+                    Url.buildURL(baseUrl = configuration.getSparkelUrl(), pathParts = listOf("isready")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
+                ))
+            )
+        )
+
+        HealthReporter(
+            app = appId,
+            healthService = healthService,
+            frequency = Duration.ofMinutes(1)
+        )
+
         DefaultProbeRoutes()
         MetricsRoute()
         HealthRoute(
-            healthService = HealthService(
-                healthChecks = setOf(
-                    aktoerGateway,
-                    personGateway,
-                    barnGateway,
-                    arbeidsgiverGateway,
-                    pleiepengesoknadMottakGateway,
-                    HttpRequestHealthCheck(mapOf(
-                        configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false),
-                        Url.buildURL(baseUrl = configuration.getPleiepengerDokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
-                        Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value)),
-                        Url.buildURL(baseUrl = configuration.getSparkelUrl(), pathParts = listOf("isready")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
-                    ))
-                )
-            )
+            healthService = healthService
         )
     }
 
