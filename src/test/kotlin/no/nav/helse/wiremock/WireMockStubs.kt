@@ -44,7 +44,24 @@ private fun WireMockServer.stubHealthEndpoint(
     return this
 }
 
+private fun WireMockServer.stubHealthEndpointThroughZones(
+    path : String
+) : WireMockServer{
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlPathMatching(".*$path"))
+            .withHeader("x-nav-apiKey", AnythingPattern())
+            .willReturn(
+            WireMock.aResponse()
+                .withStatus(200)
+        )
+    )
+    return this
+}
+
 internal fun WireMockServer.stubPleiepengerDokumentHealth() = stubHealthEndpoint("$pleiepengerDokumentPath/health")
+internal fun WireMockServer.stubPleiepengesoknadMottakHealth() = stubHealthEndpointThroughZones("$pleiepengesoknadMottakPath/health")
+internal fun WireMockServer.stubSparkelIsReady() = stubHealthEndpointThroughZones("$sparkelPath/isready")
+
 
 internal fun WireMockServer.stubLeggSoknadTilProsessering() : WireMockServer{
     WireMock.stubFor(

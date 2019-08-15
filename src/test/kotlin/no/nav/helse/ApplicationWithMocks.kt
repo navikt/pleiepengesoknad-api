@@ -27,6 +27,8 @@ class ApplicationWithMocks {
                 .pleiepengesoknadApiConfig()
                 .build()
                 .stubPleiepengerDokumentHealth()
+                .stubSparkelIsReady()
+                .stubPleiepengesoknadMottakHealth()
                 .stubAktoerRegisterGetAktoerId()
                 .stubLeggSoknadTilProsessering()
                 .stubPleiepengerDokument()
