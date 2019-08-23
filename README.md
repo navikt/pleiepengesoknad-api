@@ -11,8 +11,7 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 POST @ /soknad -> 202 Response
 - sprak er en valgfri attributt. Om den settes må den være enten "nb" for Bokmål eller "nn" for Nynorsk.
 - Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver, med to valgfrie attributter (om en er satt må begge settes);
-- arbeidsgivere.organisasjoner[x].normal_arbeidsuke settes til varigheten på en normal arbeidsuke for søkeren hos arbeidsgiveren. (Se format i eget avsnitt)
-- arbeidsgivere.organisasjoner[x].redusert_arbeidsuke settes til varighet på arbeidsukene for søkeren hos arbeidsgiveren i perioden det søkes pleiepenger for. (Se format i eget avsnitt)
+- arbeidsgivere.organisasjoner[x].redusert_arbeidsprosent er valgfri. Om satt må den være mellom 0 og 100
 - Listen med organisajoner i arbeidsgivere kan være tom.
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
@@ -24,6 +23,7 @@ POST @ /soknad -> 202 Response
 - relasjon_til_barnet er ikke påkrevd om 'barn.aktoer_id' er satt, ellers påkrevd
 - grad må være satt til en verdi større eller lik 20 og mindre eller lik 100
 - 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
+- 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.0 og 5.0
 
 ```json
 {
@@ -41,8 +41,7 @@ POST @ /soknad -> 202 Response
 		"organisasjoner": [{
 			"navn": "Telenor",
 			"organisasjonsnummer": "973861778",
-			"normal_arbeidsuke": "PT7H30M",
-			"redusert_arbeidsuke": "PT5H"
+			"redusert_arbeidsprosent": 50
 		}, {
 			"navn": "Maxbo",
 			"organisasjonsnummer": "910831143"
@@ -58,7 +57,8 @@ POST @ /soknad -> 202 Response
 	"har_medsoker": true,
 	"har_bekreftet_opplysninger" : true,
 	"har_forstatt_rettigheter_og_plikter": true,
-	"grad": 100
+	"grad": 100,
+	"dager_per_uke_borte_fra_jobb": 4.5
 }
 ```
 

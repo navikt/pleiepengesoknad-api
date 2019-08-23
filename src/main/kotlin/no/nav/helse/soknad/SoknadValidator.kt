@@ -128,15 +128,17 @@ internal fun Soknad.validate() {
     }
 
     // Grad
-    if (grad < MIN_GRAD || grad > MAX_GRAD) {
-        violations.add(
-            Violation(
-                parameterName = "grad",
-                parameterType = ParameterType.ENTITY,
-                reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
-                invalidValue = grad
+    grad?.apply {
+        if (grad < MIN_GRAD || grad > MAX_GRAD) {
+            violations.add(
+                Violation(
+                    parameterName = "grad",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
+                    invalidValue = grad
 
-        ))
+                ))
+        }
     }
 
     // Booleans (For å forsikre at de er satt og ikke blir default false)
@@ -173,6 +175,19 @@ internal fun Soknad.validate() {
 
             ))
     }
+
+    dagerPerUkeBorteFraJobb?.apply {
+        if (this !in 0.0..5.0) {
+            violations.add(
+                Violation(
+                    parameterName = "dager_per_uke_borte_fra_jobb",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Dager borte fra jobb må være mellom 0 og 5.",
+                    invalidValue = this
+                ))
+        }
+    }
+
 
     // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
@@ -272,44 +287,14 @@ internal fun List<OrganisasjonDetaljer>.validate() : MutableSet<Violation> {
             )
         }
 
-        if (organisasjon.normalArbeidsuke != null && organisasjon.redusertArbeidsuke == null) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsuke",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Må oppgis når 'normal_arbeidsuke' er oppgitt.",
-                    invalidValue = organisasjon.redusertArbeidsuke
-                )
-            )
-        }
-        if (organisasjon.normalArbeidsuke == null && organisasjon.redusertArbeidsuke != null) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].normal_arbeidsuke",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Må oppgis når 'redusert_arbeidsuke' er oppgitt.",
-                    invalidValue = organisasjon.normalArbeidsuke
-                )
-            )
-        }
-        if (organisasjon.normalArbeidsuke != null && organisasjon.redusertArbeidsuke != null) {
-            if (organisasjon.normalArbeidsuke.isNegative || organisasjon.normalArbeidsuke.isZero) {
+        organisasjon.redusertArbeidsprosent?.apply {
+            if (this !in 0..100) {
                 violations.add(
                     Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].normal_arbeidsuke",
+                        parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
                         parameterType = ParameterType.ENTITY,
-                        reason = "Må være en positiv varighet.",
-                        invalidValue = organisasjon.normalArbeidsuke
-                    )
-                )
-            }
-            if (organisasjon.redusertArbeidsuke.isNegative || organisasjon.redusertArbeidsuke.erLengreEnn(organisasjon.normalArbeidsuke)) {
-                violations.add(
-                    Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsuke",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Må være 0 eller en positiv varighet, og en kortere enn 'normal_arbeidsuke'",
-                        invalidValue = organisasjon.redusertArbeidsuke
+                        reason = "Den reduserte arbeidsprosenten må være mellom 0 og 100.",
+                        invalidValue = this
                     )
                 )
             }

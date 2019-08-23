@@ -19,7 +19,8 @@ data class Soknad (
     val harMedsoker : Boolean? = null,
     val harForstattRettigheterOgPlikter : Boolean,
     val harBekreftetOpplysninger : Boolean,
-    val grad : Int
+    val grad : Int,
+    val dagerPerUkeBorteFraJobb: Double? = null
 )
 data class ArbeidsgiverDetaljer(
     val organisasjoner : List<OrganisasjonDetaljer>
@@ -42,6 +43,5 @@ data class BarnDetaljer(
 data class OrganisasjonDetaljer (
     val navn: String? = null,
     val organisasjonsnummer: String,
-    val normalArbeidsuke : Duration? = null,
-    val redusertArbeidsuke: Duration? = null
+    val redusertArbeidsprosent: Int? = null
 )
