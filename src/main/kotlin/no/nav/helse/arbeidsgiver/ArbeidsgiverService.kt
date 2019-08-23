@@ -14,13 +14,13 @@ class ArbeidsgiverService(
         private val logger: Logger = LoggerFactory.getLogger(ArbeidsgiverService::class.java)
     }
 
-    suspend fun getAnsettelsesforhold(
+    suspend fun getArbeidsgivere(
         norskIdent: NorskIdent,
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
     ) : List<Arbeidsgiver> {
-        return try { gateway.getAnsettelsesforhold(norskIdent, callId, fraOgMed, tilOgMed) } catch (cause: Throwable) {
+        return try { gateway.getArbeidsgivere(norskIdent, callId, fraOgMed, tilOgMed) } catch (cause: Throwable) {
             logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
             emptyList()
         }

@@ -56,7 +56,7 @@ class ArbeidsgiverGateway(
         }
     }
 
-    internal suspend fun getAnsettelsesforhold(
+    internal suspend fun getArbeidsgivere(
         norskIdent: NorskIdent,
         callId: CallId,
         fraOgMed: LocalDate,

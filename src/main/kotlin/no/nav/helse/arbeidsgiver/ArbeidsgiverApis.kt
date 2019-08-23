@@ -31,7 +31,7 @@ fun Route.arbeidsgiverApis(
         } else {
             call.respond(
                 ArbeidsgiverResponse(
-                    service.getAnsettelsesforhold(
+                    service.getArbeidsgivere(
                         norskIdent = call.getNorskIdent(),
                         callId = call.getCallId(),
                         fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
