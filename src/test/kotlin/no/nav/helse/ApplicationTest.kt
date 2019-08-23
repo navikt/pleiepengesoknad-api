@@ -260,6 +260,22 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Feil ved henting av barn skal resultere i en tom liste`() {
+        wireMockServer.stubSparkelGetBarn(simulerFeil = true)
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/barn",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = """
+            {
+                "barn": []
+            }
+            """.trimIndent()
+        )
+        wireMockServer.stubSparkelGetBarn()
+    }
+
+    @Test
     fun `Hente soeker`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,

@@ -6,7 +6,8 @@ import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.HttpHeaders
 
 internal fun WireMockServer.stubSparkelGetBarn(
-    harBarn : Boolean = true
+    harBarn : Boolean = true,
+    simulerFeil: Boolean = false
 ) : WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlMatching(".*$sparkelPath/api/person/.\\d+/barn"))
@@ -14,7 +15,7 @@ internal fun WireMockServer.stubSparkelGetBarn(
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .willReturn(
                 WireMock.aResponse()
-                    .withStatus(200)
+                    .withStatus(if (simulerFeil) 500 else 200)
                     .withHeader("Content-Type", "application/json")
                     .withBody(if (harBarn) sparkelResponseHarBarn else sparkelResponseIngenBarn)
             )
