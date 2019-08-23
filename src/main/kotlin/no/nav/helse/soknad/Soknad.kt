@@ -19,7 +19,7 @@ data class Soknad (
     val harMedsoker : Boolean? = null,
     val harForstattRettigheterOgPlikter : Boolean,
     val harBekreftetOpplysninger : Boolean,
-    val grad : Int,
+    val grad : Int? = null,
     val dagerPerUkeBorteFraJobb: Double? = null
 )
 data class ArbeidsgiverDetaljer(

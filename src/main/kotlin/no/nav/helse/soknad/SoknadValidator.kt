@@ -3,7 +3,6 @@ package no.nav.helse.soknad
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
-import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -129,13 +128,13 @@ internal fun Soknad.validate() {
 
     // Grad
     grad?.apply {
-        if (grad < MIN_GRAD || grad > MAX_GRAD) {
+        if (this !in MIN_GRAD..MAX_GRAD) {
             violations.add(
                 Violation(
                     parameterName = "grad",
                     parameterType = ParameterType.ENTITY,
                     reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
-                    invalidValue = grad
+                    invalidValue = this
 
                 ))
         }
@@ -334,4 +333,3 @@ private fun List<Vedlegg>.validerTotalStorresle() {
 }
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
-private fun Duration.erLengreEnn(duration: Duration) = compareTo(duration) > 0

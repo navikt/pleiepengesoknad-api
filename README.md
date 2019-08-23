@@ -21,7 +21,7 @@ POST @ /soknad -> 202 Response
 - barn.aktoer_id må være sattil en gyldig Aktør ID om den er satt
 - barn.navn er kun påkrevd om 'barn.fodselsnummer' er satt
 - relasjon_til_barnet er ikke påkrevd om 'barn.aktoer_id' er satt, ellers påkrevd
-- grad må være satt til en verdi større eller lik 20 og mindre eller lik 100
+- grad er valgfri. Om satt må den være mellom 20 og 100
 - 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
 - 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.0 og 5.0
 
