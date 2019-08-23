@@ -21,7 +21,6 @@ import java.util.*
 
 private const val fnr = "290990123456"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
-private val logger: Logger = LoggerFactory.getLogger("nav.ApplicationTest")
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
 private val ikkeMyndigDato = "2050-12-12"
@@ -30,6 +29,8 @@ private val ikkeMyndigDato = "2050-12-12"
 class ApplicationTest {
 
     private companion object {
+
+        private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
 
         val wireMockServer = WireMockBuilder()
             .withAzureSupport()
@@ -111,6 +112,22 @@ class ApplicationTest {
             }
             """.trimIndent()
         )
+    }
+
+    @Test
+    fun `Feil ved henting av arbedisgivere skal returnere en tom liste`() {
+        wireMockServer.stubSparkelGetArbeidsgivere(simulerFeil = true)
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = """
+            {
+                "organisasjoner": []
+            }
+            """.trimIndent()
+        )
+        wireMockServer.stubSparkelGetArbeidsgivere()
     }
 
     @Test
@@ -260,7 +277,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Feil ved henting av barn skal resultere i en tom liste`() {
+    fun `Feil ved henting av barn skal resultere en tom liste`() {
         wireMockServer.stubSparkelGetBarn(simulerFeil = true)
         requestAndAssert(
             httpMethod = HttpMethod.Get,

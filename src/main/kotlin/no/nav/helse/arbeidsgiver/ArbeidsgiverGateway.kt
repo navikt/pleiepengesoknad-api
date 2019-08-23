@@ -62,10 +62,7 @@ class ArbeidsgiverGateway(
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
     ) : List<Arbeidsgiver> {
-        val sparkelResponse = try { request(norskIdent, callId, fraOgMed, tilOgMed) } catch (cause: Throwable) {
-            logger.error("Feil ved oppslag på arbeidsgivere. Returnerer tom liste med arbeidsgivere.", cause)
-            SparkelResponse(arbeidsgivere = setOf())
-        }
+        val sparkelResponse = request(norskIdent, callId, fraOgMed, tilOgMed)
 
         return sparkelResponse.arbeidsgivere.map { arbeidsforhold ->
             Arbeidsgiver(

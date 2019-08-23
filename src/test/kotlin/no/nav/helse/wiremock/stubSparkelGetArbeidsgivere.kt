@@ -5,14 +5,16 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.HttpHeaders
 
-internal fun WireMockServer.stubSparkelGetArbeidsgivere() : WireMockServer {
+internal fun WireMockServer.stubSparkelGetArbeidsgivere(
+    simulerFeil: Boolean = false
+) : WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlMatching(".*$sparkelPath/api/arbeidsgivere/.*"))
             .withHeader("x-nav-apiKey", AnythingPattern())
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .willReturn(
                 WireMock.aResponse()
-                    .withStatus(200)
+                    .withStatus(if (simulerFeil) 500 else 200)
                     .withHeader("Content-Type", "application/json")
                     .withBody(sparkelResponse)
             )
