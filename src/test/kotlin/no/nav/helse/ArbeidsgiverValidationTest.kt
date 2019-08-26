@@ -32,7 +32,7 @@ class ArbeidsgiverValidationTest {
     fun `Redusert arbeidsprosent satt`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            redusertArbeidsprosent = 99
+            redusertArbeidsprosent = 99.09
         ))
         assertTrue(organisasjoner.validate(true).isEmpty())
     }
@@ -41,7 +41,7 @@ class ArbeidsgiverValidationTest {
     fun `Redusert arbeidsprosent satt for lav`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            redusertArbeidsprosent = -1
+            redusertArbeidsprosent = -1.00
         ))
         assertEquals(1, organisasjoner.validate(true).size)
     }
@@ -50,7 +50,7 @@ class ArbeidsgiverValidationTest {
     fun `Redusert arbeidsprosent satt før høy`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            redusertArbeidsprosent = 101
+            redusertArbeidsprosent = 101.01
         ))
         assertEquals(1, organisasjoner.validate(true).size)
     }

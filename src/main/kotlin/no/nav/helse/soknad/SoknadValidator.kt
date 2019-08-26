@@ -295,7 +295,7 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean) : MutableSet
         }
 
         organisasjon.redusertArbeidsprosent?.apply {
-            if (this !in 0..100) {
+            if (this !in 0.0..100.0) {
                 violations.add(
                     Violation(
                         parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
