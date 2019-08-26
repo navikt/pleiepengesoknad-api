@@ -192,7 +192,7 @@ internal fun Soknad.validate() {
                 parameterName = "dager_per_uke_borte_fra_jobb",
                 parameterType = ParameterType.ENTITY,
                 reason = "Dager borte fra jobb må settes når grad ikke er satt.",
-                invalidValue = this
+                invalidValue = null
             ))
     }
 
