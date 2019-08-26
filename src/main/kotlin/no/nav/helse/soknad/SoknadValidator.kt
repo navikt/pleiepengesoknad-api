@@ -90,8 +90,9 @@ class FraOgMedTilOgMedValidator {
 }
 
 internal fun Soknad.validate() {
+    val gradSatt = grad != null
     val violations = barn.validate(relasjonTilBarnet)
-    violations.addAll(arbeidsgivere.organisasjoner.validate())
+    violations.addAll(arbeidsgivere.organisasjoner.validate(gradSatt))
 
     // Datoer
     violations.addAll(FraOgMedTilOgMedValidator.validate(
@@ -135,7 +136,6 @@ internal fun Soknad.validate() {
                     parameterType = ParameterType.ENTITY,
                     reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
                     invalidValue = this
-
                 ))
         }
     }
@@ -186,7 +186,15 @@ internal fun Soknad.validate() {
                 ))
         }
     }
-
+    if (!gradSatt && dagerPerUkeBorteFraJobb == null) {
+        violations.add(
+            Violation(
+                parameterName = "dager_per_uke_borte_fra_jobb",
+                parameterType = ParameterType.ENTITY,
+                reason = "Dager borte fra jobb må settes når grad ikke er satt.",
+                invalidValue = this
+            ))
+    }
 
     // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
@@ -261,7 +269,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     return violations
 }
 
-internal fun List<OrganisasjonDetaljer>.validate() : MutableSet<Violation> {
+internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean) : MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     mapIndexed { index, organisasjon ->
@@ -297,6 +305,17 @@ internal fun List<OrganisasjonDetaljer>.validate() : MutableSet<Violation> {
                     )
                 )
             }
+        }
+
+        if (!gradSatt && organisasjon.redusertArbeidsprosent == null) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Den reduserte arbeidsprosenten må være satt når det ikke er satt grad i søknaden.",
+                    invalidValue = null
+                )
+            )
         }
     }
     return violations

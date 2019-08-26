@@ -17,7 +17,15 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR
         ))
-        assertTrue(organisasjoner.validate().isEmpty())
+        assertTrue(organisasjoner.validate(true).isEmpty())
+    }
+
+    @Test
+    fun `Ingen informasjon om arbeidsuker satt, ingen grad satt`() {
+        val organisasjoner = listOf(OrganisasjonDetaljer(
+            organisasjonsnummer = GYLDIG_ORGNR
+        ))
+        assertEquals(1, organisasjoner.validate(false).size)
     }
 
     @Test
@@ -26,7 +34,7 @@ class ArbeidsgiverValidationTest {
             organisasjonsnummer = GYLDIG_ORGNR,
             redusertArbeidsprosent = 99
         ))
-        assertTrue(organisasjoner.validate().isEmpty())
+        assertTrue(organisasjoner.validate(true).isEmpty())
     }
 
     @Test
@@ -35,7 +43,7 @@ class ArbeidsgiverValidationTest {
             organisasjonsnummer = GYLDIG_ORGNR,
             redusertArbeidsprosent = -1
         ))
-        assertEquals(1, organisasjoner.validate().size)
+        assertEquals(1, organisasjoner.validate(true).size)
     }
 
     @Test
@@ -44,6 +52,6 @@ class ArbeidsgiverValidationTest {
             organisasjonsnummer = GYLDIG_ORGNR,
             redusertArbeidsprosent = 101
         ))
-        assertEquals(1, organisasjoner.validate().size)
+        assertEquals(1, organisasjoner.validate(true).size)
     }
 }

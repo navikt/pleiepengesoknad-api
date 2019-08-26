@@ -11,7 +11,7 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 POST @ /soknad -> 202 Response
 - sprak er en valgfri attributt. Om den settes må den være enten "nb" for Bokmål eller "nn" for Nynorsk.
 - Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver, med to valgfrie attributter (om en er satt må begge settes);
-- arbeidsgivere.organisasjoner[x].redusert_arbeidsprosent er valgfri. Om satt må den være mellom 0 og 100
+- arbeidsgivere.organisasjoner[x].redusert_arbeidsprosent er valgfri. Om satt må den være mellom 0 og 100. Om 'grad' ikke er satt må denne alltid settes.
 - Listen med organisajoner i arbeidsgivere kan være tom.
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
@@ -23,7 +23,7 @@ POST @ /soknad -> 202 Response
 - relasjon_til_barnet er ikke påkrevd om 'barn.aktoer_id' er satt, ellers påkrevd
 - grad er valgfri. Om satt må den være mellom 20 og 100
 - 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
-- 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.0 og 5.0
+- 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.0 og 5.0. Om 'grad' ikke er satt må denne alltid settes.
 
 ```json
 {
@@ -44,7 +44,8 @@ POST @ /soknad -> 202 Response
 			"redusert_arbeidsprosent": 50
 		}, {
 			"navn": "Maxbo",
-			"organisasjonsnummer": "910831143"
+			"organisasjonsnummer": "910831143",
+			"redusert_arbeidsprosent": 25
 		}]
 	},
 	"vedlegg": [
