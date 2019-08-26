@@ -45,6 +45,7 @@ fun expectedGetSokerJson(
         "fornavn": "MOR",
         "mellomnavn": "HEISANN",
         "fodselsnummer": "$fodselsnummer",
+        "aktoer_id": "12345",
         "fodselsdato": "$fodselsdato",
         "myndig": $myndig
     }
