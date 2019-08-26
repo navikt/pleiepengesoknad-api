@@ -19,5 +19,6 @@ data class KomplettSoknad(
     val grad : Int?,
     val harMedsoker : Boolean,
     val harForstattRettigheterOgPlikter : Boolean,
-    val harBekreftetOpplysninger : Boolean
+    val harBekreftetOpplysninger : Boolean,
+    val dagerPerUkeBorteFraJobb: Double?
 )
