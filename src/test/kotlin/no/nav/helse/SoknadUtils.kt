@@ -10,7 +10,7 @@ class SoknadUtils {
             tilOgMed: String? = "2019-10-10",
             vedleggUrl1: String,
             vedleggUrl2: String,
-            medArbeidsukeDetaljer: Boolean = false) : String {
+            utenGrad: Boolean = false) : String {
             return """
                 {
                     "barn": {
@@ -25,10 +25,9 @@ class SoknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ"
-                                ${ if (medArbeidsukeDetaljer) 
+                                ${ if (utenGrad) 
                                 """
-                                    , "normal_arbeidsuke": "PT30H15M"
-                                    , "redusert_arbeidsuke": "PT20H"
+                                    , "redusert_arbeidsprosent": 50
                                 """.trimIndent() 
                                 else ""}
                             }
@@ -42,7 +41,11 @@ class SoknadUtils {
                         "har_bodd_i_utlandet_siste_12_mnd" : false,
                         "skal_bo_i_utlandet_neste_12_mnd" : true
                     },
-                    "grad": 100,
+                    ${ if(utenGrad) """
+                        "dager_per_uke_borte_fra_jobb": 4.0,
+                    """.trimIndent() else """
+                        "grad": 100,
+                    """.trimIndent()}
                     "har_medsoker": true,
                     "har_bekreftet_opplysninger": true,
                     "har_forstatt_rettigheter_og_plikter": true
