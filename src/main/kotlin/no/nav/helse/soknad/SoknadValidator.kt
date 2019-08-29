@@ -188,14 +188,24 @@ internal fun Soknad.validate() {
     }
     val medSoker = harMedsoker != null && harMedsoker
 
-    if (!gradSatt && medSoker && dagerPerUkeBorteFraJobb == null) {
-        violations.add(
-            Violation(
-                parameterName = "dager_per_uke_borte_fra_jobb",
-                parameterType = ParameterType.ENTITY,
-                reason = "Dager borte fra jobb må settes når grad ikke er satt og det er en medsøker.",
-                invalidValue = null
+    if (!gradSatt) {
+        if (medSoker && dagerPerUkeBorteFraJobb == null) {
+            violations.add(
+                Violation(
+                    parameterName = "dager_per_uke_borte_fra_jobb",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Dager borte fra jobb må settes om det er en medsøker.",
+                    invalidValue = dagerPerUkeBorteFraJobb
             ))
+        } else if (!medSoker && dagerPerUkeBorteFraJobb != null) {
+            violations.add(
+                Violation(
+                    parameterName = "dager_per_uke_borte_fra_jobb",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Dager borte fra jobb skal bare settes om det er en medsøker.",
+                    invalidValue = dagerPerUkeBorteFraJobb
+                ))
+        }
     }
 
     // Ser om det er noen valideringsfeil
