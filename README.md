@@ -23,7 +23,7 @@ POST @ /soknad -> 202 Response
 - relasjon_til_barnet er ikke påkrevd om 'barn.aktoer_id' er satt, ellers påkrevd
 - grad er valgfri. Om satt må den være mellom 20 og 100
 - 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
-- 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.0 og 5.0. Om 'grad' ikke er satt må denne alltid settes.
+- 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.5 og 5.0. Om 'grad' ikke er satt og 'har_medsoker' er true må den settes.
 
 ```json
 {
