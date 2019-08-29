@@ -176,7 +176,7 @@ internal fun Soknad.validate() {
     }
 
     dagerPerUkeBorteFraJobb?.apply {
-        if (this !in 0.0..5.0) {
+        if (this !in 0.5..5.0) {
             violations.add(
                 Violation(
                     parameterName = "dager_per_uke_borte_fra_jobb",
