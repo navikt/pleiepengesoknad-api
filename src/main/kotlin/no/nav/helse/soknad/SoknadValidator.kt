@@ -186,12 +186,14 @@ internal fun Soknad.validate() {
                 ))
         }
     }
-    if (!gradSatt && dagerPerUkeBorteFraJobb == null) {
+    val medSoker = harMedsoker != null && harMedsoker
+
+    if (!gradSatt && medSoker && dagerPerUkeBorteFraJobb == null) {
         violations.add(
             Violation(
                 parameterName = "dager_per_uke_borte_fra_jobb",
                 parameterType = ParameterType.ENTITY,
-                reason = "Dager borte fra jobb må settes når grad ikke er satt.",
+                reason = "Dager borte fra jobb må settes når grad ikke er satt og det er en medsøker.",
                 invalidValue = null
             ))
     }
