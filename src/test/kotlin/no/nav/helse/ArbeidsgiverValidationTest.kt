@@ -2,7 +2,6 @@ package no.nav.helse
 
 import no.nav.helse.soknad.OrganisasjonDetaljer
 import no.nav.helse.soknad.validate
-import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -18,82 +17,41 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR
         ))
-        assertTrue(organisasjoner.validate().isEmpty())
+        assertTrue(organisasjoner.validate(true).isEmpty())
     }
 
     @Test
-    fun `Normal og redusert arbeidsuke satt`() {
+    fun `Ingen informasjon om arbeidsuker satt, ingen grad satt`() {
+        val organisasjoner = listOf(OrganisasjonDetaljer(
+            organisasjonsnummer = GYLDIG_ORGNR
+        ))
+        assertEquals(1, organisasjoner.validate(false).size)
+    }
+
+    @Test
+    fun `Redusert arbeidsprosent satt`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            normalArbeidsuke = Duration.ofHours(7).plusMillis(30),
-            redusertArbeidsuke = Duration.ofHours(5)
+            redusertArbeidsprosent = 99.09
         ))
-        assertTrue(organisasjoner.validate().isEmpty())
+        assertTrue(organisasjoner.validate(true).isEmpty())
     }
 
     @Test
-    fun `Normal arbeidsuke satt, men ikke redusert arbeidsuke`() {
+    fun `Redusert arbeidsprosent satt for lav`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            normalArbeidsuke = Duration.ofHours(6)
+            redusertArbeidsprosent = -1.00
         ))
-        assertEquals(1, organisasjoner.validate().size)
+        assertEquals(1, organisasjoner.validate(true).size)
     }
 
     @Test
-    fun `Redusert arbeidsuke satt, men ikke normal arbeidsuke`() {
+    fun `Redusert arbeidsprosent satt før høy`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            normalArbeidsuke = Duration.ofHours(6)
+            redusertArbeidsprosent = 101.01
         ))
-        assertEquals(1, organisasjoner.validate().size)
-    }
-
-    @Test
-    fun `Normal arbeidsuke satt til 0`() {
-        val organisasjoner = listOf(OrganisasjonDetaljer(
-            organisasjonsnummer = GYLDIG_ORGNR,
-            normalArbeidsuke = Duration.ZERO
-        ))
-        assertEquals(1, organisasjoner.validate().size)
-    }
-
-    @Test
-    fun `Redusert arbeidsuke satt til 0`() {
-        val organisasjoner = listOf(OrganisasjonDetaljer(
-            organisasjonsnummer = GYLDIG_ORGNR,
-            normalArbeidsuke = Duration.ofHours(6),
-            redusertArbeidsuke = Duration.ZERO
-        ))
-        assertTrue(organisasjoner.validate().isEmpty())
-    }
-
-    @Test
-    fun `Redusert arbeidsuke lengre enn normal arbeidsuke`() {
-        val organisasjoner = listOf(OrganisasjonDetaljer(
-            organisasjonsnummer = GYLDIG_ORGNR,
-            normalArbeidsuke = Duration.ofHours(6),
-            redusertArbeidsuke = Duration.ofHours(7)
-        ))
-        assertEquals(1, organisasjoner.validate().size)
-    }
-
-    @Test
-    fun `Tre arbeidsgivere men kun feil paa en`() {
-        val organisasjoner = listOf(
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR,
-                redusertArbeidsuke = Duration.ofHours(7)
-            ),
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR,
-                normalArbeidsuke = Duration.ofHours(7),
-                redusertArbeidsuke = Duration.ofHours(6)
-            ),
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR
-            )
-        )
-        assertEquals(1, organisasjoner.validate().size)
+        assertEquals(1, organisasjoner.validate(true).size)
     }
 }

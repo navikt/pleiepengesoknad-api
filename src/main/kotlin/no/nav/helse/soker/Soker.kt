@@ -13,6 +13,7 @@ private fun erMyndig(fodselsdato: LocalDate) : Boolean {
 }
 
 data class Soker (
+    val aktoerId: String,
     val fodselsdato: LocalDate,
     val fodselsnummer: String,
     val fornavn: String? = null,

@@ -13,13 +13,16 @@ import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
-private val logger: Logger = LoggerFactory.getLogger("nav.SoknadService")
 
 class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
                     private val sokerService: SokerService,
                     private val personService: PersonService,
                     private val aktoerService: AktoerService,
                     private val vedleggService: VedleggService) {
+
+    private companion object {
+        private val logger: Logger = LoggerFactory.getLogger(SoknadService::class.java)
+    }
 
     suspend fun registrer(
         soknad: Soknad,
@@ -67,7 +70,8 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             grad = soknad.grad,
             harMedsoker = soknad.harMedsoker!!,
             harBekreftetOpplysninger = soknad.harBekreftetOpplysninger,
-            harForstattRettigheterOgPlikter = soknad.harForstattRettigheterOgPlikter
+            harForstattRettigheterOgPlikter = soknad.harForstattRettigheterOgPlikter,
+            dagerPerUkeBorteFraJobb = soknad.dagerPerUkeBorteFraJobb
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(

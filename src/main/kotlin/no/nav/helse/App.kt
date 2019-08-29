@@ -142,12 +142,12 @@ fun Application.pleiepengesoknadapi() {
         )
 
         val personService = PersonService(
-            personGateway = personGateway,
-            aktoerService = aktoerService
+            personGateway = personGateway
         )
 
         val sokerService = SokerService(
-            personService = personService
+            personService = personService,
+            aktoerService = aktoerService
         )
 
         val barnGateway = BarnGateway(

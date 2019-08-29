@@ -3,7 +3,6 @@ package no.nav.helse.soknad
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
-import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -91,8 +90,9 @@ class FraOgMedTilOgMedValidator {
 }
 
 internal fun Soknad.validate() {
+    val gradSatt = grad != null
     val violations = barn.validate(relasjonTilBarnet)
-    violations.addAll(arbeidsgivere.organisasjoner.validate())
+    violations.addAll(arbeidsgivere.organisasjoner.validate(gradSatt))
 
     // Datoer
     violations.addAll(FraOgMedTilOgMedValidator.validate(
@@ -128,15 +128,16 @@ internal fun Soknad.validate() {
     }
 
     // Grad
-    if (grad < MIN_GRAD || grad > MAX_GRAD) {
-        violations.add(
-            Violation(
-                parameterName = "grad",
-                parameterType = ParameterType.ENTITY,
-                reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
-                invalidValue = grad
-
-        ))
+    grad?.apply {
+        if (this !in MIN_GRAD..MAX_GRAD) {
+            violations.add(
+                Violation(
+                    parameterName = "grad",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
+                    invalidValue = this
+                ))
+        }
     }
 
     // Booleans (For å forsikre at de er satt og ikke blir default false)
@@ -172,6 +173,39 @@ internal fun Soknad.validate() {
                 invalidValue = false
 
             ))
+    }
+
+    dagerPerUkeBorteFraJobb?.apply {
+        if (this !in 0.5..5.0) {
+            violations.add(
+                Violation(
+                    parameterName = "dager_per_uke_borte_fra_jobb",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Dager borte fra jobb må være mellom 0 og 5.",
+                    invalidValue = this
+                ))
+        }
+    }
+    val medSoker = harMedsoker != null && harMedsoker
+
+    if (!gradSatt) {
+        if (medSoker && dagerPerUkeBorteFraJobb == null) {
+            violations.add(
+                Violation(
+                    parameterName = "dager_per_uke_borte_fra_jobb",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Dager borte fra jobb må settes om det er en medsøker.",
+                    invalidValue = dagerPerUkeBorteFraJobb
+            ))
+        } else if (!medSoker && dagerPerUkeBorteFraJobb != null) {
+            violations.add(
+                Violation(
+                    parameterName = "dager_per_uke_borte_fra_jobb",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Dager borte fra jobb skal bare settes om det er en medsøker.",
+                    invalidValue = dagerPerUkeBorteFraJobb
+                ))
+        }
     }
 
     // Ser om det er noen valideringsfeil
@@ -247,7 +281,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     return violations
 }
 
-internal fun List<OrganisasjonDetaljer>.validate() : MutableSet<Violation> {
+internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean) : MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     mapIndexed { index, organisasjon ->
@@ -272,47 +306,28 @@ internal fun List<OrganisasjonDetaljer>.validate() : MutableSet<Violation> {
             )
         }
 
-        if (organisasjon.normalArbeidsuke != null && organisasjon.redusertArbeidsuke == null) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsuke",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Må oppgis når 'normal_arbeidsuke' er oppgitt.",
-                    invalidValue = organisasjon.redusertArbeidsuke
-                )
-            )
-        }
-        if (organisasjon.normalArbeidsuke == null && organisasjon.redusertArbeidsuke != null) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].normal_arbeidsuke",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Må oppgis når 'redusert_arbeidsuke' er oppgitt.",
-                    invalidValue = organisasjon.normalArbeidsuke
-                )
-            )
-        }
-        if (organisasjon.normalArbeidsuke != null && organisasjon.redusertArbeidsuke != null) {
-            if (organisasjon.normalArbeidsuke.isNegative || organisasjon.normalArbeidsuke.isZero) {
+        organisasjon.redusertArbeidsprosent?.apply {
+            if (this !in 0.0..100.0) {
                 violations.add(
                     Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].normal_arbeidsuke",
+                        parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
                         parameterType = ParameterType.ENTITY,
-                        reason = "Må være en positiv varighet.",
-                        invalidValue = organisasjon.normalArbeidsuke
+                        reason = "Den reduserte arbeidsprosenten må være mellom 0 og 100.",
+                        invalidValue = this
                     )
                 )
             }
-            if (organisasjon.redusertArbeidsuke.isNegative || organisasjon.redusertArbeidsuke.erLengreEnn(organisasjon.normalArbeidsuke)) {
-                violations.add(
-                    Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsuke",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Må være 0 eller en positiv varighet, og en kortere enn 'normal_arbeidsuke'",
-                        invalidValue = organisasjon.redusertArbeidsuke
-                    )
+        }
+
+        if (!gradSatt && organisasjon.redusertArbeidsprosent == null) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Den reduserte arbeidsprosenten må være satt når det ikke er satt grad i søknaden.",
+                    invalidValue = null
                 )
-            }
+            )
         }
     }
     return violations
@@ -349,4 +364,3 @@ private fun List<Vedlegg>.validerTotalStorresle() {
 }
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
-private fun Duration.erLengreEnn(duration: Duration) = compareTo(duration) > 0

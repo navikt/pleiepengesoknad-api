@@ -342,7 +342,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad med detailer om arbeidsuker per arbeidsgiver`() {
+    fun `Sende soknad uten grad`() {
         wireMockServer.stubSparkelGetPerson()
         wireMockServer.stubSparkelGetBarn()
         val cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -359,7 +359,7 @@ class ApplicationTest {
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl,
-                medArbeidsukeDetaljer = true
+                utenGrad = true
             )
         )
     }

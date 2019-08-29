@@ -16,8 +16,9 @@ data class KomplettSoknad(
     val vedlegg: List<Vedlegg>,
     val medlemskap : Medlemskap,
     val relasjonTilBarnet : String,
-    val grad : Int,
+    val grad : Int?,
     val harMedsoker : Boolean,
     val harForstattRettigheterOgPlikter : Boolean,
-    val harBekreftetOpplysninger : Boolean
+    val harBekreftetOpplysninger : Boolean,
+    val dagerPerUkeBorteFraJobb: Double?
 )
