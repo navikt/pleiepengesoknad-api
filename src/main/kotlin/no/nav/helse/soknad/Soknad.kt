@@ -20,7 +20,8 @@ data class Soknad (
     val harForstattRettigheterOgPlikter : Boolean,
     val harBekreftetOpplysninger : Boolean,
     val grad : Int? = null,
-    val dagerPerUkeBorteFraJobb: Double? = null
+    val dagerPerUkeBorteFraJobb: Double? = null,
+    val tilsynordning: Tilsynsordning?
 )
 data class ArbeidsgiverDetaljer(
     val organisasjoner : List<OrganisasjonDetaljer>
@@ -44,4 +45,12 @@ data class OrganisasjonDetaljer (
     val navn: String? = null,
     val organisasjonsnummer: String,
     val redusertArbeidsprosent: Double? = null
+)
+
+data class Tilsynsordning(
+    val mandag: Duration?,
+    val tirsdag: Duration?,
+    val onsdag: Duration?,
+    val torsdag: Duration?,
+    val fredag: Duration?
 )

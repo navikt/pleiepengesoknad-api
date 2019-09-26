@@ -93,6 +93,9 @@ internal fun Soknad.validate() {
     val gradSatt = grad != null
     val violations = barn.validate(relasjonTilBarnet)
     violations.addAll(arbeidsgivere.organisasjoner.validate(gradSatt))
+    tilsynordning?.apply {
+        violations.addAll(this.validate())
+    }
 
     // Datoer
     violations.addAll(FraOgMedTilOgMedValidator.validate(
@@ -213,6 +216,22 @@ internal fun Soknad.validate() {
         throw Throwblem(ValidationProblemDetails(violations))
     }
 
+}
+
+private fun Tilsynsordning.validate() : MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+
+    if (listOfNotNull(mandag, tirsdag, onsdag, torsdag, fredag).isEmpty()) {
+        violations.add(
+            Violation(
+                parameterName = "tilsynsordning",
+                parameterType = ParameterType.ENTITY,
+                reason = "Minst en dag må være satt.",
+                invalidValue = this
+            )
+        )
+    }
+    return violations
 }
 
 internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Violation> {

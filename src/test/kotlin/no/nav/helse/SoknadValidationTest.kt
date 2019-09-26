@@ -65,6 +65,7 @@ class SoknadValidationTest {
         harBekreftetOpplysninger = true,
         harForstattRettigheterOgPlikter = true,
         dagerPerUkeBorteFraJobb =dagerPerUkeBorteFraJobb,
-        grad = grad
+        grad = grad,
+        tilsynordning = null
     )
 }
