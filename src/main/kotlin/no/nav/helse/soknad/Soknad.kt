@@ -47,10 +47,24 @@ data class OrganisasjonDetaljer (
     val redusertArbeidsprosent: Double? = null
 )
 
-data class Tilsynsordning(
+enum class TilsynsordningSvar{ja, nei, vet_ikke}
+enum class TilsynsordningVetIkkeSvar{er_sporadisk, er_ikke_laget_en_plan, annet}
+
+data class TilsynsordningJa(
     val mandag: Duration?,
     val tirsdag: Duration?,
     val onsdag: Duration?,
     val torsdag: Duration?,
-    val fredag: Duration?
+    val fredag: Duration?,
+    val tilleggsinformasjon: String? = null
+)
+data class TilsynsordningVetIkke(
+    val svar: TilsynsordningVetIkkeSvar,
+    val annet: String? = null
+)
+
+data class Tilsynsordning(
+    val svar: TilsynsordningSvar,
+    val ja: TilsynsordningJa? = null,
+    val vetIkke: TilsynsordningVetIkke? = null
 )
