@@ -24,6 +24,7 @@ POST @ /soknad -> 202 Response
 - grad er valgfri. Om satt må den være mellom 20 og 100
 - 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
 - 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.5 og 5.0. Om 'grad' ikke er satt og 'har_medsoker' er true må den settes.
+- tilsynsordning er ikke påkrevd, men objektet er satt må minst en av dagene være satt.
 
 ```json
 {
@@ -59,7 +60,14 @@ POST @ /soknad -> 202 Response
 	"har_bekreftet_opplysninger" : true,
 	"har_forstatt_rettigheter_og_plikter": true,
 	"grad": 100,
-	"dager_per_uke_borte_fra_jobb": 4.5
+	"dager_per_uke_borte_fra_jobb": 4.5,
+	"tilsynsordning" : {
+	  "mandag": "PT7H30M",
+	  "tirsdag": null,
+	  "onsdag": "PT7H25M",
+	  "torsdag": "",
+	  "fredag": "PT0S"
+	}
 }
 ```
 

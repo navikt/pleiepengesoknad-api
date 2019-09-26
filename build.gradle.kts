@@ -1,18 +1,18 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val dusseldorfKtorVersion = "1.2.3.b45ba92"
+val dusseldorfKtorVersion = "1.2.4.97e227b"
 val ktorVersion = ext.get("ktorVersion").toString()
 
 val mainClass = "no.nav.helse.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.3.41"
+    kotlin("jvm") version "1.3.50"
     id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
 buildscript {
-    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/b45ba92fbe655e1818374daf6465af5174a72183/gradle/dusseldorf-ktor.gradle.kts")
+    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/97e227bcbb622e7843447470dab8f1d643f66327/gradle/dusseldorf-ktor.gradle.kts")
 }
 
 dependencies {
@@ -30,8 +30,10 @@ dependencies {
     
     // Test
     testCompile ( "no.nav.helse:dusseldorf-ktor-test-support:$dusseldorfKtorVersion")
+    testCompile ("io.ktor:ktor-client-cio:1.2.3")
     testCompile ("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
+        exclude(group = "io.ktor", module = "ktor-client-cio")
     }
 
     testCompile ("org.skyscreamer:jsonassert:1.5.0")
@@ -75,5 +77,5 @@ tasks.withType<ShadowJar> {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "5.6"
+    gradleVersion = "5.6.2"
 }
