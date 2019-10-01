@@ -68,3 +68,13 @@ data class Tilsynsordning(
     val ja: TilsynsordningJa? = null,
     val vetIkke: TilsynsordningVetIkke? = null
 )
+
+data class Nattevaak(
+    val harNattevaak: Boolean? = null,
+    val tilleggsinformasjon: String?
+)
+
+data class Beredskap(
+    val iBeredskap: Boolean? = null,
+    val tilleggsinformasjon: String?
+)
