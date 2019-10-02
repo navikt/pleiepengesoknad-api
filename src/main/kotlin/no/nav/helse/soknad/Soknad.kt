@@ -77,6 +77,7 @@ data class Nattevaak(
 )
 
 data class Beredskap(
-    val iBeredskap: Boolean? = null,
+    @JsonProperty("i_beredskap")
+    val beredskap: Boolean? = null,
     val tilleggsinformasjon: String?
 )

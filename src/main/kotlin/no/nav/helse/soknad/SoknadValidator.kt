@@ -213,7 +213,7 @@ internal fun Soknad.validate() {
     }
 
     beredkap?.apply {
-        if (iBeredskap == null) booleanIkkeSatt("beredskap.i_beredskap")
+        if (beredskap == null) booleanIkkeSatt("beredskap.i_beredskap")
         tilleggsinformasjon?.apply {
             if (length > MAX_FRITEKST_TEGN) {
                 violations.add(

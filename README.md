@@ -80,7 +80,7 @@ POST @ /soknad -> 202 Response
 		"tilleggsinformasjon": "Må sitte utenfor barnehagen."
 	},
 	"nattevaak": {
-		"i_nattevaak": true,
+		"har_nattevaak": true,
 		"tilleggsinformasjon": "Må sove om dagen."
 	}
 }
