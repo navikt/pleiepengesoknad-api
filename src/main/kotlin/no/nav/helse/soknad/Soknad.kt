@@ -21,7 +21,9 @@ data class Soknad (
     val harBekreftetOpplysninger : Boolean,
     val grad : Int? = null,
     val dagerPerUkeBorteFraJobb: Double? = null,
-    val tilsynordning: Tilsynsordning?
+    val tilsynordning: Tilsynsordning?,
+    val nattevaak: Nattevaak? = null,
+    val beredkap: Beredskap? = null
 )
 data class ArbeidsgiverDetaljer(
     val organisasjoner : List<OrganisasjonDetaljer>

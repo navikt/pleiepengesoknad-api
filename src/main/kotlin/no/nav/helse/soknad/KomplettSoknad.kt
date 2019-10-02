@@ -21,5 +21,7 @@ data class KomplettSoknad(
     val harForstattRettigheterOgPlikter : Boolean,
     val harBekreftetOpplysninger : Boolean,
     val dagerPerUkeBorteFraJobb: Double?,
-    val tilsynsordning: Tilsynsordning?
+    val tilsynsordning: Tilsynsordning?,
+    val nattevaak: Nattevaak?,
+    val beredskap: Beredskap?
 )

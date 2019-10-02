@@ -10,7 +10,7 @@ private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachments-too-large", status = 413, detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB.")
 private const val MIN_GRAD = 20
 private const val MAX_GRAD = 100
-private const val MAX_FRITEKST_TEGN = 140
+private const val MAX_FRITEKST_TEGN = 1000
 
 class FraOgMedTilOgMedValidator {
     companion object {
@@ -209,6 +209,38 @@ internal fun Soknad.validate() {
                     reason = "Dager borte fra jobb skal bare settes om det er en medsøker.",
                     invalidValue = dagerPerUkeBorteFraJobb
                 ))
+        }
+    }
+
+    beredkap?.apply {
+        if (iBeredskap == null) booleanIkkeSatt("beredskap.i_beredskap")
+        tilleggsinformasjon?.apply {
+            if (length > MAX_FRITEKST_TEGN) {
+                violations.add(
+                    Violation(
+                        parameterName = "beredskap.tilleggsinformasjon",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
+                        invalidValue = this
+                    )
+                )
+            }
+        }
+    }
+
+    nattevaak?.apply {
+        if (harNattevaak == null) booleanIkkeSatt("nattevaak.har_nattevaak")
+        tilleggsinformasjon?.apply {
+            if (length > MAX_FRITEKST_TEGN) {
+                violations.add(
+                    Violation(
+                        parameterName = "nattevaak.tilleggsinformasjon",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
+                        invalidValue = this
+                    )
+                )
+            }
         }
     }
 

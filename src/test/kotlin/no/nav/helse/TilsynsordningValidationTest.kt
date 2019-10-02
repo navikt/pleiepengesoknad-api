@@ -18,6 +18,14 @@ class TilsynsordningValidationTest {
             For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
             For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
             For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
+            For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
+            For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
+            For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
+            For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
+            For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
+            For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
+            For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
+            For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst,
             For Lang fritekst, For Lang fritekst, For Lang fritekst, For Lang fritekst
         """.trimIndent()
     }

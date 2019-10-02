@@ -25,6 +25,9 @@ POST @ /soknad -> 202 Response
 - 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
 - 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.5 og 5.0. Om 'grad' ikke er satt og 'har_medsoker' er true må den settes.
 - tilsynsordning er ikke påkrevd, se eget avsnitt under om det er satt.
+- beredskap er ikke påkrevd, men om det er satt må 'i_beredskap' være satt og 'tilleggsinformasjon' være maks 1000 tegn om den er satt.
+- nattevaak er ikke påkrevd, men om det er satt må 'har_nattevaak' være satt og 'tilleggsinformasjon' være maks 1000 tegn om den er satt.
+
 
 ```json
 {
@@ -71,6 +74,14 @@ POST @ /soknad -> 202 Response
 			"fredag": "PT0S",
 			"tilleggsinformasjon": "Unntatt uke 37. Da er han hjemme hele tiden."
 		}
+	},
+	"beredskap": {
+		"i_beredskap": true,
+		"tilleggsinformasjon": "Må sitte utenfor barnehagen."
+	},
+	"nattevaak": {
+		"i_nattevaak": true,
+		"tilleggsinformasjon": "Må sove om dagen."
 	}
 }
 ```
