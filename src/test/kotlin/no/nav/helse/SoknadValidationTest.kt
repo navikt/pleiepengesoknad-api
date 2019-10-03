@@ -66,6 +66,6 @@ class SoknadValidationTest {
         harForstattRettigheterOgPlikter = true,
         dagerPerUkeBorteFraJobb =dagerPerUkeBorteFraJobb,
         grad = grad,
-        tilsynordning = null
+        tilsynsordning = null
     )
 }

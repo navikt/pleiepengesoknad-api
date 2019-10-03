@@ -72,9 +72,9 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             harBekreftetOpplysninger = soknad.harBekreftetOpplysninger,
             harForstattRettigheterOgPlikter = soknad.harForstattRettigheterOgPlikter,
             dagerPerUkeBorteFraJobb = soknad.dagerPerUkeBorteFraJobb,
-            tilsynsordning = soknad.tilsynordning,
+            tilsynsordning = soknad.tilsynsordning,
             nattevaak = soknad.nattevaak,
-            beredskap = soknad.beredkap
+            beredskap = soknad.beredskap
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(

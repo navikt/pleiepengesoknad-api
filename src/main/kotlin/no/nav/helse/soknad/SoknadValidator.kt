@@ -94,7 +94,7 @@ internal fun Soknad.validate() {
     val gradSatt = grad != null
     val violations = barn.validate(relasjonTilBarnet)
     violations.addAll(arbeidsgivere.organisasjoner.validate(gradSatt))
-    tilsynordning?.apply {
+    tilsynsordning?.apply {
         violations.addAll(this.validate())
     }
 
@@ -212,7 +212,7 @@ internal fun Soknad.validate() {
         }
     }
 
-    beredkap?.apply {
+    beredskap?.apply {
         if (beredskap == null) booleanIkkeSatt("beredskap.i_beredskap")
         tilleggsinformasjon?.apply {
             if (length > MAX_FRITEKST_TEGN) {
