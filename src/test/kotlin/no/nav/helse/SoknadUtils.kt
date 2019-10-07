@@ -27,7 +27,7 @@ class SoknadUtils {
                                 "navn": "Bjeffefirmaet ÆÆÅ"
                                 ${ if (utenGrad) 
                                 """
-                                    , "redusert_arbeidsprosent": 50
+                                    , "skal_jobbe_prosent": 50
                                 """.trimIndent() 
                                 else ""}
                             }

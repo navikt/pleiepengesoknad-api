@@ -46,7 +46,7 @@ data class BarnDetaljer(
 data class OrganisasjonDetaljer (
     val navn: String? = null,
     val organisasjonsnummer: String,
-    val redusertArbeidsprosent: Double? = null
+    val skalJobbeProsent: Double? = null
 )
 
 enum class TilsynsordningSvar{ja, nei, vet_ikke}

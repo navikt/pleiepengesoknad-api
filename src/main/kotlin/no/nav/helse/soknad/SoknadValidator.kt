@@ -432,25 +432,25 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean) : MutableSet
             )
         }
 
-        organisasjon.redusertArbeidsprosent?.apply {
+        organisasjon.skalJobbeProsent?.apply {
             if (this !in 0.0..100.0) {
                 violations.add(
                     Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
+                        parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
                         parameterType = ParameterType.ENTITY,
-                        reason = "Den reduserte arbeidsprosenten må være mellom 0 og 100.",
+                        reason = "Skal jobbe prosent må være mellom 0 og 100.",
                         invalidValue = this
                     )
                 )
             }
         }
 
-        if (!gradSatt && organisasjon.redusertArbeidsprosent == null) {
+        if (!gradSatt && organisasjon.skalJobbeProsent == null) {
             violations.add(
                 Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
+                    parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Den reduserte arbeidsprosenten må være satt når det ikke er satt grad i søknaden.",
+                    reason = "Skal jobbe prosent må være satt når det ikke er satt grad i søknaden.",
                     invalidValue = null
                 )
             )
