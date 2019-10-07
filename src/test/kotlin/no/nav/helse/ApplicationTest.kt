@@ -367,8 +367,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad ikke myndig`() {
-        wireMockServer.stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie("12125012345")
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
 
@@ -393,7 +392,6 @@ class ApplicationTest {
             )
 
         )
-        wireMockServer.stubSparkelGetPerson()
     }
 
     @Test

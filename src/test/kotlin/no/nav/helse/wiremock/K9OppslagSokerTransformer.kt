@@ -45,16 +45,26 @@ private fun getResponse(personIdent: String): String {
         }
         """.trimIndent()
         } "290990123456" -> {
-        return """
-        {
-            "etternavn": "MORSEN",
-            "fornavn": "MOR",
-            "mellomnavn": "HEISANN",
-            "aktør_id": "12345",
-            "fødselsdato": "1997-05-25"
-        }
-    """.trimIndent()
-        }else -> {
+            return """
+            {
+                "etternavn": "MORSEN",
+                "fornavn": "MOR",
+                "mellomnavn": "HEISANN",
+                "aktør_id": "12345",
+                "fødselsdato": "1997-05-25"
+            }
+        """.trimIndent()
+        } "12125012345" -> {
+            return """
+            {
+                "etternavn": "HANSEN",
+                "fornavn": "UMYNDIG",
+                "mellomnavn": "ANNE",
+                "aktør_id": "54321",
+                "fødselsdato": "2050-12-12"
+            }
+        """.trimIndent()
+        } else -> {
             return """
                 {}
             """.trimIndent()
