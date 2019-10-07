@@ -1,5 +1,6 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpPost
@@ -29,7 +30,7 @@ class PleiepengesoknadMottakGateway(
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(PleiepengesoknadMottakGateway::class.java)
-        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
+        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
     }
 
     private val komplettUrl = Url.buildURL(
