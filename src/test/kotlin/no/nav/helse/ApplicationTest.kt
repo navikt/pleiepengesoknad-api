@@ -20,6 +20,7 @@ import java.time.Duration
 import java.util.*
 
 private const val fnr = "290990123456"
+private const val ikkeMyndigFnr = "12125012345"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
@@ -305,18 +306,17 @@ class ApplicationTest {
 
     @Test
     fun `Hente soeker som ikke er myndig`() {
-        wireMockServer.stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/soker",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(
-                fodselsnummer = fnr,
+                fodselsnummer = ikkeMyndigFnr,
                 fodselsdato = ikkeMyndigDato,
                 myndig = false
-            )
+            ),
+            cookie = getAuthCookie(ikkeMyndigFnr)
         )
-        wireMockServer.stubSparkelGetPerson()
     }
 
     @Test
@@ -367,7 +367,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad ikke myndig`() {
-        val cookie = getAuthCookie("12125012345")
+        val cookie = getAuthCookie(ikkeMyndigFnr)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
 

@@ -57,10 +57,10 @@ private fun getResponse(personIdent: String): String {
         } "12125012345" -> {
             return """
             {
-                "etternavn": "HANSEN",
-                "fornavn": "UMYNDIG",
-                "mellomnavn": "ANNE",
-                "aktør_id": "54321",
+                "etternavn": "MORSEN",
+                "fornavn": "MOR",
+                "mellomnavn": "HEISANN",
+                "aktør_id": "12345",
                 "fødselsdato": "2050-12-12"
             }
         """.trimIndent()
