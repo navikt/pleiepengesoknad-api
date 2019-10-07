@@ -40,9 +40,10 @@ import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.helse.general.auth.*
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
+import no.nav.helse.k9.K9OppslagGateway
+import no.nav.helse.k9.K9OppslagService
 import no.nav.helse.person.PersonGateway
 import no.nav.helse.person.PersonService
-import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.PleiepengesoknadMottakGateway
 import no.nav.helse.soknad.SoknadService
@@ -146,11 +147,6 @@ fun Application.pleiepengesoknadapi() {
             personGateway = personGateway
         )
 
-        val sokerService = SokerService(
-            personService = personService,
-            aktoerService = aktoerService
-        )
-
         val barnGateway = BarnGateway(
             baseUrl = configuration.getSparkelUrl(),
             aktoerService = aktoerService,
@@ -167,15 +163,25 @@ fun Application.pleiepengesoknadapi() {
 
         val pleiepengesoknadMottakGateway = PleiepengesoknadMottakGateway(
             baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
-            accessTokenClient = accessTokenClientResolver.pleiepengesoknaMottak(),
+            accessTokenClient = accessTokenClientResolver.pleiepengesoknadMottak(),
             sendeSoknadTilProsesseringScopes = configuration.getSendSoknadTilProsesseringScopes(),
             apiGatewayApiKey = apiGatewayApiKey
+        )
+
+        val k9OppslagGateway = K9OppslagGateway(
+            baseUrl = configuration.getK9OppslagUrl(),
+            accessTokenClient = accessTokenClientResolver.k9Oppslag(),
+            apiGatewayApiKey = apiGatewayApiKey
+        )
+
+        val k9OppslagService = K9OppslagService(
+            k9OppslagGateway = k9OppslagGateway
         )
 
         authenticate {
 
             sokerApis(
-                sokerService = sokerService
+                k9OppslagService = k9OppslagService
             )
 
             barnApis(
@@ -199,7 +205,7 @@ fun Application.pleiepengesoknadapi() {
                 idTokenProvider = idTokenProvider,
                 soknadService = SoknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
-                    sokerService = sokerService,
+                    k9OppslagService = k9OppslagService,
                     personService = personService,
                     vedleggService = vedleggService,
                     aktoerService = aktoerService

@@ -3,9 +3,9 @@ package no.nav.helse.soknad
 import no.nav.helse.aktoer.*
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
+import no.nav.helse.k9.K9OppslagService
 import no.nav.helse.person.Person
 import no.nav.helse.person.PersonService
-import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
@@ -15,7 +15,7 @@ import java.time.ZonedDateTime
 
 
 class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
-                    private val sokerService: SokerService,
+                    private val k9OppslagService: K9OppslagService,
                     private val personService: PersonService,
                     private val aktoerService: AktoerService,
                     private val vedleggService: VedleggService) {
@@ -31,7 +31,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         callId: CallId
     ) {
         logger.trace("Registrerer søknad. Henter søker")
-        val soker = sokerService.getSoker(norskIdent = norskIdent, callId = callId)
+        val soker = k9OppslagService.getSoker(norskIdent = norskIdent, callId = callId)
 
         logger.trace("Søker hentet. Validerer om søkeren.")
         soker.validate()

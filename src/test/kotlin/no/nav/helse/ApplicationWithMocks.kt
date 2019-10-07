@@ -35,6 +35,7 @@ class ApplicationWithMocks {
                 .stubSparkelGetArbeidsgivere()
                 .stubSparkelGetBarn()
                 .stubSparkelGetPerson()
+                .stubK9OppslagSoker()
 
             val testArgs = TestConfiguration.asMap(
                 port = 8082,

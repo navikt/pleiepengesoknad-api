@@ -45,6 +45,7 @@ class ApplicationTest {
             .stubLeggSoknadTilProsessering()
             .stubPleiepengerDokument()
             .stubSparkelGetArbeidsgivere()
+            .stubK9OppslagSoker()
 
         fun getConfig() : ApplicationConfig {
 
