@@ -16,7 +16,7 @@ private const val pleiepengerDokumentPath = "/pleiepenger-dokument-mock"
 
 internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration {
     it
-      //  .extensions(AktoerRegisterResponseTransformer())
+        .extensions(AktoerRegisterResponseTransformer())
         .extensions(PleiepengerDokumentResponseTransformer())
         .extensions(K9OppslagResponseTransformer())
 }
