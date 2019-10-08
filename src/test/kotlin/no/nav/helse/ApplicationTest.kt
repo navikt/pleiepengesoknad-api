@@ -278,8 +278,8 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Feil ved henting av barn skal resultere en tom liste`() {
-        wireMockServer.stubSparkelGetBarn(simulerFeil = true)
+    fun `Feil ved henting av barn skal returnere tom liste`() {
+        wireMockServer.stubK9OppslagBarn(simulerFeil = true)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
@@ -288,9 +288,10 @@ class ApplicationTest {
             {
                 "barn": []
             }
-            """.trimIndent()
+            """.trimIndent(),
+            cookie = getAuthCookie(fnr)
         )
-        wireMockServer.stubSparkelGetBarn()
+        wireMockServer.stubK9OppslagBarn()
     }
 
     @Test

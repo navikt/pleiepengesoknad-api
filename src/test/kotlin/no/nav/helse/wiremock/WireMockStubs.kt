@@ -57,7 +57,7 @@ internal fun WireMockServer.stubK9OppslagSoker() : WireMockServer {
     return this
 }
 
-internal fun WireMockServer.stubK9OppslagBarn() : WireMockServer {
+internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false) : WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
             .withHeader("x-nav-apiKey", AnythingPattern())
@@ -70,7 +70,7 @@ internal fun WireMockServer.stubK9OppslagBarn() : WireMockServer {
             .willReturn(
                 WireMock.aResponse()
                     .withHeader("Content-Type", "application/json")
-                    .withStatus(200)
+                    .withStatus(if (simulerFeil) 500 else 200)
                     .withTransformers("k9-oppslag-barn")
             )
     )
