@@ -40,8 +40,9 @@ import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.helse.general.auth.*
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
+import no.nav.helse.k9.K9OppslagBarnService
 import no.nav.helse.k9.K9OppslagGateway
-import no.nav.helse.k9.K9OppslagService
+import no.nav.helse.k9.K9OppslagSokerService
 import no.nav.helse.person.PersonGateway
 import no.nav.helse.person.PersonService
 import no.nav.helse.soker.sokerApis
@@ -174,19 +175,19 @@ fun Application.pleiepengesoknadapi() {
             apiGatewayApiKey = apiGatewayApiKey
         )
 
-        val k9OppslagService = K9OppslagService(
+        val k9OppslagSokerService = K9OppslagSokerService(
             k9OppslagGateway = k9OppslagGateway
         )
 
         authenticate {
 
             sokerApis(
-                k9OppslagService = k9OppslagService
+                k9OppslagSokerService = k9OppslagSokerService
             )
 
             barnApis(
-                barnService = BarnService(
-                    barnGateway = barnGateway
+                k9OppslagBarnService = K9OppslagBarnService(
+                    k9OppslagGateway = k9OppslagGateway
                 )
             )
 
@@ -205,7 +206,7 @@ fun Application.pleiepengesoknadapi() {
                 idTokenProvider = idTokenProvider,
                 soknadService = SoknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
-                    k9OppslagService = k9OppslagService,
+                    k9OppslagSokerService = k9OppslagSokerService,
                     personService = personService,
                     vedleggService = vedleggService,
                     aktoerService = aktoerService

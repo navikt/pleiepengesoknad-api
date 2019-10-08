@@ -47,6 +47,7 @@ class ApplicationTest {
             .stubPleiepengerDokument()
             .stubSparkelGetArbeidsgivere()
             .stubK9OppslagSoker()
+            .stubK9OppslagBarn()
 
         fun getConfig() : ApplicationConfig {
 
@@ -236,8 +237,6 @@ class ApplicationTest {
 
     @Test
     fun `Henting av barn`() {
-        wireMockServer.stubSparkelGetPerson()
-        wireMockServer.stubSparkelGetBarn()
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
@@ -258,7 +257,8 @@ class ApplicationTest {
                     "aktoer_id": "1000000000002"
                 }]
             }
-            """.trimIndent()
+            """.trimIndent(),
+            cookie = getAuthCookie(fnr)
         )
     }
 

@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
 
-class K9OppslagSokerTransformer : ResponseTransformer() {
+class K9OppslagBarnTransformer : ResponseTransformer() {
     override fun transform(
         request: Request?,
         response: Response?,
@@ -23,7 +23,7 @@ class K9OppslagSokerTransformer : ResponseTransformer() {
     }
 
     override fun getName(): String {
-        return "k9-oppslag-soker"
+        return "k9-oppslag-barn"
     }
 
     override fun applyGlobally(): Boolean {
@@ -34,36 +34,24 @@ class K9OppslagSokerTransformer : ResponseTransformer() {
 
 private fun getResponse(personIdent: String): String {
     when(personIdent) {
-        "25037139184" -> {
-            return """
-        { 
-            "aktør_id": "23456",
-            "fornavn": "ARNE",
-            "mellomnavn": "BJARNE",
-            "etternavn": "CARLSEN",
-            "fødselsdato": "1990-01-02"
-        }
-        """.trimIndent()
-        } "290990123456" -> {
+        "290990123456" -> {
             return """
             {
-                "etternavn": "MORSEN",
-                "fornavn": "MOR",
-                "mellomnavn": "HEISANN",
-                "aktør_id": "12345",
-                "fødselsdato": "1997-05-25"
+                "barn": [{
+                    "fødselsdato": "2000-08-27",
+                    "fornavn": "BARN",
+                    "mellomnavn": "EN",
+                    "etternavn": "BARNESEN",
+                    "aktør_id": "1000000000001"
+                }, {
+                    "fødselsdato": "2001-04-10",
+                    "fornavn": "BARN",
+                    "mellomnavn": "TO",
+                    "etternavn": "BARNESEN",
+                    "aktør_id": "1000000000002"
+                }]
             }
-        """.trimIndent()
-        } "12125012345" -> {
-            return """
-            {
-                "etternavn": "MORSEN",
-                "fornavn": "MOR",
-                "mellomnavn": "HEISANN",
-                "aktør_id": "12345",
-                "fødselsdato": "2050-12-12"
-            }
-        """.trimIndent()
+            """.trimIndent()
         } else -> {
             return """
                 {}

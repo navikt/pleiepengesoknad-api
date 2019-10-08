@@ -4,7 +4,7 @@ import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
 import no.nav.helse.soker.Soker
 
-class K9OppslagService (
+class K9OppslagSokerService (
     private val k9OppslagGateway: K9OppslagGateway
 ) {
     suspend fun getSoker(
@@ -13,7 +13,7 @@ class K9OppslagService (
     ): Soker {
         val sokerOppslagRespons: SokerOppslagRespons = k9OppslagGateway.hentSoker(norskIdent.getValue(), callId)
         return Soker(
-            aktoerId = sokerOppslagRespons.aktør_id,
+            aktoerId = sokerOppslagRespons.aktør_id!!,
             fodselsnummer = norskIdent.getValue(), // TODO: Bør skifte til "alternativ_id" ?
             fodselsdato = sokerOppslagRespons.fødselsdato,
             fornavn = sokerOppslagRespons.fornavn,

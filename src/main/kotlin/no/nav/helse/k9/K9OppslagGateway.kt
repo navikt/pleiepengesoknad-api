@@ -9,8 +9,6 @@ import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
-import no.nav.helse.aktoer.AktoerId
-import no.nav.helse.aktoer.AktoerRegisterIdentResponse
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
@@ -178,4 +176,35 @@ class K9OppslagGateway(
         return oppslagRespons
     }
 
+    suspend fun hentBarn(
+        personIdent: String,
+        callId : CallId
+    ) : List<Barn> {
+        val httpRequest = generateHttpRequest(barnUrl, personIdent, callId)
+
+        val oppslagRespons = Retry.retry(
+            operation = HENTE_BARN_OPERATION,
+            initialDelay = Duration.ofMillis(200),
+            factor = 2.0,
+            logger = logger
+        ) {
+            val (request, _, result) = Operation.monitored(
+                app = "pleiepengesoknad-api",
+                operation = HENTE_BARN_OPERATION,
+                resultResolver = { 200 == it.second.statusCode }
+            ) { httpRequest.awaitStringResponseResult() }
+
+            result.fold(
+                { success -> objectMapper.readValue<BarnOppslagResponse>(success)},
+                { error ->
+                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                    logger.error(error.toString())
+                    throw IllegalStateException("Feil ved henting av informasjon om søkers barn")
+                }
+            )
+        }
+        return oppslagRespons.barn
+    }
+
+    data class BarnOppslagResponse(val barn: List<Barn>)
 }
