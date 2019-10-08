@@ -13,7 +13,7 @@ class K9OppslagSokerService (
     ): Soker {
         val sokerOppslagRespons: SokerOppslagRespons = k9OppslagGateway.hentSoker(norskIdent.getValue(), callId)
         return Soker(
-            aktoerId = sokerOppslagRespons.aktør_id!!,
+            aktoerId = sokerOppslagRespons.aktør_id,
             fodselsnummer = norskIdent.getValue(), // TODO: Bør skifte til "alternativ_id" ?
             fodselsdato = sokerOppslagRespons.fødselsdato,
             fornavn = sokerOppslagRespons.fornavn,
