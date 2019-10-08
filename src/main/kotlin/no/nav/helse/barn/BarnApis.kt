@@ -23,7 +23,7 @@ fun Route.barnApis(
         call.respond(
             BarnResponse(
                 k9OppslagBarnService.hentNaaverendeBarn(
-                    norskIdent = call.getNorskIdent(),
+                    ident = call.getNorskIdent().getValue(),
                     callId = call.getCallId()
                 ).map { it.tilDto() }
             )

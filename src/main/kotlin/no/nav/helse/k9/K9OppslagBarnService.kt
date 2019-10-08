@@ -21,12 +21,12 @@ class K9OppslagBarnService(
     }
 
     internal suspend fun hentNaaverendeBarn(
-        norskIdent: NorskIdent,
+        ident: String,
         callId: CallId
     ) =
         try {
             k9OppslagGateway.hentBarn(
-                personIdent = norskIdent.getValue(),
+                personIdent = ident,
                 callId = callId
             )
         } catch (cause: Throwable) {

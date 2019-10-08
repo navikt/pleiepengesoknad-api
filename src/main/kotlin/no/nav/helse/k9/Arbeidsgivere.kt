@@ -1,5 +1,5 @@
 package no.nav.helse.k9
 
-class Arbeidsgivere (
+data class Arbeidsgivere (
     val organisasjoner: List<Organisasjon>
 )

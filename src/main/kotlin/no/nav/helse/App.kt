@@ -40,6 +40,7 @@ import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.helse.general.auth.*
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
+import no.nav.helse.k9.K9OppslagArbeidsgivereService
 import no.nav.helse.k9.K9OppslagBarnService
 import no.nav.helse.k9.K9OppslagGateway
 import no.nav.helse.k9.K9OppslagSokerService
@@ -188,8 +189,8 @@ fun Application.pleiepengesoknadapi() {
             )
 
             arbeidsgiverApis(
-                service = ArbeidsgiverService(
-                    gateway = arbeidsgiverGateway
+                service = K9OppslagArbeidsgivereService(
+                    k9OppslagGateway = k9OppslagGateway
                 )
             )
 

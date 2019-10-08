@@ -1,6 +1,5 @@
 package no.nav.helse.k9
 
-import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
 import no.nav.helse.soker.Soker
 

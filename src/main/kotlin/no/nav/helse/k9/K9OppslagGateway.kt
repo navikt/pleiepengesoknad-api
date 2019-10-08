@@ -24,6 +24,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
 import java.time.Duration
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class K9OppslagGateway(
     private val baseUrl: URI,
@@ -46,26 +48,6 @@ class K9OppslagGateway(
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
-    private val sokerUrl = Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf("meg"),
-        queryParameters = mapOf(
-            Pair("a", listOf("aktør_id", "fornavn", "mellomnavn", "etternavn", "fødselsdato"))
-        )
-    ).toString()
-
-    private val barnUrl = Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf("meg"),
-        queryParameters = mapOf(
-            Pair("a", listOf("barn[].aktør_id",
-                "barn[].fornavn",
-                "barn[].mellomnavn",
-                "barn[].etternavn",
-                "barn[].fødselsdato")
-            )
-        )
-    ).toString()
 
     override suspend fun check(): Result {
         return try {
@@ -149,6 +131,13 @@ class K9OppslagGateway(
         personIdent: String,
         callId : CallId
     ) : SokerOppslagRespons {
+        val sokerUrl = Url.buildURL(
+            baseUrl = baseUrl,
+            pathParts = listOf("meg"),
+            queryParameters = mapOf(
+                Pair("a", listOf("aktør_id", "fornavn", "mellomnavn", "etternavn", "fødselsdato"))
+            )
+        ).toString()
         val httpRequest = generateHttpRequest(sokerUrl, personIdent, callId)
 
         val oppslagRespons = Retry.retry(
@@ -180,6 +169,19 @@ class K9OppslagGateway(
         personIdent: String,
         callId : CallId
     ) : List<Barn> {
+        val barnUrl = Url.buildURL(
+            baseUrl = baseUrl,
+            pathParts = listOf("meg"),
+            queryParameters = mapOf(
+                Pair("a", listOf("barn[].aktør_id",
+                    "barn[].fornavn",
+                    "barn[].mellomnavn",
+                    "barn[].etternavn",
+                    "barn[].fødselsdato")
+                )
+            )
+        ).toString()
+
         val httpRequest = generateHttpRequest(barnUrl, personIdent, callId)
 
         val oppslagRespons = Retry.retry(
@@ -204,6 +206,50 @@ class K9OppslagGateway(
             )
         }
         return oppslagRespons.barn
+    }
+
+    internal suspend fun hentArbeidsgivere(
+        personIdent: String,
+        callId: CallId,
+        fraOgMed: LocalDate,
+        tilOgMed: LocalDate
+    ) : List<Organisasjon> {
+        val arbeidsgivereUrl = Url.buildURL(
+            baseUrl = baseUrl,
+            pathParts = listOf("meg"),
+            queryParameters = mapOf(
+                Pair("a", listOf( "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
+                    "arbeidsgivere[].organisasjoner[].navn")),
+                Pair("fom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed))),
+                Pair("tom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(tilOgMed)))
+            )
+        ).toString()
+
+        val httpRequest = generateHttpRequest(arbeidsgivereUrl, personIdent, callId)
+
+        val arbeidsgivere = Retry.retry(
+            operation = HENTE_ARBEIDSGIVERE_OPERATION,
+            initialDelay = Duration.ofMillis(200),
+            factor = 2.0,
+            logger = logger
+        ) {
+            val (request, _, result) = Operation.monitored(
+                app = "pleiepengesoknad-api",
+                operation = HENTE_ARBEIDSGIVERE_OPERATION,
+                resultResolver = { 200 == it.second.statusCode }
+            ) { httpRequest.awaitStringResponseResult() }
+
+            result.fold(
+                { success -> objectMapper.readValue<Arbeidsgivere>(success)},
+                { error ->
+                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                    logger.error(error.toString())
+                    throw IllegalStateException("Feil ved henting av arbeidsgiver.")
+                }
+            )
+        }
+
+        return arbeidsgivere.organisasjoner
     }
 
     data class BarnOppslagResponse(val barn: List<Barn>)

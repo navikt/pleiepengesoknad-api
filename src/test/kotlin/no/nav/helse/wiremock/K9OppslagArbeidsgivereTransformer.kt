@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
 import no.nav.helse.general.rest.NavHeaders
 
-class K9OppslagBarnTransformer : ResponseTransformer() {
+class K9OppslagArbeidsgivereTransformer : ResponseTransformer() {
     override fun transform(
         request: Request?,
         response: Response?,
@@ -24,7 +24,7 @@ class K9OppslagBarnTransformer : ResponseTransformer() {
     }
 
     override fun getName(): String {
-        return "k9-oppslag-barn"
+        return "k9-oppslag-arbeidsgivere"
     }
 
     override fun applyGlobally(): Boolean {
@@ -35,30 +35,24 @@ class K9OppslagBarnTransformer : ResponseTransformer() {
 
 private fun getResponse(personIdent: String): String {
     when(personIdent) {
-        "290990123456" -> {
-            return """
+        "02119970078" -> {
+        return """
             {
-                "barn": [{
-                    "fødselsdato": "2000-08-27",
-                    "fornavn": "BARN",
-                    "mellomnavn": "EN",
-                    "etternavn": "BARNESEN",
-                    "aktør_id": "1000000000001"
+                "organisasjoner": [{
+                    "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
+                    "organisasjonsnummer": "913548221"
                 }, {
-                    "fødselsdato": "2001-04-10",
-                    "fornavn": "BARN",
-                    "mellomnavn": "TO",
-                    "etternavn": "BARNESEN",
-                    "aktør_id": "1000000000002"
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564"
                 }]
             }
-            """.trimIndent()
+        """.trimIndent()
         } else -> {
-            return """
+        return """
                 {
-                    "barn": []
+                    "arbeidsgivere": []
                 }
             """.trimIndent()
-        }
+    }
     }
 }
