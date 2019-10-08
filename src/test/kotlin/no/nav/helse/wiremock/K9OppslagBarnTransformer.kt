@@ -54,7 +54,9 @@ private fun getResponse(personIdent: String): String {
             """.trimIndent()
         } else -> {
             return """
-                {}
+                {
+                    "barn": []
+                }
             """.trimIndent()
         }
     }

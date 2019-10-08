@@ -264,7 +264,6 @@ class ApplicationTest {
 
     @Test
     fun `Har ingen registrerte barn`() {
-        wireMockServer.stubSparkelGetBarn(harBarn = false)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
@@ -273,9 +272,9 @@ class ApplicationTest {
             {
                 "barn": []
             }
-            """.trimIndent()
+            """.trimIndent(),
+            cookie = getAuthCookie("07077712345")
         )
-        wireMockServer.stubSparkelGetBarn(harBarn = true)
     }
 
     @Test
