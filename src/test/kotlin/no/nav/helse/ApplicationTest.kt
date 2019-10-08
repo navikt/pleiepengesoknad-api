@@ -296,6 +296,21 @@ class ApplicationTest {
         wireMockServer.stubK9OppslagBarn()
     }
 
+    fun expectedGetSokerJson(
+        fodselsnummer: String,
+        fodselsdato: String = "1997-05-25",
+        myndig : Boolean = true) = """
+    {
+        "etternavn": "MORSEN",
+        "fornavn": "MOR",
+        "mellomnavn": "HEISANN",
+        "fodselsnummer": "$fodselsnummer",
+        "aktoer_id": "12345",
+        "fodselsdato": "$fodselsdato",
+        "myndig": $myndig
+    }
+""".trimIndent()
+
     @Test
     fun `Hente soeker`() {
         requestAndAssert(

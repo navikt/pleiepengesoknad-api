@@ -32,9 +32,6 @@ class ApplicationWithMocks {
                 .stubAktoerRegisterGetAktoerId()
                 .stubLeggSoknadTilProsessering()
                 .stubPleiepengerDokument()
-                .stubSparkelGetArbeidsgivere()
-                .stubSparkelGetBarn()
-                .stubSparkelGetPerson()
                 .stubK9OppslagSoker()
 
             val testArgs = TestConfiguration.asMap(
