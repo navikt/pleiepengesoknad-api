@@ -28,7 +28,7 @@ import java.time.Duration
  */
 
 class AktoerGateway(
-    baseUrl: URI,
+    private val baseUrl: URI,
     private val accessTokenClient: AccessTokenClient,
     private val henteAktoerIdScopes : Set<String> = setOf("openid"),
     private val apiGatewayApiKey: ApiGatewayApiKey
@@ -41,24 +41,6 @@ class AktoerGateway(
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         }
     }
-
-    private val aktoerIdUrl = Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf("api","v1","identer"),
-        queryParameters = mapOf(
-            Pair("gjeldende", listOf("true")),
-            Pair("identgruppe", listOf("AktoerId"))
-        )
-    ).toString()
-
-    private val fodselsnummerUrl = Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf("api","v1","identer"),
-        queryParameters = mapOf(
-            Pair("gjeldende", listOf("true")),
-            Pair("identgruppe", listOf("NorskIdent"))
-        )
-    ).toString()
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
@@ -135,24 +117,22 @@ class AktoerGateway(
         return aktoerId.value
     }
 
-    suspend fun hentAktoerId(
-        norskIdent: NorskIdent,
-        callId: CallId
-    ) : AktoerId {
-        return AktoerId(get(
-            url = aktoerIdUrl,
-            personIdent = norskIdent.getValue(),
-            callId = callId
-        ))
-    }
-
     suspend fun hentNorskIdent(
-        aktoerId: AktoerId,
+        aktoerId: String,
         callId: CallId
     ) : NorskIdent {
+        val fodselsnummerUrl = Url.buildURL(
+            baseUrl = baseUrl,
+            pathParts = listOf("api","v1","identer"),
+            queryParameters = mapOf(
+                Pair("gjeldende", listOf("true")),
+                Pair("identgruppe", listOf("NorskIdent"))
+            )
+        ).toString()
+
         return get(
             url = fodselsnummerUrl,
-            personIdent = aktoerId.value,
+            personIdent = aktoerId,
             callId = callId
         ).tilNorskIdent()
     }
