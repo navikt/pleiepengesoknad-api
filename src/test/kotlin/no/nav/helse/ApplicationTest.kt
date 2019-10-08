@@ -321,8 +321,6 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad`() {
-        wireMockServer.stubSparkelGetPerson()
-        wireMockServer.stubSparkelGetBarn()
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -344,8 +342,6 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad uten grad`() {
-        wireMockServer.stubSparkelGetPerson()
-        wireMockServer.stubSparkelGetBarn()
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)

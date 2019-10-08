@@ -21,3 +21,4 @@ data class Soker (
     val etternavn: String? = null,
     val myndig : Boolean = erMyndig(fodselsdato)
 )
+

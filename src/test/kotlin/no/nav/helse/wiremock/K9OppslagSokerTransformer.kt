@@ -64,6 +64,16 @@ private fun getResponse(personIdent: String): String {
                 "fødselsdato": "2050-12-12"
             }
         """.trimIndent()
+        } "02119970078" -> {
+        return """
+            {
+                "etternavn": "MORSEN",
+                "fornavn": "MOR",
+                "mellomnavn": "HEISANN",
+                "aktør_id": "12345",
+                "fødselsdato": "1999-11-02"
+            }
+        """.trimIndent()
         } else -> {
             return """
                 {}

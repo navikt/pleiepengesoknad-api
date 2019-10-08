@@ -144,10 +144,6 @@ fun Application.pleiepengesoknadapi() {
             apiGatewayApiKey = apiGatewayApiKey
         )
 
-        val personService = PersonService(
-            personGateway = personGateway
-        )
-
         val barnGateway = BarnGateway(
             baseUrl = configuration.getSparkelUrl(),
             aktoerService = aktoerService,
@@ -207,7 +203,6 @@ fun Application.pleiepengesoknadapi() {
                 soknadService = SoknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
                     k9OppslagSokerService = k9OppslagSokerService,
-                    personService = personService,
                     vedleggService = vedleggService,
                     aktoerService = aktoerService
                 )

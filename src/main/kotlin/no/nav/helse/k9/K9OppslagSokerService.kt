@@ -8,13 +8,13 @@ class K9OppslagSokerService (
     private val k9OppslagGateway: K9OppslagGateway
 ) {
     suspend fun getSoker(
-        norskIdent: NorskIdent,
+        ident: String,
         callId: CallId
     ): Soker {
-        val sokerOppslagRespons: SokerOppslagRespons = k9OppslagGateway.hentSoker(norskIdent.getValue(), callId)
+        val sokerOppslagRespons: SokerOppslagRespons = k9OppslagGateway.hentSoker(ident, callId)
         return Soker(
             aktoerId = sokerOppslagRespons.aktør_id,
-            fodselsnummer = norskIdent.getValue(), // TODO: Bør skifte til "alternativ_id" ?
+            fodselsnummer = ident, // TODO: Bør skifte til "alternativ_id" ?
             fodselsdato = sokerOppslagRespons.fødselsdato,
             fornavn = sokerOppslagRespons.fornavn,
             mellomnavn = sokerOppslagRespons.mellomnavn,

@@ -25,7 +25,7 @@ fun Route.sokerApis(
 
     get { _: getSoker ->
         call.respond(k9OppslagSokerService.getSoker(
-            norskIdent = call.getNorskIdent(),
+            ident = call.getNorskIdent().getValue(),
             callId = call.getCallId()
         ))
     }
