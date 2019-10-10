@@ -44,6 +44,7 @@ internal class AccessTokenClientResolver(
     )
 
     internal fun aktoerRegister() = naisStsAccessTokenClient
+    internal fun sparkel() = naisStsAccessTokenClient
     internal fun k9Oppslag() = naisStsAccessTokenClient
     internal fun pleiepengesoknadMottak() = azureV2AccessTokenClient
 }

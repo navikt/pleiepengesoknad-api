@@ -32,7 +32,7 @@ fun Route.arbeidsgiverApis(
             call.respond(
                 Arbeidsgivere(
                     arbeidsgivereService.getArbeidsgivere(
-                        ident = call.getNorskIdent().getValue(),
+                        ident = call.getNorskIdent(),
                         callId = call.getCallId(),
                         fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
                         tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])

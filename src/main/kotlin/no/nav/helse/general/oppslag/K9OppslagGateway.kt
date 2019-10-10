@@ -3,6 +3,7 @@ package no.nav.helse.general.oppslag
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.HttpHeaders
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
@@ -22,7 +23,7 @@ abstract class K9OppslagGateway(
 
     protected fun generateHttpRequest(
         url: String,
-        personIdent: String,
+        ident: NorskIdent,
         callId: CallId
     ): Request {
         val authorizationHeader = cachedAccessTokenClient.getAccessToken(scopes).asAuthoriationHeader()
@@ -32,7 +33,7 @@ abstract class K9OppslagGateway(
                 HttpHeaders.Authorization to authorizationHeader,
                 HttpHeaders.Accept to "application/json",
                 "Nav-Consumer-Id" to "pleiepengesoknad-api",
-                "Nav-Personidenter" to personIdent,
+                "Nav-Personidenter" to ident.getValue(),
                 NavHeaders.CallId to callId.value,
                 apiGatewayApiKey.headerKey to apiGatewayApiKey.value
             )

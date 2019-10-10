@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import io.ktor.http.Url
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.health.Healthy
@@ -49,7 +50,7 @@ class ArbeidsgivereGateway(
     }
 
     internal suspend fun hentArbeidsgivere(
-        personIdent: String,
+        ident: NorskIdent,
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
@@ -65,7 +66,7 @@ class ArbeidsgivereGateway(
             )
         ).toString()
 
-        val httpRequest = generateHttpRequest(arbeidsgivereUrl, personIdent, callId)
+        val httpRequest = generateHttpRequest(arbeidsgivereUrl, ident, callId)
 
         val arbeidsgivere = Retry.retry(
             operation = HENTE_ARBEIDSGIVERE_OPERATION,

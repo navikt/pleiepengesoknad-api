@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import io.ktor.http.Url
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.health.Healthy
@@ -48,7 +49,7 @@ class SokerGateway (
     }
 
     suspend fun hentSoker(
-        personIdent: String,
+        ident: NorskIdent,
         callId : CallId
     ) : SokerOppslagRespons {
         val sokerUrl = Url.buildURL(
@@ -58,7 +59,7 @@ class SokerGateway (
                 Pair("a", listOf("aktør_id", "fornavn", "mellomnavn", "etternavn", "fødselsdato"))
             )
         ).toString()
-        val httpRequest = generateHttpRequest(sokerUrl, personIdent, callId)
+        val httpRequest = generateHttpRequest(sokerUrl, ident, callId)
 
         val oppslagRespons = Retry.retry(
             operation = HENTE_SOKER_OPERATION,

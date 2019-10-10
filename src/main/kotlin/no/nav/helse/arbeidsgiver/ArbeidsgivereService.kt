@@ -1,5 +1,6 @@
 package no.nav.helse.arbeidsgiver
 
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,7 +14,7 @@ class ArbeidsgivereService (
     }
 
     suspend fun getArbeidsgivere(
-        ident: String,
+        ident: NorskIdent,
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate

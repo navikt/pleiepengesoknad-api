@@ -49,6 +49,8 @@ class ApplicationTest {
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
+            .stubSparkelIsReady()
+            .stubSparkelGetPerson()
 
         fun getConfig() : ApplicationConfig {
 
@@ -408,7 +410,7 @@ class ApplicationTest {
         )
     }
 
-    @Test
+    @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
     fun `Sende soknad med AktørID som ID på barnet`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)

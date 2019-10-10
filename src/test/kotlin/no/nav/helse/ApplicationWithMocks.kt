@@ -36,6 +36,7 @@ class ApplicationWithMocks {
                 .stubK9OppslagSoker()
                 .stubK9OppslagBarn()
                 .stubK9OppslagArbeidsgivere()
+                .stubSparkelIsReady()
 
             val testArgs = TestConfiguration.asMap(
                 port = 8082,

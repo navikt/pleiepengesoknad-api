@@ -21,7 +21,7 @@ fun Route.barnApis(
         call.respond(
             BarnResponse(
                 barnService.hentNaaverendeBarn(
-                    ident = call.getNorskIdent().getValue(),
+                    ident = call.getNorskIdent(),
                     callId = call.getCallId()
                 )
             )

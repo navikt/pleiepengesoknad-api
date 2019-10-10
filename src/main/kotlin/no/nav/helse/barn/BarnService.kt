@@ -1,5 +1,6 @@
 package no.nav.helse.barn
 
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -12,11 +13,11 @@ class BarnService(
     }
 
     internal suspend fun hentNaaverendeBarn(
-        ident: String,
+        ident: NorskIdent,
         callId: CallId
     ) = try {
         barnGateway.hentBarn(
-            personIdent = ident,
+            ident = ident,
             callId = callId
             ).map { it.tilBarn() }
         } catch (cause: Throwable) {

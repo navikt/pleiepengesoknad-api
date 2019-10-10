@@ -24,7 +24,7 @@ fun Route.sokerApis(
 
     get { _: getSoker ->
         call.respond(sokerService.getSoker(
-            ident = call.getNorskIdent().getValue(),
+            ident = call.getNorskIdent(),
             callId = call.getCallId()
         ))
     }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import io.ktor.http.Url
+import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.health.Healthy
@@ -48,7 +49,7 @@ class BarnGateway (
     }
 
     suspend fun hentBarn(
-        personIdent: String,
+        ident: NorskIdent,
         callId : CallId
     ) : List<BarnOppslagDTO> {
         val barnUrl = Url.buildURL(
@@ -64,7 +65,7 @@ class BarnGateway (
             )
         ).toString()
 
-        val httpRequest = generateHttpRequest(barnUrl, personIdent, callId)
+        val httpRequest = generateHttpRequest(barnUrl, ident, callId)
 
         val oppslagRespons = Retry.retry(
             operation = HENTE_BARN_OPERATION,

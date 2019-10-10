@@ -14,6 +14,7 @@ object TestConfiguration {
     fun asMap(
         wireMockServer: WireMockServer? = null,
         port : Int = 8080,
+        sparkelUrl: String? = wireMockServer?.getSparkelUrl(),
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
         aktoerRegisterBaseUrl : String? = wireMockServer?.getAktoerRegisterUrl(),
         pleiepengesoknadMottakUrl : String? = wireMockServer?.getPleiepengesoknadMottakUrl(),
@@ -29,6 +30,7 @@ object TestConfiguration {
             Pair("nav.authorization.issuer", "${loginServiceWellKnownJson?.getString("issuer")}"),
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
             Pair("nav.authorization.jwks_uri","${loginServiceWellKnownJson?.getString("jwks_uri")}"),
+            Pair("nav.gateways.sparkel_url","$sparkelUrl"),
             Pair("nav.gateways.k9_oppslag_url","$k9OppslagUrl"),
             Pair("nav.gateways.aktoer_register_url", "$aktoerRegisterBaseUrl"),
             Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
