@@ -23,12 +23,8 @@ fun Route.barnApis(
                 barnService.hentNaaverendeBarn(
                     ident = call.getNorskIdent().getValue(),
                     callId = call.getCallId()
-                ).map { it.tilDto() }
+                )
             )
         )
     }
 }
-
-private data class BarnResponse(
-    val barn: List<BarnDTO>
-)

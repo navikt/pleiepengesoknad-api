@@ -1,7 +1,6 @@
 package no.nav.helse.soker
 
 import no.nav.helse.general.CallId
-import no.nav.helse.general.oppslag.K9OppslagGateway
 
 class SokerService (
     private val sokerGateway: SokerGateway
@@ -9,15 +8,14 @@ class SokerService (
     suspend fun getSoker(
         ident: String,
         callId: CallId
-    ): Soker {
-        val sokerOppslagRespons: SokerOppslagRespons = sokerGateway.hentSoker(ident, callId)
-        return Soker(
-            aktoerId = sokerOppslagRespons.aktør_id,
-            fodselsnummer = ident, // TODO: Bør skifte til "alternativ_id" ?
-            fodselsdato = sokerOppslagRespons.fødselsdato,
-            fornavn = sokerOppslagRespons.fornavn,
-            mellomnavn = sokerOppslagRespons.mellomnavn,
-            etternavn = sokerOppslagRespons.etternavn
-        )
-    }
+    ) = sokerGateway.hentSoker(ident, callId).tilSoker(ident)
+
+    private fun  SokerGateway.SokerOppslagRespons.tilSoker(ident: String) = Soker(
+        aktoerId = aktør_id,
+        fodselsnummer = ident, // TODO: Bør skifte til "alternativ_id" ?
+        fodselsdato = fødselsdato,
+        fornavn = fornavn,
+        mellomnavn = mellomnavn,
+        etternavn = etternavn
+    )
 }

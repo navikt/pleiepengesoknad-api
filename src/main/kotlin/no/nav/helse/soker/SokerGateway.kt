@@ -20,6 +20,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
 import java.time.Duration
+import java.time.LocalDate
 
 class SokerGateway (
     baseUrl: URI,
@@ -82,4 +83,11 @@ class SokerGateway (
         }
         return oppslagRespons
     }
+    data class SokerOppslagRespons(
+        val aktør_id: String,
+        val fornavn: String,
+        val mellomnavn: String?,
+        val etternavn: String,
+        val fødselsdato: LocalDate
+    )
 }

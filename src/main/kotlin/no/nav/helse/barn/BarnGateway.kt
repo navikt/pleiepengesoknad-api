@@ -20,6 +20,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
 import java.time.Duration
+import java.time.LocalDate
 
 class BarnGateway (
     baseUrl: URI,
@@ -49,7 +50,7 @@ class BarnGateway (
     suspend fun hentBarn(
         personIdent: String,
         callId : CallId
-    ) : List<Barn> {
+    ) : List<BarnOppslagDTO> {
         val barnUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
@@ -89,5 +90,13 @@ class BarnGateway (
         return oppslagRespons.barn
     }
 
-    data class BarnOppslagResponse(val barn: List<Barn>)
+    private data class BarnOppslagResponse(val barn: List<BarnOppslagDTO>)
+
+    data class BarnOppslagDTO (
+        val fødselsdato: LocalDate,
+        val fornavn: String,
+        val mellomnavn: String? = null,
+        val etternavn: String,
+        val aktør_id: String
+    )
 }
