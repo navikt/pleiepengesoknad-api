@@ -28,10 +28,14 @@ class ApplicationWithMocks {
                 .build()
                 .stubPleiepengerDokumentHealth()
                 .stubPleiepengesoknadMottakHealth()
+                .stubOppslagHealth()
+                .stubAktoerRegisterHealth()
                 .stubAktoerRegisterGetAktoerId()
                 .stubLeggSoknadTilProsessering()
                 .stubPleiepengerDokument()
                 .stubK9OppslagSoker()
+                .stubK9OppslagBarn()
+                .stubK9OppslagArbeidsgivere()
 
             val testArgs = TestConfiguration.asMap(
                 port = 8082,
