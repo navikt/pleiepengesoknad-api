@@ -6,7 +6,6 @@ import no.nav.helse.general.auth.IdToken
 import no.nav.helse.person.Person
 import no.nav.helse.person.PersonService
 import no.nav.helse.soker.SokerService
-import no.nav.helse.soker.Soker
 import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
