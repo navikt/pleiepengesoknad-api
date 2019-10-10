@@ -4,11 +4,9 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
-import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import io.ktor.http.HttpHeaders
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 
-internal const val sparkelPath = "/helse-reverse-proxy/sparkel-mock"
 internal const val k9OppslagPath = "/k9-oppslag-mock"
 private const val aktoerRegisterServerPath = "/helse-reverse-proxy/aktoer-register-mock"
 private const val pleiepengesoknadMottakPath = "/helse-reverse-proxy/pleiepengesoknad-mottak-mock"
@@ -125,8 +123,8 @@ private fun WireMockServer.stubHealthEndpointThroughZones(
 
 internal fun WireMockServer.stubPleiepengerDokumentHealth() = stubHealthEndpoint("$pleiepengerDokumentPath/health")
 internal fun WireMockServer.stubPleiepengesoknadMottakHealth() = stubHealthEndpointThroughZones("$pleiepengesoknadMottakPath/health")
-internal fun WireMockServer.stubSparkelIsReady() = stubHealthEndpointThroughZones("$sparkelPath/isready")
-
+internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpointThroughZones("$k9OppslagPath/health")
+internal fun WireMockServer.stubAktoerRegisterHealth() = stubHealthEndpointThroughZones("$aktoerRegisterServerPath/health")
 
 internal fun WireMockServer.stubLeggSoknadTilProsessering() : WireMockServer{
     WireMock.stubFor(
@@ -151,8 +149,6 @@ internal fun WireMockServer.stubPleiepengerDokument() : WireMockServer{
     return this
 }
 
-
-internal fun WireMockServer.getSparkelUrl() = baseUrl() + sparkelPath
 internal fun WireMockServer.getK9OppslagUrl() = baseUrl() + k9OppslagPath
 internal fun WireMockServer.getAktoerRegisterUrl() = baseUrl() + aktoerRegisterServerPath
 internal fun WireMockServer.getPleiepengesoknadMottakUrl() = baseUrl() + pleiepengesoknadMottakPath

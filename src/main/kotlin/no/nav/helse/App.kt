@@ -20,6 +20,7 @@ import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.helse.aktoer.AktoerGateway
 import no.nav.helse.aktoer.AktoerService
+import no.nav.helse.arbeidsgiver.ArbeidsgivereGateway
 import no.nav.helse.arbeidsgiver.arbeidsgiverApis
 import no.nav.helse.barn.barnApis
 import no.nav.helse.dusseldorf.ktor.auth.clients
@@ -37,10 +38,11 @@ import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.authorizationStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
-import no.nav.helse.k9.K9OppslagArbeidsgivereService
-import no.nav.helse.k9.K9OppslagBarnService
-import no.nav.helse.k9.K9OppslagGateway
-import no.nav.helse.k9.K9OppslagSokerService
+import no.nav.helse.arbeidsgiver.ArbeidsgivereService
+import no.nav.helse.barn.BarnGateway
+import no.nav.helse.barn.BarnService
+import no.nav.helse.soker.SokerGateway
+import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.PleiepengesoknadMottakGateway
 import no.nav.helse.soknad.SoknadService
@@ -143,31 +145,43 @@ fun Application.pleiepengesoknadapi() {
             apiGatewayApiKey = apiGatewayApiKey
         )
 
-        val k9OppslagGateway = K9OppslagGateway(
+        val sokerGateway = SokerGateway(
             baseUrl = configuration.getK9OppslagUrl(),
             accessTokenClient = accessTokenClientResolver.k9Oppslag(),
             apiGatewayApiKey = apiGatewayApiKey
         )
 
-        val k9OppslagSokerService = K9OppslagSokerService(
-            k9OppslagGateway = k9OppslagGateway
+        val barnGateway = BarnGateway(
+            baseUrl = configuration.getK9OppslagUrl(),
+            accessTokenClient = accessTokenClientResolver.k9Oppslag(),
+            apiGatewayApiKey = apiGatewayApiKey
+        )
+
+        val arbeidsgivereGateway = ArbeidsgivereGateway(
+            baseUrl = configuration.getK9OppslagUrl(),
+            accessTokenClient = accessTokenClientResolver.k9Oppslag(),
+            apiGatewayApiKey = apiGatewayApiKey
+        )
+
+        val sokerService = SokerService(
+            sokerGateway = sokerGateway
         )
 
         authenticate {
 
             sokerApis(
-                k9OppslagSokerService = k9OppslagSokerService
+                sokerService = sokerService
             )
 
             barnApis(
-                k9OppslagBarnService = K9OppslagBarnService(
-                    k9OppslagGateway = k9OppslagGateway
+                barnService = BarnService(
+                    barnGateway = barnGateway
                 )
             )
 
             arbeidsgiverApis(
-                service = K9OppslagArbeidsgivereService(
-                    k9OppslagGateway = k9OppslagGateway
+                arbeidsgivereService = ArbeidsgivereService(
+                    arbeidsgivereGateway = arbeidsgivereGateway
                 )
             )
 
@@ -180,7 +194,7 @@ fun Application.pleiepengesoknadapi() {
                 idTokenProvider = idTokenProvider,
                 soknadService = SoknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
-                    k9OppslagSokerService = k9OppslagSokerService,
+                    sokerService = sokerService,
                     vedleggService = vedleggService,
                     aktoerService = aktoerService
                 )
@@ -190,13 +204,16 @@ fun Application.pleiepengesoknadapi() {
         val healthService = HealthService(
             healthChecks = setOf(
                 aktoerGateway,
-                k9OppslagGateway,
+                arbeidsgivereGateway,
+                barnGateway,
+                sokerGateway,
                 pleiepengesoknadMottakGateway,
                 HttpRequestHealthCheck(mapOf(
                     configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false),
                     Url.buildURL(baseUrl = configuration.getPleiepengerDokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
                     Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value)),
-                    Url.buildURL(baseUrl = configuration.getSparkelUrl(), pathParts = listOf("isready")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
+                    Url.buildURL(baseUrl = configuration.getAktoerRegisterUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value)),
+                    Url.buildURL(baseUrl = configuration.getK9OppslagUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
                 ))
             )
         )

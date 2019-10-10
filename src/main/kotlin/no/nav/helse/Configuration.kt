@@ -30,8 +30,6 @@ data class Configuration(val config : ApplicationConfig) {
         )
     }
 
-    internal fun getSparkelUrl() = URI(config.getRequiredString("nav.gateways.sparkel_url", secret = false))
-
     internal fun getK9OppslagUrl() = URI(config.getRequiredString("nav.gateways.k9_oppslag_url", secret = false))
 
     internal fun getAktoerRegisterUrl() = URI(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))

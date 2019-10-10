@@ -1,6 +1,5 @@
-package no.nav.helse.k9
+package no.nav.helse.barn
 
-import no.nav.helse.aktoer.AktoerId
 import java.time.LocalDate
 
 data class Barn (

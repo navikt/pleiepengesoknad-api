@@ -9,8 +9,6 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.general.auth.getNorskIdent
 import no.nav.helse.general.getCallId
-import no.nav.helse.k9.Arbeidsgivere
-import no.nav.helse.k9.K9OppslagArbeidsgivereService
 import no.nav.helse.soknad.FraOgMedTilOgMedValidator
 import java.time.LocalDate
 
@@ -18,7 +16,7 @@ private const val fraOgMedQueryName = "fra_og_med"
 private const val tilOgMedQueryName = "til_og_med"
 
 fun Route.arbeidsgiverApis(
-    service: K9OppslagArbeidsgivereService
+    arbeidsgivereService: ArbeidsgivereService
 ) {
 
     get("/arbeidsgiver") {
@@ -33,7 +31,7 @@ fun Route.arbeidsgiverApis(
         } else {
             call.respond(
                 Arbeidsgivere(
-                    service.getArbeidsgivere(
+                    arbeidsgivereService.getArbeidsgivere(
                         ident = call.getNorskIdent().getValue(),
                         callId = call.getCallId(),
                         fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),

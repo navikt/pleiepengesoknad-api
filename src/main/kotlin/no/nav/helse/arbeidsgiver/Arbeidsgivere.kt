@@ -1,4 +1,4 @@
-package no.nav.helse.k9
+package no.nav.helse.arbeidsgiver
 
 data class Arbeidsgivere (
     val organisasjoner: List<Organisasjon>

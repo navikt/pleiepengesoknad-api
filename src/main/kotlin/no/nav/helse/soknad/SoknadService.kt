@@ -3,7 +3,7 @@ package no.nav.helse.soknad
 import no.nav.helse.aktoer.*
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
-import no.nav.helse.k9.K9OppslagSokerService
+import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.Soker
 import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.VedleggService
@@ -14,7 +14,7 @@ import java.time.ZonedDateTime
 
 
 class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
-                    private val k9OppslagSokerService: K9OppslagSokerService,
+                    private val sokerService: SokerService,
                     private val aktoerService: AktoerService,
                     private val vedleggService: VedleggService) {
 
@@ -29,7 +29,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         callId: CallId
     ) {
         logger.trace("Registrerer søknad. Henter søker")
-        val soker = k9OppslagSokerService.getSoker(ident = norskIdent.getValue(), callId = callId)
+        val soker = sokerService.getSoker(ident = norskIdent.getValue(), callId = callId)
 
         logger.trace("Søker hentet. Validerer om søkeren.")
         soker.validate()
@@ -112,7 +112,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
 
     private suspend fun barnetsNavn(barn: BarnDetaljer, callId: CallId): String? {
         return barn.navn ?: if (barn.fodselsnummer != null) try {
-            k9OppslagSokerService.getSoker(
+            sokerService.getSoker(
                 ident = barn.fodselsnummer,
                 callId = callId
             ).sammensattNavn()

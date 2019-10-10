@@ -1,16 +1,16 @@
-package no.nav.helse.k9
+package no.nav.helse.soker
 
 import no.nav.helse.general.CallId
-import no.nav.helse.soker.Soker
+import no.nav.helse.general.oppslag.K9OppslagGateway
 
-class K9OppslagSokerService (
-    private val k9OppslagGateway: K9OppslagGateway
+class SokerService (
+    private val sokerGateway: SokerGateway
 ) {
     suspend fun getSoker(
         ident: String,
         callId: CallId
     ): Soker {
-        val sokerOppslagRespons: SokerOppslagRespons = k9OppslagGateway.hentSoker(ident, callId)
+        val sokerOppslagRespons: SokerOppslagRespons = sokerGateway.hentSoker(ident, callId)
         return Soker(
             aktoerId = sokerOppslagRespons.aktør_id,
             fodselsnummer = ident, // TODO: Bør skifte til "alternativ_id" ?

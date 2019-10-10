@@ -49,8 +49,6 @@ spec:
       value: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten
     - name: AKTOER_REGISTER_URL
       value: https://api-gw.oera.no/helse-reverse-proxy/aktoer-register
-    - name: SPARKEL_URL
-      value: https://api-gw.oera.no/helse-reverse-proxy/sparkel
     - name: TOKEN_URL
       value: https://api-gw.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token
     - name: PLEIEPENGESOKNAD_MOTTAK_BASE_URL

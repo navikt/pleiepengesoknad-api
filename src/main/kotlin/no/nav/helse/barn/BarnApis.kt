@@ -8,12 +8,10 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import no.nav.helse.general.auth.getNorskIdent
 import no.nav.helse.general.getCallId
-import no.nav.helse.k9.K9OppslagBarnService
-import no.nav.helse.k9.tilDto
 
 @KtorExperimentalLocationsAPI
 fun Route.barnApis(
-    k9OppslagBarnService: K9OppslagBarnService
+    barnService: BarnService
 ) {
 
     @Location("/barn")
@@ -22,7 +20,7 @@ fun Route.barnApis(
     get { _: getBarn ->
         call.respond(
             BarnResponse(
-                k9OppslagBarnService.hentNaaverendeBarn(
+                barnService.hentNaaverendeBarn(
                     ident = call.getNorskIdent().getValue(),
                     callId = call.getCallId()
                 ).map { it.tilDto() }
@@ -32,5 +30,5 @@ fun Route.barnApis(
 }
 
 private data class BarnResponse(
-    val barn: List<no.nav.helse.k9.BarnDTO>
+    val barn: List<BarnDTO>
 )

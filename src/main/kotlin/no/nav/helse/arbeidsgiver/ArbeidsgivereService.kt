@@ -1,15 +1,15 @@
-package no.nav.helse.k9
+package no.nav.helse.arbeidsgiver
 
 import no.nav.helse.general.CallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
-class K9OppslagArbeidsgivereService (
-    private val k9OppslagGateway: K9OppslagGateway
+class ArbeidsgivereService (
+    private val arbeidsgivereGateway: ArbeidsgivereGateway
 ) {
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger(K9OppslagArbeidsgivereService::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(ArbeidsgivereService::class.java)
     }
 
     suspend fun getArbeidsgivere(
@@ -19,7 +19,7 @@ class K9OppslagArbeidsgivereService (
         tilOgMed: LocalDate
     ) : List<Organisasjon> {
         return try {
-            k9OppslagGateway.hentArbeidsgivere(ident, callId, fraOgMed, tilOgMed)
+            arbeidsgivereGateway.hentArbeidsgivere(ident, callId, fraOgMed, tilOgMed)
         } catch (cause: Throwable) {
             logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
             emptyList()

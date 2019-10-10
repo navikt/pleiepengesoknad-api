@@ -1,4 +1,4 @@
-package no.nav.helse.k9
+package no.nav.helse.arbeidsgiver
 
 class Organisasjon (
     val organisasjonsnummer: String,

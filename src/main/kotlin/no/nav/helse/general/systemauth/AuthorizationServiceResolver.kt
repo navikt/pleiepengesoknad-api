@@ -36,7 +36,6 @@ internal class AuthorizationServiceResolver(
     private val naisStsAuthorizationService = AuthorizationService(cachedNaisStsAccessTokenClient, setOf("openid"))
 
     internal fun aktoerRegister() = naisStsAuthorizationService
-    internal fun sparkel() = naisStsAuthorizationService
     internal fun pleiepengesoknaMottak() = naisStsAuthorizationService
 
     override suspend fun check(): Result {
