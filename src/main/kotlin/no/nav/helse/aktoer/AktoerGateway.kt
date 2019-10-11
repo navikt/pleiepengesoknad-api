@@ -119,7 +119,7 @@ class AktoerGateway(
     }
 
     suspend fun hentNorskIdent(
-        aktoerId: String,
+        aktoerId: AktoerId,
         callId: CallId
     ) : NorskIdent {
         val fodselsnummerUrl = Url.buildURL(
@@ -133,7 +133,7 @@ class AktoerGateway(
 
         return get(
             url = fodselsnummerUrl,
-            personIdent = aktoerId,
+            personIdent = aktoerId.value,
             callId = callId
         ).tilNorskIdent()
     }

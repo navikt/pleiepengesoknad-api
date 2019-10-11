@@ -100,7 +100,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             barn.aktoerId != null -> {
                 try {
                     aktoerService.getNorskIdent(
-                        aktoerId = (barn.aktoerId),
+                        aktoerId = AktoerId(barn.aktoerId),
                         callId = callId
                     )
                 } catch (cause: Throwable) {

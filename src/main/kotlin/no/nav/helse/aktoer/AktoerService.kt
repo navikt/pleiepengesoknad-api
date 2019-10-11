@@ -6,7 +6,7 @@ class AktoerService(
     private val aktoerGateway: AktoerGateway
 ){
     suspend fun getNorskIdent(
-        aktoerId: String,
+        aktoerId: AktoerId,
         callId: CallId
     ): NorskIdent {
         return aktoerGateway.hentNorskIdent(aktoerId, callId)
