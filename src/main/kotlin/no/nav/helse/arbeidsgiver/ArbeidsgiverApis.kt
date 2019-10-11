@@ -31,13 +31,11 @@ fun Route.arbeidsgiverApis(
             throw Throwblem(ValidationProblemDetails(violations))
         } else {
             call.respond(
-                Arbeidsgivere(
-                    arbeidsgivereService.getArbeidsgivere(
-                        idToken = idTokenProvider.getIdToken(call),
-                        callId = call.getCallId(),
-                        fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
-                        tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])
-                    )
+                arbeidsgivereService.getArbeidsgivere(
+                    idToken = idTokenProvider.getIdToken(call),
+                    callId = call.getCallId(),
+                    fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
+                    tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])
                 )
             )
         }

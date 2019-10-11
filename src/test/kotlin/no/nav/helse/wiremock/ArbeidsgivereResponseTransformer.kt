@@ -36,19 +36,23 @@ private fun getResponse(ident: String): String {
         "02119970078" -> {
         return """
             {
-                "organisasjoner": [{
-                    "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
-                    "organisasjonsnummer": "913548221"
-                }, {
-                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
-                    "organisasjonsnummer": "984054564"
-                }]
+                "arbeidsgivere": {
+                    "organisasjoner": [{
+                        "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
+                        "organisasjonsnummer": "913548221"
+                    }, {
+                        "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                        "organisasjonsnummer": "984054564"
+                    }]
+                }
             }
         """.trimIndent()
         } else -> {
         return """
                 {
-                    "arbeidsgivere": []
+                    "arbeidsgivere": {
+                        "organisasjoner": []
+                    }
                 }
             """.trimIndent()
     }

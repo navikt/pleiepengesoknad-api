@@ -41,7 +41,7 @@ class ArbeidsgivereGateway(
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
-    ) : List<Organisasjon> {
+    ) : Arbeidsgivere {
         val arbeidsgivereUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
@@ -54,7 +54,7 @@ class ArbeidsgivereGateway(
 
         val httpRequest = generateHttpRequest(idToken, arbeidsgivereUrl, callId)
 
-        val arbeidsgivere = Retry.retry(
+        val arbeidsgivereOppslagRespons = Retry.retry(
             operation = HENTE_ARBEIDSGIVERE_OPERATION,
             initialDelay = Duration.ofMillis(200),
             factor = 2.0,
@@ -67,7 +67,7 @@ class ArbeidsgivereGateway(
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<Arbeidsgivere>(success)},
+                { success -> objectMapper.readValue<ArbeidsgivereOppslagRespons>(success)},
                 { error ->
                     logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
                     logger.error(error.toString())
@@ -75,6 +75,6 @@ class ArbeidsgivereGateway(
                 }
             )
         }
-        return arbeidsgivere.organisasjoner
+        return arbeidsgivereOppslagRespons.arbeidsgivere
     }
 }

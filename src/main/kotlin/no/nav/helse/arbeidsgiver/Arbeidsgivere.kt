@@ -1,5 +1,9 @@
 package no.nav.helse.arbeidsgiver
 
+data class ArbeidsgivereOppslagRespons (
+    val arbeidsgivere: Arbeidsgivere
+)
+
 data class Arbeidsgivere (
     val organisasjoner: List<Organisasjon>
 )

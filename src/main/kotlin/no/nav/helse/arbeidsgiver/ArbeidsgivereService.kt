@@ -18,12 +18,12 @@ class ArbeidsgivereService (
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
-    ) : List<Organisasjon> {
+    ) : Arbeidsgivere {
         return try {
             arbeidsgivereGateway.hentArbeidsgivere(idToken, callId, fraOgMed, tilOgMed)
         } catch (cause: Throwable) {
             logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
-            emptyList()
+            Arbeidsgivere(emptyList())
         }
     }
 }
