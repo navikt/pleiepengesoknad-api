@@ -18,6 +18,7 @@ import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.general.rest.NavHeaders
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -66,9 +67,9 @@ class AktoerGateway(
             .header(
                 HttpHeaders.Authorization to authorizationHeader,
                 HttpHeaders.Accept to "application/json",
-                "Nav-Consumer-Id" to "pleiepengesoknad-api",
-                "Nav-Personidenter" to personIdent,
-                "Nav-Call-Id" to callId.value,
+                NavHeaders.ConsumerId to "pleiepengesoknad-api",
+                NavHeaders.PersonIdenter to personIdent,
+                NavHeaders.CallId to callId.value,
                 apiGatewayApiKey.headerKey to apiGatewayApiKey.value
             )
 
