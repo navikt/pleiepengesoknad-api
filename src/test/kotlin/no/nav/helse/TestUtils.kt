@@ -6,7 +6,7 @@ import io.ktor.http.HttpHeaders
 
 class TestUtils {
     companion object {
-        fun getIdentFromIdToken(request: Request): String {
+        fun getIdentFromIdToken(request: Request?): String {
             val idToken: String = request!!.getHeader(HttpHeaders.Authorization).substringAfter("Bearer ")
             return JWT.decode(idToken).subject ?: throw IllegalStateException("Token mangler 'sub' claim.")
         }

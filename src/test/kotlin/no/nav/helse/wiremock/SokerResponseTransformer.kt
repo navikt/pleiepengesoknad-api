@@ -1,6 +1,5 @@
 package no.nav.helse.wiremock
 
-import com.auth0.jwt.JWT
 import com.github.tomakehurst.wiremock.common.FileSource
 import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.ResponseTransformer
@@ -17,7 +16,7 @@ class SokerResponseTransformer : ResponseTransformer() {
     ): Response {
         return Response.Builder.like(response)
             .body(getResponse(
-                ident = TestUtils.getIdentFromIdToken(request!!)
+                ident = TestUtils.getIdentFromIdToken(request)
             ))
             .build()
     }

@@ -16,7 +16,7 @@ class ArbeidsgivereResponseTransformer : ResponseTransformer() {
     ): Response {
         return Response.Builder.like(response)
             .body(getResponse(
-                ident = TestUtils.getIdentFromIdToken(request!!)
+                ident = TestUtils.getIdentFromIdToken(request)
             ))
             .build()
     }
