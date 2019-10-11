@@ -20,7 +20,10 @@ data class Soknad (
     val harForstattRettigheterOgPlikter : Boolean,
     val harBekreftetOpplysninger : Boolean,
     val grad : Int? = null,
-    val dagerPerUkeBorteFraJobb: Double? = null
+    val dagerPerUkeBorteFraJobb: Double? = null,
+    val tilsynsordning: Tilsynsordning?,
+    val nattevaak: Nattevaak? = null,
+    val beredskap: Beredskap? = null
 )
 data class ArbeidsgiverDetaljer(
     val organisasjoner : List<OrganisasjonDetaljer>
@@ -43,5 +46,38 @@ data class BarnDetaljer(
 data class OrganisasjonDetaljer (
     val navn: String? = null,
     val organisasjonsnummer: String,
-    val redusertArbeidsprosent: Double? = null
+    val skalJobbeProsent: Double? = null
+)
+
+enum class TilsynsordningSvar{ja, nei, vet_ikke}
+enum class TilsynsordningVetIkkeSvar{er_sporadisk, er_ikke_laget_en_plan, annet}
+
+data class TilsynsordningJa(
+    val mandag: Duration?,
+    val tirsdag: Duration?,
+    val onsdag: Duration?,
+    val torsdag: Duration?,
+    val fredag: Duration?,
+    val tilleggsinformasjon: String? = null
+)
+data class TilsynsordningVetIkke(
+    val svar: TilsynsordningVetIkkeSvar,
+    val annet: String? = null
+)
+
+data class Tilsynsordning(
+    val svar: TilsynsordningSvar,
+    val ja: TilsynsordningJa? = null,
+    val vetIkke: TilsynsordningVetIkke? = null
+)
+
+data class Nattevaak(
+    val harNattevaak: Boolean? = null,
+    val tilleggsinformasjon: String?
+)
+
+data class Beredskap(
+    @JsonProperty("i_beredskap")
+    val beredskap: Boolean? = null,
+    val tilleggsinformasjon: String?
 )

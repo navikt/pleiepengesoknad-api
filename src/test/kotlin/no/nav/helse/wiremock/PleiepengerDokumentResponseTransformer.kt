@@ -1,5 +1,6 @@
 package no.nav.helse.wiremock
 
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.tomakehurst.wiremock.common.FileSource
@@ -15,7 +16,7 @@ import kotlin.IllegalStateException
 class PleiepengerDokumentResponseTransformer() : ResponseTransformer() {
 
     val storage = mutableMapOf<VedleggId, Vedlegg>()
-    val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
+    val objectMapper = jacksonObjectMapper().dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
 
     override fun getName(): String {
         return "PleiepengerDokumentResponseTransformer"

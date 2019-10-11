@@ -1,5 +1,6 @@
 package no.nav.helse.vedlegg
 
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.core.Request
@@ -26,7 +27,7 @@ class PleiepengerDokumentGateway(
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(PleiepengerDokumentGateway::class.java)
-        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
+        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
         private const val SLETTE_VEDLEGG_OPERATION = "slette-vedlegg"
         private const val HENTE_VEDLEGG_OPERATION = "hente-vedlegg"
         private const val LAGRE_VEDLEGG_OPERATION = "lagre-vedlegg"

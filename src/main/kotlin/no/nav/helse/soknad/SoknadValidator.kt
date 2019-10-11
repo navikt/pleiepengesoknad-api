@@ -10,6 +10,7 @@ private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachments-too-large", status = 413, detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB.")
 private const val MIN_GRAD = 20
 private const val MAX_GRAD = 100
+private const val MAX_FRITEKST_TEGN = 1000
 
 class FraOgMedTilOgMedValidator {
     companion object {
@@ -93,6 +94,9 @@ internal fun Soknad.validate() {
     val gradSatt = grad != null
     val violations = barn.validate(relasjonTilBarnet)
     violations.addAll(arbeidsgivere.organisasjoner.validate(gradSatt))
+    tilsynsordning?.apply {
+        violations.addAll(this.validate())
+    }
 
     // Datoer
     violations.addAll(FraOgMedTilOgMedValidator.validate(
@@ -208,11 +212,133 @@ internal fun Soknad.validate() {
         }
     }
 
+    beredskap?.apply {
+        if (beredskap == null) booleanIkkeSatt("beredskap.i_beredskap")
+        tilleggsinformasjon?.apply {
+            if (length > MAX_FRITEKST_TEGN) {
+                violations.add(
+                    Violation(
+                        parameterName = "beredskap.tilleggsinformasjon",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
+                        invalidValue = this
+                    )
+                )
+            }
+        }
+    }
+
+    nattevaak?.apply {
+        if (harNattevaak == null) booleanIkkeSatt("nattevaak.har_nattevaak")
+        tilleggsinformasjon?.apply {
+            if (length > MAX_FRITEKST_TEGN) {
+                violations.add(
+                    Violation(
+                        parameterName = "nattevaak.tilleggsinformasjon",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
+                        invalidValue = this
+                    )
+                )
+            }
+        }
+    }
+
     // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
 
+}
+
+internal fun Tilsynsordning.validate() : MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+
+    if (svar != TilsynsordningSvar.ja && ja != null) {
+        violations.add(
+            Violation(
+                parameterName = "tilsynsordning.ja",
+                parameterType = ParameterType.ENTITY,
+                reason = "Skal kun settes om svar er 'ja'",
+                invalidValue = ja
+            )
+        )
+    }
+
+    if (svar != TilsynsordningSvar.vet_ikke && vetIkke != null) {
+        violations.add(
+            Violation(
+                parameterName = "tilsynsordning.vet_ikke",
+                parameterType = ParameterType.ENTITY,
+                reason = "Skal kun settes om svar er 'vet_ikke'",
+                invalidValue = vetIkke
+            )
+        )
+    }
+
+    ja?.apply {
+        if (listOfNotNull(mandag, tirsdag, onsdag, torsdag, fredag).isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "tilsynsordning.ja",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Minst en dag må være satt når barnet skal være i tilsynsordning.",
+                    invalidValue = this
+                )
+            )
+        }
+        tilleggsinformasjon?.apply {
+            if (length > MAX_FRITEKST_TEGN) {
+                violations.add(
+                    Violation(
+                        parameterName = "tilsynsordning.ja.tilleggsinformasjon",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
+                        invalidValue = this
+                    )
+                )
+            }
+        }
+    }
+
+    vetIkke?.apply {
+        if (svar != TilsynsordningVetIkkeSvar.annet && annet != null) {
+            violations.add(
+                Violation(
+                    parameterName = "tilsynsordning.vet_ikke.annet",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Skal kun settes om svar er 'annet''",
+                    invalidValue = annet
+                )
+            )
+        }
+
+        if (svar == TilsynsordningVetIkkeSvar.annet && annet.isNullOrBlank()) {
+            violations.add(
+                Violation(
+                    parameterName = "tilsynsordning.vet_ikke.annet",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Må settes når svar er 'annet",
+                    invalidValue = annet
+                )
+            )
+        }
+
+        annet?.apply {
+            if (length > MAX_FRITEKST_TEGN) {
+                violations.add(
+                    Violation(
+                        parameterName = "tilsynsordning.vet_ikke.annet",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
+                        invalidValue = this
+                    )
+                )
+            }
+        }
+    }
+
+    return violations
 }
 
 internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Violation> {
@@ -306,25 +432,25 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean) : MutableSet
             )
         }
 
-        organisasjon.redusertArbeidsprosent?.apply {
+        organisasjon.skalJobbeProsent?.apply {
             if (this !in 0.0..100.0) {
                 violations.add(
                     Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
+                        parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
                         parameterType = ParameterType.ENTITY,
-                        reason = "Den reduserte arbeidsprosenten må være mellom 0 og 100.",
+                        reason = "Skal jobbe prosent må være mellom 0 og 100.",
                         invalidValue = this
                     )
                 )
             }
         }
 
-        if (!gradSatt && organisasjon.redusertArbeidsprosent == null) {
+        if (!gradSatt && organisasjon.skalJobbeProsent == null) {
             violations.add(
                 Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].redusert_arbeidsprosent",
+                    parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Den reduserte arbeidsprosenten må være satt når det ikke er satt grad i søknaden.",
+                    reason = "Skal jobbe prosent må være satt når det ikke er satt grad i søknaden.",
                     invalidValue = null
                 )
             )

@@ -29,28 +29,28 @@ class ArbeidsgiverValidationTest {
     }
 
     @Test
-    fun `Redusert arbeidsprosent satt`() {
+    fun `Skal jobbe prosent satt`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            redusertArbeidsprosent = 99.09
+            skalJobbeProsent = 99.09
         ))
         assertTrue(organisasjoner.validate(true).isEmpty())
     }
 
     @Test
-    fun `Redusert arbeidsprosent satt for lav`() {
+    fun `Skal jobbe prosent satt for lav`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            redusertArbeidsprosent = -1.00
+            skalJobbeProsent = -1.00
         ))
         assertEquals(1, organisasjoner.validate(true).size)
     }
 
     @Test
-    fun `Redusert arbeidsprosent satt før høy`() {
+    fun `Skal jobbe prosent satt før høy`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            redusertArbeidsprosent = 101.01
+            skalJobbeProsent = 101.01
         ))
         assertEquals(1, organisasjoner.validate(true).size)
     }

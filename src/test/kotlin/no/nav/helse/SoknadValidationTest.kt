@@ -10,34 +10,34 @@ class SoknadValidationTest {
 
     @Test
     fun `Håndterer søknader med grad`() {
-        soknad(grad = 50, harMedsoker = true, dagerPerUkeBorteFraJobb = null, redusertArbeidsprosent = null).validate()
+        soknad(grad = 50, harMedsoker = true, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null).validate()
     }
 
     @Test
     fun `Håndterer søknad uten grad og med medsøker`() {
-        soknad(grad = null, harMedsoker = true, dagerPerUkeBorteFraJobb = 5.0, redusertArbeidsprosent = 22.00).validate()
+        soknad(grad = null, harMedsoker = true, dagerPerUkeBorteFraJobb = 5.0, skalJobbeProsent = 22.00).validate()
     }
 
     @Test
     fun `Håndterer søknad uten grad og uten medsøker`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, redusertArbeidsprosent = 22.00).validate()
+        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = 22.00).validate()
     }
 
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad uten grad og uten medsøker, men med dager per uke borte fra jobb satt`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = 2.5, redusertArbeidsprosent = 22.00).validate()
+        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = 2.5, skalJobbeProsent = 22.00).validate()
     }
 
     @Test(expected = Throwblem::class)
-    fun `Feiler på søknad uten grad, hvor redusert arbeidsprosent ikke er satt`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, redusertArbeidsprosent = null).validate()
+    fun `Feiler på søknad uten grad, hvor skal jobbe prosent ikke er satt`() {
+        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null).validate()
     }
 
     private fun soknad(
         grad: Int?,
         harMedsoker: Boolean,
         dagerPerUkeBorteFraJobb: Double?,
-        redusertArbeidsprosent: Double?
+        skalJobbeProsent: Double?
     ) = Soknad(
         sprak = Sprak.nb,
         barn = BarnDetaljer(
@@ -51,7 +51,7 @@ class SoknadValidationTest {
             OrganisasjonDetaljer(
                 navn = "Org",
                 organisasjonsnummer = "917755736",
-                redusertArbeidsprosent = redusertArbeidsprosent
+                skalJobbeProsent = skalJobbeProsent
             )
         )),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
@@ -65,6 +65,7 @@ class SoknadValidationTest {
         harBekreftetOpplysninger = true,
         harForstattRettigheterOgPlikter = true,
         dagerPerUkeBorteFraJobb =dagerPerUkeBorteFraJobb,
-        grad = grad
+        grad = grad,
+        tilsynsordning = null
     )
 }

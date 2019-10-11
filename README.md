@@ -11,7 +11,7 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 POST @ /soknad -> 202 Response
 - sprak er en valgfri attributt. Om den settes må den være enten "nb" for Bokmål eller "nn" for Nynorsk.
 - Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver, med to valgfrie attributter (om en er satt må begge settes);
-- arbeidsgivere.organisasjoner[x].redusert_arbeidsprosent er valgfri. Om satt må den være mellom 0.0 og 100.0. Om 'grad' ikke er satt må denne alltid settes.
+- arbeidsgivere.organisasjoner[x].skal_jobbe_prosent er valgfri. Om satt må den være mellom 0.0 og 100.0. Om 'grad' ikke er satt må denne alltid settes.
 - Listen med organisajoner i arbeidsgivere kan være tom.
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
@@ -24,6 +24,10 @@ POST @ /soknad -> 202 Response
 - grad er valgfri. Om satt må den være mellom 20 og 100
 - 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
 - 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.5 og 5.0. Om 'grad' ikke er satt og 'har_medsoker' er true må den settes.
+- tilsynsordning er ikke påkrevd, se eget avsnitt under om det er satt.
+- beredskap er ikke påkrevd, men om det er satt må 'i_beredskap' være satt og 'tilleggsinformasjon' være maks 1000 tegn om den er satt.
+- nattevaak er ikke påkrevd, men om det er satt må 'har_nattevaak' være satt og 'tilleggsinformasjon' være maks 1000 tegn om den er satt.
+
 
 ```json
 {
@@ -41,11 +45,11 @@ POST @ /soknad -> 202 Response
 		"organisasjoner": [{
 			"navn": "Telenor",
 			"organisasjonsnummer": "973861778",
-			"redusert_arbeidsprosent": 50.24
+			"skal_jobber_prosent": 50.24
 		}, {
 			"navn": "Maxbo",
 			"organisasjonsnummer": "910831143",
-			"redusert_arbeidsprosent": 25.0
+			"skal_jobbe_prosent": 25.0
 		}]
 	},
 	"vedlegg": [
@@ -56,10 +60,72 @@ POST @ /soknad -> 202 Response
 		"skal_bo_i_utlandet_neste_12_mnd": true
 	},
 	"har_medsoker": true,
-	"har_bekreftet_opplysninger" : true,
+	"har_bekreftet_opplysninger": true,
 	"har_forstatt_rettigheter_og_plikter": true,
 	"grad": 100,
-	"dager_per_uke_borte_fra_jobb": 4.5
+	"dager_per_uke_borte_fra_jobb": 4.5,
+	"tilsynsordning": {
+		"svar": "ja",
+		"ja": {
+			"mandag": "PT7H30M",
+			"tirsdag": null,
+			"onsdag": "PT7H25M",
+			"torsdag": null,
+			"fredag": "PT0S",
+			"tilleggsinformasjon": "Unntatt uke 37. Da er han hjemme hele tiden."
+		}
+	},
+	"beredskap": {
+		"i_beredskap": true,
+		"tilleggsinformasjon": "Må sitte utenfor barnehagen."
+	},
+	"nattevaak": {
+		"har_nattevaak": true,
+		"tilleggsinformasjon": "Må sove om dagen."
+	}
+}
+```
+
+#### Tilsynsordning
+##### Ja
+- Attributten `ja` være satt.
+- Attributten `vet_ikke` kan ikke være satt.
+- Minst en av dagene må være satt (Se format på duration lengre ned)
+- `ja.tilleggsinformasjon` er ikke påkrevd. Om den er satt må den være maks 140 tegn.
+
+```json
+{
+	"svar": "ja",
+	"ja": {
+		"mandag": "PT7H30M",
+		"tirsdag": null,
+		"onsdag": "PT7H25M",
+		"torsdag": null,
+		"fredag": "PT0S",
+		"tilleggsinformasjon": "Unntatt uke 37. Da er han hjemme hele tiden."
+	}
+}
+```
+##### Nei
+- Hverken attributten `ja` eller `vet_ikke` kan være satt.
+```json
+{
+	"svar": "nei"
+}
+```
+##### Vet ikke
+- Attributten `vet_ikke` være satt.
+- Attributten `ja` kan ikke være satt.
+- `vet_ikke.svar` kan være enten `er_sporadisk`, `er_ikke_laget_en_plan` eller `annet`
+- Om `vet_ikke.svar` er `annet` må også attributten `vet_ikke.svar.annet` være satt, men være maks 140 tegn.
+
+```json
+{
+	"svar": "vet_ikke",
+	"vet_ikke": {
+		"svar": "annet",
+		"annet": "Blir for vanskelig å si nå."
+	}
 }
 ```
 
