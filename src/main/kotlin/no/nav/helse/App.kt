@@ -49,7 +49,7 @@ import no.nav.helse.soker.sokerApis
 import no.nav.helse.soknad.PleiepengesoknadMottakGateway
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
-import no.nav.helse.vedlegg.PleiepengerDokumentGateway
+import no.nav.helse.vedlegg.K9DokumentGateway
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.helse.vedlegg.vedleggApis
 import org.slf4j.Logger
@@ -135,8 +135,8 @@ fun Application.pleiepengesoknadapi() {
         val aktoerService = AktoerService(aktoerGateway)
 
         val vedleggService = VedleggService(
-            pleiepengerDokumentGateway = PleiepengerDokumentGateway(
-                baseUrl = configuration.getPleiepengerDokumentUrl()
+            k9DokumentGateway = K9DokumentGateway(
+                baseUrl = configuration.getK9DokumentUrl()
             )
         )
 
@@ -221,7 +221,7 @@ fun Application.pleiepengesoknadapi() {
                 personGateway,
                 HttpRequestHealthCheck(mapOf(
                     configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false),
-                    Url.buildURL(baseUrl = configuration.getPleiepengerDokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
+                    Url.buildURL(baseUrl = configuration.getK9DokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
                     Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value)),
                     Url.buildURL(baseUrl = configuration.getSparkelUrl(), pathParts = listOf("isready")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
                 ))

@@ -36,7 +36,7 @@ data class Configuration(val config : ApplicationConfig) {
 
     internal fun getAktoerRegisterUrl() = URI(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))
 
-    internal fun getPleiepengerDokumentUrl() = URI(config.getRequiredString("nav.gateways.pleiepenger_dokument_url", secret = false))
+    internal fun getK9DokumentUrl() = URI(config.getRequiredString("nav.gateways.k9_dokument_url", secret = false))
 
     internal fun getPleiepengesoknadMottakBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_mottak_base_url", secret = false))
 

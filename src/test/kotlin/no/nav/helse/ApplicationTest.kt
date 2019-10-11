@@ -39,18 +39,19 @@ class ApplicationTest {
             .withLoginServiceSupport()
             .pleiepengesoknadApiConfig()
             .build()
-            .stubPleiepengerDokumentHealth()
+            .stubK9DokumentHealth()
+            .stubSparkelIsReady()
             .stubPleiepengesoknadMottakHealth()
             .stubOppslagHealth()
             .stubAktoerRegisterHealth()
             .stubAktoerRegisterGetAktoerId()
             .stubLeggSoknadTilProsessering()
-            .stubPleiepengerDokument()
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
             .stubSparkelIsReady()
             .stubSparkelGetPerson()
+            .stubK9Dokument()
 
         fun getConfig() : ApplicationConfig {
 
