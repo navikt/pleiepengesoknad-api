@@ -56,7 +56,7 @@ spec:
     - name: PLEIEPENGESOKNAD_MOTTAK_BASE_URL
       value: https://api-gw.oera.no/helse-reverse-proxy/pleiepengesoknad-mottak
     - name: PLEIEPENGER_DOKUMENT_BASE_URL
-      value: https://pleiepenger-dokument.nais.oera.no
+      value: https://k9-dokument.nais.oera.no
     - name: AZURE_CLIENT_ID
       value: c7138cc4-8cef-41bf-99e0-2d3884a106f0
     - name: AZURE_V2_DISCOVERY_ENDPOINT
