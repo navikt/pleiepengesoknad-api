@@ -2,6 +2,7 @@ package no.nav.helse.barn
 
 import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
+import no.nav.helse.general.auth.IdToken
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -13,11 +14,11 @@ class BarnService(
     }
 
     internal suspend fun hentNaaverendeBarn(
-        ident: NorskIdent,
+        idToken: IdToken,
         callId: CallId
     ) = try {
         barnGateway.hentBarn(
-            ident = ident,
+            idToken = idToken,
             callId = callId
             ).map { it.tilBarn() }
         } catch (cause: Throwable) {

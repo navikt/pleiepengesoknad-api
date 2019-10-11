@@ -6,16 +6,12 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import io.ktor.http.Url
-import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
-import no.nav.helse.dusseldorf.ktor.health.Healthy
-import no.nav.helse.dusseldorf.ktor.health.Result
-import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
-import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,31 +22,22 @@ import java.time.format.DateTimeFormatter
 
 class ArbeidsgivereGateway(
     baseUrl: URI,
-    accessTokenClient: AccessTokenClient,
     apiGatewayApiKey: ApiGatewayApiKey
-) : K9OppslagGateway(baseUrl, accessTokenClient, apiGatewayApiKey) {
+) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
 
-    protected companion object {
-        protected val logger: Logger = LoggerFactory.getLogger("nav.ArbeidsgivereGateway")
-        protected const val HENTE_ARBEIDSGIVERE_OPERATION = "hente-arbeidsgivere"
-        protected val objectMapper = jacksonObjectMapper().apply {
+    private companion object {
+        private val logger: Logger = LoggerFactory.getLogger("nav.ArbeidsgivereGateway")
+        private const val HENTE_ARBEIDSGIVERE_OPERATION = "hente-arbeidsgivere"
+        private val objectMapper = jacksonObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             registerModule(JavaTimeModule())
         }
-    }
-
-    override suspend fun check(): Result {
-        return try {
-            accessTokenClient.getAccessToken(scopes)
-            Healthy("ArbeidsgivereGateway", "Henting av access token for henting av arbeidsgivere OK.")
-        } catch (cause: Throwable) {
-            logger.error("Feil ved henting av access token for henting av arbeidsgivere", cause)
-            UnHealthy("ArbeidsgivereGateway", "Henting av access token for henting av arbeidsgivere feilet.")
-        }
+        private val attributer = Pair("a", listOf( "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
+            "arbeidsgivere[].organisasjoner[].navn"))
     }
 
     internal suspend fun hentArbeidsgivere(
-        ident: NorskIdent,
+        idToken: IdToken,
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
@@ -59,14 +46,13 @@ class ArbeidsgivereGateway(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
             queryParameters = mapOf(
-                Pair("a", listOf( "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
-                    "arbeidsgivere[].organisasjoner[].navn")),
+                attributer,
                 Pair("fom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed))),
                 Pair("tom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(tilOgMed)))
             )
         ).toString()
 
-        val httpRequest = generateHttpRequest(arbeidsgivereUrl, ident, callId)
+        val httpRequest = generateHttpRequest(idToken, arbeidsgivereUrl, callId)
 
         val arbeidsgivere = Retry.retry(
             operation = HENTE_ARBEIDSGIVERE_OPERATION,

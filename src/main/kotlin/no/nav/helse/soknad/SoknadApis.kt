@@ -34,7 +34,6 @@ fun Route.soknadApis(
 
         soknadService.registrer(
             soknad = soknad,
-            norskIdent = call.getNorskIdent(),
             callId = call.getCallId(),
             idToken = idTokenProvider.getIdToken(call)
         )

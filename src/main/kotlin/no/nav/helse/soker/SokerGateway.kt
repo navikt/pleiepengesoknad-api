@@ -9,13 +9,10 @@ import io.ktor.http.Url
 import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
-import no.nav.helse.dusseldorf.ktor.health.Healthy
-import no.nav.helse.dusseldorf.ktor.health.Result
-import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
-import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -25,41 +22,31 @@ import java.time.LocalDate
 
 class SokerGateway (
     baseUrl: URI,
-    accessTokenClient: AccessTokenClient,
     apiGatewayApiKey: ApiGatewayApiKey
-) : K9OppslagGateway(baseUrl, accessTokenClient, apiGatewayApiKey) {
+) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
 
-    protected companion object {
-        protected val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
-        protected const val HENTE_SOKER_OPERATION = "hente-soker"
-        protected val objectMapper = jacksonObjectMapper().apply {
+    private companion object {
+        private val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
+        private const val HENTE_SOKER_OPERATION = "hente-soker"
+        private val objectMapper = jacksonObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             registerModule(JavaTimeModule())
         }
-    }
-
-    override suspend fun check(): Result {
-        return try {
-            accessTokenClient.getAccessToken(scopes)
-            Healthy("ArbeidsgivereGateway", "Henting av access token for henting av arbeidsgivere OK.")
-        } catch (cause: Throwable) {
-            logger.error("Feil ved henting av access token for henting av arbeidsgivere", cause)
-            UnHealthy("ArbeidsgivereGateway", "Henting av access token for henting av arbeidsgivere feilet.")
-        }
+        private val attributter = Pair("a", listOf("aktør_id", "fornavn", "mellomnavn", "etternavn", "fødselsdato"))
     }
 
     suspend fun hentSoker(
-        ident: NorskIdent,
+        idToken: IdToken,
         callId : CallId
     ) : SokerOppslagRespons {
         val sokerUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
             queryParameters = mapOf(
-                Pair("a", listOf("aktør_id", "fornavn", "mellomnavn", "etternavn", "fødselsdato"))
+                attributter
             )
         ).toString()
-        val httpRequest = generateHttpRequest(sokerUrl, ident, callId)
+        val httpRequest = generateHttpRequest(idToken, sokerUrl, callId)
 
         val oppslagRespons = Retry.retry(
             operation = HENTE_SOKER_OPERATION,

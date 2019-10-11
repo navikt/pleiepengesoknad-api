@@ -6,16 +6,12 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import io.ktor.http.Url
-import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
-import no.nav.helse.dusseldorf.ktor.health.Healthy
-import no.nav.helse.dusseldorf.ktor.health.Result
-import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
-import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -25,47 +21,37 @@ import java.time.LocalDate
 
 class BarnGateway (
     baseUrl: URI,
-    accessTokenClient: AccessTokenClient,
     apiGatewayApiKey: ApiGatewayApiKey
-    ) : K9OppslagGateway(baseUrl, accessTokenClient, apiGatewayApiKey) {
+    ) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
 
-    protected companion object {
-        protected val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
-        protected const val HENTE_BARN_OPERATION = "hente-barn"
-        protected val objectMapper = jacksonObjectMapper().apply {
+    private companion object {
+        private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
+        private const val HENTE_BARN_OPERATION = "hente-barn"
+        private val objectMapper = jacksonObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             registerModule(JavaTimeModule())
         }
-    }
-
-    override suspend fun check(): Result {
-        return try {
-            accessTokenClient.getAccessToken(scopes)
-            Healthy("ArbeidsgivereGateway", "Henting av access token for henting av arbeidsgivere OK.")
-        } catch (cause: Throwable) {
-            logger.error("Feil ved henting av access token for henting av arbeidsgivere", cause)
-            UnHealthy("ArbeidsgivereGateway", "Henting av access token for henting av arbeidsgivere feilet.")
-        }
+        private val attributter = Pair("a", listOf("barn[].aktør_id",
+            "barn[].fornavn",
+            "barn[].mellomnavn",
+            "barn[].etternavn",
+            "barn[].fødselsdato")
+        )
     }
 
     suspend fun hentBarn(
-        ident: NorskIdent,
+        idToken: IdToken,
         callId : CallId
     ) : List<BarnOppslagDTO> {
         val barnUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
             queryParameters = mapOf(
-                Pair("a", listOf("barn[].aktør_id",
-                    "barn[].fornavn",
-                    "barn[].mellomnavn",
-                    "barn[].etternavn",
-                    "barn[].fødselsdato")
-                )
+                attributter
             )
         ).toString()
 
-        val httpRequest = generateHttpRequest(barnUrl, ident, callId)
+        val httpRequest = generateHttpRequest(idToken, barnUrl, callId)
 
         val oppslagRespons = Retry.retry(
             operation = HENTE_BARN_OPERATION,

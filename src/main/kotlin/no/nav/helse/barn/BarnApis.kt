@@ -6,12 +6,14 @@ import io.ktor.locations.Location
 import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.getNorskIdent
 import no.nav.helse.general.getCallId
 
 @KtorExperimentalLocationsAPI
 fun Route.barnApis(
-    barnService: BarnService
+    barnService: BarnService,
+    idTokenProvider: IdTokenProvider
 ) {
 
     @Location("/barn")
@@ -21,7 +23,7 @@ fun Route.barnApis(
         call.respond(
             BarnResponse(
                 barnService.hentNaaverendeBarn(
-                    ident = call.getNorskIdent(),
+                    idToken = idTokenProvider.getIdToken(call),
                     callId = call.getCallId()
                 )
             )

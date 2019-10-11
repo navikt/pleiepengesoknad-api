@@ -1,19 +1,23 @@
 package no.nav.helse.soker
 
-import no.nav.helse.aktoer.NorskIdent
+import com.auth0.jwt.JWT
 import no.nav.helse.general.CallId
+import no.nav.helse.general.auth.IdToken
 
 class SokerService (
     private val sokerGateway: SokerGateway
 ) {
     suspend fun getSoker(
-        ident: NorskIdent,
+        idToken: IdToken,
         callId: CallId
-    ) = sokerGateway.hentSoker(ident, callId).tilSoker(ident)
+    ): Soker {
+        val ident: String = JWT.decode(idToken.value).subject ?: throw IllegalStateException("Token mangler 'sub' claim.")
+        return sokerGateway.hentSoker(idToken, callId).tilSoker(ident)
+    }
 
-    private fun  SokerGateway.SokerOppslagRespons.tilSoker(ident: NorskIdent) = Soker(
+    private fun  SokerGateway.SokerOppslagRespons.tilSoker(fodselsnummer: String) = Soker(
         aktoerId = aktør_id,
-        fodselsnummer = ident.getValue(), // TODO: Bør skifte til "alternativ_id" ?
+        fodselsnummer = fodselsnummer, // TODO: Bør skifte til "alternativ_id" ?
         fodselsdato = fødselsdato,
         fornavn = fornavn,
         mellomnavn = mellomnavn,

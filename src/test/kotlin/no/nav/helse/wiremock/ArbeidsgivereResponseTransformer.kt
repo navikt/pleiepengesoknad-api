@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
-import no.nav.helse.general.rest.NavHeaders
+import no.nav.helse.TestUtils
 
 class K9OppslagArbeidsgivereTransformer : ResponseTransformer() {
     override fun transform(
@@ -14,11 +14,9 @@ class K9OppslagArbeidsgivereTransformer : ResponseTransformer() {
         files: FileSource?,
         parameters: Parameters?
     ): Response {
-        val personIdent = request!!.getHeader(NavHeaders.PersonIdenter)
-
         return Response.Builder.like(response)
             .body(getResponse(
-                personIdent = personIdent
+                ident = TestUtils.getIdentFromIdToken(request!!)
             ))
             .build()
     }
@@ -33,8 +31,8 @@ class K9OppslagArbeidsgivereTransformer : ResponseTransformer() {
 
 }
 
-private fun getResponse(personIdent: String): String {
-    when(personIdent) {
+private fun getResponse(ident: String): String {
+    when(ident) {
         "02119970078" -> {
         return """
             {
