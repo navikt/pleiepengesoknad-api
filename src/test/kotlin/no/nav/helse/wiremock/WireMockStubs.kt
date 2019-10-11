@@ -17,9 +17,9 @@ internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration
     it
         .extensions(AktoerRegisterResponseTransformer())
         .extensions(PleiepengerDokumentResponseTransformer())
-        .extensions(K9OppslagSokerTransformer())
-        .extensions(K9OppslagBarnTransformer())
-        .extensions(K9OppslagArbeidsgivereTransformer())
+        .extensions(SokerResponseTransformer())
+        .extensions(BarnResponseTransformer())
+        .extensions(ArbeidsgivereResponseTransformer())
 }
 
 internal fun WireMockServer.stubAktoerRegisterGetAktoerId() : WireMockServer {

@@ -6,10 +6,9 @@ import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
-import io.ktor.http.HttpHeaders
 import no.nav.helse.TestUtils
 
-class K9OppslagSokerTransformer : ResponseTransformer() {
+class SokerResponseTransformer : ResponseTransformer() {
     override fun transform(
         request: Request?,
         response: Response?,

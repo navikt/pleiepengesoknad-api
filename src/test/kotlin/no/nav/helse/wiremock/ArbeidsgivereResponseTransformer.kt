@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
 import no.nav.helse.TestUtils
 
-class K9OppslagArbeidsgivereTransformer : ResponseTransformer() {
+class ArbeidsgivereResponseTransformer : ResponseTransformer() {
     override fun transform(
         request: Request?,
         response: Response?,
