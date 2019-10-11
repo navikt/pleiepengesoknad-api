@@ -1,6 +1,5 @@
 package no.nav.helse.arbeidsgiver
 
-import no.nav.helse.aktoer.NorskIdent
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import org.slf4j.Logger

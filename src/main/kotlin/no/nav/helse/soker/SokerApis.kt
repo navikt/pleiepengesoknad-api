@@ -7,7 +7,6 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import no.nav.helse.general.auth.IdTokenProvider
-import no.nav.helse.general.auth.getNorskIdent
 import no.nav.helse.general.getCallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
