@@ -13,13 +13,13 @@ import no.nav.helse.vedlegg.VedleggId
 import java.util.*
 import kotlin.IllegalStateException
 
-class PleiepengerDokumentResponseTransformer() : ResponseTransformer() {
+class K9DokumentResponseTransformer() : ResponseTransformer() {
 
     val storage = mutableMapOf<VedleggId, Vedlegg>()
     val objectMapper = jacksonObjectMapper().dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
 
     override fun getName(): String {
-        return "PleiepengerDokumentResponseTransformer"
+        return "K9DokumentResponseTransformer"
     }
 
     override fun applyGlobally(): Boolean {

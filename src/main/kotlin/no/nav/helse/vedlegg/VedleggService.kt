@@ -13,7 +13,7 @@ import java.net.URL
 private val logger: Logger = LoggerFactory.getLogger("nav.VedleggService")
 
 class VedleggService(
-    private val pleiepengerDokumentGateway: PleiepengerDokumentGateway
+    private val k9DokumentGateway: K9DokumentGateway
 ) {
     suspend fun lagreVedlegg(
         vedlegg: Vedlegg,
@@ -21,7 +21,7 @@ class VedleggService(
         callId: CallId
     ) : VedleggId {
 
-        return pleiepengerDokumentGateway.lagreVedlegg(
+        return k9DokumentGateway.lagreVedlegg(
             vedlegg = vedlegg,
             idToken = idToken,
             callId = callId
@@ -35,7 +35,7 @@ class VedleggService(
         callId: CallId
     ) : Vedlegg? {
 
-        return pleiepengerDokumentGateway.hentVedlegg(
+        return k9DokumentGateway.hentVedlegg(
             vedleggId = vedleggId,
             idToken = idToken,
             callId = callId
@@ -67,7 +67,7 @@ class VedleggService(
         idToken: IdToken,
         callId: CallId
     ) {
-        pleiepengerDokumentGateway.slettVedlegg(
+        k9DokumentGateway.slettVedlegg(
             vedleggId = vedleggId,
             idToken = idToken,
             callId = callId

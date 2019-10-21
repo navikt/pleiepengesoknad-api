@@ -18,7 +18,7 @@ object TestConfiguration {
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
         aktoerRegisterBaseUrl : String? = wireMockServer?.getAktoerRegisterUrl(),
         pleiepengesoknadMottakUrl : String? = wireMockServer?.getPleiepengesoknadMottakUrl(),
-        pleiepengerDokumentUrl : String? = wireMockServer?.getPleiepengerDokumentUrl(),
+        k9DokumentUrl : String? = wireMockServer?.getK9DokumentUrl(),
         corsAdresses : String = "http://localhost:8080"
     ) : Map<String, String> {
 
@@ -34,7 +34,7 @@ object TestConfiguration {
             Pair("nav.gateways.k9_oppslag_url","$k9OppslagUrl"),
             Pair("nav.gateways.aktoer_register_url", "$aktoerRegisterBaseUrl"),
             Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
-            Pair("nav.gateways.pleiepenger_dokument_url", "$pleiepengerDokumentUrl"),
+            Pair("nav.gateways.k9_dokument_url", "$k9DokumentUrl"),
             Pair("nav.cors.addresses", corsAdresses),
             Pair("nav.authorization.api_gateway.api_key", "verysecret")
         )

@@ -21,12 +21,12 @@ import java.io.ByteArrayInputStream
 import java.net.URI
 import java.time.Duration
 
-class PleiepengerDokumentGateway(
+class K9DokumentGateway(
     baseUrl : URI
 ) {
 
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger(PleiepengerDokumentGateway::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(K9DokumentGateway::class.java)
         private val objectMapper = jacksonObjectMapper().dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
         private const val SLETTE_VEDLEGG_OPERATION = "slette-vedlegg"
         private const val HENTE_VEDLEGG_OPERATION = "hente-vedlegg"

@@ -11,15 +11,15 @@ internal const val sparkelPath = "/helse-reverse-proxy/sparkel-mock"
 internal const val k9OppslagPath = "/helse-reverse-proxy/k9-selvbetjening-oppslag-mock"
 private const val aktoerRegisterServerPath = "/helse-reverse-proxy/aktoer-register-mock"
 private const val pleiepengesoknadMottakPath = "/helse-reverse-proxy/pleiepengesoknad-mottak-mock"
-private const val pleiepengerDokumentPath = "/pleiepenger-dokument-mock"
+private const val k9DokumentPath = "/k9-dokument-mock"
 
 internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration {
     it
         .extensions(AktoerRegisterResponseTransformer())
-        .extensions(PleiepengerDokumentResponseTransformer())
         .extensions(SokerResponseTransformer())
         .extensions(BarnResponseTransformer())
         .extensions(ArbeidsgivereResponseTransformer())
+        .extensions(K9DokumentResponseTransformer())
 }
 
 internal fun WireMockServer.stubAktoerRegisterGetAktoerId() : WireMockServer {
@@ -122,7 +122,7 @@ private fun WireMockServer.stubHealthEndpointThroughZones(
     return this
 }
 
-internal fun WireMockServer.stubPleiepengerDokumentHealth() = stubHealthEndpoint("$pleiepengerDokumentPath/health")
+internal fun WireMockServer.stubK9DokumentHealth() = stubHealthEndpoint("$k9DokumentPath/health")
 internal fun WireMockServer.stubPleiepengesoknadMottakHealth() = stubHealthEndpointThroughZones("$pleiepengesoknadMottakPath/health")
 internal fun WireMockServer.stubSparkelIsReady() = stubHealthEndpointThroughZones("$sparkelPath/isready")
 internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpointThroughZones("$k9OppslagPath/health")
@@ -140,12 +140,12 @@ internal fun WireMockServer.stubLeggSoknadTilProsessering() : WireMockServer{
     return this
 }
 
-internal fun WireMockServer.stubPleiepengerDokument() : WireMockServer{
+internal fun WireMockServer.stubK9Dokument() : WireMockServer{
     WireMock.stubFor(
-        WireMock.any(WireMock.urlMatching(".*$pleiepengerDokumentPath/v1/dokument.*"))
+        WireMock.any(WireMock.urlMatching(".*$k9DokumentPath/v1/dokument.*"))
             .willReturn(
                 WireMock.aResponse()
-                    .withTransformers("PleiepengerDokumentResponseTransformer")
+                    .withTransformers("K9DokumentResponseTransformer")
             )
     )
     return this
@@ -155,4 +155,4 @@ internal fun WireMockServer.getSparkelUrl() = baseUrl() + sparkelPath
 internal fun WireMockServer.getK9OppslagUrl() = baseUrl() + k9OppslagPath
 internal fun WireMockServer.getAktoerRegisterUrl() = baseUrl() + aktoerRegisterServerPath
 internal fun WireMockServer.getPleiepengesoknadMottakUrl() = baseUrl() + pleiepengesoknadMottakPath
-internal fun WireMockServer.getPleiepengerDokumentUrl() = baseUrl() + pleiepengerDokumentPath
+internal fun WireMockServer.getK9DokumentUrl() = baseUrl() + k9DokumentPath

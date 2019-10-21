@@ -7,7 +7,7 @@ import no.nav.helse.wiremock.*
 import no.nav.helse.wiremock.pleiepengesoknadApiConfig
 import no.nav.helse.wiremock.stubAktoerRegisterGetAktoerId
 import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
-import no.nav.helse.wiremock.stubPleiepengerDokument
+import no.nav.helse.wiremock.stubK9Dokument
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -26,13 +26,15 @@ class ApplicationWithMocks {
                 .withLoginServiceSupport()
                 .pleiepengesoknadApiConfig()
                 .build()
-                .stubPleiepengerDokumentHealth()
+                .stubK9DokumentHealth()
+                .stubSparkelIsReady()
                 .stubPleiepengesoknadMottakHealth()
                 .stubOppslagHealth()
                 .stubAktoerRegisterHealth()
                 .stubAktoerRegisterGetAktoerId()
                 .stubLeggSoknadTilProsessering()
-                .stubPleiepengerDokument()
+                .stubK9Dokument()
+                .stubSparkelGetPerson()
                 .stubK9OppslagSoker()
                 .stubK9OppslagBarn()
                 .stubK9OppslagArbeidsgivere()
