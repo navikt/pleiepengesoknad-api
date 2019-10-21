@@ -1,4 +1,4 @@
-package no.nav.helse.barn
+package no.nav.helse.arbeidsgiver
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -18,72 +18,63 @@ import org.slf4j.LoggerFactory
 import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-class BarnGateway (
+class ArbeidsgivereGateway(
     baseUrl: URI,
     apiGatewayApiKey: ApiGatewayApiKey
-    ) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
 
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
-        private const val HENTE_BARN_OPERATION = "hente-barn"
+        private val logger: Logger = LoggerFactory.getLogger("nav.ArbeidsgivereGateway")
+        private const val HENTE_ARBEIDSGIVERE_OPERATION = "hente-arbeidsgivere"
         private val objectMapper = jacksonObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             registerModule(JavaTimeModule())
         }
-        private val attributter = Pair("a", listOf("barn[].aktør_id",
-            "barn[].fornavn",
-            "barn[].mellomnavn",
-            "barn[].etternavn",
-            "barn[].fødselsdato")
-        )
+        private val attributer = Pair("a", listOf( "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
+            "arbeidsgivere[].organisasjoner[].navn"))
     }
 
-    suspend fun hentBarn(
+    internal suspend fun hentArbeidsgivere(
         idToken: IdToken,
-        callId : CallId
-    ) : List<BarnOppslagDTO> {
-        val barnUrl = Url.buildURL(
+        callId: CallId,
+        fraOgMed: LocalDate,
+        tilOgMed: LocalDate
+    ) : Arbeidsgivere {
+        val arbeidsgivereUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
             queryParameters = mapOf(
-                attributter
+                attributer,
+                Pair("fom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed))),
+                Pair("tom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(tilOgMed)))
             )
         ).toString()
 
-        val httpRequest = generateHttpRequest(idToken, barnUrl, callId)
+        val httpRequest = generateHttpRequest(idToken, arbeidsgivereUrl, callId)
 
-        val oppslagRespons = Retry.retry(
-            operation = HENTE_BARN_OPERATION,
+        val arbeidsgivereOppslagRespons = Retry.retry(
+            operation = HENTE_ARBEIDSGIVERE_OPERATION,
             initialDelay = Duration.ofMillis(200),
             factor = 2.0,
             logger = logger
         ) {
             val (request, _, result) = Operation.monitored(
                 app = "pleiepengesoknad-api",
-                operation = HENTE_BARN_OPERATION,
+                operation = HENTE_ARBEIDSGIVERE_OPERATION,
                 resultResolver = { 200 == it.second.statusCode }
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<BarnOppslagResponse>(success)},
+                { success -> objectMapper.readValue<ArbeidsgivereOppslagRespons>(success)},
                 { error ->
                     logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
                     logger.error(error.toString())
-                    throw IllegalStateException("Feil ved henting av informasjon om søkers barn")
+                    throw IllegalStateException("Feil ved henting av arbeidsgiver.")
                 }
             )
         }
-        return oppslagRespons.barn
+        return arbeidsgivereOppslagRespons.arbeidsgivere
     }
-
-    private data class BarnOppslagResponse(val barn: List<BarnOppslagDTO>)
-
-    data class BarnOppslagDTO (
-        val fødselsdato: LocalDate,
-        val fornavn: String,
-        val mellomnavn: String? = null,
-        val etternavn: String,
-        val aktør_id: String
-    )
 }

@@ -5,6 +5,7 @@ import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.person.Person
 import no.nav.helse.person.PersonService
+import no.nav.helse.soker.Soker
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.VedleggService
@@ -26,12 +27,11 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
 
     suspend fun registrer(
         soknad: Soknad,
-        norskIdent: NorskIdent,
         idToken: IdToken,
         callId: CallId
     ) {
         logger.trace("Registrerer søknad. Henter søker")
-        val soker = sokerService.getSoker(norskIdent = norskIdent, callId = callId)
+        val soker: Soker = sokerService.getSoker(idToken = idToken, callId = callId)
 
         logger.trace("Søker hentet. Validerer om søkeren.")
         soker.validate()
@@ -100,7 +100,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             barn.aktoerId != null -> {
                 try {
                     aktoerService.getNorskIdent(
-                        aktoerId = (AktoerId(barn.aktoerId)),
+                        aktoerId = AktoerId(barn.aktoerId),
                         callId = callId
                     )
                 } catch (cause: Throwable) {
@@ -111,6 +111,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             else -> null
         }
     }
+
     private suspend fun barnetsNavn(barn: BarnDetaljer, callId: CallId): String? {
         return barn.navn ?: if (barn.aktoerId != null) try {
             personService.hentPerson(

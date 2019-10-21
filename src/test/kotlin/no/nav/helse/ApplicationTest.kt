@@ -20,6 +20,7 @@ import java.time.Duration
 import java.util.*
 
 private const val fnr = "290990123456"
+private const val ikkeMyndigFnr = "12125012345"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
@@ -39,12 +40,17 @@ class ApplicationTest {
             .pleiepengesoknadApiConfig()
             .build()
             .stubPleiepengerDokumentHealth()
-            .stubSparkelIsReady()
             .stubPleiepengesoknadMottakHealth()
+            .stubOppslagHealth()
+            .stubAktoerRegisterHealth()
             .stubAktoerRegisterGetAktoerId()
             .stubLeggSoknadTilProsessering()
             .stubPleiepengerDokument()
-            .stubSparkelGetArbeidsgivere()
+            .stubK9OppslagSoker()
+            .stubK9OppslagBarn()
+            .stubK9OppslagArbeidsgivere()
+            .stubSparkelIsReady()
+            .stubSparkelGetPerson()
 
         fun getConfig() : ApplicationConfig {
 
@@ -95,7 +101,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Hente arbedisgivere`() {
+    fun `Hente arbeidsgivere`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
@@ -110,13 +116,14 @@ class ApplicationTest {
                     "organisasjonsnummer": "984054564"
                 }]
             }
-            """.trimIndent()
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
         )
     }
 
     @Test
-    fun `Feil ved henting av arbedisgivere skal returnere en tom liste`() {
-        wireMockServer.stubSparkelGetArbeidsgivere(simulerFeil = true)
+    fun `Feil ved henting av arbeidsgivere skal returnere en tom liste`() {
+        wireMockServer.stubK9OppslagArbeidsgivere(simulerFeil = true)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
@@ -125,13 +132,14 @@ class ApplicationTest {
             {
                 "organisasjoner": []
             }
-            """.trimIndent()
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
         )
-        wireMockServer.stubSparkelGetArbeidsgivere()
+        wireMockServer.stubK9OppslagArbeidsgivere()
     }
 
     @Test
-    fun `Hente arbedisgivere uten cookie satt`() {
+    fun `Hente arbeidsgivere uten cookie satt`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
@@ -142,18 +150,18 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Hente arbreidsgivere med for lav ID level`() {
+    fun `Hente arbeidsgivere med for lav ID level`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.Forbidden,
             expectedResponse = null,
-            cookie = getAuthCookie(fnr = fnr, level = 3)
+            cookie = getAuthCookie(fnr = gyldigFodselsnummerA, level = 3)
         )
     }
 
     @Test
-    fun `Hente arbreidsgivere med ugyldig format på ID-Token`() {
+    fun `Hente arbeidsgivere med ugyldig format på ID-Token`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
@@ -170,7 +178,7 @@ class ApplicationTest {
             path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
-            cookie = getAuthCookie(fnr, expiry = -(oneMinuteInMillis))
+            cookie = getAuthCookie(gyldigFodselsnummerA, expiry = -(oneMinuteInMillis))
         )
     }
 
@@ -234,8 +242,6 @@ class ApplicationTest {
 
     @Test
     fun `Henting av barn`() {
-        wireMockServer.stubSparkelGetPerson()
-        wireMockServer.stubSparkelGetBarn()
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
@@ -256,13 +262,13 @@ class ApplicationTest {
                     "aktoer_id": "1000000000002"
                 }]
             }
-            """.trimIndent()
+            """.trimIndent(),
+            cookie = getAuthCookie(fnr)
         )
     }
 
     @Test
     fun `Har ingen registrerte barn`() {
-        wireMockServer.stubSparkelGetBarn(harBarn = false)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
@@ -271,14 +277,14 @@ class ApplicationTest {
             {
                 "barn": []
             }
-            """.trimIndent()
+            """.trimIndent(),
+            cookie = getAuthCookie("07077712345")
         )
-        wireMockServer.stubSparkelGetBarn(harBarn = true)
     }
 
     @Test
-    fun `Feil ved henting av barn skal resultere en tom liste`() {
-        wireMockServer.stubSparkelGetBarn(simulerFeil = true)
+    fun `Feil ved henting av barn skal returnere tom liste`() {
+        wireMockServer.stubK9OppslagBarn(simulerFeil = true)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/barn",
@@ -287,10 +293,26 @@ class ApplicationTest {
             {
                 "barn": []
             }
-            """.trimIndent()
+            """.trimIndent(),
+            cookie = getAuthCookie(fnr)
         )
-        wireMockServer.stubSparkelGetBarn()
+        wireMockServer.stubK9OppslagBarn()
     }
+
+    fun expectedGetSokerJson(
+        fodselsnummer: String,
+        fodselsdato: String = "1997-05-25",
+        myndig : Boolean = true) = """
+    {
+        "etternavn": "MORSEN",
+        "fornavn": "MOR",
+        "mellomnavn": "HEISANN",
+        "fodselsnummer": "$fodselsnummer",
+        "aktoer_id": "12345",
+        "fodselsdato": "$fodselsdato",
+        "myndig": $myndig
+    }
+""".trimIndent()
 
     @Test
     fun `Hente soeker`() {
@@ -304,24 +326,21 @@ class ApplicationTest {
 
     @Test
     fun `Hente soeker som ikke er myndig`() {
-        wireMockServer.stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "/soker",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(
-                fodselsnummer = fnr,
+                fodselsnummer = ikkeMyndigFnr,
                 fodselsdato = ikkeMyndigDato,
                 myndig = false
-            )
+            ),
+            cookie = getAuthCookie(ikkeMyndigFnr)
         )
-        wireMockServer.stubSparkelGetPerson()
     }
 
     @Test
     fun `Sende soknad`() {
-        wireMockServer.stubSparkelGetPerson()
-        wireMockServer.stubSparkelGetBarn()
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -343,8 +362,6 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad uten grad`() {
-        wireMockServer.stubSparkelGetPerson()
-        wireMockServer.stubSparkelGetBarn()
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
@@ -366,8 +383,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad ikke myndig`() {
-        wireMockServer.stubSparkelGetPerson(fodselsdato = ikkeMyndigDato)
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie(ikkeMyndigFnr)
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
 
@@ -392,10 +408,9 @@ class ApplicationTest {
             )
 
         )
-        wireMockServer.stubSparkelGetPerson()
     }
 
-    @Test
+    @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
     fun `Sende soknad med AktørID som ID på barnet`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)

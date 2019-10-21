@@ -7,7 +7,7 @@ import io.ktor.routing.get
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
-import no.nav.helse.general.auth.getNorskIdent
+import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import no.nav.helse.soknad.FraOgMedTilOgMedValidator
 import java.time.LocalDate
@@ -16,7 +16,8 @@ private const val fraOgMedQueryName = "fra_og_med"
 private const val tilOgMedQueryName = "til_og_med"
 
 fun Route.arbeidsgiverApis(
-    service: ArbeidsgiverService
+    arbeidsgivereService: ArbeidsgivereService,
+    idTokenProvider: IdTokenProvider
 ) {
 
     get("/arbeidsgiver") {
@@ -30,19 +31,13 @@ fun Route.arbeidsgiverApis(
             throw Throwblem(ValidationProblemDetails(violations))
         } else {
             call.respond(
-                ArbeidsgiverResponse(
-                    service.getArbeidsgivere(
-                        norskIdent = call.getNorskIdent(),
-                        callId = call.getCallId(),
-                        fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
-                        tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])
-                    )
+                arbeidsgivereService.getArbeidsgivere(
+                    idToken = idTokenProvider.getIdToken(call),
+                    callId = call.getCallId(),
+                    fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
+                    tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])
                 )
             )
         }
     }
 }
-
-data class ArbeidsgiverResponse (
-    val organisasjoner : List<Arbeidsgiver>
-)

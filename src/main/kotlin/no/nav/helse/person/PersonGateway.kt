@@ -20,6 +20,7 @@ import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.general.rest.NavHeaders
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -34,7 +35,7 @@ class PersonGateway(
 ) : HealthCheck {
 
     private companion object {
-        private const val SPARKEL_CORRELATION_ID_HEADER = "Nav-Call-Id"
+        private const val SPARKEL_CORRELATION_ID_HEADER = NavHeaders.CallId
         private val logger: Logger = LoggerFactory.getLogger("nav.PersonGateway")
         private const val HENTE_PERSON_OPERATION = "hente-person"
         private val objectMapper = jacksonObjectMapper().apply {

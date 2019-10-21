@@ -18,6 +18,7 @@ import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.*
 import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.general.rest.NavHeaders
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -28,7 +29,7 @@ import java.time.Duration
  */
 
 class AktoerGateway(
-    baseUrl: URI,
+    private val baseUrl: URI,
     private val accessTokenClient: AccessTokenClient,
     private val henteAktoerIdScopes : Set<String> = setOf("openid"),
     private val apiGatewayApiKey: ApiGatewayApiKey
@@ -41,24 +42,6 @@ class AktoerGateway(
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         }
     }
-
-    private val aktoerIdUrl = Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf("api","v1","identer"),
-        queryParameters = mapOf(
-            Pair("gjeldende", listOf("true")),
-            Pair("identgruppe", listOf("AktoerId"))
-        )
-    ).toString()
-
-    private val fodselsnummerUrl = Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf("api","v1","identer"),
-        queryParameters = mapOf(
-            Pair("gjeldende", listOf("true")),
-            Pair("identgruppe", listOf("NorskIdent"))
-        )
-    ).toString()
 
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
@@ -84,9 +67,9 @@ class AktoerGateway(
             .header(
                 HttpHeaders.Authorization to authorizationHeader,
                 HttpHeaders.Accept to "application/json",
-                "Nav-Consumer-Id" to "pleiepengesoknad-api",
-                "Nav-Personidenter" to personIdent,
-                "Nav-Call-Id" to callId.value,
+                NavHeaders.ConsumerId to "pleiepengesoknad-api",
+                NavHeaders.PersonIdenter to personIdent,
+                NavHeaders.CallId to callId.value,
                 apiGatewayApiKey.headerKey to apiGatewayApiKey.value
             )
 
@@ -135,21 +118,19 @@ class AktoerGateway(
         return aktoerId.value
     }
 
-    suspend fun hentAktoerId(
-        norskIdent: NorskIdent,
-        callId: CallId
-    ) : AktoerId {
-        return AktoerId(get(
-            url = aktoerIdUrl,
-            personIdent = norskIdent.getValue(),
-            callId = callId
-        ))
-    }
-
     suspend fun hentNorskIdent(
         aktoerId: AktoerId,
         callId: CallId
     ) : NorskIdent {
+        val fodselsnummerUrl = Url.buildURL(
+            baseUrl = baseUrl,
+            pathParts = listOf("api","v1","identer"),
+            queryParameters = mapOf(
+                Pair("gjeldende", listOf("true")),
+                Pair("identgruppe", listOf("NorskIdent"))
+            )
+        ).toString()
+
         return get(
             url = fodselsnummerUrl,
             personIdent = aktoerId.value,

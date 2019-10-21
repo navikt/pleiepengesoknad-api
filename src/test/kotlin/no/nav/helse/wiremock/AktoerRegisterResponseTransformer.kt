@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
+import no.nav.helse.general.rest.NavHeaders
 
 private val identMap = mapOf(
     "AktoerId" to "12345",
@@ -18,7 +19,7 @@ class AktoerRegisterResponseTransformer : ResponseTransformer() {
         files: FileSource?,
         parameters: Parameters?
     ): Response {
-        val personIdent = request!!.getHeader("Nav-Personidenter")
+        val personIdent = request!!.getHeader(NavHeaders.PersonIdenter)
         val identGruppe = request.queryParameter("identgruppe").firstValue()
 
 

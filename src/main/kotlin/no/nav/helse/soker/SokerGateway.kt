@@ -1,4 +1,4 @@
-package no.nav.helse.barn
+package no.nav.helse.soker
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -19,71 +19,62 @@ import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 
-class BarnGateway (
+class SokerGateway (
     baseUrl: URI,
     apiGatewayApiKey: ApiGatewayApiKey
-    ) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
 
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
-        private const val HENTE_BARN_OPERATION = "hente-barn"
+        private val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
+        private const val HENTE_SOKER_OPERATION = "hente-soker"
         private val objectMapper = jacksonObjectMapper().apply {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             registerModule(JavaTimeModule())
         }
-        private val attributter = Pair("a", listOf("barn[].aktør_id",
-            "barn[].fornavn",
-            "barn[].mellomnavn",
-            "barn[].etternavn",
-            "barn[].fødselsdato")
-        )
+        private val attributter = Pair("a", listOf("aktør_id", "fornavn", "mellomnavn", "etternavn", "fødselsdato"))
     }
 
-    suspend fun hentBarn(
+    suspend fun hentSoker(
         idToken: IdToken,
         callId : CallId
-    ) : List<BarnOppslagDTO> {
-        val barnUrl = Url.buildURL(
+    ) : SokerOppslagRespons {
+        val sokerUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
             queryParameters = mapOf(
                 attributter
             )
         ).toString()
-
-        val httpRequest = generateHttpRequest(idToken, barnUrl, callId)
+        val httpRequest = generateHttpRequest(idToken, sokerUrl, callId)
 
         val oppslagRespons = Retry.retry(
-            operation = HENTE_BARN_OPERATION,
+            operation = HENTE_SOKER_OPERATION,
             initialDelay = Duration.ofMillis(200),
             factor = 2.0,
             logger = logger
         ) {
             val (request, _, result) = Operation.monitored(
                 app = "pleiepengesoknad-api",
-                operation = HENTE_BARN_OPERATION,
+                operation = HENTE_SOKER_OPERATION,
                 resultResolver = { 200 == it.second.statusCode }
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<BarnOppslagResponse>(success)},
+                { success -> objectMapper.readValue<SokerOppslagRespons>(success)},
                 { error ->
                     logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
                     logger.error(error.toString())
-                    throw IllegalStateException("Feil ved henting av informasjon om søkers barn")
+                    throw IllegalStateException("Feil ved henting av søkers personinformasjon")
                 }
             )
         }
-        return oppslagRespons.barn
+        return oppslagRespons
     }
-
-    private data class BarnOppslagResponse(val barn: List<BarnOppslagDTO>)
-
-    data class BarnOppslagDTO (
-        val fødselsdato: LocalDate,
+    data class SokerOppslagRespons(
+        val aktør_id: String,
         val fornavn: String,
-        val mellomnavn: String? = null,
+        val mellomnavn: String?,
         val etternavn: String,
-        val aktør_id: String
+        val fødselsdato: LocalDate
     )
 }

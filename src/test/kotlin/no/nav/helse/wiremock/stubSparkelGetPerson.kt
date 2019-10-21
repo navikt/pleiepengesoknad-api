@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.HttpHeaders
 
 internal fun WireMockServer.stubSparkelGetPerson(
-    fodselsdato : String = "1997-05-25"
+    aktoerId : String = "10000000001"
 ) : WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlMatching(".*$sparkelPath/api/person/.\\d+"))
@@ -16,38 +16,22 @@ internal fun WireMockServer.stubSparkelGetPerson(
                 WireMock.aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
-                    .withBody(sparkelResponse(fodselsdato))
+                    .withBody(sparkelResponse(aktoerId))
             )
     )
     return this
 }
 
-private fun sparkelResponse(fodselsdato: String) : String = """
+private fun sparkelResponse(aktoerId: String) : String = """
     {
-        "fdato": "$fodselsdato",
+        "fdato": "1997-05-05",
         "statsborgerskap": "NOR",
-        "mellomnavn": "HEISANN",
-        "etternavn": "MORSEN",
-        "aktørId": "1060877738241",
+        "mellomnavn": "TILKNYTTET",
+        "etternavn": "FORELDER",
+        "aktørId": "$aktoerId",
         "bostedsland": "NOR",
-        "fornavn": "MOR",
+        "fornavn": "IKKE",
         "kjønn": "KVINNE",
         "status": "BOSA"
     }
 """.trimIndent()
-
-fun expectedGetSokerJson(
-    fodselsnummer: String,
-    fodselsdato: String = "1997-05-25",
-    myndig : Boolean = true) = """
-    {
-        "etternavn": "MORSEN",
-        "fornavn": "MOR",
-        "mellomnavn": "HEISANN",
-        "fodselsnummer": "$fodselsnummer",
-        "aktoer_id": "12345",
-        "fodselsdato": "$fodselsdato",
-        "myndig": $myndig
-    }
-""".trimIndent()
-
