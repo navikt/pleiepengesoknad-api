@@ -32,10 +32,6 @@ data class Configuration(val config : ApplicationConfig) {
 
     internal fun getK9OppslagUrl() = URI(config.getRequiredString("nav.gateways.k9_oppslag_url", secret = false))
 
-    internal fun getSparkelUrl() = URI(config.getRequiredString("nav.gateways.sparkel_url", secret = false))
-
-    internal fun getAktoerRegisterUrl() = URI(config.getRequiredString("nav.gateways.aktoer_register_url", secret = false))
-
     internal fun getK9DokumentUrl() = URI(config.getRequiredString("nav.gateways.k9_dokument_url", secret = false))
 
     internal fun getPleiepengesoknadMottakBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_mottak_base_url", secret = false))

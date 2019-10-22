@@ -1,10 +1,7 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.aktoer.*
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
-import no.nav.helse.person.Person
-import no.nav.helse.person.PersonService
 import no.nav.helse.soker.Soker
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.validate
@@ -17,8 +14,6 @@ import java.time.ZonedDateTime
 
 class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
                     private val sokerService: SokerService,
-                    private val personService: PersonService,
-                    private val aktoerService: AktoerService,
                     private val vedleggService: VedleggService) {
 
     private companion object {
@@ -47,7 +42,6 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         vedlegg.validerVedlegg(soknad.vedlegg)
 
         logger.trace("Henter barnets norske ident")
-        val barnetsNorskeIdent = barnetsNorskeIdent(soknad.barn, callId)
 
         logger.trace("Legger søknad til prosessering")
 
@@ -58,10 +52,10 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             tilOgMed = soknad.tilOgMed,
             soker = soker,
             barn = BarnDetaljer(
-                fodselsnummer = if (barnetsNorskeIdent is Fodselsnummer) barnetsNorskeIdent.getValue() else null,
-                alternativId = if (barnetsNorskeIdent is AlternativId) barnetsNorskeIdent.getValue() else null,
+                fodselsnummer = soknad.barn.fodselsnummer,
+                alternativId = soknad.barn.alternativId,
                 aktoerId = soknad.barn.aktoerId,
-                navn = barnetsNavn(soknad.barn, callId)
+                navn = soknad.barn.navn
             ),
             vedlegg = vedlegg,
             arbeidsgivere = soknad.arbeidsgivere,
@@ -92,38 +86,6 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
 
         logger.trace("Vedlegg slettet.")
     }
-
-    private suspend fun barnetsNorskeIdent(barn: BarnDetaljer, callId: CallId) : NorskIdent? {
-        return when {
-            barn.fodselsnummer != null -> Fodselsnummer(barn.fodselsnummer)
-            barn.alternativId != null -> AlternativId(barn.alternativId)
-            barn.aktoerId != null -> {
-                try {
-                    aktoerService.getNorskIdent(
-                        aktoerId = AktoerId(barn.aktoerId),
-                        callId = callId
-                    )
-                } catch (cause: Throwable) {
-                    logger.error("Feil på oppslag på barnets norske ident.", cause)
-                    null
-                }
-            }
-            else -> null
-        }
-    }
-
-    private suspend fun barnetsNavn(barn: BarnDetaljer, callId: CallId): String? {
-        return barn.navn ?: if (barn.aktoerId != null) try {
-            personService.hentPerson(
-                aktoerId = AktoerId(barn.aktoerId),
-                callId = callId
-            ).sammensattNavn()
-        } catch (cause: Throwable) {
-            logger.error("Feil ved oppslag på barnets navn.", cause)
-            null
-        } else null
-    }
 }
 
-private fun Person.sammensattNavn() = if (mellomnavn == null) "$fornavn $etternavn" else "$fornavn $mellomnavn $etternavn"
 private fun Soknad.relasjon() = if (relasjonTilBarnet.isNullOrBlank()) "Forelder" else relasjonTilBarnet

@@ -7,35 +7,18 @@ import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.HttpHeaders
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 
-internal const val sparkelPath = "/helse-reverse-proxy/sparkel-mock"
 internal const val k9OppslagPath = "/helse-reverse-proxy/k9-selvbetjening-oppslag-mock"
-private const val aktoerRegisterServerPath = "/helse-reverse-proxy/aktoer-register-mock"
 private const val pleiepengesoknadMottakPath = "/helse-reverse-proxy/pleiepengesoknad-mottak-mock"
 private const val k9DokumentPath = "/k9-dokument-mock"
 
 internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration {
     it
-        .extensions(AktoerRegisterResponseTransformer())
         .extensions(SokerResponseTransformer())
         .extensions(BarnResponseTransformer())
         .extensions(ArbeidsgivereResponseTransformer())
         .extensions(K9DokumentResponseTransformer())
 }
 
-internal fun WireMockServer.stubAktoerRegisterGetAktoerId() : WireMockServer {
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching("$aktoerRegisterServerPath/.*"))
-            .withHeader("x-nav-apiKey", AnythingPattern())
-            .withHeader(HttpHeaders.Authorization, AnythingPattern())
-            .willReturn(
-                WireMock.aResponse()
-                    .withHeader("Content-Type", "application/json")
-                    .withStatus(200)
-                    .withTransformers("aktoer-register")
-            )
-    )
-    return this
-}
 
 internal fun WireMockServer.stubK9OppslagSoker() : WireMockServer {
     WireMock.stubFor(
@@ -124,9 +107,7 @@ private fun WireMockServer.stubHealthEndpointThroughZones(
 
 internal fun WireMockServer.stubK9DokumentHealth() = stubHealthEndpoint("$k9DokumentPath/health")
 internal fun WireMockServer.stubPleiepengesoknadMottakHealth() = stubHealthEndpointThroughZones("$pleiepengesoknadMottakPath/health")
-internal fun WireMockServer.stubSparkelIsReady() = stubHealthEndpointThroughZones("$sparkelPath/isready")
 internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpointThroughZones("$k9OppslagPath/health")
-internal fun WireMockServer.stubAktoerRegisterHealth() = stubHealthEndpointThroughZones("$aktoerRegisterServerPath/health")
 
 internal fun WireMockServer.stubLeggSoknadTilProsessering() : WireMockServer{
     WireMock.stubFor(
@@ -151,8 +132,6 @@ internal fun WireMockServer.stubK9Dokument() : WireMockServer{
     return this
 }
 
-internal fun WireMockServer.getSparkelUrl() = baseUrl() + sparkelPath
 internal fun WireMockServer.getK9OppslagUrl() = baseUrl() + k9OppslagPath
-internal fun WireMockServer.getAktoerRegisterUrl() = baseUrl() + aktoerRegisterServerPath
 internal fun WireMockServer.getPleiepengesoknadMottakUrl() = baseUrl() + pleiepengesoknadMottakPath
 internal fun WireMockServer.getK9DokumentUrl() = baseUrl() + k9DokumentPath
