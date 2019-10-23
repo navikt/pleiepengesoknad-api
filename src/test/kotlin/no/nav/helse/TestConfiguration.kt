@@ -20,7 +20,6 @@ object TestConfiguration {
         corsAdresses : String = "http://localhost:8080"
     ) : Map<String, String> {
 
-        val naisStsWellKnownJson = wireMockServer?.getNaisStsWellKnownUrl()?.getAsJson()
         val loginServiceWellKnownJson = wireMockServer?.getLoginServiceV1WellKnownUrl()?.getAsJson()
 
         val map = mutableMapOf(
