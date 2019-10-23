@@ -41,8 +41,6 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         logger.trace("Vedlegg hentet. Validerer vedleggene.")
         vedlegg.validerVedlegg(soknad.vedlegg)
 
-        logger.trace("Henter barnets norske ident")
-
         logger.trace("Legger søknad til prosessering")
 
         val komplettSoknad = KomplettSoknad(
