@@ -5,7 +5,6 @@ import no.nav.helse.dusseldorf.ktor.testsupport.asArguments
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.wiremock.*
 import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubAktoerRegisterGetAktoerId
 import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
 import no.nav.helse.wiremock.stubK9Dokument
 import org.slf4j.Logger
@@ -27,18 +26,13 @@ class ApplicationWithMocks {
                 .pleiepengesoknadApiConfig()
                 .build()
                 .stubK9DokumentHealth()
-                .stubSparkelIsReady()
                 .stubPleiepengesoknadMottakHealth()
                 .stubOppslagHealth()
-                .stubAktoerRegisterHealth()
-                .stubAktoerRegisterGetAktoerId()
                 .stubLeggSoknadTilProsessering()
                 .stubK9Dokument()
-                .stubSparkelGetPerson()
                 .stubK9OppslagSoker()
                 .stubK9OppslagBarn()
                 .stubK9OppslagArbeidsgivere()
-                .stubSparkelIsReady()
 
             val testArgs = TestConfiguration.asMap(
                 port = 8082,

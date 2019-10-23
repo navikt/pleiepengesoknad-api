@@ -14,15 +14,12 @@ object TestConfiguration {
     fun asMap(
         wireMockServer: WireMockServer? = null,
         port : Int = 8080,
-        sparkelUrl: String? = wireMockServer?.getSparkelUrl(),
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
-        aktoerRegisterBaseUrl : String? = wireMockServer?.getAktoerRegisterUrl(),
         pleiepengesoknadMottakUrl : String? = wireMockServer?.getPleiepengesoknadMottakUrl(),
         k9DokumentUrl : String? = wireMockServer?.getK9DokumentUrl(),
         corsAdresses : String = "http://localhost:8080"
     ) : Map<String, String> {
 
-        val naisStsWellKnownJson = wireMockServer?.getNaisStsWellKnownUrl()?.getAsJson()
         val loginServiceWellKnownJson = wireMockServer?.getLoginServiceV1WellKnownUrl()?.getAsJson()
 
         val map = mutableMapOf(
@@ -30,9 +27,7 @@ object TestConfiguration {
             Pair("nav.authorization.issuer", "${loginServiceWellKnownJson?.getString("issuer")}"),
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
             Pair("nav.authorization.jwks_uri","${loginServiceWellKnownJson?.getString("jwks_uri")}"),
-            Pair("nav.gateways.sparkel_url","$sparkelUrl"),
             Pair("nav.gateways.k9_oppslag_url","$k9OppslagUrl"),
-            Pair("nav.gateways.aktoer_register_url", "$aktoerRegisterBaseUrl"),
             Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
             Pair("nav.gateways.k9_dokument_url", "$k9DokumentUrl"),
             Pair("nav.cors.addresses", corsAdresses),
@@ -41,18 +36,11 @@ object TestConfiguration {
 
         // Clients
         if (wireMockServer != null) {
-            map["nav.auth.clients.0.alias"] = "nais-sts"
-            map["nav.auth.clients.0.client_id"] = "srvpleiepengesokna"
-            map["nav.auth.clients.0.client_secret"] = "very-secret"
-            map["nav.auth.clients.0.token_endpoint"] = "${naisStsWellKnownJson?.getString("token_endpoint")}"
-        }
-
-        if (wireMockServer != null) {
-            map["nav.auth.clients.1.alias"] = "azure-v2"
-            map["nav.auth.clients.1.client_id"] = "pleiepengesoknad-api"
-            map["nav.auth.clients.1.private_key_jwk"] = ClientCredentials.ClientA.privateKeyJwk
-            map["nav.auth.clients.1.certificate_hex_thumbprint"] = ClientCredentials.ClientA.certificateHexThumbprint
-            map["nav.auth.clients.1.discovery_endpoint"] = wireMockServer.getAzureV2WellKnownUrl()
+            map["nav.auth.clients.0.alias"] = "azure-v2"
+            map["nav.auth.clients.0.client_id"] = "pleiepengesoknad-api"
+            map["nav.auth.clients.0.private_key_jwk"] = ClientCredentials.ClientA.privateKeyJwk
+            map["nav.auth.clients.0.certificate_hex_thumbprint"] = ClientCredentials.ClientA.certificateHexThumbprint
+            map["nav.auth.clients.0.discovery_endpoint"] = wireMockServer.getAzureV2WellKnownUrl()
             map["nav.auth.scopes.sende-soknad-til-prosessering"] = "pleiepengesoknad-mottak/.default"
         }
 

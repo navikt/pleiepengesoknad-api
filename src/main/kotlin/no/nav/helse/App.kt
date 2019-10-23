@@ -18,8 +18,6 @@ import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.routing.Routing
 import io.ktor.util.KtorExperimentalAPI
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.helse.aktoer.AktoerGateway
-import no.nav.helse.aktoer.AktoerService
 import no.nav.helse.arbeidsgiver.ArbeidsgivereGateway
 import no.nav.helse.arbeidsgiver.arbeidsgiverApis
 import no.nav.helse.barn.barnApis
@@ -41,8 +39,6 @@ import no.nav.helse.general.systemauth.AccessTokenClientResolver
 import no.nav.helse.arbeidsgiver.ArbeidsgivereService
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
-import no.nav.helse.person.PersonGateway
-import no.nav.helse.person.PersonService
 import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
@@ -70,7 +66,7 @@ fun Application.pleiepengesoknadapi() {
 
     val configuration = Configuration(environment.config)
     val apiGatewayApiKey = configuration.getApiGatewayApiKey()
-    val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients(), apiGatewayApiKey)
+    val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients())
 
     install(ContentNegotiation) {
         jackson {
@@ -127,13 +123,6 @@ fun Application.pleiepengesoknadapi() {
 
     install(Routing) {
 
-        val aktoerGateway = AktoerGateway(
-            baseUrl = configuration.getAktoerRegisterUrl(),
-            accessTokenClient = accessTokenClientResolver.aktoerRegister(),
-            apiGatewayApiKey = apiGatewayApiKey
-        )
-        val aktoerService = AktoerService(aktoerGateway)
-
         val vedleggService = VedleggService(
             k9DokumentGateway = K9DokumentGateway(
                 baseUrl = configuration.getK9DokumentUrl()
@@ -164,16 +153,6 @@ fun Application.pleiepengesoknadapi() {
 
         val sokerService = SokerService(
             sokerGateway = sokerGateway
-        )
-
-        val personGateway = PersonGateway(
-            baseUrl = configuration.getSparkelUrl(),
-            accessTokenClient = accessTokenClientResolver.sparkel(),
-            apiGatewayApiKey = apiGatewayApiKey
-        )
-
-        val personService = PersonService(
-            personGateway = personGateway
         )
 
         authenticate {
@@ -207,23 +186,18 @@ fun Application.pleiepengesoknadapi() {
                 soknadService = SoknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
                     sokerService = sokerService,
-                    personService = personService,
-                    vedleggService = vedleggService,
-                    aktoerService = aktoerService
+                    vedleggService = vedleggService
                 )
             )
         }
 
         val healthService = HealthService(
             healthChecks = setOf(
-                aktoerGateway,
                 pleiepengesoknadMottakGateway,
-                personGateway,
                 HttpRequestHealthCheck(mapOf(
                     configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false),
                     Url.buildURL(baseUrl = configuration.getK9DokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
-                    Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value)),
-                    Url.buildURL(baseUrl = configuration.getSparkelUrl(), pathParts = listOf("isready")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
+                    Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
                 ))
             )
         )
