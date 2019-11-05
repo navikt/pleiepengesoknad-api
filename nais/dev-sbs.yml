@@ -49,8 +49,6 @@ spec:
       value: https://login.microsoftonline.com/navtestb2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten_ver1
     - name: K9_OPPSLAG_REGISTER_URL
       value: https://api-gw-q1.oera.no/helse-reverse-proxy/k9-selvbetjening-oppslag
-    - name: TOKEN_URL
-      value: https://api-gw-q1.oera.no/helse-reverse-proxy/security-token-service/rest/v1/sts/token
     - name: PLEIEPENGESOKNAD_MOTTAK_BASE_URL
       value: https://api-gw-q1.oera.no/helse-reverse-proxy/pleiepengesoknad-mottak
     - name: K9_DOKUMENT_BASE_URL
