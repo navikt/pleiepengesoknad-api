@@ -48,7 +48,6 @@ data class OrganisasjonDetaljer (
     val navn: String? = null,
     val organisasjonsnummer: String,
     val jobberNormaltTimer: Double? = null,
-    val skalJobbeTimer: Double?  = null,
     val skalJobbeProsent: Double?  = null,
     val vetIkkeEkstrainfo: String? = null
 )
@@ -77,7 +76,6 @@ data class Tilsynsordning(
 
 data class Nattevaak(
     val harNattevaak: Boolean? = null,
-    val borteFraJobb: Boolean,
     val tilleggsinformasjon: String?
 )
 
