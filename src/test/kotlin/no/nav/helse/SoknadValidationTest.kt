@@ -37,7 +37,8 @@ class SoknadValidationTest {
         grad: Int?,
         harMedsoker: Boolean,
         dagerPerUkeBorteFraJobb: Double?,
-        skalJobbeProsent: Double?
+        skalJobbeProsent: Double?,
+        jobberNormalTimer: Double?= null
     ) = Soknad(
         sprak = Sprak.nb,
         barn = BarnDetaljer(
@@ -51,7 +52,8 @@ class SoknadValidationTest {
             OrganisasjonDetaljer(
                 navn = "Org",
                 organisasjonsnummer = "917755736",
-                skalJobbeProsent = skalJobbeProsent
+                skalJobbeProsent = skalJobbeProsent,
+                jobberNormaltTimer = jobberNormalTimer
             )
         )),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
