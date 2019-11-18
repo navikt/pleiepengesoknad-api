@@ -61,6 +61,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             relasjonTilBarnet = soknad.relasjon(),
             grad = soknad.grad,
             harMedsoker = soknad.harMedsoker!!,
+            samtidigHjemme = soknad.samtidigHjemme,
             harBekreftetOpplysninger = soknad.harBekreftetOpplysninger,
             harForstattRettigheterOgPlikter = soknad.harForstattRettigheterOgPlikter,
             dagerPerUkeBorteFraJobb = soknad.dagerPerUkeBorteFraJobb,

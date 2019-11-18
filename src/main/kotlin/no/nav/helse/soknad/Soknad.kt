@@ -17,6 +17,7 @@ data class Soknad (
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
     val harMedsoker : Boolean? = null,
+    val samtidigHjemme: Boolean? = null,
     val harForstattRettigheterOgPlikter : Boolean,
     val harBekreftetOpplysninger : Boolean,
     val grad : Int? = null,
@@ -46,7 +47,10 @@ data class BarnDetaljer(
 data class OrganisasjonDetaljer (
     val navn: String? = null,
     val organisasjonsnummer: String,
-    val skalJobbeProsent: Double? = null
+    val jobberNormaltTimer: Double? = null,
+    val skalJobbeTimer: Double?  = null,
+    val skalJobbeProsent: Double?  = null,
+    val vetIkkeEkstrainfo: String? = null
 )
 
 enum class TilsynsordningSvar{ja, nei, vet_ikke}
@@ -73,6 +77,7 @@ data class Tilsynsordning(
 
 data class Nattevaak(
     val harNattevaak: Boolean? = null,
+    val borteFraJobb: Boolean,
     val tilleggsinformasjon: String?
 )
 
