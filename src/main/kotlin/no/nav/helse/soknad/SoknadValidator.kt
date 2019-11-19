@@ -132,7 +132,7 @@ internal fun Soknad.validate() {
     }
 
     // Grad
-    grad?.apply {
+    /*grad?.apply {
         if (this !in MIN_GRAD..MAX_GRAD) {
             violations.add(
                 Violation(
@@ -142,7 +142,7 @@ internal fun Soknad.validate() {
                     invalidValue = this
                 ))
         }
-    }
+    }*/
 
     // Booleans (For å forsikre at de er satt og ikke blir default false)
     fun booleanIkkeSatt(parameterName: String) {
@@ -192,7 +192,7 @@ internal fun Soknad.validate() {
     }
     val medSoker = harMedsoker != null && harMedsoker
 
-    if (!gradSatt) {
+    /*if (!gradSatt) {
         if (medSoker && dagerPerUkeBorteFraJobb == null) {
             violations.add(
                 Violation(
@@ -210,7 +210,7 @@ internal fun Soknad.validate() {
                     invalidValue = dagerPerUkeBorteFraJobb
                 ))
         }
-    }
+    }*/
 
     beredskap?.apply {
         if (beredskap == null) booleanIkkeSatt("beredskap.i_beredskap")
@@ -445,27 +445,16 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean) : MutableSet
             }
         }
 
-        if (!gradSatt) {
-            if (organisasjon.skalJobbeProsent == null && organisasjon.jobberNormaltTimer == null) {
-                violations.add(
-                    Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Skal jobbe prosent og jobber normaltimer må være satt når det ikke er satt grad i søknaden.",
-                        invalidValue = null
-                    )
+        /*if (!gradSatt && organisasjon.skalJobbeProsent == null) {
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Skal jobbe prosent må være satt når det ikke er satt grad i søknaden.",
+                    invalidValue = null
                 )
-            } else if (organisasjon.skalJobbeProsent == null) {
-                violations.add(
-                    Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Skal jobbe prosent må være satt når det ikke er satt grad i søknaden.",
-                        invalidValue = null
-                    )
-                )
-            }
-        }
+            )
+        }*/
     }
     return violations
 }
