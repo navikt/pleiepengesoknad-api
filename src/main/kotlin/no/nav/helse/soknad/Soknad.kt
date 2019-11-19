@@ -8,6 +8,7 @@ import java.time.LocalDate
 enum class Sprak{nb, nn}
 
 data class Soknad (
+    val newVersion: Boolean = false,
     val sprak: Sprak? = null,
     val barn : BarnDetaljer,
     val relasjonTilBarnet : String? = null,

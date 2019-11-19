@@ -93,7 +93,7 @@ class FraOgMedTilOgMedValidator {
 internal fun Soknad.validate() {
     val gradSatt = grad != null
     val violations = barn.validate(relasjonTilBarnet)
-    violations.addAll(arbeidsgivere.organisasjoner.validate(gradSatt))
+    violations.addAll(arbeidsgivere.organisasjoner.validate(gradSatt, newVersion))
     tilsynsordning?.apply {
         violations.addAll(this.validate())
     }
@@ -132,17 +132,19 @@ internal fun Soknad.validate() {
     }
 
     // Grad
-    /*grad?.apply {
-        if (this !in MIN_GRAD..MAX_GRAD) {
-            violations.add(
-                Violation(
-                    parameterName = "grad",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
-                    invalidValue = this
-                ))
+    if (!newVersion) {
+        grad?.apply {
+            if (this !in MIN_GRAD..MAX_GRAD) {
+                violations.add(
+                    Violation(
+                        parameterName = "grad",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
+                        invalidValue = this
+                    ))
+            }
         }
-    }*/
+    }
 
     // Booleans (For å forsikre at de er satt og ikke blir default false)
     fun booleanIkkeSatt(parameterName: String) {
@@ -179,20 +181,22 @@ internal fun Soknad.validate() {
             ))
     }
 
-    dagerPerUkeBorteFraJobb?.apply {
-        if (this !in 0.5..5.0) {
-            violations.add(
-                Violation(
-                    parameterName = "dager_per_uke_borte_fra_jobb",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Dager borte fra jobb må være mellom 0 og 5.",
-                    invalidValue = this
-                ))
+    if (!newVersion) {
+        dagerPerUkeBorteFraJobb?.apply {
+            if (this !in 0.5..5.0) {
+                violations.add(
+                    Violation(
+                        parameterName = "dager_per_uke_borte_fra_jobb",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Dager borte fra jobb må være mellom 0 og 5.",
+                        invalidValue = this
+                    ))
+            }
         }
     }
     val medSoker = harMedsoker != null && harMedsoker
 
-    /*if (!gradSatt) {
+    if (!gradSatt && !newVersion) {
         if (medSoker && dagerPerUkeBorteFraJobb == null) {
             violations.add(
                 Violation(
@@ -210,7 +214,7 @@ internal fun Soknad.validate() {
                     invalidValue = dagerPerUkeBorteFraJobb
                 ))
         }
-    }*/
+    }
 
     beredskap?.apply {
         if (beredskap == null) booleanIkkeSatt("beredskap.i_beredskap")
@@ -407,7 +411,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     return violations
 }
 
-internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean) : MutableSet<Violation> {
+internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: Boolean = false) : MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     mapIndexed { index, organisasjon ->
@@ -432,29 +436,33 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean) : MutableSet
             )
         }
 
-        organisasjon.skalJobbeProsent?.apply {
-            if (this !in 0.0..100.0) {
+        if (!newVersion) {
+            organisasjon.skalJobbeProsent?.apply {
+                if (this !in 0.0..100.0) {
+                    violations.add(
+                        Violation(
+                            parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Skal jobbe prosent må være mellom 0 og 100.",
+                            invalidValue = this
+                        )
+                    )
+                }
+            }
+        }
+
+        if (!newVersion) {
+            if (!gradSatt && organisasjon.skalJobbeProsent == null) {
                 violations.add(
                     Violation(
                         parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
                         parameterType = ParameterType.ENTITY,
-                        reason = "Skal jobbe prosent må være mellom 0 og 100.",
-                        invalidValue = this
+                        reason = "Skal jobbe prosent må være satt når det ikke er satt grad i søknaden.",
+                        invalidValue = null
                     )
                 )
             }
         }
-
-        /*if (!gradSatt && organisasjon.skalJobbeProsent == null) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Skal jobbe prosent må være satt når det ikke er satt grad i søknaden.",
-                    invalidValue = null
-                )
-            )
-        }*/
     }
     return violations
 }
