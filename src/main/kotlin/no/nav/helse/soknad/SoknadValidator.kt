@@ -132,7 +132,7 @@ internal fun Soknad.validate() {
     }
 
     // Grad
-    if (!newVersion) {
+    if (newVersion == null) {
         grad?.apply {
             if (this !in MIN_GRAD..MAX_GRAD) {
                 violations.add(
@@ -181,7 +181,7 @@ internal fun Soknad.validate() {
             ))
     }
 
-    if (!newVersion) {
+    if (newVersion == null) {
         dagerPerUkeBorteFraJobb?.apply {
             if (this !in 0.5..5.0) {
                 violations.add(
@@ -196,7 +196,7 @@ internal fun Soknad.validate() {
     }
     val medSoker = harMedsoker != null && harMedsoker
 
-    if (!gradSatt && !newVersion) {
+    if (!gradSatt && newVersion == null) {
         if (medSoker && dagerPerUkeBorteFraJobb == null) {
             violations.add(
                 Violation(
@@ -252,7 +252,6 @@ internal fun Soknad.validate() {
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
-
 }
 
 internal fun Tilsynsordning.validate() : MutableSet<Violation> {
@@ -411,7 +410,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     return violations
 }
 
-internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: Boolean = false) : MutableSet<Violation> {
+internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: Boolean? = null) : MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     mapIndexed { index, organisasjon ->
@@ -436,7 +435,7 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
             )
         }
 
-        if (!newVersion) {
+        if (newVersion == null) {
             organisasjon.skalJobbeProsent?.apply {
                 if (this !in 0.0..100.0) {
                     violations.add(
@@ -451,7 +450,7 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
             }
         }
 
-        if (!newVersion) {
+        if (newVersion == null) {
             if (!gradSatt && organisasjon.skalJobbeProsent == null) {
                 violations.add(
                     Violation(
