@@ -49,6 +49,7 @@ class SoknadValidationTest {
         vetIkkeEkstrainfo: String? = null,
         jobberNormalTimer: Double?= null
     ) = Soknad(
+        newVersion = null,
         sprak = Sprak.nb,
         barn = BarnDetaljer(
             aktoerId = null,
