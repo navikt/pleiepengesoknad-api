@@ -131,6 +131,7 @@ internal fun Soknad.validate() {
         }
     }
 
+    // TODO: Fjern etter at dette er merget inn i master og er i prod.
     // Grad
     if (newVersion == null) {
         grad?.apply {
@@ -181,6 +182,7 @@ internal fun Soknad.validate() {
             ))
     }
 
+    // TODO: Fjern etter at dette er merget inn i master og er i prod.
     if (newVersion == null) {
         dagerPerUkeBorteFraJobb?.apply {
             if (this !in 0.5..5.0) {
@@ -196,6 +198,7 @@ internal fun Soknad.validate() {
     }
     val medSoker = harMedsoker != null && harMedsoker
 
+    // TODO: Fjern etter at dette er merget inn i master og er i prod.
     if (!gradSatt && newVersion == null) {
         if (medSoker && dagerPerUkeBorteFraJobb == null) {
             violations.add(
@@ -435,6 +438,7 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
             )
         }
 
+        // TODO: Fjern etter at dette er merget inn i master og er i prod.
         if (newVersion == null) {
             organisasjon.skalJobbeProsent?.apply {
                 if (this !in 0.0..100.0) {
@@ -450,6 +454,7 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
             }
         }
 
+        // TODO: Fjern etter at dette er merget inn i master og er i prod.
         if (newVersion == null) {
             if (!gradSatt && organisasjon.skalJobbeProsent == null) {
                 violations.add(
