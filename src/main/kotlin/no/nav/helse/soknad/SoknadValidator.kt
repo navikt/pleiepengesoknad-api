@@ -91,7 +91,6 @@ class FraOgMedTilOgMedValidator {
 }
 
 internal fun Soknad.validate() {
-    println("Søknad har ny vesrsjon: $newVersion")
     val gradSatt = grad != null
     val violations = barn.validate(relasjonTilBarnet)
     violations.addAll(arbeidsgivere.organisasjoner.validate(gradSatt, newVersion))
