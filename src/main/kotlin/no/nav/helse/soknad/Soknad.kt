@@ -47,6 +47,7 @@ data class BarnDetaljer(
 
 data class OrganisasjonDetaljer (
     val navn: String? = null,
+    val skalJobbe: String? = null,
     val organisasjonsnummer: String,
     val jobberNormaltTimer: Double? = null,
     val skalJobbeProsent: Double?  = null,
