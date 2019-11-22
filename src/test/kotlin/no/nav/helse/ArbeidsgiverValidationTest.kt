@@ -54,4 +54,17 @@ class ArbeidsgiverValidationTest {
         ))
         assertEquals(1, organisasjoner.validate(true).size)
     }
+
+    @Test
+    fun `feiler på søkand der arbeidsgiver skalJobbe er annet enn tillatt verdi`() {
+        val organisasjoner = listOf(
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ja"),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "nei"),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "redusert"),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "vet_ikke"),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig1"),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig2")
+        )
+        assertEquals(2, organisasjoner.validate(false, true).size)
+    }
 }

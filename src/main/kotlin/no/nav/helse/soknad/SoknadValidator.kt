@@ -4,6 +4,7 @@ import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
@@ -463,6 +464,23 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
                         parameterType = ParameterType.ENTITY,
                         reason = "Skal jobbe prosent må være satt når det ikke er satt grad i søknaden.",
                         invalidValue = null
+                    )
+                )
+            }
+        }
+
+        if (newVersion != null && newVersion == true) {
+            when (organisasjon.skalJobbe) {
+                "ja" -> {}
+                "nei" -> {}
+                "redusert" -> {}
+                "vet_ikke" -> {}
+                else -> violations.add(
+                    Violation(
+                        parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vet_ikke",
+                        invalidValue = organisasjon.skalJobbe
                     )
                 )
             }
