@@ -18,6 +18,7 @@ data class KomplettSoknad(
     val relasjonTilBarnet : String,
     val grad : Int?,
     val harMedsoker : Boolean,
+    val samtidigHjemme: Boolean?,
     val harForstattRettigheterOgPlikter : Boolean,
     val harBekreftetOpplysninger : Boolean,
     val dagerPerUkeBorteFraJobb: Double?,

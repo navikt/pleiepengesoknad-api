@@ -4,7 +4,9 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.soknad.*
 import java.net.URL
 import java.time.LocalDate
+import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class SoknadValidationTest {
 
@@ -33,12 +35,21 @@ class SoknadValidationTest {
         soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null).validate()
     }
 
+    @Test
+    fun `validering på gradering skal ikke slå inn, når det er ny versjon`() {
+        soknad(grad = null, harMedsoker = true, samtidigHjemme = true, jobberNormalTimer = 30.0, skalJobbeProsent = 50.0, vetIkkeEkstrainfo = "Liker å skulke")
+    }
+
     private fun soknad(
         grad: Int?,
         harMedsoker: Boolean,
-        dagerPerUkeBorteFraJobb: Double?,
-        skalJobbeProsent: Double?
+        samtidigHjemme: Boolean? = false,
+        dagerPerUkeBorteFraJobb: Double? = null,
+        skalJobbeProsent: Double?,
+        vetIkkeEkstrainfo: String? = null,
+        jobberNormalTimer: Double?= null
     ) = Soknad(
+        newVersion = null,
         sprak = Sprak.nb,
         barn = BarnDetaljer(
             aktoerId = null,
@@ -51,7 +62,9 @@ class SoknadValidationTest {
             OrganisasjonDetaljer(
                 navn = "Org",
                 organisasjonsnummer = "917755736",
-                skalJobbeProsent = skalJobbeProsent
+                skalJobbeProsent = skalJobbeProsent,
+                jobberNormaltTimer = jobberNormalTimer,
+                vetIkkeEkstrainfo = vetIkkeEkstrainfo
             )
         )),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
@@ -62,6 +75,8 @@ class SoknadValidationTest {
             skalBoIUtlandetNeste12Mnd = true
         ),
         harMedsoker = harMedsoker,
+        samtidigHjemme = samtidigHjemme,
+
         harBekreftetOpplysninger = true,
         harForstattRettigheterOgPlikter = true,
         dagerPerUkeBorteFraJobb =dagerPerUkeBorteFraJobb,

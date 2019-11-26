@@ -28,6 +28,7 @@ fun Route.soknadApis(
         logger.trace("Mottatt ny søknad. Mapper søknad.")
         val soknad = call.receive<Soknad>()
         logger.trace("Søknad mappet. Validerer")
+        logger.info("Debugging newVersion=${soknad.newVersion}")
         soknad.validate()
         logger.trace("Validering OK. Registrerer søknad.")
 

@@ -8,6 +8,7 @@ import java.time.LocalDate
 enum class Sprak{nb, nn}
 
 data class Soknad (
+    val newVersion: Boolean?,
     val sprak: Sprak? = null,
     val barn : BarnDetaljer,
     val relasjonTilBarnet : String? = null,
@@ -17,6 +18,7 @@ data class Soknad (
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
     val harMedsoker : Boolean? = null,
+    val samtidigHjemme: Boolean? = null,
     val harForstattRettigheterOgPlikter : Boolean,
     val harBekreftetOpplysninger : Boolean,
     val grad : Int? = null,
@@ -45,8 +47,11 @@ data class BarnDetaljer(
 
 data class OrganisasjonDetaljer (
     val navn: String? = null,
+    val skalJobbe: String? = null,
     val organisasjonsnummer: String,
-    val skalJobbeProsent: Double? = null
+    val jobberNormaltTimer: Double? = null,
+    val skalJobbeProsent: Double?  = null,
+    val vetIkkeEkstrainfo: String? = null
 )
 
 enum class TilsynsordningSvar{ja, nei, vet_ikke}
