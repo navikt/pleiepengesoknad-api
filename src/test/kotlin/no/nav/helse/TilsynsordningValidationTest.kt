@@ -36,20 +36,6 @@ class TilsynsordningValidationTest {
     }
 
     @Test
-    fun `Tilsynsordning Ja - Ingen dager satt`() {
-        Tilsynsordning(
-            svar = TilsynsordningSvar.ja,
-            ja = TilsynsordningJa(
-                mandag = null,
-                tirsdag = null,
-                onsdag = null,
-                torsdag = null,
-                fredag = null
-            )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.ja"))
-    }
-
-    @Test
     fun `Tilsynsordning Ja - For lang fritekst`() {
         medGyldigeDagerSatt(tilleggsinformasjon = ForLangFritekst).validate().assertFeilPaa(listOf("tilsynsordning.ja.tilleggsinformasjon"))
     }

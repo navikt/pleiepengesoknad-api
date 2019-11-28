@@ -284,16 +284,6 @@ internal fun Tilsynsordning.validate() : MutableSet<Violation> {
     }
 
     ja?.apply {
-        if (listOfNotNull(mandag, tirsdag, onsdag, torsdag, fredag).isEmpty()) {
-            violations.add(
-                Violation(
-                    parameterName = "tilsynsordning.ja",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Minst en dag må være satt når barnet skal være i tilsynsordning.",
-                    invalidValue = this
-                )
-            )
-        }
         tilleggsinformasjon?.apply {
             if (length > MAX_FRITEKST_TEGN) {
                 violations.add(
