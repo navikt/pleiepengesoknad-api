@@ -5,37 +5,38 @@ import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
 
-enum class Sprak{nb, nn}
+enum class Sprak { nb, nn }
 
-data class Soknad (
+data class Soknad(
     val newVersion: Boolean?,
     val sprak: Sprak? = null,
-    val barn : BarnDetaljer,
-    val relasjonTilBarnet : String? = null,
-    val arbeidsgivere : ArbeidsgiverDetaljer,
-    val vedlegg : List<URL>,
+    val barn: BarnDetaljer,
+    val relasjonTilBarnet: String? = null,
+    val arbeidsgivere: ArbeidsgiverDetaljer,
+    val vedlegg: List<URL>,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
-    val harMedsoker : Boolean? = null,
+    val harMedsoker: Boolean? = null,
     val samtidigHjemme: Boolean? = null,
-    val harForstattRettigheterOgPlikter : Boolean,
-    val harBekreftetOpplysninger : Boolean,
-    val grad : Int? = null,
+    val harForstattRettigheterOgPlikter: Boolean,
+    val harBekreftetOpplysninger: Boolean,
+    val grad: Int? = null,
     val dagerPerUkeBorteFraJobb: Double? = null,
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
     val beredskap: Beredskap? = null
 )
+
 data class ArbeidsgiverDetaljer(
-    val organisasjoner : List<OrganisasjonDetaljer>
+    val organisasjoner: List<OrganisasjonDetaljer>
 )
 
 data class Medlemskap(
     @JsonProperty("har_bodd_i_utlandet_siste_12_mnd")
-    val harBoddIUtlandetSiste12Mnd : Boolean? = null,
+    val harBoddIUtlandetSiste12Mnd: Boolean? = null,
     @JsonProperty("skal_bo_i_utlandet_neste_12_mnd")
-    val skalBoIUtlandetNeste12Mnd : Boolean? = null
+    val skalBoIUtlandetNeste12Mnd: Boolean? = null
 )
 
 data class BarnDetaljer(
@@ -43,19 +44,23 @@ data class BarnDetaljer(
     val alternativId: String?,
     val aktoerId: String?,
     val navn: String?
-)
+) {
+    override fun toString(): String {
+        return "BarnDetaljer(aktoerId=${aktoerId}, navn=${navn}"
+    }
+}
 
-data class OrganisasjonDetaljer (
+data class OrganisasjonDetaljer(
     val navn: String? = null,
     val skalJobbe: String? = null,
     val organisasjonsnummer: String,
     val jobberNormaltTimer: Double? = null,
-    val skalJobbeProsent: Double?  = null,
+    val skalJobbeProsent: Double? = null,
     val vetIkkeEkstrainfo: String? = null
 )
 
-enum class TilsynsordningSvar{ja, nei, vet_ikke}
-enum class TilsynsordningVetIkkeSvar{er_sporadisk, er_ikke_laget_en_plan, annet}
+enum class TilsynsordningSvar { ja, nei, vet_ikke }
+enum class TilsynsordningVetIkkeSvar { er_sporadisk, er_ikke_laget_en_plan, annet }
 
 data class TilsynsordningJa(
     val mandag: Duration?,
@@ -64,11 +69,20 @@ data class TilsynsordningJa(
     val torsdag: Duration?,
     val fredag: Duration?,
     val tilleggsinformasjon: String? = null
-)
+) {
+    override fun toString(): String {
+        return "TilsynsordningJa(mandag=${mandag}, tirsdag=${tirsdag}, onsdag=${onsdag}, torsdag=${torsdag}, fredag=${fredag})"
+    }
+}
+
 data class TilsynsordningVetIkke(
     val svar: TilsynsordningVetIkkeSvar,
     val annet: String? = null
-)
+) {
+    override fun toString(): String {
+        return "TilsynsordningVetIkke(svar=${svar})"
+    }
+}
 
 data class Tilsynsordning(
     val svar: TilsynsordningSvar,
@@ -79,10 +93,18 @@ data class Tilsynsordning(
 data class Nattevaak(
     val harNattevaak: Boolean? = null,
     val tilleggsinformasjon: String?
-)
+) {
+    override fun toString(): String {
+        return "Nattevaak(harNattevaak=${harNattevaak})"
+    }
+}
 
 data class Beredskap(
     @JsonProperty("i_beredskap")
     val beredskap: Boolean? = null,
     val tilleggsinformasjon: String?
-)
+) {
+    override fun toString(): String {
+        return "Beredskap(beredskap=${beredskap})"
+    }
+}

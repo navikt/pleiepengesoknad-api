@@ -5,6 +5,7 @@ import no.nav.helse.soknad.*
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class TilsynsordningValidationTest {
@@ -37,14 +38,30 @@ class TilsynsordningValidationTest {
 
     @Test
     fun `Tilsynsordning Ja - For lang fritekst`() {
-        medGyldigeDagerSatt(tilleggsinformasjon = ForLangFritekst).validate().assertFeilPaa(listOf("tilsynsordning.ja.tilleggsinformasjon"))
+        medGyldigeDagerSatt(tilleggsinformasjon = ForLangFritekst).validate()
+            .assertFeilPaa(listOf("tilsynsordning.ja.tilleggsinformasjon"))
     }
 
     @Test
     fun `Tilsynsordning Ja - vet_ikke satt`() {
-        medGyldigeDagerSatt(vetIkke = TilsynsordningVetIkke(
-            svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
-        )).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke"))
+        medGyldigeDagerSatt(
+            vetIkke = TilsynsordningVetIkke(
+                svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
+            )
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke"))
+    }
+
+    @Test
+    fun `Tilsynsordning Ja - tilleggsinformasjon skal ikke inneholde data i felt`() {
+        Tilsynsordning(svar = TilsynsordningSvar.ja, ja = TilsynsordningJa(
+            null,
+            null,
+            null,
+            null,
+            null,
+            ForLangFritekst
+        )).validate()
+            .forEach { assertNotEquals(ForLangFritekst, it.invalidValue) }
     }
 
     @Test
@@ -133,8 +150,18 @@ class TilsynsordningValidationTest {
         ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke.annet"))
     }
 
+    @Test
+    fun `Tilsynsordning Vet ikke - annet skal ikke inneholde data i felt`() {
+        Tilsynsordning(
+            svar = TilsynsordningSvar.vet_ikke,
+            vetIkke = TilsynsordningVetIkke(
+                svar = TilsynsordningVetIkkeSvar.annet,
+                annet = ForLangFritekst
+            )).validate()
+            .forEach { assertNotEquals(ForLangFritekst, it.invalidValue) }
+    }
 
-    private fun MutableSet<Violation>.assertFeilPaa(parameterNames : List<String> = emptyList()) {
+    private fun MutableSet<Violation>.assertFeilPaa(parameterNames: List<String> = emptyList()) {
         assertEquals(size, parameterNames.size)
 
         forEach {
@@ -142,6 +169,7 @@ class TilsynsordningValidationTest {
         }
 
     }
+
     private fun MutableSet<Violation>.assertIngenFeil() = assertTrue(isEmpty())
 
     private fun medGyldigeDagerSatt(
