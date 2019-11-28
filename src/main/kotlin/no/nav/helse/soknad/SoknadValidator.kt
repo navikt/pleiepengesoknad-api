@@ -229,7 +229,7 @@ internal fun Soknad.validate() {
                         parameterName = "beredskap.tilleggsinformasjon",
                         parameterType = ParameterType.ENTITY,
                         reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
-                        invalidValue = this
+                        invalidValue = length
                     )
                 )
             }
@@ -245,7 +245,7 @@ internal fun Soknad.validate() {
                         parameterName = "nattevaak.tilleggsinformasjon",
                         parameterType = ParameterType.ENTITY,
                         reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
-                        invalidValue = this
+                        invalidValue = length
                     )
                 )
             }
@@ -267,7 +267,7 @@ internal fun Tilsynsordning.validate() : MutableSet<Violation> {
                 parameterName = "tilsynsordning.ja",
                 parameterType = ParameterType.ENTITY,
                 reason = "Skal kun settes om svar er 'ja'",
-                invalidValue = ja
+                invalidValue = ja.toString()
             )
         )
     }
@@ -278,7 +278,7 @@ internal fun Tilsynsordning.validate() : MutableSet<Violation> {
                 parameterName = "tilsynsordning.vet_ikke",
                 parameterType = ParameterType.ENTITY,
                 reason = "Skal kun settes om svar er 'vet_ikke'",
-                invalidValue = vetIkke
+                invalidValue = vetIkke.toString()
             )
         )
     }
@@ -291,7 +291,7 @@ internal fun Tilsynsordning.validate() : MutableSet<Violation> {
                         parameterName = "tilsynsordning.ja.tilleggsinformasjon",
                         parameterType = ParameterType.ENTITY,
                         reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
-                        invalidValue = this
+                        invalidValue = length
                     )
                 )
             }
@@ -305,7 +305,7 @@ internal fun Tilsynsordning.validate() : MutableSet<Violation> {
                     parameterName = "tilsynsordning.vet_ikke.annet",
                     parameterType = ParameterType.ENTITY,
                     reason = "Skal kun settes om svar er 'annet''",
-                    invalidValue = annet
+                    invalidValue = svar
                 )
             )
         }
@@ -316,7 +316,7 @@ internal fun Tilsynsordning.validate() : MutableSet<Violation> {
                     parameterName = "tilsynsordning.vet_ikke.annet",
                     parameterType = ParameterType.ENTITY,
                     reason = "Må settes når svar er 'annet",
-                    invalidValue = annet
+                    invalidValue = svar
                 )
             )
         }
@@ -328,7 +328,7 @@ internal fun Tilsynsordning.validate() : MutableSet<Violation> {
                         parameterName = "tilsynsordning.vet_ikke.annet",
                         parameterType = ParameterType.ENTITY,
                         reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
-                        invalidValue = this
+                        invalidValue = length
                     )
                 )
             }
