@@ -13,7 +13,7 @@ data class Soknad(
     val barn: BarnDetaljer,
     val relasjonTilBarnet: String? = null,
     val arbeidsgivere: ArbeidsgiverDetaljer,
-    val vedlegg: List<URL>,
+    private val vedlegg: List<URL>,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
@@ -26,7 +26,10 @@ data class Soknad(
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
     val beredskap: Beredskap? = null
-)
+) {
+    // Kan oppstå url = null etter Jackson deserialisering
+    internal fun vedlegg() = vedlegg.filterNotNull()
+}
 
 data class ArbeidsgiverDetaljer(
     val organisasjoner: List<OrganisasjonDetaljer>

@@ -352,7 +352,6 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
             )
-
         )
     }
 
@@ -556,11 +555,6 @@ class ApplicationTest {
                         "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
                     }, {
                         "type": "entity",
-                        "name": "vedlegg[1]",
-                        "reason": "Ikke gyldig vedlegg URL.",
-                        "invalid_value": null
-                    }, {
-                        "type": "entity",
                         "name": "grad",
                         "reason": "Grad må være mellom 20 og 100.",
                         "invalid_value": 120
@@ -649,6 +643,57 @@ class ApplicationTest {
             contentType = "image/png",
             fileName = "big_picture.png",
             expectedCode = HttpStatusCode.PayloadTooLarge
+        )
+    }
+
+    @Test
+    fun `Om en av vedleggsreferansene er null skal søknaden fortsatt aksepteres`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                vedleggUrl2 = null
+            )
+        )
+    }
+
+    @Test
+    fun `Om alle vedleggene er null skal søknaden avvises`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                    "type": "/problem-details/invalid-request-parameters",
+                    "title": "invalid-request-parameters",
+                    "status": 400,
+                    "detail": "Requesten inneholder ugyldige paramtere.",
+                    "instance": "about:blank",
+                    "invalid_parameters": [{
+                        "type": "entity",
+                        "name": "vedlegg",
+                        "reason": "Det må sendes minst et vedlegg.",
+                        "invalid_value": []
+	                }]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = null,
+                vedleggUrl2 = null
+            )
         )
     }
 

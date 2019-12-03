@@ -8,8 +8,8 @@ class SoknadUtils {
             fodselsnummer: String,
             fraOgMed: String? = "2018-10-10",
             tilOgMed: String? = "2019-10-10",
-            vedleggUrl1: String,
-            vedleggUrl2: String,
+            vedleggUrl1: String?,
+            vedleggUrl2: String?,
             utenGrad: Boolean = false) : String {
             return """
                 {
@@ -34,8 +34,8 @@ class SoknadUtils {
                         ]
                     },
                     "vedlegg": [
-                        "$vedleggUrl1",
-                        "$vedleggUrl2"
+                        ${if (vedleggUrl1 != null) """"$vedleggUrl1"""" else null},
+                        ${if (vedleggUrl2 != null) """"$vedleggUrl2"""" else null}
                     ],
                     "medlemskap" : {
                         "har_bodd_i_utlandet_siste_12_mnd" : false,

@@ -31,15 +31,15 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         logger.trace("Søker hentet. Validerer om søkeren.")
         soker.validate()
 
-        logger.trace("Validert Søker. Henter ${soknad.vedlegg.size} vedlegg.")
+        logger.trace("Validert Søker. Henter ${soknad.vedlegg().size} vedlegg.")
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
-            vedleggUrls = soknad.vedlegg,
+            vedleggUrls = soknad.vedlegg(),
             callId = callId
         )
 
         logger.trace("Vedlegg hentet. Validerer vedleggene.")
-        vedlegg.validerVedlegg(soknad.vedlegg)
+        vedlegg.validerVedlegg(soknad.vedlegg())
 
         logger.trace("Legger søknad til prosessering")
 
@@ -78,7 +78,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
 
         vedleggService.slettVedleg(
-            vedleggUrls = soknad.vedlegg,
+            vedleggUrls = soknad.vedlegg(),
             callId = callId,
             idToken = idToken
         )

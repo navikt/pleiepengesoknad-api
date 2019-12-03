@@ -4,7 +4,6 @@ import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
@@ -107,20 +106,19 @@ internal fun Soknad.validate() {
     ))
 
     // Vedlegg
-    if (vedlegg.isEmpty()) {
+    if (vedlegg().isEmpty()) {
         violations.add(
             Violation(
                 parameterName = "vedlegg",
                 parameterType = ParameterType.ENTITY,
                 reason = "Det må sendes minst et vedlegg.",
-                invalidValue = vedlegg
+                invalidValue = vedlegg()
             )
         )
     }
 
-    vedlegg.mapIndexed { index, url ->
-        // Kan oppstå url = null etter Jackson deserialisering
-        if (url == null || !url.path.matches(Regex("/vedlegg/.*"))) {
+    vedlegg().mapIndexed { index, url ->
+        if (!url.path.matches(Regex("/vedlegg/.*"))) {
             violations.add(
                 Violation(
                     parameterName = "vedlegg[$index]",
