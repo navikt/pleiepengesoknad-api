@@ -4,7 +4,6 @@ import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
@@ -116,6 +115,40 @@ internal fun Soknad.validate() {
                 invalidValue = vedlegg
             )
         )
+    }
+
+    utenlandsopphold.mapIndexed { index, utenlandsopphold ->
+        val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
+        if (fraDataErEtterTilDato) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Til dato kan ikke være før fra dato",
+                    invalidValue = "fraOgMed eller tilOgMed"
+                )
+            )
+        }
+        if (utenlandsopphold.landkode.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landkode er ikke satt",
+                    invalidValue = "landkode"
+                )
+            )
+        }
+        if (utenlandsopphold.landnavn.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landnavn er ikke satt",
+                    invalidValue = "landnavn"
+                )
+            )
+        }
     }
 
     vedlegg.mapIndexed { index, url ->

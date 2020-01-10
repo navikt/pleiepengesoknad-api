@@ -1,5 +1,6 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.time.Duration
@@ -25,7 +26,9 @@ data class Soknad(
     val dagerPerUkeBorteFraJobb: Double? = null,
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
-    val beredskap: Beredskap? = null
+    val beredskap: Beredskap? = null,
+    val utenlandsopphold: List<Utenlandsopphold> = listOf()
+
 )
 
 data class ArbeidsgiverDetaljer(
@@ -106,5 +109,16 @@ data class Beredskap(
 ) {
     override fun toString(): String {
         return "Beredskap(beredskap=${beredskap})"
+    }
+}
+
+data class Utenlandsopphold(
+    @JsonFormat(pattern = "yyyy-MM-dd") val fraOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd") val tilOgMed: LocalDate,
+    val landkode: String,
+    val landnavn: String
+) {
+    override fun toString(): String {
+        return "Utenlandsopphold(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed, landkode='$landkode', landnavn='$landnavn')"
     }
 }

@@ -4,40 +4,81 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.soknad.*
 import java.net.URL
 import java.time.LocalDate
-import kotlin.test.Ignore
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class SoknadValidationTest {
 
     @Test
     fun `Håndterer søknader med grad`() {
-        soknad(grad = 50, harMedsoker = true, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null).validate()
+        soknad(
+            grad = 50, harMedsoker = true, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null, utenlandsopphold = listOf()
+        ).validate()
     }
 
     @Test
     fun `Håndterer søknad uten grad og med medsøker`() {
-        soknad(grad = null, harMedsoker = true, dagerPerUkeBorteFraJobb = 5.0, skalJobbeProsent = 22.00).validate()
+        soknad(
+            grad = null, harMedsoker = true, dagerPerUkeBorteFraJobb = 5.0, skalJobbeProsent = 22.00, utenlandsopphold = listOf()
+        ).validate()
     }
 
     @Test
     fun `Håndterer søknad uten grad og uten medsøker`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = 22.00).validate()
+        soknad(
+            grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = 22.00, utenlandsopphold = listOf()
+        ).validate()
     }
 
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad uten grad og uten medsøker, men med dager per uke borte fra jobb satt`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = 2.5, skalJobbeProsent = 22.00).validate()
+        soknad(
+            grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = 2.5, skalJobbeProsent = 22.00, utenlandsopphold = listOf()
+        ).validate()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Feiler på søknad dersom utenlandsopphold har til og fra dato som ikke kommer i rett rekkefølge`() {
+        soknad(
+            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null, utenlandsopphold = listOf(Utenlandsopphold(
+                LocalDate.of(2020,1,2),LocalDate.of(2020,1,1), "no", "Norge"
+            ))
+        ).validate()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Feiler på søknad dersom utenlandsopphold mangler landkode`() {
+        soknad(
+            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null, utenlandsopphold = listOf(Utenlandsopphold(
+                LocalDate.of(2020,1,2),LocalDate.of(2020,1,1), "", "Norge"
+            ))
+        ).validate()
+    }
+
+    @Test
+    fun `Skal ikke feile ved opphold på en dag`() {
+        soknad(
+            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null, utenlandsopphold = listOf(Utenlandsopphold(
+                LocalDate.of(2020,1,2), LocalDate.of(2020,1,2), "no", "Norge"
+            ))
+        ).validate()
     }
 
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad uten grad, hvor skal jobbe prosent ikke er satt`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null).validate()
+        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null, utenlandsopphold = listOf()).validate()
     }
 
     @Test
     fun `validering på gradering skal ikke slå inn, når det er ny versjon`() {
-        soknad(grad = null, harMedsoker = true, samtidigHjemme = true, jobberNormalTimer = 30.0, skalJobbeProsent = 50.0, vetIkkeEkstrainfo = "Liker å skulke")
+        soknad(
+            grad = null,
+            harMedsoker = true,
+            samtidigHjemme = true,
+            skalJobbeProsent = 50.0,
+            vetIkkeEkstrainfo = "Liker å skulke",
+            jobberNormalTimer = 30.0,
+            utenlandsopphold = listOf()
+        )
     }
 
     private fun soknad(
@@ -47,7 +88,8 @@ class SoknadValidationTest {
         dagerPerUkeBorteFraJobb: Double? = null,
         skalJobbeProsent: Double?,
         vetIkkeEkstrainfo: String? = null,
-        jobberNormalTimer: Double?= null
+        jobberNormalTimer: Double? = null,
+        utenlandsopphold: List<Utenlandsopphold>
     ) = Soknad(
         newVersion = null,
         sprak = Sprak.nb,
@@ -81,6 +123,7 @@ class SoknadValidationTest {
         harForstattRettigheterOgPlikter = true,
         dagerPerUkeBorteFraJobb =dagerPerUkeBorteFraJobb,
         grad = grad,
-        tilsynsordning = null
+        tilsynsordning = null,
+        utenlandsopphold = utenlandsopphold
     )
 }
