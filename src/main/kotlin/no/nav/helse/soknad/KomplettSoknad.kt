@@ -24,6 +24,5 @@ data class KomplettSoknad(
     val dagerPerUkeBorteFraJobb: Double?,
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak?,
-    val beredskap: Beredskap?,
-    val utenlandsopphold: List<Utenlandsopphold>
+    val beredskap: Beredskap?
 )

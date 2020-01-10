@@ -26,9 +26,7 @@ data class Soknad(
     val dagerPerUkeBorteFraJobb: Double? = null,
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
-    val beredskap: Beredskap? = null,
-    val utenlandsopphold: List<Utenlandsopphold> = listOf()
-
+    val beredskap: Beredskap? = null
 )
 
 data class ArbeidsgiverDetaljer(
@@ -38,8 +36,12 @@ data class ArbeidsgiverDetaljer(
 data class Medlemskap(
     @JsonProperty("har_bodd_i_utlandet_siste_12_mnd")
     val harBoddIUtlandetSiste12Mnd: Boolean? = null,
+    @JsonProperty("utenlandsopphold_siste_12_mnd")
+    val utenlandsoppholdSiste12Mnd: List<Utenlandsopphold> = listOf(),
     @JsonProperty("skal_bo_i_utlandet_neste_12_mnd")
-    val skalBoIUtlandetNeste12Mnd: Boolean? = null
+    val skalBoIUtlandetNeste12Mnd: Boolean? = null,
+    @JsonProperty("utenlandsopphold_neste_12_mnd")
+    val utenlandsoppholdNeste12Mnd: List<Utenlandsopphold> = listOf()
 )
 
 data class BarnDetaljer(
