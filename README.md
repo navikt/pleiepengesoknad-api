@@ -45,10 +45,12 @@ POST @ /soknad -> 202 Response
 		"organisasjoner": [{
 			"navn": "Telenor",
 			"organisasjonsnummer": "973861778",
+			"skal_jobbe": 'ja',
 			"skal_jobber_prosent": 50.24
 		}, {
 			"navn": "Maxbo",
 			"organisasjonsnummer": "910831143",
+			"skal_jobbe": 'ja',
 			"skal_jobbe_prosent": 25.0
 		}]
 	},
