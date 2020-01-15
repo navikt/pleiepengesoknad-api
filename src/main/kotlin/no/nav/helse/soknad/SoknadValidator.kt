@@ -364,13 +364,13 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
         )
     }
 
-    if (alternativId != null && (alternativId.erBlankEllerLengreEnn(50) || !alternativId.erKunSiffer())) {
+    if (fodselsdato != null && (fodselsdato.isAfter(LocalDate.now()))) {
         violations.add(
             Violation(
-                parameterName = "barn.alternativ_id",
+                parameterName = "barn.fodselsdato",
                 parameterType = ParameterType.ENTITY,
-                reason = "Ikke gyldig alternativ id. Kan kun inneholde tall og være maks 50 lang.",
-                invalidValue = alternativId
+                reason = "Fødselsdato kan ikke være in fremtiden",
+                invalidValue = fodselsdato
             )
         )
     }
@@ -480,7 +480,7 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
 }
 
 private fun BarnDetaljer.gyldigAntallIder() : Boolean {
-    val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer, alternativId).size
+    val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer, fodselsdato).size
     return antallIderSatt == 0 || antallIderSatt == 1
 }
 
