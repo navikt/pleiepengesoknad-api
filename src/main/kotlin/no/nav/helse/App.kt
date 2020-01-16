@@ -39,6 +39,8 @@ import no.nav.helse.general.systemauth.AccessTokenClientResolver
 import no.nav.helse.arbeidsgiver.ArbeidsgivereService
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
+import no.nav.helse.mellomlagring.MellomlagringService
+import no.nav.helse.mellomlagring.mellomlagringApis
 import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
@@ -173,6 +175,11 @@ fun Application.pleiepengesoknadapi() {
                 arbeidsgivereService = ArbeidsgivereService(
                     arbeidsgivereGateway = arbeidsgivereGateway
                 ),
+                idTokenProvider = idTokenProvider
+            )
+
+            mellomlagringApis(
+                mellomlagringService = MellomlagringService(),
                 idTokenProvider = idTokenProvider
             )
 
