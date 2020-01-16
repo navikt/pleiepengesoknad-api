@@ -1,5 +1,6 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.time.Duration
@@ -41,12 +42,13 @@ data class Medlemskap(
 
 data class BarnDetaljer(
     val fodselsnummer: String?,
-    val alternativId: String?,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val fodselsdato: LocalDate?,
     val aktoerId: String?,
     val navn: String?
 ) {
     override fun toString(): String {
-        return "BarnDetaljer(aktoerId=${aktoerId}, navn=${navn}"
+        return "BarnDetaljer(aktoerId=${aktoerId}, navn=${navn}, fodselsdato=${fodselsdato}"
     }
 }
 

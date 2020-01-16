@@ -51,7 +51,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             soker = soker,
             barn = BarnDetaljer(
                 fodselsnummer = soknad.barn.fodselsnummer,
-                alternativId = soknad.barn.alternativId,
+                fodselsdato = soknad.barn.fodselsdato,
                 aktoerId = soknad.barn.aktoerId,
                 navn = soknad.barn.navn
             ),
