@@ -46,7 +46,7 @@ object TestConfiguration {
 
         map["nav.redis.host"] = "localhost"
         map["nav.redis.port"] = "6379"
-        map["storage.passphrase"] = "verySecret"
+        map["nav.storage.passphrase"] = "verySecret"
 
         return map.toMap()
     }

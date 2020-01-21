@@ -48,6 +48,6 @@ data class Configuration(val config : ApplicationConfig) {
     internal fun getRedisHost() = config.getOptionalString("nav.redis.host", secret = false)
 
     internal fun getStoragePassphrase() : String {
-        return config.getRequiredString("storage.passphrase", secret = true)
+        return config.getRequiredString("nav.storage.passphrase", secret = true)
     }
 }
