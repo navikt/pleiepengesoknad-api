@@ -8,12 +8,13 @@ import java.util.*
 
 class MellomlagringService @KtorExperimentalAPI constructor(private val redisStore: RedisStore,private val passphrase:String) {
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger(MellomlagringService::class.java)
+        private val log: Logger = LoggerFactory.getLogger(MellomlagringService::class.java)
     }
 
     fun getMellomlagring(
         fnr: String
     ): String? {
+        log.info("Get " + fnr)
         val krypto = Krypto(passphrase, fnr)
         val encrypted = redisStore.get(fnr) ?: return null
         return krypto.decrypt(encrypted)
@@ -23,6 +24,7 @@ class MellomlagringService @KtorExperimentalAPI constructor(private val redisSto
         fnr: String,
         midlertidigSøknad: String
     ) {
+        log.info("Set " + fnr)
         val krypto = Krypto(passphrase, fnr)
         val expirationDate = Calendar.getInstance().let {
             it.add(Calendar.HOUR, 24)
