@@ -30,13 +30,13 @@ fun Route.mellomlagringApis(
         val midlertidigSøknad = call.receive<String>()
         val idToken = idTokenProvider.getIdToken(call)
         mellomlagringService.setMellomlagring(idToken.getSubject()!!, midlertidigSøknad)
-        call.respond(HttpStatusCode.Accepted)
+        call.respond(HttpStatusCode.NoContent)
     }
 
     get { _: mellomlagring ->
         val idToken = idTokenProvider.getIdToken(call)
         mellomlagringService.getMellomlagring(idToken.getSubject()!!)
-        call.respond(HttpStatusCode.Accepted)
+        call.respond(HttpStatusCode.OK)
     }
 
     delete { _: mellomlagring ->
