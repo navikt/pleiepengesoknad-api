@@ -35,7 +35,8 @@ class MellomlagringService @KtorExperimentalAPI constructor(private val redisSto
     }
 
     fun deleteMellomlagring(
-        fnr: IdToken
+        fnr: String
     ) {
+        redisStore.delete(fnr)
     }
 }

@@ -49,4 +49,14 @@ class RedisStore constructor(
 
         return null
     }
+
+    fun delete(key: String): Boolean {
+        val del = async.del(key)
+
+        if (del.await(10, TimeUnit.SECONDS)) {
+            return true
+        }
+
+        return false
+    }
 }
