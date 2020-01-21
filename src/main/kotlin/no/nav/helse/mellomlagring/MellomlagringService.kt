@@ -28,7 +28,7 @@ class MellomlagringService @KtorExperimentalAPI constructor(private val redisSto
     ) {
         val krypto = Krypto(passphrase, fnr)
         val expirationDate = Calendar.getInstance().let {
-            it.add(Calendar.MINUTE, 10)
+            it.add(Calendar.HOUR, 24)
             it.time
         }
         redisStore.setString(fnr, krypto.encrypt(midlertidigSøknad),expirationDate)
