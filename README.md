@@ -320,6 +320,11 @@ Ikke autorisert til å fullføre requesten. Ingen payload i responsen.
 }
 ```
 
+### Mellomlagre sesjon
+POST @ /mellomlagring -> 200 Response
+GET @ /mellomlagring -> 200 Response
+DELETE @ /mellomlagring -> 200 Response
+
 ### Redis
 Vi bruker Redis for mellomlagring. En instanse av Redis må være kjørene før deploy av applikasjonen. 
 Dette gjøres manuelt med kubectl både i preprod og prod. Se [nais/doc](https://github.com/nais/doc/blob/master/content/redis.md)
