@@ -3,7 +3,6 @@ package no.nav.helse.mellomlagring
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
-import no.nav.helse.ApplicationTest
 import no.nav.helse.Configuration
 import no.nav.helse.TestConfiguration
 import no.nav.helse.redis.RedisConfig
@@ -52,8 +51,8 @@ class MellomlagringTest {
         mellomlagringService.setMellomlagring("test", "test")
 
         val mellomlagring = mellomlagringService.getMellomlagring("test")
-        assertNotNull(redisStore.getString("test"))
-        assertNotEquals(mellomlagring, redisStore.getString("test"))
+        assertNotNull(redisStore.get("test"))
+        assertNotEquals(mellomlagring, redisStore.get("test"))
     }
 
 }
