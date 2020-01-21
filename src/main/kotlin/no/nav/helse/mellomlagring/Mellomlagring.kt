@@ -29,19 +29,19 @@ fun Route.mellomlagringApis(
     post { _: mellomlagring ->
         val midlertidigSøknad = call.receive<String>()
         val idToken = idTokenProvider.getIdToken(call)
-        mellomlagringService.setMellomlagring(idToken, call.getCallId(), midlertidigSøknad)
+        mellomlagringService.setMellomlagring(idToken.getSubject()!!, midlertidigSøknad)
         call.respond(HttpStatusCode.Accepted)
     }
 
     get { _: mellomlagring ->
         val idToken = idTokenProvider.getIdToken(call)
-        mellomlagringService.getMellomlagring(idToken, call.getCallId())
+        mellomlagringService.getMellomlagring(idToken.getSubject()!!)
         call.respond(HttpStatusCode.Accepted)
     }
 
     delete { _: mellomlagring ->
         val idToken = idTokenProvider.getIdToken(call)
-        mellomlagringService.deleteMellomlagring(idToken, call.getCallId())
+        mellomlagringService.deleteMellomlagring(idToken)
         call.respond(HttpStatusCode.Accepted)
     }
 }

@@ -39,6 +39,8 @@ spec:
     enabled: true
   webproxy: true
   env:
+    - name: REDIS_HOST
+      value: pleiepengesoknad-api-redis.default.svc.nais.local
     - name: CORS_ADDRESSES
       value: https://pleiepengesoknad-q.nav.no
     - name: ISSUER

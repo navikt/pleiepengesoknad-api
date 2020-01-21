@@ -3,6 +3,7 @@ package no.nav.helse
 import io.ktor.config.ApplicationConfig
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.getOptionalList
+import no.nav.helse.dusseldorf.ktor.core.getOptionalString
 import no.nav.helse.dusseldorf.ktor.core.getRequiredList
 import no.nav.helse.dusseldorf.ktor.core.getRequiredString
 import no.nav.helse.general.auth.ApiGatewayApiKey
@@ -43,4 +44,10 @@ data class Configuration(val config : ApplicationConfig) {
 
     private fun getScopesFor(operation: String) = config.getRequiredList("nav.auth.scopes.$operation", secret = false, builder = { it }).toSet()
     internal fun getSendSoknadTilProsesseringScopes() = getScopesFor("sende-soknad-til-prosessering")
+    internal fun getRedisPort() = config.getOptionalString("redis.port", secret = false)
+    internal fun getRedisHost() = config.getOptionalString("redis.host", secret = false)
+
+    internal fun getStoragePassphrase() : String {
+        return config.getRequiredString("storage.passphrase", secret = true)
+    }
 }

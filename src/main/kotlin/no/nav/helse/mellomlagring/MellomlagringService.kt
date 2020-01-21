@@ -1,36 +1,41 @@
 package no.nav.helse.mellomlagring
 
+import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
+import no.nav.sbl.sosialhjelp.login.api.redis.RedisStore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.LocalDate
+import java.util.*
+import kotlin.collections.HashMap
 
-class MellomlagringService (
-) {
+class MellomlagringService @KtorExperimentalAPI constructor(private val redisStore: RedisStore,private val passphrase:String) {
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(MellomlagringService::class.java)
-        private val store = HashMap<String, String>()
     }
 
-    suspend fun getMellomlagring(
-        idToken: IdToken,
-        callId: CallId
-    ) : String? {
-        return  store[idToken.value]
+    fun getMellomlagring(
+        fnr: String
+    ): String? {
+        val krypto = Krypto(passphrase, fnr)
+        return  krypto.decrypt(redisStore.getString(fnr))
     }
 
-    suspend fun setMellomlagring(
-        idToken: IdToken,
-        callId: CallId,
+    fun setMellomlagring(
+        fnr: String,
         midlertidigSøknad: String
     ) {
-        store[idToken.value] = midlertidigSøknad
+        val krypto = Krypto(passphrase, fnr)
+        val expirationDate = Calendar.getInstance().let {
+            it.add(Calendar.MINUTE, 10)
+            it.time
+        }
+        redisStore.setString(fnr, krypto.encrypt(midlertidigSøknad),expirationDate)
     }
 
-    suspend fun deleteMellomlagring(
-        idToken: IdToken,
-        callId: CallId
+    fun deleteMellomlagring(
+        fnr: IdToken
     ) {
-        store.remove(idToken.value)
     }
 }
