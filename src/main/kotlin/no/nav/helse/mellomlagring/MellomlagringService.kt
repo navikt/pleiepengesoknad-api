@@ -19,7 +19,8 @@ class MellomlagringService @KtorExperimentalAPI constructor(private val redisSto
         fnr: String
     ): String? {
         val krypto = Krypto(passphrase, fnr)
-        return  krypto.decrypt(redisStore.getString(fnr))
+        val encrypted = redisStore.getString(fnr) ?: return null
+        return krypto.decrypt(encrypted)
     }
 
     fun setMellomlagring(
