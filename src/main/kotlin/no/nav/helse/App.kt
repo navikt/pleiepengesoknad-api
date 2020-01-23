@@ -52,7 +52,7 @@ import no.nav.helse.vedlegg.K9DokumentGateway
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.helse.vedlegg.vedleggApis
 import no.nav.helse.redis.RedisConfigurationProperties
-import no.nav.sbl.sosialhjelp.login.api.redis.RedisStore
+import no.nav.helse.redis.RedisStore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration

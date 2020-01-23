@@ -1,4 +1,4 @@
-package no.nav.sbl.sosialhjelp.login.api.redis
+package no.nav.helse.redis
 
 import io.lettuce.core.RedisClient
 import java.util.*

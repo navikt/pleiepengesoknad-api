@@ -8,7 +8,7 @@ import no.nav.helse.TestConfiguration
 import no.nav.helse.redis.RedisConfig
 import no.nav.helse.redis.RedisConfigurationProperties
 import no.nav.helse.redis.RedisMockUtil
-import no.nav.sbl.sosialhjelp.login.api.redis.RedisStore
+import no.nav.helse.redis.RedisStore
 import org.junit.AfterClass
 import kotlin.test.*
 
