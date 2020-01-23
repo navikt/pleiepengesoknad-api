@@ -11,11 +11,13 @@ class MellomlagringService @KtorExperimentalAPI constructor(private val redisSto
         private val log: Logger = LoggerFactory.getLogger(MellomlagringService::class.java)
     }
 
+    private val nøkkelPrefiks = "mellomlagring_"
+
     fun getMellomlagring(
         fnr: String
     ): String? {
         val krypto = Krypto(passphrase, fnr)
-        val encrypted = redisStore.get(fnr) ?: return null
+        val encrypted = redisStore.get(nøkkelPrefiks +fnr) ?: return null
         return krypto.decrypt(encrypted)
     }
 
@@ -28,12 +30,12 @@ class MellomlagringService @KtorExperimentalAPI constructor(private val redisSto
             it.add(Calendar.HOUR, 24)
             it.time
         }
-        redisStore.set(fnr, krypto.encrypt(midlertidigSøknad),expirationDate)
+        redisStore.set(nøkkelPrefiks + fnr, krypto.encrypt(midlertidigSøknad),expirationDate)
     }
 
     fun deleteMellomlagring(
         fnr: String
     ) {
-        redisStore.delete(fnr)
+        redisStore.delete(nøkkelPrefiks + fnr)
     }
 }
