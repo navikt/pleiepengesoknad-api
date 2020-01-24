@@ -87,7 +87,7 @@ POST @ /soknad -> 202 Response
                 "til_og_med": "2020-01-09",
                 "er_utenfor_eos": true,
                 "er_barnet_innlagt": true,
-                "arsak": ""
+                "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
             }
         ]
     },
@@ -159,6 +159,7 @@ POST @ /soknad -> 202 Response
 -- `BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING`
 -- `BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD`
 -- `ANNET`
+- Attributten `arsak` settes til null  `er_barnet_innlagt` er false
 
 
 #### Tilsynsordning
