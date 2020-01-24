@@ -134,23 +134,23 @@ POST @ /soknad -> 202 Response
 ###### Opphold i EØS land
 ````json
 {
-	landnavn: 'Sverige',
-	landkode: 'SE',
-	fra_og_med: '2020-01-01',
-	til_og_med: '2020-02-01'
+	"landnavn": "Sverige",
+	"landkode": "SE",
+	"fra_og_med": "2020-01-01",
+	"til_og_med": "2020-02-01"
 }
 ````
 
 ###### Opphold i et land utenfor EØS
 ````json
 {
-	landnavn: 'USA',
-	landkode: 'US',
-	fra_og_med: '2020-01-08',
-	til_og_med: '2020-01-09',
-	er_utenfor_eos: true,
-	er_barnet_innlagt: true,
-	arsak: UtenlandsoppholdÅrsak.ANNET
+	"landnavn": "USA",
+	"landkode": "US",
+	"fra_og_med": "2020-01-08",
+	"til_og_med": "2020-01-09",
+	"er_utenfor_eos": true,
+	"er_barnet_innlagt": true,
+	"arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
 }
 ````
 - Attributten `er_utenfor_eos` er satt til `true`
