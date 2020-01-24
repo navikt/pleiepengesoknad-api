@@ -155,11 +155,11 @@ POST @ /soknad -> 202 Response
 ````
 - Attributten `er_utenfor_eos` er satt til `true`
 - Attributten `er_barnet_innlagt` er satt til `true|false`
-- Attributten `arsak` settes når `er_barnet_innlagt` er true. Verdiene her er:
+- Attributten `arsak` settes når `er_barnet_innlagt` er `true`. Gyldige verdier er:
 -- `BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING`
 -- `BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD`
 -- `ANNET`
-- Attributten `arsak` settes til null  `er_barnet_innlagt` er false
+- Attributten `arsak` settes til `null` når `er_barnet_innlagt` er `false`
 
 
 #### Tilsynsordning
