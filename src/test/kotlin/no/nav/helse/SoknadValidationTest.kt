@@ -43,7 +43,7 @@ class SoknadValidationTest {
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
                 utenlandsoppholdNeste12Mnd = listOf(
-                    Utenlandsopphold(
+                    Bosted(
                         LocalDate.of(2022, 1, 4),
                         LocalDate.of(2022, 1, 3),
                         "US", "USA"
@@ -60,7 +60,7 @@ class SoknadValidationTest {
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
                 utenlandsoppholdNeste12Mnd = listOf(
-                    Utenlandsopphold(
+                    Bosted(
                         LocalDate.of(2022, 1, 2),
                         LocalDate.of(2022, 1, 3),
                         "", "USA"
@@ -106,7 +106,7 @@ class SoknadValidationTest {
             harBoddIUtlandetSiste12Mnd = false,
             skalBoIUtlandetNeste12Mnd = true,
             utenlandsoppholdNeste12Mnd = listOf(
-                Utenlandsopphold(
+                Bosted(
                     LocalDate.of(2022, 1, 2),
                     LocalDate.of(2022, 1, 3),
                     "US", "USA"
@@ -145,6 +145,7 @@ class SoknadValidationTest {
         harForstattRettigheterOgPlikter = true,
         dagerPerUkeBorteFraJobb = dagerPerUkeBorteFraJobb,
         grad = grad,
-        tilsynsordning = null
+        tilsynsordning = null,
+        utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf())
     )
 }

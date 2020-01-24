@@ -509,6 +509,10 @@ class ApplicationTest {
                         null
                     ],
                     "medlemskap" : {},
+                    "utenlandsopphold_i_perioden": {
+                        "skal_oppholde_seg_i_utlandet_i_perioden": false,
+                        "opphold": []
+                    },
                     "har_forstatt_rettigheter_og_plikter": false
                 }
                 """.trimIndent(),

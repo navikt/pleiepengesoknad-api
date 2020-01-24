@@ -171,9 +171,11 @@ internal fun Soknad.validate() {
         )
     }
     if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.har_bodd_i_utlandet_siste_12_mnd")
-    violations.addAll(validerUtenlandopphold(medlemskap.utenlandsoppholdSiste12Mnd))
+    violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
-    violations.addAll(validerUtenlandopphold(medlemskap.utenlandsoppholdNeste12Mnd))
+    violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
+    if (utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null) booleanIkkeSatt("utenlandsopphold_i_perioden.skal_oppholde_seg_i_utlandet_i_perioden")
+    violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden.opphold))
 
     if (harMedsoker == null) booleanIkkeSatt("har_medsoker")
     if (!harBekreftetOpplysninger) {
@@ -277,7 +279,46 @@ internal fun Soknad.validate() {
     }
 }
 
-private fun validerUtenlandopphold(
+private fun validerBosted(
+    list: List<Bosted>
+): MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+    list.mapIndexed { index, bosted ->
+        val fraDataErEtterTilDato = bosted.fraOgMed.isAfter(bosted.tilOgMed)
+        if (fraDataErEtterTilDato) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Til dato kan ikke være før fra dato",
+                    invalidValue = "fraOgMed eller tilOgMed"
+                )
+            )
+        }
+        if (bosted.landkode.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landkode er ikke satt",
+                    invalidValue = "landkode"
+                )
+            )
+        }
+        if (bosted.landnavn.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landnavn er ikke satt",
+                    invalidValue = "landnavn"
+                )
+            )
+        }
+    }
+    return violations
+}
+private fun validerUtenladsopphold(
     list: List<Utenlandsopphold>
 ): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
@@ -310,6 +351,16 @@ private fun validerUtenlandopphold(
                     parameterType = ParameterType.ENTITY,
                     reason = "Landnavn er ikke satt",
                     invalidValue = "landnavn"
+                )
+            )
+        }
+        if (utenlandsopphold.arsak != null && utenlandsopphold.erBarnetInnlagt == false) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Attributten arsak settes til null når er_barnet_innlagt er false",
+                    invalidValue = "arsak eller erBarnetInnlagt"
                 )
             )
         }
