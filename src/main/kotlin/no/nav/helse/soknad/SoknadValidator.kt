@@ -347,7 +347,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
             Violation(
                 parameterName = "barn",
                 parameterType = ParameterType.ENTITY,
-                reason = "Kan kun sette en av 'aktoer_id', 'fodselsnummer' eller 'alternativ_id' på barnet.",
+                reason = "Kan kun sette en av 'aktoer_id', 'fodselsnummer' på barnet.",
                 invalidValue = null
             )
         )
@@ -480,7 +480,7 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
 }
 
 private fun BarnDetaljer.gyldigAntallIder() : Boolean {
-    val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer, fodselsdato).size
+    val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer).size
     return antallIderSatt == 0 || antallIderSatt == 1
 }
 
