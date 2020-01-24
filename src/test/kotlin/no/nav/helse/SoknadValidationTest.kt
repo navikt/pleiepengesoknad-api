@@ -119,7 +119,7 @@ class SoknadValidationTest {
         barn = BarnDetaljer(
             aktoerId = null,
             fodselsnummer = null,
-            alternativId = null,
+            fodselsdato = null,
             navn = null
         ),
         relasjonTilBarnet = "far",
