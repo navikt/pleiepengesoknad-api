@@ -128,7 +128,7 @@ POST @ /soknad -> 202 Response
 
 ```
 #### Utenlandsopphold i perioden
-- Attributten `skal_oppholde_seg_i_i_utlandet_i_perioden` være satt. `true|false`.
+- Attributten `skal_oppholde_seg_i_utlandet_i_perioden` være satt. `true|false`.
 - Attributten `opphold` inneholder to typer data
 
 ###### Opphold i EØS land
