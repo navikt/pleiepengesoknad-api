@@ -21,4 +21,5 @@ data class IdToken(val value: String) {
 
     internal fun getId() : String? = jwt.id
     internal fun getSubject() : String? = jwt.subject
+
 }
