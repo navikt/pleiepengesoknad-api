@@ -20,4 +20,6 @@ data class IdToken(val value: String) {
     internal fun somHttpAuthHeader() : HttpAuthHeader = HttpAuthHeader.Single("Bearer", value)
 
     internal fun getId() : String? = jwt.id
+    internal fun getSubject() : String? = jwt.subject
+
 }
