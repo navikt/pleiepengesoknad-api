@@ -31,62 +31,136 @@ POST @ /soknad -> 202 Response
 
 ```json
 {
-	"sprak": "nb",
-	"barn": {
-		"navn": "Iben Olafsson Hansen",
-		"fodselsnummer": "01011950021",
-		"alternativ_id": null,
-		"aktoer_id": null
-	},
-	"relasjon_til_barnet": "mor",
-	"fra_og_med": "2019-10-10",
-	"til_og_med": "2019-11-10",
-	"arbeidsgivere": {
-		"organisasjoner": [{
-			"navn": "Telenor",
-			"organisasjonsnummer": "973861778",
-			"skal_jobbe": "ja",
-			"skal_jobber_prosent": 50.24
-		}, {
-			"navn": "Maxbo",
-			"organisasjonsnummer": "910831143",
-			"skal_jobbe": "ja",
-			"skal_jobbe_prosent": 25.0
-		}]
-	},
-	"vedlegg": [
-		"http://pleiepengesoknad-api.nav.no/vedlegg/e2daa60b-2423-401c-aa33-b41dc6b630e7"
-	],
-	"medlemskap": {
-		"har_bodd_i_utlandet_siste_12_mnd": false,
-		"skal_bo_i_utlandet_neste_12_mnd": true
-	},
-	"har_medsoker": true,
-	"har_bekreftet_opplysninger": true,
-	"har_forstatt_rettigheter_og_plikter": true,
-	"grad": 100,
-	"dager_per_uke_borte_fra_jobb": 4.5,
-	"tilsynsordning": {
-		"svar": "ja",
-		"ja": {
-			"mandag": "PT7H30M",
-			"tirsdag": null,
-			"onsdag": "PT7H25M",
-			"torsdag": null,
-			"fredag": "PT0S",
-			"tilleggsinformasjon": "Unntatt uke 37. Da er han hjemme hele tiden."
-		}
-	},
-	"beredskap": {
-		"i_beredskap": true,
-		"tilleggsinformasjon": "Må sitte utenfor barnehagen."
-	},
-	"nattevaak": {
-		"har_nattevaak": true,
-		"tilleggsinformasjon": "Må sove om dagen."
-	}
+    "sprak": "nb",
+    "barn": {
+        "navn": "Iben Olafsson Hansen",
+        "fodselsnummer": "01011950021",
+        "alternativ_id": null,
+        "aktoer_id": null
+    },
+    "relasjon_til_barnet": "mor",
+    "fra_og_med": "2019-10-10",
+    "til_og_med": "2019-11-10",
+    "arbeidsgivere": {
+        "organisasjoner": [
+            {
+                "navn": "Telenor",
+                "organisasjonsnummer": "973861778",
+                "skal_jobbe": "ja",
+                "skal_jobber_prosent": 50.24
+            },
+            {
+                "navn": "Maxbo",
+                "organisasjonsnummer": "910831143",
+                "skal_jobbe": "ja",
+                "skal_jobbe_prosent": 25.0
+            }
+        ]
+    },
+    "vedlegg": ["http://pleiepengesoknad-api.nav.no/vedlegg/e2daa60b-2423-401c-aa33-b41dc6b630e7"],
+    "medlemskap": {
+        "har_bodd_i_utlandet_siste_12_mnd": false,
+        "skal_bo_i_utlandet_neste_12_mnd": true,
+        "utenlandsopphold_neste_12_mnd": [
+            {
+                "fra_og_med": "2019-10-10",
+                "til_og_med": "2019-11-10",
+                "landkode": "SE",
+                "landnavn": "Sverige"
+            }
+        ],
+        "utenlandsopphold_siste_12_mnd": []
+    },
+    "utenlandsopphold_i_perioden": {
+        "skal_oppholde_seg_i_i_utlandet_i_perioden": true,
+        "opphold": [
+            {
+                "fra_og_med": "2019-10-10",
+                "til_og_med": "2019-11-10",
+                "landkode": "SE",
+                "landnavn": "Sverige"
+            },
+            {
+                "landnavn": "USA",
+                "landkode": "US",
+                "fra_og_med": "2020-01-08",
+                "til_og_med": "2020-01-09",
+                "er_utenfor_eos": true,
+                "er_barnet_innlagt": true,
+                "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+            }
+        ]
+    },
+    "ferieuttak_i_perioden": {
+        "skal_ta_ut_ferie_i_periode": true,
+        "ferieuttak": [
+            {
+                "fra_og_med": "2020-01-05",
+                "til_og_med": "2020-01-07"
+            }
+        ]
+    },
+    "har_medsoker": true,
+    "har_bekreftet_opplysninger": true,
+    "har_forstatt_rettigheter_og_plikter": true,
+    "grad": 100,
+    "dager_per_uke_borte_fra_jobb": 4.5,
+    "tilsynsordning": {
+        "svar": "ja",
+        "ja": {
+            "mandag": "PT7H30M",
+            "tirsdag": null,
+            "onsdag": "PT7H25M",
+            "torsdag": null,
+            "fredag": "PT0S",
+            "tilleggsinformasjon": "Unntatt uke 37. Da er han hjemme hele tiden."
+        }
+    },
+    "beredskap": {
+        "i_beredskap": true,
+        "tilleggsinformasjon": "Må sitte utenfor barnehagen."
+    },
+    "nattevaak": {
+        "har_nattevaak": true,
+        "tilleggsinformasjon": "Må sove om dagen."
+    }
 }
+
 ```
+#### Utenlandsopphold i perioden
+- Attributten `skal_oppholde_seg_i_utlandet_i_perioden` være satt. `true|false`.
+- Attributten `opphold` inneholder to typer data
+
+###### Opphold i EØS land
+````json
+{
+	"landnavn": "Sverige",
+	"landkode": "SE",
+	"fra_og_med": "2020-01-01",
+	"til_og_med": "2020-02-01"
+}
+````
+
+###### Opphold i et land utenfor EØS
+````json
+{
+	"landnavn": "USA",
+	"landkode": "US",
+	"fra_og_med": "2020-01-08",
+	"til_og_med": "2020-01-09",
+	"er_utenfor_eos": true,
+	"er_barnet_innlagt": true,
+	"arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+}
+````
+- Attributten `er_utenfor_eos` er satt til `true`
+- Attributten `er_barnet_innlagt` er satt til `true|false`
+- Attributten `arsak` settes når `er_barnet_innlagt` er `true`. Gyldige verdier er:
+-- `BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING`
+-- `BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD`
+-- `ANNET`
+- Attributten `arsak` settes til `null` når `er_barnet_innlagt` er `false`
+
 
 #### Tilsynsordning
 ##### Ja
