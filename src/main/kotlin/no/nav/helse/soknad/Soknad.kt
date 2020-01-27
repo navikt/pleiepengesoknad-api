@@ -20,6 +20,8 @@ data class Soknad(
     val medlemskap: Medlemskap,
     @JsonProperty("utenlandsopphold_i_perioden")
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
+    @JsonProperty("ferieuttak_i_perioden")
+    val ferieuttakIPerioden: FerieuttakIPerioden,
     val harMedsoker: Boolean? = null,
     val samtidigHjemme: Boolean? = null,
     val harForstattRettigheterOgPlikter: Boolean,
@@ -136,6 +138,7 @@ data class Utenlandsopphold(
         return "Utenlandsopphold(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed, landkode='$landkode', landnavn='$landnavn', erUtenforEos=$erUtenforEos, erBarnetInnlagt=$erBarnetInnlagt, arsak=$arsak)"
     }
 }
+
 data class Bosted(
     @JsonFormat(pattern = "yyyy-MM-dd") val fraOgMed: LocalDate,
     @JsonFormat(pattern = "yyyy-MM-dd") val tilOgMed: LocalDate,
@@ -144,6 +147,25 @@ data class Bosted(
 ) {
     override fun toString(): String {
         return "Utenlandsopphold(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed, landkode='$landkode', landnavn='$landnavn')"
+    }
+}
+
+data class FerieuttakIPerioden(
+    @JsonProperty("skal_ta_ut_ferie_i_periode")
+    val skalTaUtFerieIPerioden: Boolean,
+    val ferieuttak: List<Ferieuttak>
+) {
+    override fun toString(): String {
+        return "FerieuttakIPerioden(skalTaUtFerieIPerioden=$skalTaUtFerieIPerioden, ferieuttak=$ferieuttak)"
+    }
+}
+
+data class Ferieuttak(
+    @JsonFormat(pattern = "yyyy-MM-dd") val fraOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd") val tilOgMed: LocalDate
+) {
+    override fun toString(): String {
+        return "Ferieuttak(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed)"
     }
 }
 

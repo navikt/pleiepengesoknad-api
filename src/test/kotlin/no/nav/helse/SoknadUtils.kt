@@ -14,6 +14,7 @@ class SoknadUtils {
             vedleggUrl2: String,
             utenGrad: Boolean = false
         ): String {
+            //language=JSON
             return """
                 {
                     "barn": {
@@ -71,7 +72,16 @@ class SoknadUtils {
                     """.trimIndent()}
                     "har_medsoker": true,
                     "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true
+                    "har_forstatt_rettigheter_og_plikter": true,
+                  "ferieuttak_i_perioden": {
+                    "skal_ta_ut_ferie_i_periode": true,
+                    "ferieuttak": [
+                      {
+                        "fra_og_med": "2020-01-05",
+                        "til_og_med": "2020-01-07"
+                      }
+                    ]
+                  }
                 }
                 """.trimIndent()
         }
@@ -111,7 +121,17 @@ class SoknadUtils {
                     "grad": 100,
                     "har_medsoker": true,
                     "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true
+                    "har_forstatt_rettigheter_og_plikter": true,
+                  "ferieuttak_i_perioden": {
+                    "skal_ta_ut_ferie_i_periode": true,
+                    "ferieuttak": [
+                      {
+                        "fra_og_med": "2020-01-05",
+                        "til_og_med": "2020-01-07"
+                      }
+                    ]
+                  }
+                }
                 }
                 """.trimIndent()
         }
@@ -150,7 +170,17 @@ class SoknadUtils {
                     "grad": 100,
                     "har_medsoker": true,
                     "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true
+                    "har_forstatt_rettigheter_og_plikter": true,
+                    "ferieuttak_i_perioden": {
+                        "skal_ta_ut_ferie_i_periode": true,
+                        "ferieuttak": [
+                          {
+                            "fra_og_med": "2020-01-05",
+                            "til_og_med": "2020-01-07"
+                          }
+                        ]
+                      }
+                    }
                 }
                 """.trimIndent()
         }

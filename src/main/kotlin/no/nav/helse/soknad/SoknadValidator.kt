@@ -176,6 +176,7 @@ internal fun Soknad.validate() {
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
     if (utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null) booleanIkkeSatt("utenlandsopphold_i_perioden.skal_oppholde_seg_i_utlandet_i_perioden")
     violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden.opphold))
+    violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
 
     if (harMedsoker == null) booleanIkkeSatt("har_medsoker")
     if (!harBekreftetOpplysninger) {
@@ -318,6 +319,7 @@ private fun validerBosted(
     }
     return violations
 }
+
 private fun validerUtenladsopphold(
     list: List<Utenlandsopphold>
 ): MutableSet<Violation> {
@@ -361,6 +363,26 @@ private fun validerUtenladsopphold(
                     parameterType = ParameterType.ENTITY,
                     reason = "Attributten arsak settes til null når er_barnet_innlagt er false",
                     invalidValue = "arsak eller erBarnetInnlagt"
+                )
+            )
+        }
+    }
+    return violations
+}
+
+private fun validerFerieuttakIPerioden(
+    ferieuttakIPerioden: FerieuttakIPerioden
+): MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+    ferieuttakIPerioden.ferieuttak.mapIndexed { index, ferieuttak ->
+        val fraDataErEtterTilDato = ferieuttak.fraOgMed.isAfter(ferieuttak.tilOgMed)
+        if (fraDataErEtterTilDato) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Til dato kan ikke være før fra dato",
+                    invalidValue = "fraOgMed eller tilOgMed"
                 )
             )
         }
