@@ -51,7 +51,7 @@ class MellomlagringTest {
         mellomlagringService.setMellomlagring("test", "test")
 
         val mellomlagring = mellomlagringService.getMellomlagring("test")
-        assertNotNull(redisStore.get("test"))
+        assertNotNull(redisStore.get("mellomlagring_test"))
         assertNotEquals(mellomlagring, redisStore.get("test"))
     }
 
