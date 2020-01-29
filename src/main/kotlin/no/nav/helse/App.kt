@@ -39,6 +39,9 @@ import no.nav.helse.general.systemauth.AccessTokenClientResolver
 import no.nav.helse.arbeidsgiver.ArbeidsgivereService
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
+import no.nav.helse.mellomlagring.MellomlagringService
+import no.nav.helse.mellomlagring.mellomlagringApis
+import no.nav.helse.redis.RedisConfig
 import no.nav.helse.soker.SokerGateway
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.sokerApis
@@ -48,6 +51,8 @@ import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.K9DokumentGateway
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.helse.vedlegg.vedleggApis
+import no.nav.helse.redis.RedisConfigurationProperties
+import no.nav.helse.redis.RedisStore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
@@ -176,6 +181,14 @@ fun Application.pleiepengesoknadapi() {
                 idTokenProvider = idTokenProvider
             )
 
+            mellomlagringApis(
+                mellomlagringService = MellomlagringService(
+                    RedisStore(RedisConfig(
+                        RedisConfigurationProperties(
+                            configuration.getRedisHost().equals("localhost"))).redisClient(configuration)), configuration.getStoragePassphrase()),
+                idTokenProvider = idTokenProvider
+            )
+
             vedleggApis(
                 vedleggService = vedleggService,
                 idTokenProvider = idTokenProvider
@@ -218,7 +231,6 @@ fun Application.pleiepengesoknadapi() {
     install(MicrometerMetrics) {
         init(appId)
     }
-
 
     intercept(ApplicationCallPipeline.Monitoring) {
         call.request.log()

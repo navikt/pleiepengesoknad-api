@@ -10,6 +10,7 @@ import io.ktor.server.testing.*
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
+import no.nav.helse.redis.RedisMockUtil
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -74,6 +75,7 @@ class ApplicationTest {
         fun tearDown() {
             logger.info("Tearing down")
             wireMockServer.stop()
+            RedisMockUtil.stopRedisMocked()
             logger.info("Tear down complete")
         }
     }

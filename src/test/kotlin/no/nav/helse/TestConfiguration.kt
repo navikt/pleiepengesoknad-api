@@ -44,6 +44,10 @@ object TestConfiguration {
             map["nav.auth.scopes.sende-soknad-til-prosessering"] = "pleiepengesoknad-mottak/.default"
         }
 
+        map["nav.redis.host"] = "localhost"
+        map["nav.redis.port"] = "6379"
+        map["nav.storage.passphrase"] = "verySecret"
+
         return map.toMap()
     }
 
