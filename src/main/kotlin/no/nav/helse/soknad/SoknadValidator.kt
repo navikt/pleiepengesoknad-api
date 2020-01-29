@@ -174,7 +174,10 @@ internal fun Soknad.validate() {
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
-    if (utenlandsoppholdIPerioden?.skalOppholdeSegIUtlandetIPerioden == null) booleanIkkeSatt("utenlandsopphold_i_perioden.skal_oppholde_seg_i_utlandet_i_perioden")
+    if (utenlandsoppholdIPerioden != null &&
+        utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null) {
+        booleanIkkeSatt("utenlandsopphold_i_perioden.skal_oppholde_seg_i_utlandet_i_perioden")
+    }
     violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
 
