@@ -19,9 +19,9 @@ data class Soknad(
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
     @JsonProperty("utenlandsopphold_i_perioden")
-    val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
+    val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     @JsonProperty("ferieuttak_i_perioden")
-    val ferieuttakIPerioden: FerieuttakIPerioden,
+    val ferieuttakIPerioden: FerieuttakIPerioden?,
     val harMedsoker: Boolean? = null,
     val samtidigHjemme: Boolean? = null,
     val harForstattRettigheterOgPlikter: Boolean,

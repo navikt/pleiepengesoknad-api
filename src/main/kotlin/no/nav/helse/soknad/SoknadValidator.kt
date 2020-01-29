@@ -1,10 +1,7 @@
 package no.nav.helse.soknad
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -19,7 +16,6 @@ private const val MIN_GRAD = 20
 private const val MAX_GRAD = 100
 private const val MAX_FRITEKST_TEGN = 1000
 
-private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 class FraOgMedTilOgMedValidator {
     companion object {
         internal fun validate(
@@ -178,8 +174,8 @@ internal fun Soknad.validate() {
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
-    if (utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null) booleanIkkeSatt("utenlandsopphold_i_perioden.skal_oppholde_seg_i_utlandet_i_perioden")
-    violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden.opphold))
+    if (utenlandsoppholdIPerioden?.skalOppholdeSegIUtlandetIPerioden == null) booleanIkkeSatt("utenlandsopphold_i_perioden.skal_oppholde_seg_i_utlandet_i_perioden")
+    violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
 
     if (harMedsoker == null) booleanIkkeSatt("har_medsoker")
@@ -325,10 +321,10 @@ private fun validerBosted(
 }
 
 private fun validerUtenladsopphold(
-    list: List<Utenlandsopphold>
+    list: List<Utenlandsopphold>?
 ): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
-    list.mapIndexed { index, utenlandsopphold ->
+    list?.mapIndexed { index, utenlandsopphold ->
         val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
         if (fraDataErEtterTilDato) {
             violations.add(
@@ -361,7 +357,6 @@ private fun validerUtenladsopphold(
             )
         }
         if (utenlandsopphold.arsak != null && utenlandsopphold.erBarnetInnlagt == false) {
-            logger.info(jacksonObjectMapper().writeValueAsString(utenlandsopphold))
             violations.add(
                 Violation(
                     parameterName = "Utenlandsopphold[$index]",
@@ -376,10 +371,10 @@ private fun validerUtenladsopphold(
 }
 
 private fun validerFerieuttakIPerioden(
-    ferieuttakIPerioden: FerieuttakIPerioden
+    ferieuttakIPerioden: FerieuttakIPerioden?
 ): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
-    ferieuttakIPerioden.ferieuttak.mapIndexed { index, ferieuttak ->
+    ferieuttakIPerioden?.ferieuttak?.mapIndexed { index, ferieuttak ->
         val fraDataErEtterTilDato = ferieuttak.fraOgMed.isAfter(ferieuttak.tilOgMed)
         if (fraDataErEtterTilDato) {
             violations.add(

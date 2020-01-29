@@ -1,5 +1,6 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.helse.soker.Soker
 import no.nav.helse.vedlegg.Vedlegg
 import java.time.LocalDate
@@ -15,6 +16,10 @@ data class KomplettSoknad(
     val arbeidsgivere: ArbeidsgiverDetaljer,
     val vedlegg: List<Vedlegg>,
     val medlemskap: Medlemskap,
+    @JsonProperty("utenlandsopphold_i_perioden")
+    val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
+    @JsonProperty("ferieuttak_i_perioden")
+    val ferieuttakIPerioden: FerieuttakIPerioden?,
     val relasjonTilBarnet: String,
     val grad: Int?,
     val harMedsoker: Boolean,
