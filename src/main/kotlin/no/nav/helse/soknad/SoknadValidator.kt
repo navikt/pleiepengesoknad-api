@@ -1,7 +1,10 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -16,6 +19,7 @@ private const val MIN_GRAD = 20
 private const val MAX_GRAD = 100
 private const val MAX_FRITEKST_TEGN = 1000
 
+private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 class FraOgMedTilOgMedValidator {
     companion object {
         internal fun validate(
@@ -357,6 +361,7 @@ private fun validerUtenladsopphold(
             )
         }
         if (utenlandsopphold.arsak != null && utenlandsopphold.erBarnetInnlagt == false) {
+            logger.info(jacksonObjectMapper().writeValueAsString(utenlandsopphold))
             violations.add(
                 Violation(
                     parameterName = "Utenlandsopphold[$index]",
