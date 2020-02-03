@@ -353,7 +353,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
         )
     }
 
-    if (fodselsnummer != null && !fodselsnummer.erGyldigFodselsnummer()) {
+    if (fodselsnummer != null && !fodselsnummer.erKunSiffer() ) {
         violations.add(
             Violation(
                 parameterName = "barn.fodselsnummer",
