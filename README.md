@@ -430,6 +430,10 @@ Gå på, eller legg inn følgende URL som URL til Login Service
 
 `http://localhost:8081/login-service/v1.0/login?redirect={REDIRECT_URL}&fnr={FNR}`
 
+fra SokerResponseTransformer.kt
+
+`http://localhost:8081/login-service/v1.0/login?redirect=http://localhost:8080/&fnr=25037139184`
+
 Dette vil sette en cookie som gjør at du er autentisert og kommer forbi 401/403-feil.
 
 ## Henvendelser
