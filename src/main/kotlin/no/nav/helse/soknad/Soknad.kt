@@ -26,7 +26,9 @@ data class Soknad(
     val dagerPerUkeBorteFraJobb: Double? = null,
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
-    val beredskap: Beredskap? = null
+    val beredskap: Beredskap? = null,
+    val harHattInntektSomFrilanser: Boolean,
+    val frilans: Frilans? = null
 )
 
 data class ArbeidsgiverDetaljer(
@@ -110,3 +112,18 @@ data class Beredskap(
         return "Beredskap(beredskap=${beredskap})"
     }
 }
+data class Oppdrag(
+    val arbeidsgivernavn: String,
+    val fraOgMed: LocalDate,
+    val tilOgMed: LocalDate?,
+    val erPagaende: Boolean
+)
+
+data class Frilans(
+    val harHattOppdragForFamilie: Boolean,
+    val harHattInntektSomFosterforelder: Boolean,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val startdato: LocalDate,
+    val jobberFortsattSomFrilans: Boolean,
+    val oppdrag: List<Oppdrag>
+)
