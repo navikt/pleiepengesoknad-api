@@ -112,12 +112,6 @@ data class Beredskap(
         return "Beredskap(beredskap=${beredskap})"
     }
 }
-data class Oppdrag(
-    val arbeidsgivernavn: String,
-    val fraOgMed: LocalDate,
-    val tilOgMed: LocalDate?,
-    val erPagaende: Boolean
-)
 
 data class Frilans(
     val harHattOppdragForFamilie: Boolean,
