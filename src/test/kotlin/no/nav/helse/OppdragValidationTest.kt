@@ -2,8 +2,10 @@ package no.nav.helse
 
 import no.nav.helse.soknad.Oppdrag
 import no.nav.helse.soknad.harGyldigPeriode
+import no.nav.helse.soknad.kanIkkeVaerePaagaendeOgFerdig
 import java.time.LocalDate
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class OppdragValidationTest {
@@ -26,7 +28,7 @@ class OppdragValidationTest {
         assertTrue(oppdrag.harGyldigPeriode())
     }
 
-/*    @Test
+    @Test
     fun `Hvis pågående så kan ikke tilogmed være satt`(){
         val oppdrag = Oppdrag(
             arbeidsgivernavn = "BariBar",
@@ -36,5 +38,5 @@ class OppdragValidationTest {
         )
 
         assertFalse(oppdrag.kanIkkeVaerePaagaendeOgFerdig())
-    }*/
+    }
 }
