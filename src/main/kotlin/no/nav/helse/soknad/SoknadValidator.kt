@@ -107,6 +107,13 @@ internal fun Soknad.validate() {
         violations.addAll(this.validate())
     }
 
+    //Alle oppdrag dersom frilans
+    if(frilans != null){
+        for(oppdrag in frilans.oppdrag){
+            violations.addAll(oppdrag.validate())
+        }
+    }
+
     // Datoer
     violations.addAll(
         FraOgMedTilOgMedValidator.validate(
