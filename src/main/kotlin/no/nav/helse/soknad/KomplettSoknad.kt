@@ -29,5 +29,8 @@ data class KomplettSoknad(
     val dagerPerUkeBorteFraJobb: Double?,
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak?,
-    val beredskap: Beredskap?
+    val beredskap: Beredskap?,
+    val harHattInntektSomFrilanser: Boolean = false,
+    val frilans: Frilans?
+
 )

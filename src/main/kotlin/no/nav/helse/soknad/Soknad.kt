@@ -30,7 +30,9 @@ data class Soknad(
     val dagerPerUkeBorteFraJobb: Double? = null,
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
-    val beredskap: Beredskap? = null
+    val beredskap: Beredskap? = null,
+    val harHattInntektSomFrilanser: Boolean = false,
+    val frilans: Frilans? = null
 )
 
 data class ArbeidsgiverDetaljer(
@@ -168,6 +170,15 @@ data class Ferieuttak(
         return "Ferieuttak(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed)"
     }
 }
+
+data class Frilans(
+    val harHattOppdragForFamilie: Boolean,
+    val harHattInntektSomFosterforelder: Boolean,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val startdato: LocalDate,
+    val jobberFortsattSomFrilans: Boolean,
+    val oppdrag: List<Oppdrag>
+)
 
 enum class Arsak {
     BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING,
