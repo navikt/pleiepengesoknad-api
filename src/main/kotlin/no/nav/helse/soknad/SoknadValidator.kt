@@ -4,11 +4,14 @@ import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
-private val vedleggTooLargeProblemDetails = DefaultProblemDetails(title = "attachments-too-large", status = 413, detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB.")
+private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
+    title = "attachments-too-large",
+    status = 413,
+    detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
+)
 private const val MIN_GRAD = 20
 private const val MAX_GRAD = 100
 private const val MAX_FRITEKST_TEGN = 1000
@@ -16,10 +19,10 @@ private const val MAX_FRITEKST_TEGN = 1000
 class FraOgMedTilOgMedValidator {
     companion object {
         internal fun validate(
-            fraOgMed : String?,
-            tilOgMed : String?,
+            fraOgMed: String?,
+            tilOgMed: String?,
             parameterType: ParameterType
-        ) : Set<Violation> {
+        ): Set<Violation> {
             val violations = mutableSetOf<Violation>()
             val parsedFraOgMed = parseDate(fraOgMed)
             val parsedTilOgMed = parseDate(tilOgMed)
@@ -58,7 +61,7 @@ class FraOgMedTilOgMedValidator {
             fraOgMed: LocalDate,
             tilOgMed: LocalDate,
             parameterType: ParameterType
-        ) : Set<Violation> {
+        ): Set<Violation> {
             val violations = mutableSetOf<Violation>()
             if (fraOgMed.isEqual(tilOgMed)) return violations
 
@@ -84,9 +87,13 @@ class FraOgMedTilOgMedValidator {
             return violations
         }
 
-        private fun parseDate(date: String?) : LocalDate? {
+        private fun parseDate(date: String?): LocalDate? {
             if (date == null) return null
-            return try { LocalDate.parse(date) } catch (cause : Throwable) { null }
+            return try {
+                LocalDate.parse(date)
+            } catch (cause: Throwable) {
+                null
+            }
         }
     }
 }
@@ -100,11 +107,13 @@ internal fun Soknad.validate() {
     }
 
     // Datoer
-    violations.addAll(FraOgMedTilOgMedValidator.validate(
-        fraOgMed = fraOgMed,
-        tilOgMed = tilOgMed,
-        parameterType = ParameterType.ENTITY
-    ))
+    violations.addAll(
+        FraOgMedTilOgMedValidator.validate(
+            fraOgMed = fraOgMed,
+            tilOgMed = tilOgMed,
+            parameterType = ParameterType.ENTITY
+        )
+    )
 
     // Vedlegg
     if (vedlegg.isEmpty()) {
@@ -143,7 +152,8 @@ internal fun Soknad.validate() {
                         parameterType = ParameterType.ENTITY,
                         reason = "Grad må være mellom $MIN_GRAD og $MAX_GRAD.",
                         invalidValue = this
-                    ))
+                    )
+                )
             }
         }
     }
@@ -157,10 +167,20 @@ internal fun Soknad.validate() {
                 reason = "Må settes til true eller false.",
                 invalidValue = null
 
-        ))
+            )
+        )
     }
     if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.har_bodd_i_utlandet_siste_12_mnd")
+    violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
+    violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
+    if (utenlandsoppholdIPerioden != null &&
+        utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null) {
+        booleanIkkeSatt("utenlandsopphold_i_perioden.skal_oppholde_seg_i_utlandet_i_perioden")
+    }
+    violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
+    violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
+
     if (harMedsoker == null) booleanIkkeSatt("har_medsoker")
     if (!harBekreftetOpplysninger) {
         violations.add(
@@ -170,7 +190,8 @@ internal fun Soknad.validate() {
                 reason = "Opplysningene må bekreftes for å sende inn søknad.",
                 invalidValue = false
 
-            ))
+            )
+        )
     }
     if (!harForstattRettigheterOgPlikter) {
         violations.add(
@@ -180,7 +201,8 @@ internal fun Soknad.validate() {
                 reason = "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                 invalidValue = false
 
-            ))
+            )
+        )
     }
 
     // TODO: Fjern etter at dette er merget inn i master og er i prod.
@@ -193,7 +215,8 @@ internal fun Soknad.validate() {
                         parameterType = ParameterType.ENTITY,
                         reason = "Dager borte fra jobb må være mellom 0 og 5.",
                         invalidValue = this
-                    ))
+                    )
+                )
             }
         }
     }
@@ -208,7 +231,8 @@ internal fun Soknad.validate() {
                     parameterType = ParameterType.ENTITY,
                     reason = "Dager borte fra jobb må settes om det er en medsøker.",
                     invalidValue = dagerPerUkeBorteFraJobb
-            ))
+                )
+            )
         } else if (!medSoker && dagerPerUkeBorteFraJobb != null) {
             violations.add(
                 Violation(
@@ -216,7 +240,8 @@ internal fun Soknad.validate() {
                     parameterType = ParameterType.ENTITY,
                     reason = "Dager borte fra jobb skal bare settes om det er en medsøker.",
                     invalidValue = dagerPerUkeBorteFraJobb
-                ))
+                )
+            )
         }
     }
 
@@ -258,7 +283,117 @@ internal fun Soknad.validate() {
     }
 }
 
-internal fun Tilsynsordning.validate() : MutableSet<Violation> {
+private fun validerBosted(
+    list: List<Bosted>
+): MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+    list.mapIndexed { index, bosted ->
+        val fraDataErEtterTilDato = bosted.fraOgMed.isAfter(bosted.tilOgMed)
+        if (fraDataErEtterTilDato) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Til dato kan ikke være før fra dato",
+                    invalidValue = "fraOgMed eller tilOgMed"
+                )
+            )
+        }
+        if (bosted.landkode.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landkode er ikke satt",
+                    invalidValue = "landkode"
+                )
+            )
+        }
+        if (bosted.landnavn.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landnavn er ikke satt",
+                    invalidValue = "landnavn"
+                )
+            )
+        }
+    }
+    return violations
+}
+
+private fun validerUtenladsopphold(
+    list: List<Utenlandsopphold>?
+): MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+    list?.mapIndexed { index, utenlandsopphold ->
+        val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
+        if (fraDataErEtterTilDato) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Til dato kan ikke være før fra dato",
+                    invalidValue = "fraOgMed eller tilOgMed"
+                )
+            )
+        }
+        if (utenlandsopphold.landkode.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landkode er ikke satt",
+                    invalidValue = "landkode"
+                )
+            )
+        }
+        if (utenlandsopphold.landnavn.isEmpty()) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Landnavn er ikke satt",
+                    invalidValue = "landnavn"
+                )
+            )
+        }
+        if (utenlandsopphold.arsak != null && utenlandsopphold.erBarnetInnlagt == false) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Attributten arsak settes til null når er_barnet_innlagt er false",
+                    invalidValue = "arsak eller erBarnetInnlagt"
+                )
+            )
+        }
+    }
+    return violations
+}
+
+private fun validerFerieuttakIPerioden(
+    ferieuttakIPerioden: FerieuttakIPerioden?
+): MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+    ferieuttakIPerioden?.ferieuttak?.mapIndexed { index, ferieuttak ->
+        val fraDataErEtterTilDato = ferieuttak.fraOgMed.isAfter(ferieuttak.tilOgMed)
+        if (fraDataErEtterTilDato) {
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Til dato kan ikke være før fra dato",
+                    invalidValue = "fraOgMed eller tilOgMed"
+                )
+            )
+        }
+    }
+    return violations
+}
+
+internal fun Tilsynsordning.validate(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     if (svar != TilsynsordningSvar.ja && ja != null) {
@@ -338,7 +473,7 @@ internal fun Tilsynsordning.validate() : MutableSet<Violation> {
     return violations
 }
 
-internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Violation> {
+internal fun BarnDetaljer.validate(relasjonTilBarnet: String?): MutableSet<Violation> {
 
     val violations = mutableSetOf<Violation>()
 
@@ -388,7 +523,10 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     }
 
     val kreverRelasjonPaaBarnet = aktoerId == null
-    if ((kreverRelasjonPaaBarnet || relasjonTilBarnet != null) && (relasjonTilBarnet == null || relasjonTilBarnet.erBlankEllerLengreEnn(100))) {
+    if ((kreverRelasjonPaaBarnet || relasjonTilBarnet != null) && (relasjonTilBarnet == null || relasjonTilBarnet.erBlankEllerLengreEnn(
+            100
+        ))
+    ) {
         violations.add(
             Violation(
                 parameterName = "relasjon_til_barnet",
@@ -403,7 +541,10 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?) : MutableSet<Viol
     return violations
 }
 
-internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: Boolean? = null) : MutableSet<Violation> {
+internal fun List<OrganisasjonDetaljer>.validate(
+    gradSatt: Boolean,
+    newVersion: Boolean? = null
+): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     mapIndexed { index, organisasjon ->
@@ -460,10 +601,14 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
 
         if (newVersion != null && newVersion == true) {
             when (organisasjon.skalJobbe) {
-                "ja" -> {}
-                "nei" -> {}
-                "redusert" -> {}
-                "vet_ikke" -> {}
+                "ja" -> {
+                }
+                "nei" -> {
+                }
+                "redusert" -> {
+                }
+                "vet_ikke" -> {
+                }
                 else -> violations.add(
                     Violation(
                         parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe",
@@ -478,7 +623,7 @@ internal fun List<OrganisasjonDetaljer>.validate(gradSatt: Boolean, newVersion: 
     return violations
 }
 
-private fun BarnDetaljer.gyldigAntallIder() : Boolean {
+private fun BarnDetaljer.gyldigAntallIder(): Boolean {
     val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer).size
     return antallIderSatt == 0 || antallIderSatt == 1
 }
