@@ -123,6 +123,21 @@ POST @ /soknad -> 202 Response
     "nattevaak": {
         "har_nattevaak": true,
         "tilleggsinformasjon": "Må sove om dagen."
+    },
+    "har_hatt_inntekt_som_frilanser": true,
+    "frilans": {
+    	"startdato": "2019-01-08",
+    	"har_hatt_oppdrag_for_familie": true,
+	"har_hatt_inntekt_som_fosterforelder": true,
+	"jobber_fortsatt_som_frilans": true,
+	"oppdrag": [
+		{
+			"arbeidsgivernavn": "Henrik Ibsensen",
+			"fra_og_med": "2019-05-08",
+			"til_og_med": null,
+			"er_pagaende": true
+		}
+	]
     }
 }
 
@@ -414,6 +429,10 @@ Dette vil først starte en wiremock server som mocker ut alle eksterne http-kall
 Gå på, eller legg inn følgende URL som URL til Login Service 
 
 `http://localhost:8081/login-service/v1.0/login?redirect={REDIRECT_URL}&fnr={FNR}`
+
+fra SokerResponseTransformer.kt
+
+`http://localhost:8081/login-service/v1.0/login?redirect=http://localhost:8080/&fnr=25037139184`
 
 Dette vil sette en cookie som gjør at du er autentisert og kommer forbi 401/403-feil.
 

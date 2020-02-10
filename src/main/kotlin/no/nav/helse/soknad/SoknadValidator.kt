@@ -488,7 +488,7 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?): MutableSet<Viola
         )
     }
 
-    if (fodselsnummer != null && !fodselsnummer.erGyldigFodselsnummer()) {
+    if (fodselsnummer != null && !fodselsnummer.erKunSiffer() ) {
         violations.add(
             Violation(
                 parameterName = "barn.fodselsnummer",
@@ -509,7 +509,6 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?): MutableSet<Viola
             )
         )
     }
-
 
     val kreverNavnPaaBarnet = fodselsnummer != null
     if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
