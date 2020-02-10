@@ -58,6 +58,8 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             vedlegg = vedlegg,
             arbeidsgivere = soknad.arbeidsgivere,
             medlemskap = soknad.medlemskap,
+            ferieuttakIPerioden = soknad.ferieuttakIPerioden,
+            utenlandsoppholdIPerioden = soknad.utenlandsoppholdIPerioden,
             relasjonTilBarnet = soknad.relasjon(),
             grad = soknad.grad,
             harMedsoker = soknad.harMedsoker!!,

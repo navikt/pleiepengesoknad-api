@@ -10,22 +10,71 @@ class SoknadValidationTest {
 
     @Test
     fun `Håndterer søknader med grad`() {
-        soknad(grad = 50, harMedsoker = true, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null).validate()
+        soknad(
+            grad = 50, harMedsoker = true, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null
+        ).validate()
     }
 
     @Test
     fun `Håndterer søknad uten grad og med medsøker`() {
-        soknad(grad = null, harMedsoker = true, dagerPerUkeBorteFraJobb = 5.0, skalJobbeProsent = 22.00).validate()
+        soknad(
+            grad = null, harMedsoker = true, dagerPerUkeBorteFraJobb = 5.0, skalJobbeProsent = 22.00
+        ).validate()
     }
 
     @Test
     fun `Håndterer søknad uten grad og uten medsøker`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = 22.00).validate()
+        soknad(
+            grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = 22.00
+        ).validate()
     }
 
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad uten grad og uten medsøker, men med dager per uke borte fra jobb satt`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = 2.5, skalJobbeProsent = 22.00).validate()
+        soknad(
+            grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = 2.5, skalJobbeProsent = 22.00
+        ).validate()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Feiler på søknad dersom utenlandsopphold har til og fra dato som ikke kommer i rett rekkefølge`() {
+        soknad(
+            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null,medlemskap =  Medlemskap(
+                harBoddIUtlandetSiste12Mnd = false,
+                skalBoIUtlandetNeste12Mnd = true,
+                utenlandsoppholdNeste12Mnd = listOf(
+                    Bosted(
+                        LocalDate.of(2022, 1, 4),
+                        LocalDate.of(2022, 1, 3),
+                        "US", "USA"
+                    )
+                )
+            )
+            ).validate()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Feiler på søknad dersom utenlandsopphold mangler landkode`() {
+        soknad(
+            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null, medlemskap = Medlemskap(
+                harBoddIUtlandetSiste12Mnd = false,
+                skalBoIUtlandetNeste12Mnd = true,
+                utenlandsoppholdNeste12Mnd = listOf(
+                    Bosted(
+                        LocalDate.of(2022, 1, 2),
+                        LocalDate.of(2022, 1, 3),
+                        "", "USA"
+                    )
+                )
+            )
+        ).validate()
+    }
+
+    @Test
+    fun `Skal ikke feile ved opphold på en dag`() {
+        soknad(
+            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null
+        ).validate()
     }
 
     @Test(expected = Throwblem::class)
@@ -35,7 +84,14 @@ class SoknadValidationTest {
 
     @Test
     fun `validering på gradering skal ikke slå inn, når det er ny versjon`() {
-        soknad(grad = null, harMedsoker = true, samtidigHjemme = true, jobberNormalTimer = 30.0, skalJobbeProsent = 50.0, vetIkkeEkstrainfo = "Liker å skulke")
+        soknad(
+            grad = null,
+            harMedsoker = true,
+            samtidigHjemme = true,
+            skalJobbeProsent = 50.0,
+            vetIkkeEkstrainfo = "Liker å skulke",
+            jobberNormalTimer = 30.0
+        )
     }
 
     @Test
@@ -115,7 +171,18 @@ class SoknadValidationTest {
         dagerPerUkeBorteFraJobb: Double? = null,
         skalJobbeProsent: Double?,
         vetIkkeEkstrainfo: String? = null,
-        jobberNormalTimer: Double?= null
+        jobberNormalTimer: Double? = null,
+        medlemskap: Medlemskap = Medlemskap(
+            harBoddIUtlandetSiste12Mnd = false,
+            skalBoIUtlandetNeste12Mnd = true,
+            utenlandsoppholdNeste12Mnd = listOf(
+                Bosted(
+                    LocalDate.of(2022, 1, 2),
+                    LocalDate.of(2022, 1, 3),
+                    "US", "USA"
+                )
+            )
+        )
     ) = Soknad(
         newVersion = null,
         sprak = Sprak.nb,
@@ -126,30 +193,32 @@ class SoknadValidationTest {
             navn = null
         ),
         relasjonTilBarnet = "far",
-        arbeidsgivere = ArbeidsgiverDetaljer(listOf(
-            OrganisasjonDetaljer(
-                navn = "Org",
-                organisasjonsnummer = "917755736",
-                skalJobbeProsent = skalJobbeProsent,
-                jobberNormaltTimer = jobberNormalTimer,
-                vetIkkeEkstrainfo = vetIkkeEkstrainfo
+        arbeidsgivere = ArbeidsgiverDetaljer(
+            listOf(
+                OrganisasjonDetaljer(
+                    navn = "Org",
+                    organisasjonsnummer = "917755736",
+                    skalJobbeProsent = skalJobbeProsent,
+                    jobberNormaltTimer = jobberNormalTimer,
+                    vetIkkeEkstrainfo = vetIkkeEkstrainfo
+                )
             )
-        )),
+        ),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
         fraOgMed = LocalDate.now(),
         tilOgMed = LocalDate.now(),
-        medlemskap = Medlemskap(
-            harBoddIUtlandetSiste12Mnd = false,
-            skalBoIUtlandetNeste12Mnd = true
-        ),
+        medlemskap = medlemskap,
         harMedsoker = harMedsoker,
         samtidigHjemme = samtidigHjemme,
 
         harBekreftetOpplysninger = true,
         harForstattRettigheterOgPlikter = true,
-        dagerPerUkeBorteFraJobb =dagerPerUkeBorteFraJobb,
+        dagerPerUkeBorteFraJobb = dagerPerUkeBorteFraJobb,
         grad = grad,
         tilsynsordning = null,
+        utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
+        ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
         harHattInntektSomFrilanser = false
+
     )
 }

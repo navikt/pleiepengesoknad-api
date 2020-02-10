@@ -514,7 +514,21 @@ class ApplicationTest {
                         null
                     ],
                     "medlemskap" : {},
-                    "har_forstatt_rettigheter_og_plikter": false
+                    "utenlandsopphold_i_perioden": {
+                        "skal_oppholde_seg_i_utlandet_i_perioden": false,
+                        "opphold": []
+                    },
+                    "har_forstatt_rettigheter_og_plikter": false,
+                  "ferieuttak_i_perioden": {
+                    "skal_ta_ut_ferie_i_periode": true,
+                    "ferieuttak": [
+                      {
+                        "fra_og_med": "2020-01-05",
+                        "til_og_med": "2020-01-07"
+                      }
+                    ]
+                  }
+                }
                 }
                 """.trimIndent(),
             expectedResponse = """
