@@ -31,7 +31,7 @@ data class Soknad(
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
     val beredskap: Beredskap? = null,
-    val harHattInntektSomFrilanser: Boolean,
+    val harHattInntektSomFrilanser: Boolean = false,
     val frilans: Frilans? = null
 )
 

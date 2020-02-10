@@ -219,8 +219,8 @@ class SoknadValidationTest {
         grad = grad,
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
-        ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
-        harHattInntektSomFrilanser = false
+        ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf())
+        // harHattInntektSomFrilanser = false, default == false
 
     )
 }

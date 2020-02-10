@@ -30,7 +30,7 @@ data class KomplettSoknad(
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak?,
     val beredskap: Beredskap?,
-    val harHattInntektSomFrilanser: Boolean,
+    val harHattInntektSomFrilanser: Boolean = false,
     val frilans: Frilans?
 
 )
