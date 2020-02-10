@@ -155,6 +155,8 @@ class SoknadValidationTest {
         dagerPerUkeBorteFraJobb =1.0,
         grad = 50,
         tilsynsordning = null,
+        utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
+        ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
         harHattInntektSomFrilanser = true,
         frilans = Frilans(
             harHattInntektSomFosterforelder = true,
