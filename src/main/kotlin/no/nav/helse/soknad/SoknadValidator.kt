@@ -573,22 +573,6 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?): MutableSet<Viola
         )
     }
 
-    val kreverRelasjonPaaBarnet = aktoerId == null
-    if ((kreverRelasjonPaaBarnet || relasjonTilBarnet != null) && (relasjonTilBarnet == null || relasjonTilBarnet.erBlankEllerLengreEnn(
-            100
-        ))
-    ) {
-        violations.add(
-            Violation(
-                parameterName = "relasjon_til_barnet",
-                parameterType = ParameterType.ENTITY,
-                reason = "Relasjon til barnet kan ikke være tom og være mindre enn 100 tegn.",
-                invalidValue = relasjonTilBarnet
-            )
-        )
-    }
-
-
     return violations
 }
 
