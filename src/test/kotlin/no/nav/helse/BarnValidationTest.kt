@@ -34,14 +34,14 @@ class BarnValidationTest {
 
 
     @Test
-    fun `Når Fødselsnummer settes som ID på barnet kreves det både relasjon til barnet og navn`() {
+    fun `Når Fødselsnummer settes som ID på barnet kreves det relasjon`() {
         val barn = BarnDetaljer(
             fodselsnummer = "02119970078",
             fodselsdato = null,
             aktoerId = null,
             navn = null
         )
-        barn.validate(null).assertFeilPaa(listOf("barn.navn"))
+        barn.validate(null).assertFeilPaa()
     }
 
 }
