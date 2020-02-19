@@ -107,8 +107,8 @@ internal fun Soknad.validate() {
     }
 
     //Alle oppdrag dersom frilans
-    if(frilans != null){
-        for(oppdrag in frilans.oppdrag){
+    if (frilans != null) {
+        for (oppdrag in frilans.oppdrag) {
             violations.addAll(oppdrag.validate())
         }
     }
@@ -182,7 +182,8 @@ internal fun Soknad.validate() {
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
     if (utenlandsoppholdIPerioden != null &&
-        utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null) {
+        utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null
+    ) {
         booleanIkkeSatt("utenlandsopphold_i_perioden.skal_oppholde_seg_i_utlandet_i_perioden")
     }
     violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
@@ -557,18 +558,6 @@ internal fun BarnDetaljer.validate(relasjonTilBarnet: String?): MutableSet<Viola
                 parameterType = ParameterType.ENTITY,
                 reason = "Fødselsdato kan ikke være in fremtiden",
                 invalidValue = fodselsdato
-            )
-        )
-    }
-
-    val kreverNavnPaaBarnet = fodselsnummer != null
-    if ((kreverNavnPaaBarnet || navn != null) && (navn == null || navn.erBlankEllerLengreEnn(100))) {
-        violations.add(
-            Violation(
-                parameterName = "barn.navn",
-                parameterType = ParameterType.ENTITY,
-                reason = "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
-                invalidValue = navn
             )
         )
     }

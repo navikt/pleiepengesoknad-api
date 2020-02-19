@@ -545,11 +545,6 @@ class ApplicationTest {
                         "invalid_value": "29099s12345"
                     }, {
                         "type": "entity",
-                        "name": "barn.navn",
-                        "reason": "Navn på barnet kan ikke være tomt, og kan maks være 100 tegn.",
-                        "invalid_value": ""
-                    }, {
-                        "type": "entity",
                         "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
                         "reason": "Ikke gyldig organisasjonsnummer.",
                         "invalid_value": "12"
