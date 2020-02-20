@@ -1,5 +1,9 @@
 package no.nav.helse
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
+import no.nav.helse.soknad.Virksomhet
+
 
 class SoknadUtils {
     companion object {
@@ -136,7 +140,8 @@ class SoknadUtils {
                 """.trimIndent()
         }
 
-        fun bodyMedSelvstendig(vedleggUrl1: String): String {
+        fun bodyMedSelvstendigVirksomheterSomListe(vedleggUrl1: String, virksomheter: List<Virksomhet>): String {
+            val virksomheterSomJson = jacksonObjectMapper().dusseldorfConfigured().writerWithDefaultPrettyPrinter().writeValueAsString(virksomheter)
             return """
                 {
                     "barn": {},
@@ -176,27 +181,7 @@ class SoknadUtils {
                         ]
                     },
                     "har_hatt_inntekt_som_selvstendig_naringsdrivende" : true,
-                    "selvstendig_virksomheter" : [
-                    { 
-                    "fra_og_med": "2020-01-01",
-                    "er_pagaende": true,
-                    "naringsinntekt": "100001",
-                    "navn_pa_virksomheten": "Bamseland",
-                    "registrert_i_norge": false,
-                    "registrert_i_land": "AO",
-                    "har_regnskapsforer": true,
-                    "regnskapsforer" : {
-                        "navn": "Kjell regnskap",
-                        "telefon": "874584",
-                        "er_nar_venn_familie": false
-                    },
-                    "naringstype": [
-                                "FISKE",
-                                "DAGMAMMA",
-                                "JORDBRUK_SKOGBRUK"
-                          ]
-                        }
-                      ]
+                    "selvstendig_virksomheter" : $virksomheterSomJson
                     }
             """.trimIndent()
         }
