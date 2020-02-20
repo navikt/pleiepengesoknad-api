@@ -136,6 +136,70 @@ class SoknadUtils {
                 """.trimIndent()
         }
 
+        fun bodyMedSelvstendig(vedleggUrl1: String): String {
+            return """
+                {
+                    "barn": {},
+                    "relasjon_til_barnet": "mor",
+                    "fra_og_med": "2018-10-10",
+                    "til_og_med": "2019-10-10",
+                    "arbeidsgivere": {
+                        "organisasjoner": [
+                            {
+                                "organisasjonsnummer": "917755736",
+                                "navn": "Bjeffefirmaet ÆÆÅ"
+                            }
+                        ]
+                    },
+                    "vedlegg": [
+                        "$vedleggUrl1"
+                    ],
+                    "medlemskap" : {
+                        "har_bodd_i_utlandet_siste_12_mnd" : false,
+                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                    },
+                    "utenlandsopphold_i_perioden": {
+                        "skal_oppholde_seg_i_utlandet_i_perioden": false,
+                        "opphold": []
+                    },
+                    "grad": 90,
+                    "har_medsoker": true,
+                    "har_bekreftet_opplysninger": true,
+                    "har_forstatt_rettigheter_og_plikter": true,
+                    "ferieuttak_i_perioden": {
+                        "skal_ta_ut_ferie_i_periode": true,
+                        "ferieuttak": [
+                          {
+                            "fra_og_med": "2020-01-02",
+                            "til_og_med": "2020-01-07"
+                          }
+                        ]
+                    },
+                    "har_hatt_inntekt_som_selvstendig_naringsdrivende" : true,
+                    "selvstendig_virksomheter" : [
+                    { 
+                    "fra_og_med": "2020-01-01",
+                    "er_pagaende": true,
+                    "naringsinntekt": "100001",
+                    "navn_pa_virksomheten": "Bamseland",
+                    "registrert_i_norge": false,
+                    "registrert_i_land": "AO",
+                    "har_regnskapsforer": true,
+                    "regnskapsforer" : {
+                        "navn": "Kjell regnskap",
+                        "telefon": "874584",
+                        "er_nar_venn_familie": false
+                    },
+                    "naringstype": [
+                                "FISKE",
+                                "DAGMAMMA",
+                                "JORDBRUK_SKOGBRUK"
+                          ]
+                        }
+                      ]
+                    }
+            """.trimIndent()
+        }
 
         fun bodyUtenIdPaaBarn(
             vedleggUrl1: String,

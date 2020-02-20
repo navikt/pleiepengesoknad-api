@@ -112,6 +112,7 @@ internal fun Soknad.validate() {
             violations.addAll(oppdrag.validate())
         }
     }
+
     if(harHattInntektSomSelvstendigNaringsdrivende){
         if(selvstendigVirksomheter != null && selvstendigVirksomheter.isNotEmpty()){
             for(virksomhet in selvstendigVirksomheter){

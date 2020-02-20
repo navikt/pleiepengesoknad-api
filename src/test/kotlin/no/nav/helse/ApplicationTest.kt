@@ -49,7 +49,7 @@ class ApplicationTest {
             .stubK9OppslagArbeidsgivere()
             .stubK9Dokument()
 
-        fun getConfig() : ApplicationConfig {
+        fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(TestConfiguration.asMap(wireMockServer = wireMockServer))
@@ -97,8 +97,6 @@ class ApplicationTest {
             }
         }
     }
-
-
 
 
     @Test
@@ -432,6 +430,23 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Sende søknad med selvstendig næringsvirksomhet som har regnskapsfører`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedSelvstendig(
+                vedleggUrl1 = jpegUrl
+            )
+        )
+    }
+
+    @Test
     fun `Sende soknad uten ID på barnet`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
@@ -656,7 +671,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Test opplasting av for stort vedlegg` () {
+    fun `Test opplasting av for stort vedlegg`() {
         engine.handleRequestUploadImage(
             cookie = getAuthCookie(gyldigFodselsnummerA),
             vedlegg = ByteArray(8 * 1024 * 1024 + 10),
@@ -666,13 +681,15 @@ class ApplicationTest {
         )
     }
 
-    private fun requestAndAssert(httpMethod: HttpMethod,
-                                 path : String,
-                                 requestEntity : String? = null,
-                                 expectedResponse : String?,
-                                 expectedCode : HttpStatusCode,
-                                 leggTilCookie : Boolean = true,
-                                 cookie : Cookie = getAuthCookie(fnr)) {
+    private fun requestAndAssert(
+        httpMethod: HttpMethod,
+        path: String,
+        requestEntity: String? = null,
+        expectedResponse: String?,
+        expectedCode: HttpStatusCode,
+        leggTilCookie: Boolean = true,
+        cookie: Cookie = getAuthCookie(fnr)
+    ) {
         with(engine) {
             handleRequest(httpMethod, path) {
                 if (leggTilCookie) addHeader(HttpHeaders.Cookie, cookie.toString())
