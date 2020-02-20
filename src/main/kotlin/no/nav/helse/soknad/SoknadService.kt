@@ -70,6 +70,8 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             beredskap = soknad.beredskap,
             harHattInntektSomFrilanser = soknad.harHattInntektSomFrilanser,
             frilans = soknad.frilans,
+            harHattInntektSomSelvstendigNaringsdrivende = soknad.harHattInntektSomSelvstendigNaringsdrivende,
+            selvstendigVirksomheter = soknad.selvstendigVirksomheter,
             skalBekrefteOmsorg = soknad.skalBekrefteOmsorg,
             skalPassePaBarnetIHelePerioden = soknad.skalPassePaBarnetIHelePerioden,
             beskrivelseOmsorgsRollen = soknad.beskrivelseOmsorgsRollen
