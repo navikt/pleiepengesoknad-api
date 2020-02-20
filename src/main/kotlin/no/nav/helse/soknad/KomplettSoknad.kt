@@ -31,6 +31,7 @@ data class KomplettSoknad(
     val nattevaak: Nattevaak?,
     val beredskap: Beredskap?,
     val harHattInntektSomFrilanser: Boolean = false,
-    val frilans: Frilans?
-
+    val frilans: Frilans? = null,
+    val harHattInntektSomSelvstendigNaringsdrivende: Boolean = false,
+    val selvstendigVirksomheter: List<Virksomhet>? = null
 )

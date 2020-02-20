@@ -119,9 +119,6 @@ class SoknadValidationTest {
         soknadMedFrilans(false, listOf(Oppdrag(arbeidsgivernavn = " ", fraOgMed = LocalDate.now().minusDays(1), tilOgMed = LocalDate.now(), erPagaende = true))).validate()
     }
 
-
-
-
     private fun soknadMedFrilans(jobberFortsattSomFrilans: Boolean, listeAvOppdrag: List<Oppdrag>) = Soknad(
         newVersion = null,
         sprak = Sprak.nb,

@@ -145,7 +145,6 @@ class OppdragValidationTest {
         forEach {
             assertTrue(parameterNames.contains(it.parameterName))
         }
-
     }
 }
 

@@ -32,7 +32,9 @@ data class Soknad(
     val nattevaak: Nattevaak? = null,
     val beredskap: Beredskap? = null,
     val harHattInntektSomFrilanser: Boolean = false,
-    val frilans: Frilans? = null
+    val frilans: Frilans? = null,
+    val harHattInntektSomSelvstendigNaringsdrivende: Boolean = false,
+    val selvstendigVirksomheter: List<Virksomhet>? = null
 )
 
 data class ArbeidsgiverDetaljer(
