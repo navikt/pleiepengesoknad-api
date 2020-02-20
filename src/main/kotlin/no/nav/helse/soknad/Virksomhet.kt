@@ -34,10 +34,8 @@ data class YrkesaktivSisteTreFerdigliknedeArene(
 )
 
 enum class Naringstype(val detaljert: String) {
-    @JsonProperty("FISKE")
-    FISKER("FISKE"),
-    @JsonProperty("JORDBRUK_SKOGBRUK")
-    JORDBRUK("JORDBRUK_SKOGBRUK"),
+    @JsonProperty("FISKE") FISKER("FISKE"),
+    @JsonProperty("JORDBRUK_SKOGBRUK") JORDBRUK("JORDBRUK_SKOGBRUK"),
     DAGMAMMA("DAGMAMMA"),
     ANNET("ANNEN")
 }

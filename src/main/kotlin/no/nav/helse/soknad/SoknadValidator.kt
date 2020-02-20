@@ -114,7 +114,7 @@ internal fun Soknad.validate() {
 
     if(harHattInntektSomSelvstendigNaringsdrivende){
         if(selvstendigVirksomheter != null && selvstendigVirksomheter.isNotEmpty()){
-            for(virksomhet in selvstendigVirksomheter){
+            selvstendigVirksomheter.forEach { virksomhet ->
                 violations.addAll(virksomhet.validate())
             }
         }

@@ -11,6 +11,10 @@ import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.redis.RedisMockUtil
+import no.nav.helse.soknad.Naringstype
+import no.nav.helse.soknad.Regnskapsforer
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeArene
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -18,6 +22,7 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
+import java.time.LocalDate
 import java.util.*
 
 private const val fnr = "290990123456"
@@ -440,8 +445,145 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedSelvstendig(
-                vedleggUrl1 = jpegUrl
+            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+                vedleggUrl1 = jpegUrl,
+                virksomheter = listOf(
+                    Virksomhet(
+                        naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
+                        fraOgMed = LocalDate.now().minusDays(1),
+                        tilOgMed = LocalDate.now(),
+                        erPagaende = false,
+                        naringsinntekt = 1000,
+                        navnPaVirksomheten = "TullOgTøys",
+                        registrertINorge = true,
+                        organisasjonsnummer = "101010",
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        harVarigEndringAvInntektSiste4Kalenderar = false,
+                        harRegnskapsforer = true,
+                        regnskapsforer = Regnskapsforer(
+                            navn = "Kjell",
+                            telefon = "84554",
+                            erNarVennFamilie = false
+                        ),
+                        harRevisor = false
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad med selvstendig næringsvirksomhet som ikke er gyldig, mangler registrertILand`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "registrertILand",
+                      "reason": "Hvis registrertINorge er false så må registrertILand være satt til noe",
+                      "invalid_value": null
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+                vedleggUrl1 = jpegUrl,
+                virksomheter = listOf(
+                    Virksomhet(
+                        naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
+                        fraOgMed = LocalDate.now().minusDays(1),
+                        tilOgMed = LocalDate.now(),
+                        erPagaende = false,
+                        naringsinntekt = 1000,
+                        navnPaVirksomheten = "TullOgTøys",
+                        registrertINorge = false,
+                        organisasjonsnummer = "101010",
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        harVarigEndringAvInntektSiste4Kalenderar = false,
+                        harRegnskapsforer = true,
+                        regnskapsforer = Regnskapsforer(
+                            navn = "Kjell",
+                            telefon = "84554",
+                            erNarVennFamilie = false
+                        ),
+                        harRevisor = false
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad med selvstendig næringsvirksomet som har flere gyldige virksomheter`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "registrertILand",
+                      "reason": "Hvis registrertINorge er false så må registrertILand være satt til noe",
+                      "invalid_value": null
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+                vedleggUrl1 = jpegUrl,
+                virksomheter = listOf(
+                    Virksomhet(
+                        naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
+                        fraOgMed = LocalDate.now().minusDays(1),
+                        tilOgMed = LocalDate.now(),
+                        erPagaende = false,
+                        naringsinntekt = 1000,
+                        navnPaVirksomheten = "TullOgTøys",
+                        registrertINorge = false,
+                        organisasjonsnummer = "101010",
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        harVarigEndringAvInntektSiste4Kalenderar = false,
+                        harRegnskapsforer = false,
+                        harRevisor = false
+                    ), Virksomhet(
+                        naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
+                        fraOgMed = LocalDate.now().minusDays(1),
+                        tilOgMed = LocalDate.now(),
+                        erPagaende = false,
+                        naringsinntekt = 1000,
+                        navnPaVirksomheten = "BariBar",
+                        registrertINorge = false,
+                        organisasjonsnummer = "10110",
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        harVarigEndringAvInntektSiste4Kalenderar = false,
+                        harRegnskapsforer = false,
+                        harRevisor = false
+                    )
+                )
             )
         )
     }
