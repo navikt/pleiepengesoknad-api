@@ -1,6 +1,7 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import java.time.LocalDate
@@ -14,7 +15,9 @@ data class Virksomhet(
     val naringsinntekt: Int,
     val navnPaVirksomheten: String,
     val organisasjonsnummer: String? = null,
+    @JsonProperty("registrert_i_norge")
     val registrertINorge: Boolean,
+    @JsonProperty("registrert_i_land")
     val registrertILand: String? = null,
     val harBlittYrkesaktivSisteTreFerdigliknendeArene: Boolean? = null,
     val yrkesaktivSisteTreFerdigliknedeArene: YrkesaktivSisteTreFerdigliknedeArene? = null,
@@ -31,7 +34,9 @@ data class YrkesaktivSisteTreFerdigliknedeArene(
 )
 
 enum class Naringstype(val detaljert: String) {
+    @JsonProperty("FISKE")
     FISKER("FISKE"),
+    @JsonProperty("JORDBRUK_SKOGBRUK")
     JORDBRUK("JORDBRUK_SKOGBRUK"),
     DAGMAMMA("DAGMAMMA"),
     ANNET("ANNEN")
