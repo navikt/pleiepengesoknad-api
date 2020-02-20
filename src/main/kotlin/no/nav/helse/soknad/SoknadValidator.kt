@@ -121,6 +121,19 @@ internal fun Soknad.validate() {
         }
     }
 
+    if(harHattInntektSomSelvstendigNaringsdrivende){
+        if(selvstendigVirksomheter != null && selvstendigVirksomheter.isEmpty()){
+            violations.add(
+                Violation(
+                    parameterName = "harHattInntektSomSelvstendigNaringsdrivende",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Hvis harHattInntektSomSelvstendigNaringsdrivende er true så kan ikke listen over virksomehter være tom",
+                    invalidValue = harHattInntektSomSelvstendigNaringsdrivende
+                )
+            )
+        }
+    }
+
     // Datoer
     violations.addAll(
         FraOgMedTilOgMedValidator.validate(
