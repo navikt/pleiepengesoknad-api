@@ -113,6 +113,7 @@ internal fun Soknad.validate() {
         }
     }
 
+
     if(harHattInntektSomSelvstendigNaringsdrivende){
         if(selvstendigVirksomheter != null && selvstendigVirksomheter.isNotEmpty()){
             selvstendigVirksomheter.forEach { virksomhet ->
