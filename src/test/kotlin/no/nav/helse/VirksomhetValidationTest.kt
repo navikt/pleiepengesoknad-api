@@ -26,7 +26,7 @@ class VirksomhetTest {
             harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = false)
-        virksomhet.validate().assertFeilPaa(listOf("oppdrag.tilogmed og oppdrag.fraogmed"))
+        virksomhet.validate().assertFeilPaa(listOf("virksomhet.tilogmed og virksomhet.fraogmed"))
     }
 
     @Test

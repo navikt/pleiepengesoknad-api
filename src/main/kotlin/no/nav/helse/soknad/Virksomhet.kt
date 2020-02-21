@@ -66,7 +66,7 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
     if(!harGyldigPeriode()){
         violations.add(
             Violation(
-                parameterName = "virksomhet.tilogmed og virksom.fraogmed",
+                parameterName = "virksomhet.tilogmed og virksomhet.fraogmed",
                 parameterType = ParameterType.ENTITY,
                 reason = "Har ikke gyldig periode. Fraogmed kan ikke være nyere enn tilogmed",
                 invalidValue = tilOgMed
