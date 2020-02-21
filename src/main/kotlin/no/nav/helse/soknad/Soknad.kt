@@ -81,6 +81,7 @@ data class OrganisasjonDetaljer(
 )
 
 enum class TilsynsordningSvar { ja, nei, vet_ikke }
+
 enum class TilsynsordningVetIkkeSvar { er_sporadisk, er_ikke_laget_en_plan, annet }
 
 data class TilsynsordningJa(
