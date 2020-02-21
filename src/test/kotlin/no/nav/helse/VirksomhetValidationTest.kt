@@ -18,7 +18,7 @@ class VirksomhetTest {
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now().minusDays(1),
             erPagaende = false,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
@@ -36,7 +36,7 @@ class VirksomhetTest {
             fraOgMed = LocalDate.now().minusDays(1),
             tilOgMed = LocalDate.now(),
             erPagaende = false,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
@@ -55,7 +55,7 @@ class VirksomhetTest {
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now(),
             erPagaende = false,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
@@ -73,7 +73,7 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101011",
@@ -92,7 +92,7 @@ class VirksomhetTest {
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now().plusDays(1),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
@@ -110,7 +110,7 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
@@ -128,7 +128,7 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             organisasjonsnummer = null,
             registrertINorge = true,
@@ -145,7 +145,7 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = false,
             registrertILand = "Sverige",
@@ -162,7 +162,7 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = false,
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
@@ -178,7 +178,7 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
@@ -195,7 +195,7 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
@@ -214,26 +214,44 @@ class VirksomhetTest {
     }
 
     @Test
-    fun `Hvis harRegnskapsfører er satt til true så kan ikke revisor være null, validate skal returnere en violation`(){
+    fun `Hvis harRegnskapsfører er satt til true så kan ikke regnskapsforer være null, validate skal returnere en violation`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
             erPagaende = true,
-            naringsinntekt = 1000,
+            naringsinntekt = "1000",
+            navnPaVirksomheten = "TullOgTøys",
+            registrertINorge = true,
+            organisasjonsnummer = "101010",
+            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+            harVarigEndringAvInntektSiste4Kalenderar = false,
+            harRegnskapsforer = true
+        )
+        virksomhet.validate().assertFeilPaa(listOf("regnskapsforer"))
+    }
+
+    @Test
+    fun `Hvis harRevisor er satt til true så må revisor være et revisorobjekt, validering skal ikke reagere`(){
+        val virksomhet = Virksomhet(
+            naringstype = listOf(Naringstype.FISKER),
+            fraOgMed = LocalDate.now(),
+            erPagaende = true,
+            naringsinntekt = "1000",
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
             harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
-            harRevisor = true
+            harRevisor = true,
+            revisor = Revisor(
+                navn = "Kjell",
+                telefon = "9898989",
+                erNarVennFamilie = false,
+                kanInnhenteOpplysninger = false
+            )
         )
-        virksomhet.validate().assertFeilPaa(listOf("revisor"))
-    }
-
-    @Test
-    fun `Hvis harRevisor er satt til true så må revisor være et revisorobjekt, validering skal ikke reagere`(){
-
+        virksomhet.validate().assertIngenFeil()
     }
 
     private fun MutableSet<Violation>.assertIngenFeil() = assertTrue(isEmpty())

@@ -34,6 +34,7 @@ data class Soknad(
     val harHattInntektSomFrilanser: Boolean = false,
     val frilans: Frilans? = null,
     val harHattInntektSomSelvstendigNaringsdrivende: Boolean = false,
+    @JsonProperty("selvstendig_virksomheter")
     val selvstendigVirksomheter: List<Virksomhet>? = null
 )
 

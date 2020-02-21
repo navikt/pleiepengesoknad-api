@@ -453,7 +453,7 @@ class ApplicationTest {
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
-                        naringsinntekt = 1000,
+                        naringsinntekt = "1000",
                         navnPaVirksomheten = "TullOgTøys",
                         registrertINorge = true,
                         organisasjonsnummer = "101010",
@@ -507,7 +507,7 @@ class ApplicationTest {
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
-                        naringsinntekt = 1000,
+                        naringsinntekt = "1000",
                         navnPaVirksomheten = "TullOgTøys",
                         registrertINorge = false,
                         organisasjonsnummer = "101010",
@@ -523,6 +523,125 @@ class ApplicationTest {
                     )
                 )
             )
+        )
+    }
+
+    @Test
+    fun `Sende søknad som inneholder både frilansoppdrag og en selvstendig virksomhet`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = """
+            {
+              "new_version": true,
+              "sprak": "nb",
+              "barn": {
+                "navn": "Barn Barne Barnesen",
+                "fodselsnummer": null,
+                "aktoer_id": "1",
+                "fodselsdato": "1990-01-01"
+              },
+              "arbeidsgivere": {
+                "organisasjoner": [
+                  
+                ]
+              },
+              "medlemskap": {
+                "har_bodd_i_utlandet_siste_12_mnd": false,
+                "skal_bo_i_utlandet_neste_12_mnd": false,
+                "utenlandsopphold_siste_12_mnd": [
+                  
+                ],
+                "utenlandsopphold_neste_12_mnd": [
+                  
+                ]
+              },
+              "fra_og_med": "2020-02-01",
+              "til_og_med": "2020-02-08",
+              "vedlegg": [
+                "$jpegUrl"
+              ],
+              "har_medsoker": false,
+              "har_bekreftet_opplysninger": true,
+              "har_forstatt_rettigheter_og_plikter": true,
+              "utenlandsopphold_i_perioden": {
+                "skal_oppholde_seg_i_utlandet_i_perioden": true,
+                "opphold": [
+                  {
+                    "landnavn": "Andorra",
+                    "landkode": "AD",
+                    "fra_og_med": "2020-02-05",
+                    "til_og_med": "2020-02-08",
+                    "er_utenfor_eos": true,
+                    "er_barnet_innlagt": true,
+                    "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+                  }
+                ]
+              },
+              "ferieuttak_i_perioden": {
+                "skal_ta_ut_ferie_i_periode": true,
+                "ferieuttak": [
+                  {
+                    "fra_og_med": "2020-02-05",
+                    "til_og_med": "2020-02-08"
+                  }
+                ]
+              },
+              "har_hatt_inntekt_som_frilanser": true,
+              "frilans": {
+                "har_hatt_oppdrag_for_familie": true,
+                "har_hatt_inntekt_som_fosterforelder": true,
+                "startdato": "2020-02-01",
+                "jobber_fortsatt_som_frilans": true,
+                "oppdrag": [
+                  {
+                    "arbeidsgivernavn": "NaboBil",
+                    "fra_og_med": "2020-02-19",
+                    "til_og_med": null,
+                    "er_pagaende": true
+                  }
+                ]
+              },
+              "har_hatt_inntekt_som_selvstendig_naringsdrivende": true,
+              "selvstendig_virksomheter": [
+                {
+                  "naringstype": [
+                    "FISKE",
+                    "JORDBRUK_SKOGBRUK",
+                    "DAGMAMMA"
+                  ],
+                  "navn_pa_virksomheten": "Tull og tøys",
+                  "registrert_i_norge": true,
+                  "organisasjonsnummer": "98585",
+                  "fra_og_med": "2020-02-01",
+                  "til_og_med": null,
+                  "er_pagaende": true,
+                  "naringsinntekt": "9856324598",
+                  "har_regnskapsforer": false,
+                  "har_blitt_yrkesaktiv_siste_tre_ferdigliknede_arene": true,
+                  "yrkesaktiv_siste_tre_ferdigliknede_arene": {
+                    "oppstartsdato": "2020-02-01"
+                  },
+                  "har_revisor": true,
+                  "revisor": {
+                    "navn": "Kjell",
+                    "telefon": "9854",
+                    "er_nar_venn_familie": true,
+                    "kan_innhente_opplysninger": true
+                  }
+                }
+              ],
+              "tilsynsordning": {
+                "svar": "nei"
+              }
+            } 
+            """.trimIndent()
         )
     }
 
@@ -561,7 +680,7 @@ class ApplicationTest {
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
-                        naringsinntekt = 1000,
+                        naringsinntekt = "1000",
                         navnPaVirksomheten = "TullOgTøys",
                         registrertINorge = false,
                         organisasjonsnummer = "101010",
@@ -574,7 +693,7 @@ class ApplicationTest {
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
-                        naringsinntekt = 1000,
+                        naringsinntekt = "1000",
                         navnPaVirksomheten = "BariBar",
                         registrertINorge = false,
                         organisasjonsnummer = "10110",
