@@ -600,6 +600,12 @@ class ApplicationTest {
                       "til_og_med": "2020-02-13",
                       "naringsinntekt": 9857755,
                       "har_regnskapsforer": true,
+                      "har_varig_endring_av_inntekt_siste_4_kalenderar": true,
+                            "varig_endring": {
+                              "dato": "2020-01-03",
+                              "forklaring": "forklaring blablablabla",
+                              "inntekt_etter_endring": "23423"
+                            },
                       "har_blitt_yrkesaktiv_siste_tre_ferdigliknede_arene": true,
                       "yrkesaktiv_siste_tre_ferdigliknede_arene": {
                         "oppstartsdato": "2020-02-01"
