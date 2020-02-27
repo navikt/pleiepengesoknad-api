@@ -131,17 +131,7 @@ POST @ /soknad -> 202 Response
   "har_hatt_inntekt_som_frilanser": true,
   "frilans": {
     "startdato": "2019-01-08",
-    "har_hatt_oppdrag_for_familie": true,
-    "har_hatt_inntekt_som_fosterforelder": true,
-    "jobber_fortsatt_som_frilans": true,
-    "oppdrag": [
-      {
-        "arbeidsgivernavn": "Henrik Ibsensen",
-        "fra_og_med": "2019-05-08",
-        "til_og_med": null,
-        "er_pagaende": true
-      }
-    ]
+    "jobber_fortsatt_som_frilans": true
   }
 }
 ```
@@ -251,9 +241,6 @@ POST @ /soknad -> 202 Response
 export interface FrilansApiData {
   startdato: ApiStringDate;
   jobber_fortsatt_som_frilans: boolean;
-  har_hatt_oppdrag_for_familie: boolean;
-  har_hatt_inntekt_som_fosterforelder: boolean;
-  oppdrag: FrilansoppdragApiData[];
 }
 
 export interface FrilansoppdragApiData {
@@ -309,13 +296,11 @@ export interface VirksomhetApiData {
   regnskapsforer?: {
     navn: string;
     telefon: string;
-    er_nar_venn_familie: boolean;
   };
   har_revisor?: boolean;
   revisor?: {
     navn: string;
     telefon: string;
-    er_nar_venn_familie: boolean;
     kan_innhente_opplysninger?: boolean;
   };
 }
