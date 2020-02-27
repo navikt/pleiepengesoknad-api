@@ -296,13 +296,11 @@ export interface VirksomhetApiData {
   regnskapsforer?: {
     navn: string;
     telefon: string;
-    er_nar_venn_familie: boolean;
   };
   har_revisor?: boolean;
   revisor?: {
     navn: string;
     telefon: string;
-    er_nar_venn_familie: boolean;
     kan_innhente_opplysninger?: boolean;
   };
 }
