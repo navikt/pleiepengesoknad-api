@@ -32,5 +32,4 @@ data class KomplettSoknad(
     val beredskap: Beredskap?,
     val harHattInntektSomFrilanser: Boolean = false,
     val frilans: Frilans?
-
 )

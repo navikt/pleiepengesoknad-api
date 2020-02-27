@@ -172,12 +172,9 @@ data class Ferieuttak(
 }
 
 data class Frilans(
-    val harHattOppdragForFamilie: Boolean,
-    val harHattInntektSomFosterforelder: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val startdato: LocalDate,
-    val jobberFortsattSomFrilans: Boolean,
-    val oppdrag: List<Oppdrag>
+    val jobberFortsattSomFrilans: Boolean
 )
 
 enum class Arsak {
