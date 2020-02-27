@@ -242,13 +242,6 @@ export interface FrilansApiData {
   startdato: ApiStringDate;
   jobber_fortsatt_som_frilans: boolean;
 }
-
-export interface FrilansoppdragApiData {
-  arbeidsgivernavn: string;
-  fra_og_med: ApiStringDate;
-  til_og_med: ApiStringDate | null;
-  er_pagaende?: boolean;
-}
 ```
 
 ### Selvstendig næringsdrivende
