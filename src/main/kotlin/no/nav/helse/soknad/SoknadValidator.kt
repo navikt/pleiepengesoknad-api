@@ -106,13 +106,6 @@ internal fun Soknad.validate() {
         violations.addAll(this.validate())
     }
 
-    //Alle oppdrag dersom frilans
-    if (frilans != null) {
-        for (oppdrag in frilans.oppdrag) {
-            violations.addAll(oppdrag.validate())
-        }
-    }
-
     // Datoer
     violations.addAll(
         FraOgMedTilOgMedValidator.validate(
@@ -212,6 +205,7 @@ internal fun Soknad.validate() {
             )
         )
     }
+
     if (harHattInntektSomFrilanser) {
         if (frilans == null) {
             violations.add(
@@ -222,29 +216,8 @@ internal fun Soknad.validate() {
                 )
             )
         }
-        if (frilans != null) {
-            if (frilans.harHattOppdragForFamilie) {
-                if (frilans.oppdrag.size == 0) {
-                    violations.add(
-                        Violation(
-                            parameterName = "oppdrag",
-                            parameterType = ParameterType.ENTITY,
-                            reason = "Dersom søkeren er frilans og harHattOppdragForFamilie, skal oppdrag arrayet ha et eller flere oppdrag"
-                        )
-                    )
-                }
-            }
-            if (!frilans.harHattOppdragForFamilie && frilans.oppdrag.size > 0) {
-                violations.add(
-                    Violation(
-                        parameterName = "oppdrag",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Dersom søkeren er frilans og IKKE harHattOppdragForFamilie, skal oppdrag arrayet være empty"
-                    )
-                )
-            }
-        }
     }
+
     if (!harHattInntektSomFrilanser) {
         if (frilans != null) {
             violations.add(
