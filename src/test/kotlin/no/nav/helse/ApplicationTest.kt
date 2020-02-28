@@ -11,10 +11,7 @@ import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.redis.RedisMockUtil
-import no.nav.helse.soknad.Naringstype
-import no.nav.helse.soknad.Regnskapsforer
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeArene
+import no.nav.helse.soknad.*
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -449,7 +446,7 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
+                        naringstype = listOf(Naringstype.JORDBRUK),
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
@@ -504,6 +501,7 @@ class ApplicationTest {
                 virksomheter = listOf(
                     Virksomhet(
                         naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
+                        fiskerinfo = listOf(Fiskerinfo.HYRE),
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
@@ -588,7 +586,6 @@ class ApplicationTest {
                   "selvstendig_virksomheter": [
                     {
                       "naringstype": [
-                        "FISKE",
                         "JORDBRUK_SKOGBRUK",
                         "DAGMAMMA",
                         "ANNEN"
@@ -656,7 +653,7 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
+                        naringstype = listOf(Naringstype.JORDBRUK),
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
@@ -669,7 +666,7 @@ class ApplicationTest {
                         harRegnskapsforer = false,
                         harRevisor = false
                     ), Virksomhet(
-                        naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
+                        naringstype = listOf(Naringstype.JORDBRUK),
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,

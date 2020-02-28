@@ -8,6 +8,7 @@ import java.time.LocalDate
 
 data class Virksomhet(
     val naringstype: List<Naringstype>,
+    val fiskerinfo: List<Fiskerinfo>? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate? = null,
@@ -40,6 +41,14 @@ enum class Naringstype(val detaljert: String) {
     @JsonProperty("ANNEN") ANNET("ANNEN"),
     DAGMAMMA("DAGMAMMA")
 }
+
+enum class Fiskerinfo() {
+    LOTT,
+    HYRE,
+    BLAD_A,
+    BLAD_B
+}
+
 
 data class VarigEndring(
     val dato: LocalDate? = null,
@@ -129,6 +138,17 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
             )
         )
     }
+
+    if(!erFiskerSattGyldig()){
+        violations.add(
+            Violation(
+                parameterName = "fiskerinfo",
+                parameterType = ParameterType.ENTITY,
+                reason = "Hvis fisker er satt som naringstype, så må også fiskeinfo inneholde minst en type",
+                invalidValue = fiskerinfo
+            )
+        )
+    }
     return violations
 }
 
@@ -161,5 +181,12 @@ internal fun Virksomhet.erRegistrertILandGyldigSatt(): Boolean{
 
 internal fun Virksomhet.erRegnskapsførerSattGyldig() : Boolean{
     if(harRegnskapsforer) return regnskapsforer != null
+    return true
+}
+
+internal fun Virksomhet.erFiskerSattGyldig(): Boolean{
+    if(naringstype.contains(Naringstype.FISKER)){
+        return fiskerinfo?.isNotEmpty() ?: false
+    }
     return true
 }
