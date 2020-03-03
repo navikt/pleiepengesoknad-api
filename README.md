@@ -265,16 +265,9 @@ export declare enum Næringstype {
   "ANNET" = "ANNEN"
 }
 
-export enum Fiskerinfo {
-  "LOTT" = "LOTT",
-  "HYRE" = "HYRE",
-  "BLAD_A" = "BLAD_A",
-  "BLAD_B" = "BLAD_B"
-}
-
 export interface VirksomhetApiData {
   naringstype: Næringstype[];
-  fiskerinfo?: Fiskerinfo[];
+  fiskerErPåPlanB?: boolean;
   fra_og_med: ApiStringDate;
   til_og_med?: ApiStringDate | null;
   er_pagaende?: boolean;
