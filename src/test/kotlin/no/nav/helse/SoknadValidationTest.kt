@@ -95,31 +95,16 @@ class SoknadValidationTest {
     }
 
     @Test
-    fun `Håndterer søknad med frilans med oppdrag som ikke er pågående som er korrekt`(){
-        soknadMedFrilans(true, listOf(Oppdrag(arbeidsgivernavn = "BariBar", fraOgMed = LocalDate.now().minusDays(1), tilOgMed = LocalDate.now(), erPagaende = false))).validate()
-    }
-
-    @Test
-    fun `Håndterer søknad med frilans med oppdrag som er pågående som er korrekt`(){
-        soknadMedFrilans(true, listOf(Oppdrag(arbeidsgivernavn = "BariBar", fraOgMed = LocalDate.now().minusDays(1), erPagaende = true))).validate()
+    fun `Skal ikke feile når harHattInntektSomFrilanser er satt til true og det finnes frilansobjekt`() {
+        soknadMedFrilans(true).validate()
     }
 
     @Test(expected = Throwblem::class)
-    fun `Feiler på søknad med frilans med oppdrag som har sluttdato men også er pågående`(){
-        soknadMedFrilans(false, listOf(Oppdrag(arbeidsgivernavn = "BariBar", fraOgMed = LocalDate.now().minusDays(1), tilOgMed = LocalDate.now(), erPagaende = true))).validate()
+    fun `Skal feile når harHattInntektSomFrilanser er satt til false mens det finnes frilansobjekt`() {
+        soknadMedFrilans(false).validate()
     }
 
-    @Test(expected = Throwblem::class)
-    fun `Feiler på søknad med frilans med oppdrag som har sluttdato nyere enn startdato`(){
-        soknadMedFrilans(false, listOf(Oppdrag(arbeidsgivernavn = "BariBar", fraOgMed = LocalDate.now().minusDays(1), tilOgMed = LocalDate.now().minusDays(2), erPagaende = true))).validate()
-    }
-
-    @Test(expected = Throwblem::class)
-    fun `Feiler på søknad med frilans med oppdrag som har blank arbeidsgivernavn`(){
-        soknadMedFrilans(false, listOf(Oppdrag(arbeidsgivernavn = " ", fraOgMed = LocalDate.now().minusDays(1), tilOgMed = LocalDate.now(), erPagaende = true))).validate()
-    }
-
-    private fun soknadMedFrilans(jobberFortsattSomFrilans: Boolean, listeAvOppdrag: List<Oppdrag>) = Soknad(
+    private fun soknadMedFrilans(harHattInntektSomFrilanser: Boolean) = Soknad(
         newVersion = null,
         sprak = Sprak.nb,
         barn = BarnDetaljer(
@@ -154,13 +139,10 @@ class SoknadValidationTest {
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
-        harHattInntektSomFrilanser = true,
+        harHattInntektSomFrilanser = harHattInntektSomFrilanser,
         frilans = Frilans(
-            harHattInntektSomFosterforelder = true,
-            harHattOppdragForFamilie = true,
-            startdato = LocalDate.now().minusDays(1),
-            jobberFortsattSomFrilans = jobberFortsattSomFrilans,
-            oppdrag = listeAvOppdrag)
+            jobberFortsattSomFrilans = true,
+            startdato = LocalDate.now().minusDays(1))
         )
 
     private fun soknad(
@@ -218,6 +200,5 @@ class SoknadValidationTest {
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf())
         // harHattInntektSomFrilanser = false, default == false
-
     )
 }
