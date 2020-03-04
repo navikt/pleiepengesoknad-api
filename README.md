@@ -2,7 +2,7 @@
 
 API for Selvbetjeningsløsning for søknad om pleiepenger
 
-[![CircleCI](https://circleci.com/gh/navikt/pleiepengesoknad-api/tree/master.svg?style=svg)](https://circleci.com/gh/navikt/pleiepengesoknad-api/tree/master)
+![CI / CD](https://github.com/navikt/pleiepengesoknad-api/workflows/CI%20/%20CD/badge.svg)
 
 Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 
