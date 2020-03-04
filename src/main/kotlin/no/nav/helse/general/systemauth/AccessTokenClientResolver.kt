@@ -1,12 +1,10 @@
 package no.nav.helse.general.systemauth
 
 import no.nav.helse.dusseldorf.ktor.auth.Client
-import no.nav.helse.dusseldorf.ktor.auth.ClientSecretClient
 import no.nav.helse.dusseldorf.ktor.auth.PrivateKeyClient
 import no.nav.helse.dusseldorf.oauth2.client.FromCertificateHexThumbprint
 import no.nav.helse.dusseldorf.oauth2.client.FromJwk
 import no.nav.helse.dusseldorf.oauth2.client.SignedJwtAccessTokenClient
-import no.nav.helse.general.auth.ApiGatewayApiKey
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

@@ -8,11 +8,12 @@ import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpDelete
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
-import io.ktor.http.*
+import io.ktor.http.HttpHeaders
+import io.ktor.http.Url
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry.Companion.retry
-import no.nav.helse.dusseldorf.ktor.metrics.Operation.Companion.monitored
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
+import no.nav.helse.dusseldorf.ktor.metrics.Operation.Companion.monitored
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import org.slf4j.Logger

@@ -5,13 +5,18 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.http.*
-import kotlin.test.*
-import io.ktor.server.testing.*
+import io.ktor.server.testing.TestApplicationEngine
+import io.ktor.server.testing.createTestEnvironment
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.redis.RedisMockUtil
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Naringstype
+import no.nav.helse.soknad.Regnskapsforer
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeArene
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -21,6 +26,9 @@ import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.LocalDate
 import java.util.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 private const val fnr = "290990123456"
 private const val ikkeMyndigFnr = "12125012345"

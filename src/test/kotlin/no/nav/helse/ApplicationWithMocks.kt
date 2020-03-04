@@ -4,9 +4,6 @@ import io.ktor.server.testing.withApplication
 import no.nav.helse.dusseldorf.ktor.testsupport.asArguments
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.wiremock.*
-import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
-import no.nav.helse.wiremock.stubK9Dokument
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

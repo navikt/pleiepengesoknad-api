@@ -5,8 +5,9 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import no.nav.helse.dusseldorf.ktor.testsupport.jws.ClientCredentials
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.getAzureV2WellKnownUrl
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.getLoginServiceV1WellKnownUrl
-import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.getNaisStsWellKnownUrl
-import no.nav.helse.wiremock.*
+import no.nav.helse.wiremock.getK9DokumentUrl
+import no.nav.helse.wiremock.getK9OppslagUrl
+import no.nav.helse.wiremock.getPleiepengesoknadMottakUrl
 import org.json.JSONObject
 
 object TestConfiguration {

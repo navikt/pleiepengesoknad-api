@@ -1,13 +1,10 @@
 package no.nav.helse
 
-import io.ktor.application.call
-import io.ktor.request.receive
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.*
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class VirksomhetTest {
