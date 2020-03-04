@@ -10,7 +10,10 @@ import no.nav.helse.redis.RedisConfigurationProperties
 import no.nav.helse.redis.RedisMockUtil
 import no.nav.helse.redis.RedisStore
 import org.junit.AfterClass
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 
 @KtorExperimentalAPI
 class MellomlagringTest {

@@ -11,7 +11,6 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.vedlegg.Vedlegg
 import no.nav.helse.vedlegg.VedleggId
 import java.util.*
-import kotlin.IllegalStateException
 
 class K9DokumentResponseTransformer() : ResponseTransformer() {
 

@@ -3,17 +3,12 @@ package no.nav.helse.mellomlagring
 import io.ktor.application.call
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.locations.get
-import io.ktor.locations.post
-import io.ktor.locations.delete
+import io.ktor.locations.*
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Route
 import no.nav.helse.general.auth.IdTokenProvider
-import no.nav.helse.general.getCallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
