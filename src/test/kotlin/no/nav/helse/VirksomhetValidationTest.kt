@@ -256,7 +256,7 @@ class VirksomhetTest {
     }
 
     @Test
-    fun `Hvis fisker så må også fiskerinfo være satt, validering skal slå inn`(){
+    fun `Hvis fisker så må også fiskerErPåPlanB være satt, validering skal slå inn`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.FISKER),
             fraOgMed = LocalDate.now(),
@@ -276,14 +276,14 @@ class VirksomhetTest {
                 kanInnhenteOpplysninger = false
             )
         )
-        virksomhet.validate().assertFeilPaa(listOf("fiskerinfo"))
+        virksomhet.validate().assertFeilPaa(listOf("fiskerErPåPlanB"))
     }
 
     @Test
-    fun `Hvis fisker så må også fiskerinfo være satt, validering skal ikke reagere`(){
+    fun `Hvis fisker så må også fiskerErPåPlanB være satt, validering skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.FISKER),
-            fiskerinfo = listOf(Fiskerinfo.BLAD_A),
+            fiskerErPåPlanB = true,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
