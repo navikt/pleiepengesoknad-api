@@ -8,6 +8,7 @@ import java.time.LocalDate
 
 data class Virksomhet(
     val naringstype: List<Naringstype>,
+    @JsonProperty("fiskerErPåPlanB")
     val fiskerErPåPlanB: Boolean? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
