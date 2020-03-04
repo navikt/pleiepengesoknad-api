@@ -105,6 +105,27 @@ internal fun Soknad.validate() {
         violations.addAll(this.validate())
     }
 
+    if(harHattInntektSomSelvstendigNaringsdrivende){
+        if(selvstendigVirksomheter != null && selvstendigVirksomheter.isNotEmpty()){
+            selvstendigVirksomheter.forEach { virksomhet ->
+                violations.addAll(virksomhet.validate())
+            }
+        }
+    }
+
+    if(harHattInntektSomSelvstendigNaringsdrivende){
+        if(selvstendigVirksomheter != null && selvstendigVirksomheter.isEmpty()){
+            violations.add(
+                Violation(
+                    parameterName = "harHattInntektSomSelvstendigNaringsdrivende",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Hvis harHattInntektSomSelvstendigNaringsdrivende er true så kan ikke listen over virksomehter være tom",
+                    invalidValue = harHattInntektSomSelvstendigNaringsdrivende
+                )
+            )
+        }
+    }
+
     // Datoer
     violations.addAll(
         FraOgMedTilOgMedValidator.validate(
