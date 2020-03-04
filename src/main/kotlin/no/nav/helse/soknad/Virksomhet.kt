@@ -8,12 +8,12 @@ import java.time.LocalDate
 
 data class Virksomhet(
     val naringstype: List<Naringstype>,
-    val fiskerinfo: List<Fiskerinfo>? = null,
+    val fiskerErPåPlanB: Boolean? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate? = null,
     val erPagaende: Boolean,
-    val naringsinntekt: Int,
+    val naringsinntekt: Int? = null,
     val navnPaVirksomheten: String,
     val organisasjonsnummer: String? = null,
     @JsonProperty("registrert_i_norge")
@@ -41,14 +41,6 @@ enum class Naringstype(val detaljert: String) {
     @JsonProperty("ANNEN") ANNET("ANNEN"),
     DAGMAMMA("DAGMAMMA")
 }
-
-enum class Fiskerinfo() {
-    LOTT,
-    HYRE,
-    BLAD_A,
-    BLAD_B
-}
-
 
 data class VarigEndring(
     val dato: LocalDate? = null,
@@ -142,10 +134,10 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
     if(!erFiskerSattGyldig()){
         violations.add(
             Violation(
-                parameterName = "fiskerinfo",
+                parameterName = "fiskerErPåPlanB",
                 parameterType = ParameterType.ENTITY,
-                reason = "Hvis fisker er satt som naringstype, så må også fiskeinfo inneholde minst en type",
-                invalidValue = fiskerinfo
+                reason = "Hvis fisker er satt som naringstype, så må fiskerErPåPlanB være satt til true eller false, ikke null",
+                invalidValue = fiskerErPåPlanB
             )
         )
     }
@@ -186,7 +178,7 @@ internal fun Virksomhet.erRegnskapsførerSattGyldig() : Boolean{
 
 internal fun Virksomhet.erFiskerSattGyldig(): Boolean{
     if(naringstype.contains(Naringstype.FISKER)){
-        return fiskerinfo?.isNotEmpty() ?: false
+        return fiskerErPåPlanB != null
     }
     return true
 }

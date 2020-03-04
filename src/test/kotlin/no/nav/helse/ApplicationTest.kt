@@ -500,8 +500,7 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.FISKER, Naringstype.JORDBRUK),
-                        fiskerinfo = listOf(Fiskerinfo.HYRE),
+                        naringstype = listOf(Naringstype.JORDBRUK),
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
