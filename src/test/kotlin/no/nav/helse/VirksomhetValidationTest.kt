@@ -273,14 +273,14 @@ class VirksomhetTest {
                 kanInnhenteOpplysninger = false
             )
         )
-        virksomhet.validate().assertFeilPaa(listOf("fiskerErPåPlanB"))
+        virksomhet.validate().assertFeilPaa(listOf("fiskerErPåBladB"))
     }
 
     @Test
     fun `Hvis fisker så må også fiskerErPåPlanB være satt, validering skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.FISKER),
-            fiskerErPåPlanB = true,
+            fiskerErPåBladB = true,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,

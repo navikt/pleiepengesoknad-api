@@ -8,8 +8,8 @@ import java.time.LocalDate
 
 data class Virksomhet(
     val naringstype: List<Naringstype>,
-    @JsonProperty("fiskerErPåPlanB")
-    val fiskerErPåPlanB: Boolean? = null,
+    @JsonProperty("fiskerErPåBladB")
+    val fiskerErPåBladB: Boolean? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate? = null,
@@ -135,10 +135,10 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
     if(!erFiskerSattGyldig()){
         violations.add(
             Violation(
-                parameterName = "fiskerErPåPlanB",
+                parameterName = "fiskerErPåBladB",
                 parameterType = ParameterType.ENTITY,
-                reason = "Hvis fisker er satt som naringstype, så må fiskerErPåPlanB være satt til true eller false, ikke null",
-                invalidValue = fiskerErPåPlanB
+                reason = "Hvis fisker er satt som naringstype, så må fiskerErPåBladB være satt til true eller false, ikke null",
+                invalidValue = fiskerErPåBladB
             )
         )
     }
@@ -179,7 +179,7 @@ internal fun Virksomhet.erRegnskapsførerSattGyldig() : Boolean{
 
 internal fun Virksomhet.erFiskerSattGyldig(): Boolean{
     if(naringstype.contains(Naringstype.FISKER)){
-        return fiskerErPåPlanB != null
+        return fiskerErPåBladB != null
     }
     return true
 }
