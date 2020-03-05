@@ -267,7 +267,7 @@ export declare enum Næringstype {
 
 export interface VirksomhetApiData {
   naringstype: Næringstype[];
-  fiskerErPåPlanB?: boolean;
+  fiskerErPåBladB?: boolean;
   fra_og_med: ApiStringDate;
   til_og_med?: ApiStringDate | null;
   er_pagaende?: boolean;
