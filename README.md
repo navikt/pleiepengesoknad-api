@@ -43,6 +43,9 @@ POST @ /soknad -> 202 Response
   "relasjon_til_barnet": "mor",
   "fra_og_med": "2019-10-10",
   "til_og_med": "2019-11-10",
+  "skal_bekrefte_omsorg": true,
+  "skal_passe_pa_barnet_i_hele_perioden": true,
+  "beskrivelse_omsorgsrollen": "En kort beskrivelse",
   "arbeidsgivere": {
     "organisasjoner": [
       {
