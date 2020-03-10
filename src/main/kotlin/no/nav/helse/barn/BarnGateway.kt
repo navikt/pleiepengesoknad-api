@@ -1,5 +1,6 @@
 package no.nav.helse.barn
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -84,6 +85,7 @@ class BarnGateway (
         val fornavn: String,
         val mellomnavn: String? = null,
         val etternavn: String,
-        val aktør_id: String
+        val aktør_id: String,
+        @JsonProperty("har_samme_adresse") val harSammeAdresse: Boolean
     )
 }
