@@ -41,13 +41,15 @@ private fun getResponse(ident: String): String {
                     "fornavn": "BARN",
                     "mellomnavn": "EN",
                     "etternavn": "BARNESEN",
-                    "aktør_id": "1000000000001"
+                    "aktør_id": "1000000000001",
+                    "har_samme_adresse": true
                 }, {
                     "fødselsdato": "2001-04-10",
                     "fornavn": "BARN",
                     "mellomnavn": "TO",
                     "etternavn": "BARNESEN",
-                    "aktør_id": "1000000000002"
+                    "aktør_id": "1000000000002",
+                    "har_samme_adresse": true
                 }]
             }
             """.trimIndent()

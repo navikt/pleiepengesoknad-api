@@ -254,13 +254,15 @@ class ApplicationTest {
                     "fornavn": "BARN",
                     "mellomnavn": "EN",
                     "etternavn": "BARNESEN",
-                    "aktoer_id": "1000000000001"
+                    "aktoer_id": "1000000000001",
+                    "har_samme_adresse": true
                 }, {
                     "fodselsdato": "2001-04-10",
                     "fornavn": "BARN",
                     "mellomnavn": "TO",
                     "etternavn": "BARNESEN",
-                    "aktoer_id": "1000000000002"
+                    "aktoer_id": "1000000000002",
+                    "har_samme_adresse": true
                 }]
             }
             """.trimIndent(),
