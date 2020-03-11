@@ -21,7 +21,6 @@ data class KomplettSoknad(
     @JsonProperty("ferieuttak_i_perioden")
     val ferieuttakIPerioden: FerieuttakIPerioden?,
     val relasjonTilBarnet: String,
-    val grad: Int?,
     val harMedsoker: Boolean,
     val samtidigHjemme: Boolean?,
     val harForstattRettigheterOgPlikter: Boolean,
