@@ -29,11 +29,8 @@ class SoknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ"
-                                ${if (utenGrad)
-                """
-                                    , "skal_jobbe_prosent": 50
-                                """.trimIndent()
-            else ""}
+                                ${if (utenGrad) """, "skal_jobbe_prosent": 50
+                                """.trimIndent() else ""}
                             }
                         ]
                     },
@@ -81,7 +78,10 @@ class SoknadUtils {
                         "til_og_med": "2020-01-07"
                       }
                     ]
-                  }
+                  },
+                  "skal_bekrefte_omsorg": true,
+                  "skal_passe_pa_barnet_i_hele_perioden": true,
+                  "beskrivelse_omsorgsrollen": "En kort beskrivelse"
                 }
                 """.trimIndent()
         }

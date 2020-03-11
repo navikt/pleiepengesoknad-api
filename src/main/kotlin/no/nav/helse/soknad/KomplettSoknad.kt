@@ -31,6 +31,8 @@ data class KomplettSoknad(
     val nattevaak: Nattevaak?,
     val beredskap: Beredskap?,
     val harHattInntektSomFrilanser: Boolean = false,
-    val frilans: Frilans?
-
+    val frilans: Frilans?,
+    @JsonProperty("skal_bekrefte_omsorg") val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
+    @JsonProperty("skal_passe_pa_barnet_i_hele_perioden") val skalPassePaBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
+    @JsonProperty("beskrivelse_omsorgsrollen") val beskrivelseOmsorgsRollen: String? = null // TODO: Fjern optional når prodsatt.
 )

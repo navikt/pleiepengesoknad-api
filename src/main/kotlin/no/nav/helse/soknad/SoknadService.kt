@@ -71,7 +71,10 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             nattevaak = soknad.nattevaak,
             beredskap = soknad.beredskap,
             harHattInntektSomFrilanser = soknad.harHattInntektSomFrilanser,
-            frilans = soknad.frilans
+            frilans = soknad.frilans,
+            skalBekrefteOmsorg = soknad.skalBekrefteOmsorg,
+            skalPassePaBarnetIHelePerioden = soknad.skalPassePaBarnetIHelePerioden,
+            beskrivelseOmsorgsRollen = soknad.beskrivelseOmsorgsRollen
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(
