@@ -15,9 +15,10 @@ class ArbeidsgiverValidationTest {
     @Test
     fun `Ingen informasjon om arbeidsuker satt`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
-            organisasjonsnummer = GYLDIG_ORGNR
+            organisasjonsnummer = GYLDIG_ORGNR,
+            skalJobbe = "ja"
         ))
-        assertTrue(organisasjoner.validate(true).isEmpty())
+        assertTrue(organisasjoner.validate().isEmpty())
     }
 
     @Test
@@ -25,34 +26,37 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR
         ))
-        assertEquals(1, organisasjoner.validate(false).size)
+        assertEquals(1, organisasjoner.validate().size)
     }
 
     @Test
     fun `Skal jobbe prosent satt`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            skalJobbeProsent = 99.09
+            skalJobbeProsent = 99.09,
+            skalJobbe = "redusert"
         ))
-        assertTrue(organisasjoner.validate(true).isEmpty())
+        assertTrue(organisasjoner.validate().isEmpty())
     }
 
     @Test
     fun `Skal jobbe prosent satt for lav`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            skalJobbeProsent = -1.00
+            skalJobbeProsent = -1.00,
+            skalJobbe = "nei"
         ))
-        assertEquals(1, organisasjoner.validate(true).size)
+        assertEquals(1, organisasjoner.validate().size)
     }
 
     @Test
     fun `Skal jobbe prosent satt før høy`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            skalJobbeProsent = 101.01
+            skalJobbeProsent = 101.01,
+            skalJobbe = "ja"
         ))
-        assertEquals(1, organisasjoner.validate(true).size)
+        assertEquals(1, organisasjoner.validate().size)
     }
 
     @Test
@@ -65,6 +69,6 @@ class ArbeidsgiverValidationTest {
             OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig1"),
             OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig2")
         )
-        assertEquals(2, organisasjoner.validate(false, true).size)
+        assertEquals(2, organisasjoner.validate().size)
     }
 }

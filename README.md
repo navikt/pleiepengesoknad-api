@@ -108,10 +108,9 @@ POST @ /soknad -> 202 Response
     ]
   },
   "har_medsoker": true,
+  "samtidig_hjemme": true,
   "har_bekreftet_opplysninger": true,
   "har_forstatt_rettigheter_og_plikter": true,
-  "grad": 100,
-  "dager_per_uke_borte_fra_jobb": 4.5,
   "tilsynsordning": {
     "svar": "ja",
     "ja": {
@@ -135,10 +134,7 @@ POST @ /soknad -> 202 Response
   "frilans": {
     "startdato": "2019-01-08",
     "jobber_fortsatt_som_frilans": true
-  },
-  "skal_bekrefte_omsorg": true,
-  "skal_passe_pa_barnet_i_hele_perioden": true,
-  "beskrivelse_omsorgsrollen": "En kort beskrivelse"
+  }
 }
 ```
 

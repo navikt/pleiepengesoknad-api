@@ -359,7 +359,6 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
             )
-
         )
     }
 
@@ -378,8 +377,7 @@ class ApplicationTest {
             requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = pdfUrl,
-                utenGrad = true
+                vedleggUrl2 = pdfUrl
             )
         )
     }
@@ -510,7 +508,6 @@ class ApplicationTest {
                             }
                         ]
                     },
-                    "grad": 120,
                     "vedlegg": [
                         "http://localhost:8080/ikke-vedlegg/123",
                         null
@@ -534,79 +531,93 @@ class ApplicationTest {
                 }
                 """.trimIndent(),
             expectedResponse = """
-                {
-                    "type": "/problem-details/invalid-request-parameters",
-                    "title": "invalid-request-parameters",
-                    "status": 400,
-                    "detail": "Requesten inneholder ugyldige paramtere.",
-                    "instance": "about:blank",
-                    "invalid_parameters": [{
-                        "type": "entity",
-                        "name": "barn.fodselsnummer",
-                        "reason": "Ikke gyldig fødselsnummer.",
-                        "invalid_value": "29099s12345"
-                    }, {
-                        "type": "entity",
-                        "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
-                        "reason": "Ikke gyldig organisasjonsnummer.",
-                        "invalid_value": "12"
-                    }, {
-                        "type": "entity",
-                        "name": "arbeidsgivere.organisasjoner[0].navn",
-                        "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
-                        "invalid_value": "$forlangtNavn"
-                    }, {
-                        "type": "entity",
-                        "name": "fra_og_med",
-                        "reason": "Fra og med må være før eller lik til og med.",
-                        "invalid_value": "1990-09-29"
-                    }, {
-                        "type": "entity",
-                        "name": "til_og_med",
-                        "reason": "Til og med må være etter eller lik fra og med.",
-                        "invalid_value": "1990-09-28"
-                    }, {
-                        "type": "entity",
-                        "name": "vedlegg[0]",
-                        "reason": "Ikke gyldig vedlegg URL.",
-                        "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
-                    }, {
-                        "type": "entity",
-                        "name": "vedlegg[1]",
-                        "reason": "Ikke gyldig vedlegg URL.",
-                        "invalid_value": null
-                    }, {
-                        "type": "entity",
-                        "name": "grad",
-                        "reason": "Grad må være mellom 20 og 100.",
-                        "invalid_value": 120
-                    },{
-                        "type": "entity",
-                        "name": "medlemskap.har_bodd_i_utlandet_siste_12_mnd",
-                        "reason": "Må settes til true eller false.",
-                        "invalid_value": null
-	                },{
-                        "type": "entity",
-                        "name": "medlemskap.skal_bo_i_utlandet_neste_12_mnd",
-                        "reason": "Må settes til true eller false.",
-                        "invalid_value": null
-	                },{
-                        "type": "entity",
-                        "name": "har_medsoker",
-                        "reason": "Må settes til true eller false.",
-                        "invalid_value": null
-	                },{
-                        "type": "entity",
-                        "name": "har_bekreftet_opplysninger",
-                        "reason": "Opplysningene må bekreftes for å sende inn søknad.",
-                        "invalid_value": false
-	                },{
-                        "type": "entity",
-                        "name": "har_forstatt_rettigheter_og_plikter",
-                        "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
-                        "invalid_value": false
-	                }]
-                }
+               {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "barn.fodselsnummer",
+                      "reason": "Ikke gyldig fødselsnummer.",
+                      "invalid_value": "29099s12345"
+                    },
+                    {
+                      "type": "entity",
+                      "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
+                      "reason": "Ikke gyldig organisasjonsnummer.",
+                      "invalid_value": "12"
+                    },
+                    {
+                      "type": "entity",
+                      "name": "arbeidsgivere.organisasjoner[0].navn",
+                      "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
+                      "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
+                    },
+                    {
+                      "type": "entity",
+                      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe",
+                      "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vet_ikke",
+                      "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "fra_og_med",
+                      "reason": "Fra og med må være før eller lik til og med.",
+                      "invalid_value": "1990-09-29"
+                    },
+                    {
+                      "type": "entity",
+                      "name": "til_og_med",
+                      "reason": "Til og med må være etter eller lik fra og med.",
+                      "invalid_value": "1990-09-28"
+                    },
+                    {
+                      "type": "entity",
+                      "name": "vedlegg[0]",
+                      "reason": "Ikke gyldig vedlegg URL.",
+                      "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
+                    },
+                    {
+                      "type": "entity",
+                      "name": "vedlegg[1]",
+                      "reason": "Ikke gyldig vedlegg URL.",
+                      "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "medlemskap.har_bodd_i_utlandet_siste_12_mnd",
+                      "reason": "Må settes til true eller false.",
+                      "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "medlemskap.skal_bo_i_utlandet_neste_12_mnd",
+                      "reason": "Må settes til true eller false.",
+                      "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "har_medsoker",
+                      "reason": "Må settes til true eller false.",
+                      "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "har_bekreftet_opplysninger",
+                      "reason": "Opplysningene må bekreftes for å sende inn søknad.",
+                      "invalid_value": false
+                    },
+                    {
+                      "type": "entity",
+                      "name": "har_forstatt_rettigheter_og_plikter",
+                      "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
+                      "invalid_value": false
+                    }
+                ]
+            }
             """.trimIndent()
         )
     }

@@ -8,38 +8,10 @@ import kotlin.test.Test
 
 class SoknadValidationTest {
 
-    @Test
-    fun `Håndterer søknader med grad`() {
-        soknad(
-            grad = 50, harMedsoker = true, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null
-        ).validate()
-    }
-
-    @Test
-    fun `Håndterer søknad uten grad og med medsøker`() {
-        soknad(
-            grad = null, harMedsoker = true, dagerPerUkeBorteFraJobb = 5.0, skalJobbeProsent = 22.00
-        ).validate()
-    }
-
-    @Test
-    fun `Håndterer søknad uten grad og uten medsøker`() {
-        soknad(
-            grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = 22.00
-        ).validate()
-    }
-
-    @Test(expected = Throwblem::class)
-    fun `Feiler på søknad uten grad og uten medsøker, men med dager per uke borte fra jobb satt`() {
-        soknad(
-            grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = 2.5, skalJobbeProsent = 22.00
-        ).validate()
-    }
-
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad dersom utenlandsopphold har til og fra dato som ikke kommer i rett rekkefølge`() {
         soknad(
-            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null,medlemskap =  Medlemskap(
+            harMedsoker = false, skalJobbeProsent = null,medlemskap =  Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
                 utenlandsoppholdNeste12Mnd = listOf(
@@ -56,7 +28,7 @@ class SoknadValidationTest {
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad dersom utenlandsopphold mangler landkode`() {
         soknad(
-            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null, medlemskap = Medlemskap(
+            harMedsoker = false, skalJobbeProsent = null, medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
                 utenlandsoppholdNeste12Mnd = listOf(
@@ -73,25 +45,8 @@ class SoknadValidationTest {
     @Test
     fun `Skal ikke feile ved opphold på en dag`() {
         soknad(
-            grad = 50, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null
+           harMedsoker = false, skalJobbeProsent = null
         ).validate()
-    }
-
-    @Test(expected = Throwblem::class)
-    fun `Feiler på søknad uten grad, hvor skal jobbe prosent ikke er satt`() {
-        soknad(grad = null, harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null).validate()
-    }
-
-    @Test
-    fun `validering på gradering skal ikke slå inn, når det er ny versjon`() {
-        soknad(
-            grad = null,
-            harMedsoker = true,
-            samtidigHjemme = true,
-            skalJobbeProsent = 50.0,
-            vetIkkeEkstrainfo = "Liker å skulke",
-            jobberNormalTimer = 30.0
-        )
     }
 
     @Test
@@ -137,7 +92,8 @@ class SoknadValidationTest {
                 navn = "Org",
                 organisasjonsnummer = "917755736",
                 skalJobbeProsent = 10.0,
-                jobberNormaltTimer = 10.0
+                jobberNormaltTimer = 10.0,
+                skalJobbe = "ja"
             )
         )),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
@@ -152,8 +108,6 @@ class SoknadValidationTest {
 
         harBekreftetOpplysninger = true,
         harForstattRettigheterOgPlikter = true,
-        dagerPerUkeBorteFraJobb =1.0,
-        grad = 50,
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
@@ -167,10 +121,8 @@ class SoknadValidationTest {
         )
 
     private fun soknad(
-        grad: Int?,
         harMedsoker: Boolean,
         samtidigHjemme: Boolean? = false,
-        dagerPerUkeBorteFraJobb: Double? = null,
         skalJobbeProsent: Double?,
         vetIkkeEkstrainfo: String? = null,
         jobberNormalTimer: Double? = null,
@@ -202,7 +154,8 @@ class SoknadValidationTest {
                     organisasjonsnummer = "917755736",
                     skalJobbeProsent = skalJobbeProsent,
                     jobberNormaltTimer = jobberNormalTimer,
-                    vetIkkeEkstrainfo = vetIkkeEkstrainfo
+                    vetIkkeEkstrainfo = vetIkkeEkstrainfo,
+                    skalJobbe = "ja"
                 )
             )
         ),
@@ -215,8 +168,6 @@ class SoknadValidationTest {
 
         harBekreftetOpplysninger = true,
         harForstattRettigheterOgPlikter = true,
-        dagerPerUkeBorteFraJobb = dagerPerUkeBorteFraJobb,
-        grad = grad,
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf())

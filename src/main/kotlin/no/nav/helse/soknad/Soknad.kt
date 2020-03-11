@@ -26,8 +26,6 @@ data class Soknad(
     val samtidigHjemme: Boolean? = null,
     val harForstattRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val grad: Int? = null,
-    val dagerPerUkeBorteFraJobb: Double? = null,
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
     val beredskap: Beredskap? = null,

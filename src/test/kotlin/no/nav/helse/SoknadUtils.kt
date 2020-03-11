@@ -11,8 +11,7 @@ class SoknadUtils {
             fraOgMed: String? = "2018-10-10",
             tilOgMed: String? = "2019-10-10",
             vedleggUrl1: String,
-            vedleggUrl2: String,
-            utenGrad: Boolean = false
+            vedleggUrl2: String
         ): String {
             //language=JSON
             return """
@@ -28,9 +27,9 @@ class SoknadUtils {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
-                                "navn": "Bjeffefirmaet ÆÆÅ"
-                                ${if (utenGrad) """, "skal_jobbe_prosent": 50
-                                """.trimIndent() else ""}
+                                "navn": "Bjeffefirmaet ÆÆÅ",
+                                "skal_jobbe_prosent": 50,
+                                "skal_jobbe": "redusert"
                             }
                         ]
                     },
@@ -62,11 +61,7 @@ class SoknadUtils {
                                 }
                             ]
                         },
-                    ${if (utenGrad) """
                         "dager_per_uke_borte_fra_jobb": 4.0,
-                    """.trimIndent() else """
-                        "grad": 100,
-                    """.trimIndent()}
                     "har_medsoker": true,
                     "har_bekreftet_opplysninger": true,
                     "har_forstatt_rettigheter_og_plikter": true,
@@ -102,7 +97,8 @@ class SoknadUtils {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
-                                "navn": "Bjeffefirmaet ÆÆÅ"
+                                "navn": "Bjeffefirmaet ÆÆÅ",
+                                "skal_jobbe": "nei"
                             }
                         ]
                     },
@@ -118,8 +114,7 @@ class SoknadUtils {
                         "skal_oppholde_seg_i_utlandet_i_perioden": false,
                         "opphold": []
                     },
-                    "grad": 100,
-                    "har_medsoker": true,
+                    "har_medsoker": false,
                     "har_bekreftet_opplysninger": true,
                     "har_forstatt_rettigheter_og_plikter": true,
                   "ferieuttak_i_perioden": {
@@ -151,7 +146,8 @@ class SoknadUtils {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
-                                "navn": "Bjeffefirmaet ÆÆÅ"
+                                "navn": "Bjeffefirmaet ÆÆÅ",
+                                "skal_jobbe": "nei"
                             }
                         ]
                     },
@@ -167,8 +163,8 @@ class SoknadUtils {
                         "skal_oppholde_seg_i_utlandet_i_perioden": false,
                         "opphold": []
                     },
-                    "grad": 100,
                     "har_medsoker": true,
+                    "dager_per_uke_borte_fra_jobb": 5.0,
                     "har_bekreftet_opplysninger": true,
                     "har_forstatt_rettigheter_og_plikter": true,
                     "ferieuttak_i_perioden": {
