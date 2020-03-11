@@ -239,43 +239,6 @@ internal fun Soknad.validate() {
         }
     }
 
-    // TODO: Fjern etter at dette er merget inn i master og er i prod.
-    if (newVersion == null) {
-        dagerPerUkeBorteFraJobb?.apply {
-            if (this !in 0.5..5.0) {
-                violations.add(
-                    Violation(
-                        parameterName = "dager_per_uke_borte_fra_jobb",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Dager borte fra jobb må være mellom 0 og 5.",
-                        invalidValue = this
-                    )
-                )
-            }
-        }
-    }
-    val medSoker = harMedsoker != null && harMedsoker
-
-    if (medSoker && dagerPerUkeBorteFraJobb == null) {
-        violations.add(
-            Violation(
-                parameterName = "dager_per_uke_borte_fra_jobb",
-                parameterType = ParameterType.ENTITY,
-                reason = "Dager borte fra jobb må settes om det er en medsøker.",
-                invalidValue = dagerPerUkeBorteFraJobb
-            )
-        )
-    } else if (!medSoker && dagerPerUkeBorteFraJobb != null) {
-        violations.add(
-            Violation(
-                parameterName = "dager_per_uke_borte_fra_jobb",
-                parameterType = ParameterType.ENTITY,
-                reason = "Dager borte fra jobb skal bare settes om det er en medsøker.",
-                invalidValue = dagerPerUkeBorteFraJobb
-            )
-        )
-    }
-
     beredskap?.apply {
         if (beredskap == null) booleanIkkeSatt("beredskap.i_beredskap")
         tilleggsinformasjon?.apply {

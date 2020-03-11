@@ -9,16 +9,9 @@ import kotlin.test.Test
 class SoknadValidationTest {
 
     @Test(expected = Throwblem::class)
-    fun `Feiler på søknad uten grad og uten medsøker, men med dager per uke borte fra jobb satt`() {
-        soknad(
-           harMedsoker = false, dagerPerUkeBorteFraJobb = 2.5, skalJobbeProsent = 22.00
-        ).validate()
-    }
-
-    @Test(expected = Throwblem::class)
     fun `Feiler på søknad dersom utenlandsopphold har til og fra dato som ikke kommer i rett rekkefølge`() {
         soknad(
-            harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null,medlemskap =  Medlemskap(
+            harMedsoker = false, skalJobbeProsent = null,medlemskap =  Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
                 utenlandsoppholdNeste12Mnd = listOf(
@@ -35,7 +28,7 @@ class SoknadValidationTest {
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad dersom utenlandsopphold mangler landkode`() {
         soknad(
-            harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null, medlemskap = Medlemskap(
+            harMedsoker = false, skalJobbeProsent = null, medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
                 utenlandsoppholdNeste12Mnd = listOf(
@@ -52,7 +45,7 @@ class SoknadValidationTest {
     @Test
     fun `Skal ikke feile ved opphold på en dag`() {
         soknad(
-           harMedsoker = false, dagerPerUkeBorteFraJobb = null, skalJobbeProsent = null
+           harMedsoker = false, skalJobbeProsent = null
         ).validate()
     }
 
@@ -115,7 +108,6 @@ class SoknadValidationTest {
 
         harBekreftetOpplysninger = true,
         harForstattRettigheterOgPlikter = true,
-        dagerPerUkeBorteFraJobb =1.0,
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
@@ -131,7 +123,6 @@ class SoknadValidationTest {
     private fun soknad(
         harMedsoker: Boolean,
         samtidigHjemme: Boolean? = false,
-        dagerPerUkeBorteFraJobb: Double? = null,
         skalJobbeProsent: Double?,
         vetIkkeEkstrainfo: String? = null,
         jobberNormalTimer: Double? = null,
@@ -177,7 +168,6 @@ class SoknadValidationTest {
 
         harBekreftetOpplysninger = true,
         harForstattRettigheterOgPlikter = true,
-        dagerPerUkeBorteFraJobb = dagerPerUkeBorteFraJobb,
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf())
