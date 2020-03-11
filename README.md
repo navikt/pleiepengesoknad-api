@@ -135,7 +135,10 @@ POST @ /soknad -> 202 Response
   "frilans": {
     "startdato": "2019-01-08",
     "jobber_fortsatt_som_frilans": true
-  }
+  },
+  "skal_bekrefte_omsorg": true,
+  "skal_passe_pa_barnet_i_hele_perioden": true,
+  "beskrivelse_omsorgsrollen": "En kort beskrivelse"
 }
 ```
 
