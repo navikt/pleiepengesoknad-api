@@ -20,10 +20,10 @@ import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 
-class BarnGateway (
+class BarnGateway(
     baseUrl: URI,
     apiGatewayApiKey: ApiGatewayApiKey
-    ) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
@@ -32,18 +32,22 @@ class BarnGateway (
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             registerModule(JavaTimeModule())
         }
-        private val attributter = Pair("a", listOf("barn[].aktør_id",
-            "barn[].fornavn",
-            "barn[].mellomnavn",
-            "barn[].etternavn",
-            "barn[].fødselsdato")
+        private val attributter = Pair(
+            "a", listOf(
+                "barn[].aktør_id",
+                "barn[].fornavn",
+                "barn[].mellomnavn",
+                "barn[].etternavn",
+                "barn[].fødselsdato",
+                "barn[].har_samme_adresse"
+            )
         )
     }
 
     suspend fun hentBarn(
         idToken: IdToken,
-        callId : CallId
-    ) : List<BarnOppslagDTO> {
+        callId: CallId
+    ): List<BarnOppslagDTO> {
         val barnUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
@@ -67,7 +71,7 @@ class BarnGateway (
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<BarnOppslagResponse>(success)},
+                { success -> objectMapper.readValue<BarnOppslagResponse>(success) },
                 { error ->
                     logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
                     logger.error(error.toString())
@@ -80,7 +84,7 @@ class BarnGateway (
 
     private data class BarnOppslagResponse(val barn: List<BarnOppslagDTO>)
 
-    data class BarnOppslagDTO (
+    data class BarnOppslagDTO(
         val fødselsdato: LocalDate,
         val fornavn: String,
         val mellomnavn: String? = null,
