@@ -147,7 +147,8 @@ class SoknadUtils {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
-                                "navn": "Bjeffefirmaet ÆÆÅ"
+                                "navn": "Bjeffefirmaet ÆÆÅ",
+                                "skal_jobbe": "nei"
                             }
                         ]
                     },
@@ -162,7 +163,6 @@ class SoknadUtils {
                         "skal_oppholde_seg_i_utlandet_i_perioden": false,
                         "opphold": []
                     },
-                    "grad": 90,
                     "har_medsoker": true,
                     "har_bekreftet_opplysninger": true,
                     "har_forstatt_rettigheter_og_plikter": true,
