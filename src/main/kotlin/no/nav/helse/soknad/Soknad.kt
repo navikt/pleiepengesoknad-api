@@ -78,7 +78,7 @@ data class OrganisasjonDetaljer(
     val navn: String? = null,
     val skalJobbe: String? = null,
     val organisasjonsnummer: String,
-    val jobberNormaltTimer: Double? = null,
+    val jobberNormaltTimer: Double? = null, //TODO: Fjern ? når dette er prodsatt. skalJobbeProsent skal ikke lenger være optional.
     val skalJobbeProsent: Double? = null,  //TODO: Fjern ? når dette er prodsatt. skalJobbeProsent skal ikke lenger være optional.
     val vetIkkeEkstrainfo: String? = null
 )
