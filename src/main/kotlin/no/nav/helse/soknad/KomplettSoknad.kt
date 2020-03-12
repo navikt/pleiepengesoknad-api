@@ -16,6 +16,7 @@ data class KomplettSoknad(
     val arbeidsgivere: ArbeidsgiverDetaljer,
     val vedlegg: List<Vedlegg>,
     val medlemskap: Medlemskap,
+    val bekrefterPeriodeOver8Uker: Boolean? = null,
     @JsonProperty("utenlandsopphold_i_perioden")
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     @JsonProperty("ferieuttak_i_perioden")
