@@ -46,7 +46,7 @@ class ArbeidsgiverValidationTest {
             skalJobbeProsent = -1.00,
             skalJobbe = "nei"
         ))
-        assertEquals(1, organisasjoner.validate().size)
+        assertEquals(2, organisasjoner.validate().size)
     }
 
     @Test
@@ -56,7 +56,7 @@ class ArbeidsgiverValidationTest {
             skalJobbeProsent = 101.01,
             skalJobbe = "ja"
         ))
-        assertEquals(1, organisasjoner.validate().size)
+        assertEquals(2, organisasjoner.validate().size)
     }
 
     @Test

@@ -229,5 +229,80 @@ class SoknadUtils {
                 }
                 """.trimIndent()
         }
+
+        fun bodyMedJusterbarOrganisasjon(
+            fodselsnummer: String,
+            fraOgMed: String? = "2018-10-10",
+            tilOgMed: String? = "2019-10-10",
+            vedleggUrl1: String,
+            skalJobbe: String,
+            skalJobbeProsent: Double
+        ): String {
+            //language=JSON
+            return """
+                {
+                    "barn": {
+                        "fodselsnummer": "$fodselsnummer",
+                        "navn": "Barn Barnesen"
+                    },
+                    "relasjon_til_barnet": "mor",
+                    "fra_og_med": "$fraOgMed",
+                    "til_og_med": "$tilOgMed",
+                    "arbeidsgivere": {
+                        "organisasjoner": [
+                            {
+                                "organisasjonsnummer": "917755736",
+                                "navn": "Bjeffefirmaet ÆÆÅ",
+                                "skal_jobbe_prosent": $skalJobbeProsent,
+                                "skal_jobbe": "$skalJobbe"
+                            }
+                        ]
+                    },
+                    "vedlegg": [
+                        "$vedleggUrl1",
+                        "$vedleggUrl1"
+                    ],
+                    "medlemskap" : {
+                        "har_bodd_i_utlandet_siste_12_mnd" : false,
+                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                    },
+                        "utenlandsopphold_i_perioden": {
+                            "skal_oppholde_seg_i_utlandet_i_perioden": true,
+                            "opphold": [
+                                {
+                                    "fra_og_med": "2019-10-10",
+                                    "til_og_med": "2019-11-10",
+                                    "landkode": "SE",
+                                    "landnavn": "Sverige"
+                                },
+                                {
+                                    "landnavn": "USA",
+                                    "landkode": "US",
+                                    "fra_og_med": "2020-01-08",
+                                    "til_og_med": "2020-01-09",
+                                    "er_utenfor_eos": true,
+                                    "er_barnet_innlagt": true,
+                                    "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+                                }
+                            ]
+                        },
+                    "har_medsoker": true,
+                    "har_bekreftet_opplysninger": true,
+                    "har_forstatt_rettigheter_og_plikter": true,
+                  "ferieuttak_i_perioden": {
+                    "skal_ta_ut_ferie_i_periode": true,
+                    "ferieuttak": [
+                      {
+                        "fra_og_med": "2020-01-05",
+                        "til_og_med": "2020-01-07"
+                      }
+                    ]
+                  },
+                  "skal_bekrefte_omsorg": true,
+                  "skal_passe_pa_barnet_i_hele_perioden": true,
+                  "beskrivelse_omsorgsrollen": "En kort beskrivelse"
+                }
+                """.trimIndent()
+        }
     }
 }

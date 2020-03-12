@@ -726,6 +726,186 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Sende soknad som har skalJobbe lik 'ja', men skalJobbeProsent ulik 100%, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "reason": "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
+                  "invalid_value": [
+                    {
+                      "navn": "Bjeffefirmaet ÆÆÅ",
+                      "skal_jobbe": "ja",
+                      "organisasjonsnummer": "917755736",
+                      "jobber_normalt_timer": null,
+                      "skal_jobbe_prosent": 99.0,
+                      "vet_ikke_ekstrainfo": null
+                    }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                skalJobbe = "ja",
+                skalJobbeProsent = 99.0
+            )
+        )
+    }
+
+    @Test
+    fun `Sende soknad som har skalJobbe lik 'redusert', men skalJobbeProsent ikke ligger mellom 1% - 99,9%, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "reason": "skalJobbeProsent ligger ikke mellom 1% og 99%. Dersom skalJobbe = 'redusert', så må skalJobbeProsent være mellom 1% og 99%",
+                  "invalid_value": [
+                    {
+                      "navn": "Bjeffefirmaet ÆÆÅ",
+                      "skal_jobbe": "redusert",
+                      "organisasjonsnummer": "917755736",
+                      "jobber_normalt_timer": null,
+                      "skal_jobbe_prosent": 100.0,
+                      "vet_ikke_ekstrainfo": null
+                    }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                skalJobbe = "redusert",
+                skalJobbeProsent = 100.0
+            )
+        )
+    }
+
+    @Test
+    fun `Sende soknad som har skalJobbe lik 'nei', men skalJobbeProsent er ulik 0%, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "reason": "skalJobbeProsent er ulik 0%. Dersom skalJobbe = 'nei', så må skalJobbeProsent være 0%",
+                  "invalid_value": [
+                    {
+                      "navn": "Bjeffefirmaet ÆÆÅ",
+                      "skal_jobbe": "nei",
+                      "organisasjonsnummer": "917755736",
+                      "jobber_normalt_timer": null,
+                      "skal_jobbe_prosent": 10.0,
+                      "vet_ikke_ekstrainfo": null
+                    }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                skalJobbe = "nei",
+                skalJobbeProsent = 10.0
+            )
+        )
+    }
+
+    @Test
+    fun `Sende soknad som har skalJobbe lik 'vet_ikke', men skalJobbeProsent er ulik 0%, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være mellom 0%",
+                  "invalid_value": [
+                    {
+                      "navn": "Bjeffefirmaet ÆÆÅ",
+                      "skal_jobbe": "vet_ikke",
+                      "organisasjonsnummer": "917755736",
+                      "jobber_normalt_timer": null,
+                      "skal_jobbe_prosent": 10.0,
+                      "vet_ikke_ekstrainfo": null
+                    }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                skalJobbe = "vet_ikke",
+                skalJobbeProsent = 10.0
+            )
+        )
+    }
+
+    @Test
     fun `Sende soknad uten ID på barnet`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
