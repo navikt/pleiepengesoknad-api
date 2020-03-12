@@ -5,6 +5,7 @@ import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
@@ -173,6 +174,20 @@ internal fun Soknad.validate() {
             )
         )
     }
+
+    if(bekrefterPeriodeOver8Uker != null){
+        val antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
+        if(antallDagerIPerioden > 40 && !bekrefterPeriodeOver8Uker){
+            violations.add(
+                Violation(
+                    parameterName = "bekrefterPeriodeOver8Uker",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Hvis perioden er over 8 uker(40 dager) må bekrefterPeriodeOver8Uker være true"
+                )
+            )
+        }
+    }
+
     if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.har_bodd_i_utlandet_siste_12_mnd")
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")

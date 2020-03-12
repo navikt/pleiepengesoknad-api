@@ -59,7 +59,22 @@ class SoknadValidationTest {
         soknadMedFrilans(false).validate()
     }
 
-    private fun soknadMedFrilans(harHattInntektSomFrilanser: Boolean) = Soknad(
+    @Test
+    fun `Søknad hvor perioden er 40 dager, skal ikke feile`(){
+        soknadMedFrilans(true, fraOgMed = LocalDate.now(), tilOgMed = LocalDate.now().plusDays(40)).validate()
+    }
+
+    @Test(expected = Throwblem::class)
+    fun `Søknad hvor perioden er 41 dager hvor det ikke er bekreftet, skal feile`(){
+        soknadMedFrilans(true, fraOgMed = LocalDate.now(), tilOgMed = LocalDate.now().plusDays(41)).validate()
+    }
+
+    @Test
+    fun `Søknad hvor perioden er 41 dager hvor det er bekreftet, skal ikke feile`(){
+        soknadMedFrilans(true, bekrefterPeriodeOver8Uker = true, fraOgMed = LocalDate.now(), tilOgMed = LocalDate.now().plusDays(41)).validate()
+    }
+
+    private fun soknadMedFrilans(harHattInntektSomFrilanser: Boolean, bekrefterPeriodeOver8Uker: Boolean = false, fraOgMed: LocalDate = LocalDate.now(), tilOgMed : LocalDate = LocalDate.now()) = Soknad(
         newVersion = null,
         sprak = Sprak.nb,
         barn = BarnDetaljer(
@@ -79,8 +94,9 @@ class SoknadValidationTest {
             )
         )),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
-        fraOgMed = LocalDate.now(),
-        tilOgMed = LocalDate.now(),
+        fraOgMed = fraOgMed,
+        tilOgMed = tilOgMed,
+        bekrefterPeriodeOver8Uker = bekrefterPeriodeOver8Uker,
         medlemskap = Medlemskap(
             harBoddIUtlandetSiste12Mnd = false,
             skalBoIUtlandetNeste12Mnd = true
