@@ -177,6 +177,7 @@ internal fun Soknad.validate() {
         )
     }
 
+    //Validerer at brukeren bekrefter dersom perioden er over 8 uker (40 virkedager)
     if(bekrefterPeriodeOver8Uker != null){
         var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
         var dagSomSkalSjekkes: LocalDate = fraOgMed;

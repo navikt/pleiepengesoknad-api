@@ -19,7 +19,7 @@ data class Soknad(
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
     @JsonProperty("bekrefter_periode_over_8_uker")
-    val bekrefterPeriodeOver8Uker: Boolean? = null,
+    val bekrefterPeriodeOver8Uker: Boolean? = null,// TODO: Fjern optional når prodsatt.
     @JsonProperty("utenlandsopphold_i_perioden")
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     @JsonProperty("ferieuttak_i_perioden")
