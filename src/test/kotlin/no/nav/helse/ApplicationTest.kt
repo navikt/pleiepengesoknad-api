@@ -108,7 +108,6 @@ class ApplicationTest {
         }
     }
 
-
     @Test
     fun `Hente arbeidsgivere`() {
         requestAndAssert(
@@ -630,7 +629,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med selvstendig næringsvirksomet som har flere gyldige virksomheter`(){
+    fun `Sende søknad med selvstendig næringsvirksomet som har flere gyldige virksomheter, men med en feil`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -667,7 +666,6 @@ class ApplicationTest {
                         naringsinntekt = 1212,
                         navnPaVirksomheten = "TullOgTøys",
                         registrertINorge = false,
-                        organisasjonsnummer = "101010",
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
                         harVarigEndringAvInntektSiste4Kalenderar = false,
                         harRegnskapsforer = false,
@@ -679,7 +677,7 @@ class ApplicationTest {
                         erPagaende = false,
                         naringsinntekt = 1212,
                         navnPaVirksomheten = "BariBar",
-                        registrertINorge = false,
+                        registrertINorge = true,
                         organisasjonsnummer = "10110",
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
                         harVarigEndringAvInntektSiste4Kalenderar = false,
@@ -1093,6 +1091,104 @@ class ApplicationTest {
                 ]
             }
             """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har ikke godkjent det, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "bekrefterPeriodeOver8Uker",
+                      "reason": "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true",
+                      "invalid_value": null
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+                vedleggUrl1 = jpegUrl,
+                fraOgMed = "2020-01-01",
+                tilOgMed = "2020-02-27",
+                bekrefterPeriodeOver8Uker = false
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har godkjent det, skal ikke feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+                vedleggUrl1 = jpegUrl,
+                fraOgMed = "2020-01-01",
+                tilOgMed = "2020-02-27",
+                bekrefterPeriodeOver8Uker = true
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad hvor perioden er 8 uker(40 virkedager), skal ikke feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+                vedleggUrl1 = jpegUrl,
+                fraOgMed = "2020-01-01",
+                tilOgMed = "2020-02-26"
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad hvor perioden er under 8 uker(40 virkedager), skal ikke feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+                vedleggUrl1 = jpegUrl,
+                fraOgMed = "2020-01-01",
+                tilOgMed = "2020-02-25"
+            )
         )
     }
 

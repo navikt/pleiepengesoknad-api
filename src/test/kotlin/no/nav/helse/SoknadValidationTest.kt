@@ -60,18 +60,21 @@ class SoknadValidationTest {
     }
 
     @Test
-    fun `Søknad hvor perioden er 40 dager, skal ikke feile`(){
-        soknadMedFrilans(true, fraOgMed = LocalDate.now(), tilOgMed = LocalDate.now().plusDays(40)).validate()
+    fun `Søknad hvor perioden er 40 virkedager, skal ikke feile`(){
+        soknadMedFrilans(true, fraOgMed = LocalDate.parse("2020-01-01"),
+            tilOgMed = LocalDate.parse("2020-02-26")).validate()
     }
 
     @Test(expected = Throwblem::class)
-    fun `Søknad hvor perioden er 41 dager hvor det ikke er bekreftet, skal feile`(){
-        soknadMedFrilans(true, fraOgMed = LocalDate.now(), tilOgMed = LocalDate.now().plusDays(41)).validate()
+    fun `Søknad hvor perioden er 41 virkedager hvor det ikke er bekreftet, skal feile`(){
+        soknadMedFrilans(true, fraOgMed = LocalDate.parse("2020-01-01"),
+                        tilOgMed = LocalDate.parse("2020-02-27")).validate()
     }
 
     @Test
-    fun `Søknad hvor perioden er 41 dager hvor det er bekreftet, skal ikke feile`(){
-        soknadMedFrilans(true, bekrefterPeriodeOver8Uker = true, fraOgMed = LocalDate.now(), tilOgMed = LocalDate.now().plusDays(41)).validate()
+    fun `Søknad hvor perioden er 41 virkedager hvor det er bekreftet, skal ikke feile`(){
+        soknadMedFrilans(true, bekrefterPeriodeOver8Uker = true, fraOgMed = LocalDate.parse("2020-01-01"),
+                        tilOgMed = LocalDate.parse("2020-02-27")).validate()
     }
 
     private fun soknadMedFrilans(harHattInntektSomFrilanser: Boolean, bekrefterPeriodeOver8Uker: Boolean = false, fraOgMed: LocalDate = LocalDate.now(), tilOgMed : LocalDate = LocalDate.now()) = Soknad(

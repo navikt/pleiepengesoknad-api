@@ -3,11 +3,13 @@ package no.nav.helse.soknad
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
+private const val ANTALL_VIRKEDAGER_8_UKER = 40
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
     title = "attachments-too-large",
     status = 413,
@@ -176,13 +178,20 @@ internal fun Soknad.validate() {
     }
 
     if(bekrefterPeriodeOver8Uker != null){
-        val antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
-        if(antallDagerIPerioden > 40 && !bekrefterPeriodeOver8Uker){
+        var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
+        var dagSomSkalSjekkes: LocalDate = fraOgMed;
+
+        while(!dagSomSkalSjekkes.isAfter(tilOgMed)){
+            if(dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
+            dagSomSkalSjekkes = dagSomSkalSjekkes.plusDays(1)
+        }
+
+        if(antallDagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker){
             violations.add(
                 Violation(
                     parameterName = "bekrefterPeriodeOver8Uker",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Hvis perioden er over 8 uker(40 dager) må bekrefterPeriodeOver8Uker være true"
+                    reason = "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true"
                 )
             )
         }
