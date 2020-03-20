@@ -265,7 +265,7 @@ export declare enum Næringstype {
   "FISKER" = "FISKE",
   "JORDBRUK" = "JORDBRUK_SKOGBRUK",
   "DAGMAMMA" = "DAGMAMMA",
-  "ANNET" = "ANNEN"
+  "ANNEN" = "ANNEN"
 }
 
 export interface VirksomhetApiData {
