@@ -41,4 +41,15 @@ fun Route.soknadApis(
         logger.trace("Søknad registrert.")
         call.respond(HttpStatusCode.Accepted)
     }
+
+    @Location("/soknad/valider")
+    class validerSoknad
+
+    post { _: validerSoknad ->
+        val søknad = call.receive<Soknad>()
+        logger.trace("Validerer søknad...")
+        søknad.validate()
+        logger.trace("Validering Ok.")
+        call.respond(HttpStatusCode.Accepted)
+    }
 }
