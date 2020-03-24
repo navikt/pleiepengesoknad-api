@@ -163,12 +163,12 @@ internal fun Virksomhet.erErPaagaendeGyldigSatt(): Boolean{
 }
 
 internal fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean{
-    if(registrertINorge) return !organisasjonsnummer.isNullOrEmpty()
+    if(registrertINorge) return !organisasjonsnummer.isNullOrBlank()
     return true
 }
 
 internal fun Virksomhet.erRegistrertILandGyldigSatt(): Boolean{
-    if(!registrertINorge) return registrertILand != null && registrertILand.isNotEmpty()
+    if(!registrertINorge) return registrertILand != null && !registrertILand.isNullOrBlank()
     return true
 }
 
