@@ -253,30 +253,6 @@ class VirksomhetTest {
     }
 
     @Test
-    fun `Hvis fisker så må også fiskerErPåPlanB være satt, validering skal slå inn`(){
-        val virksomhet = Virksomhet(
-            naringstype = listOf(Naringstype.FISKER),
-            fraOgMed = LocalDate.now(),
-            erPagaende = true,
-            naringsinntekt = 1111,
-            navnPaVirksomheten = "TullOgTøys",
-            registrertINorge = true,
-            organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
-            harRegnskapsforer = false,
-            harRevisor = true,
-            revisor = Revisor(
-                navn = "Kjell",
-                telefon = "9898989",
-                erNarVennFamilie = false,
-                kanInnhenteOpplysninger = false
-            )
-        )
-        virksomhet.validate().assertFeilPaa(listOf("fiskerErPåBladB"))
-    }
-
-    @Test
     fun `Hvis fisker så må også fiskerErPåPlanB være satt, validering skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.FISKER),
