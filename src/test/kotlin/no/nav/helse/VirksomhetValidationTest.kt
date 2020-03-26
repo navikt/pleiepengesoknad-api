@@ -22,7 +22,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false,
             harRevisor = false)
         virksomhet.validate().assertFeilPaa(listOf("virksomhet.tilogmed og virksomhet.fraogmed"))
     }
@@ -40,7 +39,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false,
             harRevisor = false
         )
         virksomhet.validate().assertIngenFeil()
@@ -59,7 +57,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false,
             harRevisor = false
         )
         virksomhet.validate().assertIngenFeil()
@@ -77,7 +74,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101011",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false,
             harRevisor = false
         )
         virksomhet.validate().assertIngenFeil()
@@ -96,7 +92,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false,
             harRevisor = false
         )
         virksomhet.validate().assertFeilPaa(listOf("erPagaende"))
@@ -114,7 +109,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false,
             harRevisor = false
         )
         virksomhet.validate().assertIngenFeil()
@@ -131,8 +125,7 @@ class VirksomhetTest {
             navnPaVirksomheten = "TullOgTøys",
             organisasjonsnummer = null,
             registrertINorge = true,
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false
+            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
         )
         virksomhet.validate().assertFeilPaa(listOf("organisasjonsnummer"))
     }
@@ -148,8 +141,7 @@ class VirksomhetTest {
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = false,
             registrertILand = "Sverige",
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false
+            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
         )
         virksomhet.validate().assertIngenFeil()
     }
@@ -164,68 +156,9 @@ class VirksomhetTest {
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = false,
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false
+            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
         )
         virksomhet.validate().assertFeilPaa(listOf("registrertILand"))
-    }
-
-    @Test
-    fun `Hvis harRegnskapsfører er satt til true så kan ikke regnskapsfører være null, validate skal returnere en violation`(){
-        val virksomhet = Virksomhet(
-            naringstype = listOf(Naringstype.ANNET),
-            fiskerErPåBladB = false,
-            fraOgMed = LocalDate.now(),
-            erPagaende = true,
-            naringsinntekt = 1111,
-            navnPaVirksomheten = "TullOgTøys",
-            registrertINorge = true,
-            organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = true
-        )
-        virksomhet.validate().assertFeilPaa(listOf("regnskapsforer"))
-    }
-
-    @Test
-    fun `Hvis harRegnskapsfører er satt til true så må regnskapsfører være registrert, validate skal ikke reagere`(){
-        val virksomhet = Virksomhet(
-            naringstype = listOf(Naringstype.ANNET),
-            fiskerErPåBladB = false,
-            fraOgMed = LocalDate.now(),
-            erPagaende = true,
-            naringsinntekt = 1111,
-            navnPaVirksomheten = "TullOgTøys",
-            registrertINorge = true,
-            organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false,
-            harRevisor = true,
-            revisor = Revisor(
-                navn = "Bjarne",
-                telefon = "9999",
-                erNarVennFamilie = false,
-                kanInnhenteOpplysninger = false
-            )
-        )
-        virksomhet.validate().assertIngenFeil()
-    }
-
-    @Test
-    fun `Hvis harRegnskapsfører er satt til true så kan ikke regnskapsforer være null, validate skal returnere en violation`(){
-        val virksomhet = Virksomhet(
-            naringstype = listOf(Naringstype.ANNET),
-            fiskerErPåBladB = false,
-            fraOgMed = LocalDate.now(),
-            erPagaende = true,
-            naringsinntekt = 1111,
-            navnPaVirksomheten = "TullOgTøys",
-            registrertINorge = true,
-            organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = true
-        )
-        virksomhet.validate().assertFeilPaa(listOf("regnskapsforer"))
     }
 
     @Test
@@ -240,7 +173,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harRegnskapsforer = false,
             harRevisor = true,
             revisor = Revisor(
                 navn = "Kjell",

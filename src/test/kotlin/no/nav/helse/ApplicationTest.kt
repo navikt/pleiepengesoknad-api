@@ -463,7 +463,6 @@ class ApplicationTest {
                         registrertINorge = true,
                         organisasjonsnummer = "101010",
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harRegnskapsforer = true,
                         regnskapsforer = Regnskapsforer(
                             navn = "Kjell",
                             telefon = "84554",
@@ -517,7 +516,6 @@ class ApplicationTest {
                         registrertINorge = false,
                         organisasjonsnummer = "101010",
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harRegnskapsforer = true,
                         regnskapsforer = Regnskapsforer(
                             navn = "Kjell",
                             telefon = "84554",
@@ -668,7 +666,6 @@ class ApplicationTest {
                         navnPaVirksomheten = "TullOgTøys",
                         registrertINorge = false,
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harRegnskapsforer = false,
                         harRevisor = false
                     ), Virksomhet(
                         naringstype = listOf(Naringstype.JORDBRUK),
@@ -681,7 +678,6 @@ class ApplicationTest {
                         registrertINorge = true,
                         organisasjonsnummer = "10110",
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harRegnskapsforer = false,
                         harRevisor = false
                     )
                 )

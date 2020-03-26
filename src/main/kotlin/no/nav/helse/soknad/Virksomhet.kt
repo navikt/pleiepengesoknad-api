@@ -23,7 +23,6 @@ data class Virksomhet(
     val registrertILand: String? = null,
     val yrkesaktivSisteTreFerdigliknedeArene: YrkesaktivSisteTreFerdigliknedeArene? = null,
     val varigEndring: VarigEndring? = null,
-    val harRegnskapsforer: Boolean,
     val regnskapsforer: Regnskapsforer? = null,
     val harRevisor: Boolean? = null,
     val revisor: Revisor? = null
@@ -107,17 +106,6 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
         )
     }
 
-    if(!erRegnskapsførerSattGyldig()){
-        violations.add(
-            Violation(
-                parameterName = "regnskapsforer",
-                parameterType = ParameterType.ENTITY,
-                reason = "Hvis man har satt harRegnskapsforer til true så må regnskapsforer være satt til et regnskapsforer objekt",
-                invalidValue = regnskapsforer
-            )
-        )
-    }
-
     if(!erRevisorSattGyldig()){
         violations.add(
             Violation(
@@ -156,10 +144,5 @@ internal fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean{
 
 internal fun Virksomhet.erRegistrertILandGyldigSatt(): Boolean{
     if(!registrertINorge) return registrertILand != null && !registrertILand.isNullOrBlank()
-    return true
-}
-
-internal fun Virksomhet.erRegnskapsførerSattGyldig() : Boolean{
-    if(harRegnskapsforer) return regnskapsforer != null
     return true
 }
