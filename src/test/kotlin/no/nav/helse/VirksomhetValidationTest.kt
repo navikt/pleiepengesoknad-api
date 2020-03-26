@@ -130,7 +130,6 @@ class VirksomhetTest {
             revisor = Revisor(
                 navn = "Kjell",
                 telefon = "9898989",
-                erNarVennFamilie = false,
                 kanInnhenteOpplysninger = false
             )
         )

@@ -46,8 +46,7 @@ data class VarigEndring(
 data class Revisor(
     val navn: String,
     val telefon: String,
-    val erNarVennFamilie: Boolean,
-    val kanInnhenteOpplysninger: Boolean?
+    val kanInnhenteOpplysninger: Boolean
 )
 
 data class Regnskapsforer(
