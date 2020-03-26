@@ -24,7 +24,6 @@ data class Virksomhet(
     val yrkesaktivSisteTreFerdigliknedeArene: YrkesaktivSisteTreFerdigliknedeArene? = null,
     val varigEndring: VarigEndring? = null,
     val regnskapsforer: Regnskapsforer? = null,
-    val harRevisor: Boolean? = null,
     val revisor: Revisor? = null
 )
 
@@ -106,17 +105,6 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
         )
     }
 
-    if(!erRevisorSattGyldig()){
-        violations.add(
-            Violation(
-                parameterName = "revisor",
-                parameterType = ParameterType.ENTITY,
-                reason = "Hvis man har satt harRevisor til true så må revisor være satt til et revisor objekt",
-                invalidValue = revisor
-            )
-        )
-    }
-
     return violations
 }
 
@@ -125,11 +113,6 @@ internal fun Virksomhet.harGyldigPeriode(): Boolean {
 
     if (erPagaende) return now >= fraOgMed
     return fraOgMed <= tilOgMed
-}
-
-internal fun Virksomhet.erRevisorSattGyldig(): Boolean{
-    if(harRevisor != null && harRevisor) return revisor != null
-    return true
 }
 
 internal fun Virksomhet.erErPaagaendeGyldigSatt(): Boolean{

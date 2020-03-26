@@ -467,8 +467,7 @@ class ApplicationTest {
                             navn = "Kjell",
                             telefon = "84554",
                             erNarVennFamilie = false
-                        ),
-                        harRevisor = false
+                        )
                     )
                 )
             )
@@ -520,8 +519,7 @@ class ApplicationTest {
                             navn = "Kjell",
                             telefon = "84554",
                             erNarVennFamilie = false
-                        ),
-                        harRevisor = false
+                        )
                     )
                 )
             )
@@ -572,21 +570,10 @@ class ApplicationTest {
                   "har_medsoker": false,
                   "har_bekreftet_opplysninger": true,
                   "har_forstatt_rettigheter_og_plikter": true,
-                  "har_hatt_inntekt_som_frilanser": true,
                   "frilans": {
-                    "har_hatt_oppdrag_for_familie": true,
-                    "har_hatt_inntekt_som_fosterforelder": false,
                     "startdato": "2019-12-06",
-                    "jobber_fortsatt_som_frilans": false,
-                    "oppdrag": [
-                      {
-                        "arbeidsgivernavn": "NaboBil",
-                        "fra_og_med": "2020-02-13",
-                        "til_og_med": "2020-02-20"
-                      }
-                    ]
+                    "jobber_fortsatt_som_frilans": false
                   },
-                  "har_hatt_inntekt_som_selvstendig_naringsdrivende": true,
                   "selvstendig_virksomheter": [
                     {
                       "naringstype": [
@@ -600,14 +587,11 @@ class ApplicationTest {
                       "fra_og_med": "2020-02-01",
                       "til_og_med": "2020-02-13",
                       "naringsinntekt": 9857755,
-                      "har_regnskapsforer": true,
-                      "har_varig_endring_av_inntekt_siste_4_kalenderar": true,
                             "varig_endring": {
                               "dato": "2020-01-03",
                               "forklaring": "forklaring blablablabla",
                               "inntekt_etter_endring": "23423"
                             },
-                      "har_blitt_yrkesaktiv_siste_tre_ferdigliknede_arene": true,
                       "yrkesaktiv_siste_tre_ferdigliknede_arene": {
                         "oppstartsdato": "2020-02-01"
                       },
@@ -665,8 +649,7 @@ class ApplicationTest {
                         naringsinntekt = 1212,
                         navnPaVirksomheten = "TullOgTøys",
                         registrertINorge = false,
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harRevisor = false
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
                     ), Virksomhet(
                         naringstype = listOf(Naringstype.JORDBRUK),
                         fiskerErPåBladB = false,
@@ -677,8 +660,7 @@ class ApplicationTest {
                         navnPaVirksomheten = "BariBar",
                         registrertINorge = true,
                         organisasjonsnummer = "10110",
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harRevisor = false
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
                     )
                 )
             )
