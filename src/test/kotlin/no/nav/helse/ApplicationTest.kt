@@ -463,7 +463,6 @@ class ApplicationTest {
                         registrertINorge = true,
                         organisasjonsnummer = "101010",
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harVarigEndringAvInntektSiste4Kalenderar = false,
                         harRegnskapsforer = true,
                         regnskapsforer = Regnskapsforer(
                             navn = "Kjell",
@@ -518,7 +517,6 @@ class ApplicationTest {
                         registrertINorge = false,
                         organisasjonsnummer = "101010",
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harVarigEndringAvInntektSiste4Kalenderar = false,
                         harRegnskapsforer = true,
                         regnskapsforer = Regnskapsforer(
                             navn = "Kjell",
@@ -670,7 +668,6 @@ class ApplicationTest {
                         navnPaVirksomheten = "TullOgTøys",
                         registrertINorge = false,
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harVarigEndringAvInntektSiste4Kalenderar = false,
                         harRegnskapsforer = false,
                         harRevisor = false
                     ), Virksomhet(
@@ -684,7 +681,6 @@ class ApplicationTest {
                         registrertINorge = true,
                         organisasjonsnummer = "10110",
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        harVarigEndringAvInntektSiste4Kalenderar = false,
                         harRegnskapsforer = false,
                         harRevisor = false
                     )

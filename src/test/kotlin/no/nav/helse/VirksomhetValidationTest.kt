@@ -22,7 +22,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = false)
         virksomhet.validate().assertFeilPaa(listOf("virksomhet.tilogmed og virksomhet.fraogmed"))
@@ -41,7 +40,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = false
         )
@@ -61,7 +59,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = false
         )
@@ -80,7 +77,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101011",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = false
         )
@@ -100,7 +96,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = false
         )
@@ -119,7 +114,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = false
         )
@@ -138,7 +132,6 @@ class VirksomhetTest {
             organisasjonsnummer = null,
             registrertINorge = true,
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false
         )
         virksomhet.validate().assertFeilPaa(listOf("organisasjonsnummer"))
@@ -156,7 +149,6 @@ class VirksomhetTest {
             registrertINorge = false,
             registrertILand = "Sverige",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false
         )
         virksomhet.validate().assertIngenFeil()
@@ -173,7 +165,6 @@ class VirksomhetTest {
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = false,
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false
         )
         virksomhet.validate().assertFeilPaa(listOf("registrertILand"))
@@ -191,7 +182,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = true
         )
         virksomhet.validate().assertFeilPaa(listOf("regnskapsforer"))
@@ -209,7 +199,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = true,
             revisor = Revisor(
@@ -234,7 +223,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = true
         )
         virksomhet.validate().assertFeilPaa(listOf("regnskapsforer"))
@@ -252,7 +240,6 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
             harRegnskapsforer = false,
             harRevisor = true,
             revisor = Revisor(
