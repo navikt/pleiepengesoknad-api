@@ -27,7 +27,7 @@ data class Virksomhet(
 )
 
 data class YrkesaktivSisteTreFerdigliknedeArene(
-    val oppstartsdato: LocalDate?
+    val oppstartsdato: LocalDate
 )
 
 enum class Naringstype(val detaljert: String) {
