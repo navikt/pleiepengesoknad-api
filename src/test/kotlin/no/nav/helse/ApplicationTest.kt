@@ -464,8 +464,7 @@ class ApplicationTest {
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
                         regnskapsforer = Regnskapsforer(
                             navn = "Kjell",
-                            telefon = "84554",
-                            erNarVennFamilie = false
+                            telefon = "84554"
                         )
                     )
                 )
@@ -515,8 +514,7 @@ class ApplicationTest {
                         yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
                         regnskapsforer = Regnskapsforer(
                             navn = "Kjell",
-                            telefon = "84554",
-                            erNarVennFamilie = false
+                            telefon = "84554"
                         )
                     )
                 )

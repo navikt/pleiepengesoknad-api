@@ -51,8 +51,7 @@ data class Revisor(
 
 data class Regnskapsforer(
     val navn: String,
-    val telefon: String,
-    val erNarVennFamilie: Boolean
+    val telefon: String
 )
 
 
