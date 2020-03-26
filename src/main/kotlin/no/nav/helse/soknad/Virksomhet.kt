@@ -38,9 +38,9 @@ enum class Naringstype(val detaljert: String) {
 }
 
 data class VarigEndring(
-    val dato: LocalDate? = null,
-    val inntektEtterEndring: Int? = null,
-    val forklaring: String? = null
+    val dato: LocalDate,
+    val inntektEtterEndring: Int,
+    val forklaring: String
 )
 
 data class Revisor(
