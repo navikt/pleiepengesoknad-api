@@ -13,7 +13,6 @@ data class Virksomhet(
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate? = null,
-    val erPagaende: Boolean,
     val naringsinntekt: Int? = null,
     val navnPaVirksomheten: String,
     val organisasjonsnummer: String? = null,
@@ -72,17 +71,6 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
         )
     }
 
-    if(!erErPaagaendeGyldigSatt()){
-        violations.add(
-            Violation(
-                parameterName = "erPagaende",
-                parameterType = ParameterType.ENTITY,
-                reason = "erPagaende er ikke gyldig satt. Hvis pågående så kan ikke tilogmed være satt",
-                invalidValue = erPagaende
-            )
-        )
-    }
-
     if(!erRegistrertINorgeGyldigSatt()){
         violations.add(
             Violation(
@@ -109,15 +97,9 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
 }
 
 internal fun Virksomhet.harGyldigPeriode(): Boolean {
-    val now = LocalDate.now();
 
-    if (erPagaende) return now >= fraOgMed
+    if (tilOgMed == null) return true // er pågående
     return fraOgMed <= tilOgMed
-}
-
-internal fun Virksomhet.erErPaagaendeGyldigSatt(): Boolean{
-    if (erPagaende) return tilOgMed == null
-    return tilOgMed != null
 }
 
 internal fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean{

@@ -16,7 +16,6 @@ class VirksomhetTest {
             fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now().minusDays(1),
-            erPagaende = false,
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
@@ -33,7 +32,6 @@ class VirksomhetTest {
             fiskerErPåBladB = false,
             fraOgMed = LocalDate.now().minusDays(1),
             tilOgMed = LocalDate.now(),
-            erPagaende = false,
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
@@ -50,7 +48,6 @@ class VirksomhetTest {
             fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now(),
-            erPagaende = false,
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
@@ -58,39 +55,6 @@ class VirksomhetTest {
             yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
         )
         virksomhet.validate().assertIngenFeil()
-    }
-
-    @Test
-    fun `erPagaende er true når tilOgMed ikke er satt, validate skal ikke reagere`(){
-        val virksomhet = Virksomhet(
-            naringstype = listOf(Naringstype.ANNET),
-            fiskerErPåBladB = false,
-            fraOgMed = LocalDate.now(),
-            erPagaende = true,
-            naringsinntekt = 1111,
-            navnPaVirksomheten = "TullOgTøys",
-            registrertINorge = true,
-            organisasjonsnummer = "101011",
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
-        )
-        virksomhet.validate().assertIngenFeil()
-    }
-
-    @Test
-    fun `erPagaende kan ikke være true hvis tilOgMed er satt, validate skal returnere en violation`(){
-        val virksomhet = Virksomhet(
-            naringstype = listOf(Naringstype.ANNET),
-            fiskerErPåBladB = false,
-            fraOgMed = LocalDate.now(),
-            tilOgMed = LocalDate.now().plusDays(1),
-            erPagaende = true,
-            naringsinntekt = 1111,
-            navnPaVirksomheten = "TullOgTøys",
-            registrertINorge = true,
-            organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
-        )
-        virksomhet.validate().assertFeilPaa(listOf("erPagaende"))
     }
 
     @Test
@@ -99,7 +63,6 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.ANNET),
             fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
-            erPagaende = true,
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
@@ -115,7 +78,6 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.ANNET),
             fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
-            erPagaende = true,
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             organisasjonsnummer = null,
@@ -131,7 +93,6 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.ANNET),
             fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
-            erPagaende = true,
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = false,
@@ -147,7 +108,6 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.ANNET),
             fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
-            erPagaende = true,
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = false,
@@ -162,7 +122,6 @@ class VirksomhetTest {
             naringstype = listOf(Naringstype.ANNET),
             fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
-            erPagaende = true,
             naringsinntekt = 1111,
             navnPaVirksomheten = "TullOgTøys",
             registrertINorge = true,
