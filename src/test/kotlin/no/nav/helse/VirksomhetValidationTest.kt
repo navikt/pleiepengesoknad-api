@@ -13,6 +13,7 @@ class VirksomhetTest {
     fun `FraOgMed kan ikke være før tilOgMed, validate skal returnere en violation`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now().minusDays(1),
             erPagaende = false,
@@ -31,6 +32,7 @@ class VirksomhetTest {
     fun `FraOgMed er før tilogmed, validate skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now().minusDays(1),
             tilOgMed = LocalDate.now(),
             erPagaende = false,
@@ -50,6 +52,7 @@ class VirksomhetTest {
     fun `FraOgMed er lik tilogmed, validate skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now(),
             erPagaende = false,
@@ -69,6 +72,7 @@ class VirksomhetTest {
     fun `erPagaende er true når tilOgMed ikke er satt, validate skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
@@ -87,6 +91,7 @@ class VirksomhetTest {
     fun `erPagaende kan ikke være true hvis tilOgMed er satt, validate skal returnere en violation`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now().plusDays(1),
             erPagaende = true,
@@ -106,6 +111,7 @@ class VirksomhetTest {
     fun `Hvis virksomheten er registrert i Norge så må orgnummer være satt, validate skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
@@ -124,6 +130,7 @@ class VirksomhetTest {
     fun `Hvis virksomheten er registrert i Norge så skal den feile hvis orgnummer ikke er satt, validate skal returnere en violation`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
@@ -141,6 +148,7 @@ class VirksomhetTest {
     fun `Hvis virksomheten ikke er registrert i Norge så må registrertILand være satt til noe, validate skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
@@ -158,6 +166,7 @@ class VirksomhetTest {
     fun `Hvis virksomheten ikke er registrert i Norge så må den feile hvis registrertILand ikke er satt til noe, validate skal returnere en violation`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
@@ -174,6 +183,7 @@ class VirksomhetTest {
     fun `Hvis harRegnskapsfører er satt til true så kan ikke regnskapsfører være null, validate skal returnere en violation`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
@@ -191,6 +201,7 @@ class VirksomhetTest {
     fun `Hvis harRegnskapsfører er satt til true så må regnskapsfører være registrert, validate skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
@@ -215,6 +226,7 @@ class VirksomhetTest {
     fun `Hvis harRegnskapsfører er satt til true så kan ikke regnskapsforer være null, validate skal returnere en violation`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,
@@ -232,31 +244,7 @@ class VirksomhetTest {
     fun `Hvis harRevisor er satt til true så må revisor være et revisorobjekt, validering skal ikke reagere`(){
         val virksomhet = Virksomhet(
             naringstype = listOf(Naringstype.ANNET),
-            fraOgMed = LocalDate.now(),
-            erPagaende = true,
-            naringsinntekt = 1111,
-            navnPaVirksomheten = "TullOgTøys",
-            registrertINorge = true,
-            organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-            harVarigEndringAvInntektSiste4Kalenderar = false,
-            harRegnskapsforer = false,
-            harRevisor = true,
-            revisor = Revisor(
-                navn = "Kjell",
-                telefon = "9898989",
-                erNarVennFamilie = false,
-                kanInnhenteOpplysninger = false
-            )
-        )
-        virksomhet.validate().assertIngenFeil()
-    }
-
-    @Test
-    fun `Hvis fisker så må også fiskerErPåPlanB være satt, validering skal ikke reagere`(){
-        val virksomhet = Virksomhet(
-            naringstype = listOf(Naringstype.FISKER),
-            fiskerErPåBladB = true,
+            fiskerErPåBladB = false,
             fraOgMed = LocalDate.now(),
             erPagaende = true,
             naringsinntekt = 1111,

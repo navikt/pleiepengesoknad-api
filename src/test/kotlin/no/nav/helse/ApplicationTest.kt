@@ -454,6 +454,7 @@ class ApplicationTest {
                 virksomheter = listOf(
                     Virksomhet(
                         naringstype = listOf(Naringstype.JORDBRUK),
+                        fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
@@ -508,6 +509,7 @@ class ApplicationTest {
                 virksomheter = listOf(
                     Virksomhet(
                         naringstype = listOf(Naringstype.JORDBRUK),
+                        fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
@@ -660,6 +662,7 @@ class ApplicationTest {
                 virksomheter = listOf(
                     Virksomhet(
                         naringstype = listOf(Naringstype.JORDBRUK),
+                        fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
@@ -672,6 +675,7 @@ class ApplicationTest {
                         harRevisor = false
                     ), Virksomhet(
                         naringstype = listOf(Naringstype.JORDBRUK),
+                        fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
                         erPagaende = false,
