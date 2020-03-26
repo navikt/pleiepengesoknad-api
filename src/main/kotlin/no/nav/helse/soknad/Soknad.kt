@@ -31,9 +31,7 @@ data class Soknad(
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
     val beredskap: Beredskap? = null,
-    val harHattInntektSomFrilanser: Boolean = false,
     val frilans: Frilans? = null,
-    val harHattInntektSomSelvstendigNaringsdrivende: Boolean = false,
     @JsonProperty("selvstendig_virksomheter")
     val selvstendigVirksomheter: List<Virksomhet>? = null,
     @JsonProperty("skal_bekrefte_omsorg") val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.

@@ -690,40 +690,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad som har harHattInntektSomSelvstendigNaringsdrivende true men listen over virksomheter er tom, skal feile`(){
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = "/soknad",
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "harHattInntektSomSelvstendigNaringsdrivende",
-                  "reason": "Hvis harHattInntektSomSelvstendigNaringsdrivende er true så kan ikke listen over virksomehter være tom",
-                  "invalid_value": true
-                }
-              ]
-            }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
-                vedleggUrl1 = jpegUrl,
-                virksomheter = listOf()
-            )
-        )
-    }
-
-    @Test
     fun `Sende soknad som har skalJobbe lik 'ja', men skalJobbeProsent ulik 100%, skal feile`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
@@ -1098,7 +1064,6 @@ class ApplicationTest {
     fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har ikke godkjent det, skal feile`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -1135,7 +1100,6 @@ class ApplicationTest {
     fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har godkjent det, skal ikke feile`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -1156,7 +1120,6 @@ class ApplicationTest {
     fun `Sende søknad hvor perioden er 8 uker(40 virkedager), skal ikke feile`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -1176,7 +1139,6 @@ class ApplicationTest {
     fun `Sende søknad hvor perioden er under 8 uker(40 virkedager), skal ikke feile`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,

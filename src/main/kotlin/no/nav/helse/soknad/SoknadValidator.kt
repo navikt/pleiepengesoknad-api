@@ -108,24 +108,10 @@ internal fun Soknad.validate() {
         violations.addAll(this.validate())
     }
 
-    if(harHattInntektSomSelvstendigNaringsdrivende){
-        if(selvstendigVirksomheter != null && selvstendigVirksomheter.isNotEmpty()){
-            selvstendigVirksomheter.forEach { virksomhet ->
-                violations.addAll(virksomhet.validate())
-            }
-        }
-    }
 
-    if(harHattInntektSomSelvstendigNaringsdrivende){
-        if(selvstendigVirksomheter != null && selvstendigVirksomheter.isEmpty()){
-            violations.add(
-                Violation(
-                    parameterName = "harHattInntektSomSelvstendigNaringsdrivende",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Hvis harHattInntektSomSelvstendigNaringsdrivende er true så kan ikke listen over virksomehter være tom",
-                    invalidValue = harHattInntektSomSelvstendigNaringsdrivende
-                )
-            )
+    if (selvstendigVirksomheter != null && selvstendigVirksomheter.isNotEmpty()) {
+        selvstendigVirksomheter.forEach { virksomhet ->
+            violations.addAll(virksomhet.validate())
         }
     }
 
@@ -178,16 +164,16 @@ internal fun Soknad.validate() {
     }
 
     //Validerer at brukeren bekrefter dersom perioden er over 8 uker (40 virkedager)
-    if(bekrefterPeriodeOver8Uker != null){
+    if (bekrefterPeriodeOver8Uker != null) {
         var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
         var dagSomSkalSjekkes: LocalDate = fraOgMed;
 
-        while(!dagSomSkalSjekkes.isAfter(tilOgMed)){
-            if(dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
+        while (!dagSomSkalSjekkes.isAfter(tilOgMed)) {
+            if (dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
             dagSomSkalSjekkes = dagSomSkalSjekkes.plusDays(1)
         }
 
-        if(antallDagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker){
+        if (antallDagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker) {
             violations.add(
                 Violation(
                     parameterName = "bekrefterPeriodeOver8Uker",
@@ -232,30 +218,6 @@ internal fun Soknad.validate() {
 
             )
         )
-    }
-
-    if (harHattInntektSomFrilanser) {
-        if (frilans == null) {
-            violations.add(
-                Violation(
-                    parameterName = "har_hatt_inntekt_som_frilanser",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Dersom søkeren har hatt inntekter som frilanser, skal frilans objektet ikke være null"
-                )
-            )
-        }
-    }
-
-    if (!harHattInntektSomFrilanser) {
-        if (frilans != null) {
-            violations.add(
-                Violation(
-                    parameterName = "har_hatt_inntekt_som_frilanser",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Dersom søkeren IKKE har hatt inntekter som frilanser, skal frilans objektet være null"
-                )
-            )
-        }
     }
 
     beredskap?.apply {
@@ -580,7 +542,8 @@ internal fun List<OrganisasjonDetaljer>.validate(
                                 invalidValue = this
                             )
                         )
-                    } else {}
+                    } else {
+                    }
                 }
             }
             "nei" -> {

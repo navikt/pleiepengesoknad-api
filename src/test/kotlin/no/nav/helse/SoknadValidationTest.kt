@@ -50,34 +50,29 @@ class SoknadValidationTest {
     }
 
     @Test
-    fun `Skal ikke feile når harHattInntektSomFrilanser er satt til true og det finnes frilansobjekt`() {
-        soknadMedFrilans(true).validate()
-    }
-
-    @Test(expected = Throwblem::class)
-    fun `Skal feile når harHattInntektSomFrilanser er satt til false mens det finnes frilansobjekt`() {
-        soknadMedFrilans(false).validate()
-    }
-
-    @Test
     fun `Søknad hvor perioden er 40 virkedager, skal ikke feile`(){
-        soknadMedFrilans(true, fraOgMed = LocalDate.parse("2020-01-01"),
-            tilOgMed = LocalDate.parse("2020-02-26")).validate()
+        soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-26")).validate()
     }
 
     @Test(expected = Throwblem::class)
     fun `Søknad hvor perioden er 41 virkedager hvor det ikke er bekreftet, skal feile`(){
-        soknadMedFrilans(true, fraOgMed = LocalDate.parse("2020-01-01"),
-                        tilOgMed = LocalDate.parse("2020-02-27")).validate()
+        soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-27")).validate()
     }
 
     @Test
     fun `Søknad hvor perioden er 41 virkedager hvor det er bekreftet, skal ikke feile`(){
-        soknadMedFrilans(true, bekrefterPeriodeOver8Uker = true, fraOgMed = LocalDate.parse("2020-01-01"),
-                        tilOgMed = LocalDate.parse("2020-02-27")).validate()
+        soknadMedFrilans(
+            bekrefterPeriodeOver8Uker = true,
+            fraOgMed = LocalDate.parse("2020-01-01"),
+            tilOgMed = LocalDate.parse("2020-02-27")
+        ).validate()
     }
 
-    private fun soknadMedFrilans(harHattInntektSomFrilanser: Boolean, bekrefterPeriodeOver8Uker: Boolean = false, fraOgMed: LocalDate = LocalDate.now(), tilOgMed : LocalDate = LocalDate.now()) = Soknad(
+    private fun soknadMedFrilans(
+        bekrefterPeriodeOver8Uker: Boolean = false,
+        fraOgMed: LocalDate = LocalDate.now(),
+        tilOgMed: LocalDate = LocalDate.now()
+    ) = Soknad(
         newVersion = null,
         sprak = Sprak.nb,
         barn = BarnDetaljer(
@@ -112,7 +107,6 @@ class SoknadValidationTest {
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
-        harHattInntektSomFrilanser = harHattInntektSomFrilanser,
         frilans = Frilans(
             jobberFortsattSomFrilans = true,
             startdato = LocalDate.now().minusDays(1))
