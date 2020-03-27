@@ -686,7 +686,7 @@ class ApplicationTest {
                       "navn": "Bjeffefirmaet ÆÆÅ",
                       "skal_jobbe": "ja",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": null,
+                      "jobber_normalt_timer": 0.0,
                       "skal_jobbe_prosent": 99.0,
                       "vet_ikke_ekstrainfo": null
                     }
@@ -731,7 +731,7 @@ class ApplicationTest {
                       "navn": "Bjeffefirmaet ÆÆÅ",
                       "skal_jobbe": "redusert",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": null,
+                      "jobber_normalt_timer": 0.0,
                       "skal_jobbe_prosent": 100.0,
                       "vet_ikke_ekstrainfo": null
                     }
@@ -776,7 +776,7 @@ class ApplicationTest {
                       "navn": "Bjeffefirmaet ÆÆÅ",
                       "skal_jobbe": "nei",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": null,
+                      "jobber_normalt_timer": 0.0,
                       "skal_jobbe_prosent": 10.0,
                       "vet_ikke_ekstrainfo": null
                     }
@@ -815,13 +815,13 @@ class ApplicationTest {
                 {
                   "type": "entity",
                   "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
-                  "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være mellom 0%",
+                  "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være 0%",
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
                       "skal_jobbe": "vet_ikke",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": null,
+                      "jobber_normalt_timer": 0.0,
                       "skal_jobbe_prosent": 10.0,
                       "vet_ikke_ekstrainfo": null
                     }
@@ -914,7 +914,8 @@ class ApplicationTest {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "12",
-                                "navn": "$forlangtNavn"
+                                "navn": "$forlangtNavn",
+                                "skal_jobbe": "ugyldig"
                             }
                         ]
                     },
@@ -970,7 +971,7 @@ class ApplicationTest {
                       "type": "entity",
                       "name": "arbeidsgivere.organisasjoner[0].skal_jobbe",
                       "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vet_ikke",
-                      "invalid_value": null
+                      "invalid_value": "ugyldig"
                     },
                     {
                       "type": "entity",
@@ -1026,8 +1027,8 @@ class ApplicationTest {
                       "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                       "invalid_value": false
                     }
-                ]
-            }
+                  ]
+                }
             """.trimIndent()
         )
     }

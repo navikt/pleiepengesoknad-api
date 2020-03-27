@@ -16,17 +16,11 @@ class ArbeidsgiverValidationTest {
     fun `Ingen informasjon om arbeidsuker satt`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            skalJobbe = "ja"
+            skalJobbe = "ja",
+            jobberNormaltTimer = 37.5,
+            skalJobbeProsent = 100.0
         ))
         assertTrue(organisasjoner.validate().isEmpty())
-    }
-
-    @Test
-    fun `Ingen informasjon om arbeidsuker satt, ingen grad satt`() {
-        val organisasjoner = listOf(OrganisasjonDetaljer(
-            organisasjonsnummer = GYLDIG_ORGNR
-        ))
-        assertEquals(1, organisasjoner.validate().size)
     }
 
     @Test
@@ -34,7 +28,8 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = 99.09,
-            skalJobbe = "redusert"
+            skalJobbe = "redusert",
+            jobberNormaltTimer = 37.5
         ))
         assertTrue(organisasjoner.validate().isEmpty())
     }
@@ -44,7 +39,8 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = -1.00,
-            skalJobbe = "nei"
+            skalJobbe = "nei",
+            jobberNormaltTimer = 37.5
         ))
         assertEquals(2, organisasjoner.validate().size)
     }
@@ -54,7 +50,8 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = 101.01,
-            skalJobbe = "ja"
+            skalJobbe = "ja",
+            jobberNormaltTimer = 37.5
         ))
         assertEquals(2, organisasjoner.validate().size)
     }
@@ -62,13 +59,13 @@ class ArbeidsgiverValidationTest {
     @Test
     fun `feiler på søkand der arbeidsgiver skalJobbe er annet enn tillatt verdi`() {
         val organisasjoner = listOf(
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ja"),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "nei"),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "redusert"),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "vet_ikke"),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig1"),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig2")
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ja", jobberNormaltTimer = 37.5, skalJobbeProsent = 100.0),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "nei", jobberNormaltTimer = 37.5, skalJobbeProsent = 0.0),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "redusert", jobberNormaltTimer = 37.5, skalJobbeProsent = 50.0),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "vet_ikke", jobberNormaltTimer = 37.5, skalJobbeProsent = 0.0),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig1", jobberNormaltTimer = -1.0, skalJobbeProsent = 100.0),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig2", jobberNormaltTimer = 37.5, skalJobbeProsent = -1.0)
         )
-        assertEquals(2, organisasjoner.validate().size)
+        assertEquals(3, organisasjoner.validate().size)
     }
 }

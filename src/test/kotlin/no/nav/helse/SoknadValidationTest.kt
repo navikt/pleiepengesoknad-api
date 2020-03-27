@@ -11,7 +11,7 @@ class SoknadValidationTest {
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad dersom utenlandsopphold har til og fra dato som ikke kommer i rett rekkefølge`() {
         soknad(
-            harMedsoker = false, skalJobbeProsent = null,medlemskap =  Medlemskap(
+            harMedsoker = false, skalJobbeProsent = 0.0, medlemskap =  Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
                 utenlandsoppholdNeste12Mnd = listOf(
@@ -28,7 +28,7 @@ class SoknadValidationTest {
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad dersom utenlandsopphold mangler landkode`() {
         soknad(
-            harMedsoker = false, skalJobbeProsent = null, medlemskap = Medlemskap(
+            harMedsoker = false, skalJobbeProsent = 0.0, medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
                 utenlandsoppholdNeste12Mnd = listOf(
@@ -45,7 +45,7 @@ class SoknadValidationTest {
     @Test
     fun `Skal ikke feile ved opphold på en dag`() {
         soknad(
-           harMedsoker = false, skalJobbeProsent = null
+           harMedsoker = false, skalJobbeProsent = 0.0, skalJobbe = "nei"
         ).validate()
     }
 
@@ -115,9 +115,10 @@ class SoknadValidationTest {
     private fun soknad(
         harMedsoker: Boolean,
         samtidigHjemme: Boolean? = false,
-        skalJobbeProsent: Double?,
+        skalJobbeProsent: Double = 0.0,
         vetIkkeEkstrainfo: String? = null,
-        jobberNormalTimer: Double? = null,
+        jobberNormalTimer: Double = 0.0,
+        skalJobbe: String = "ja",
         medlemskap: Medlemskap = Medlemskap(
             harBoddIUtlandetSiste12Mnd = false,
             skalBoIUtlandetNeste12Mnd = true,
@@ -147,7 +148,7 @@ class SoknadValidationTest {
                     skalJobbeProsent = skalJobbeProsent,
                     jobberNormaltTimer = jobberNormalTimer,
                     vetIkkeEkstrainfo = vetIkkeEkstrainfo,
-                    skalJobbe = "ja"
+                    skalJobbe = skalJobbe
                 )
             )
         ),

@@ -74,10 +74,10 @@ data class BarnDetaljer(
 
 data class OrganisasjonDetaljer(
     val navn: String? = null,
-    val skalJobbe: String? = null,
+    val skalJobbe: String,
     val organisasjonsnummer: String,
-    val jobberNormaltTimer: Double? = null, //TODO: Fjern ? når dette er prodsatt. skalJobbeProsent skal ikke lenger være optional.
-    val skalJobbeProsent: Double? = null,  //TODO: Fjern ? når dette er prodsatt. skalJobbeProsent skal ikke lenger være optional.
+    val jobberNormaltTimer: Double,
+    val skalJobbeProsent: Double,
     val vetIkkeEkstrainfo: String? = null
 )
 

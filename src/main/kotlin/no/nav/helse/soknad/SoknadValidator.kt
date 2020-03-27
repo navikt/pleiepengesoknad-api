@@ -514,9 +514,7 @@ internal fun List<OrganisasjonDetaljer>.validate(
             )
         }
 
-        // TODO: Fjern etter at dette er merget inn i master og er i prod.
-
-        organisasjon.skalJobbeProsent?.apply {
+        organisasjon.skalJobbeProsent.apply {
             if (this !in 0.0..100.0) {
                 violations.add(
                     Violation(
@@ -531,9 +529,8 @@ internal fun List<OrganisasjonDetaljer>.validate(
 
         when (organisasjon.skalJobbe) {
             "ja" -> {
-                //TODO: Fjern wrap med ?.let{ } når dette er prodsatt. skalJobbeProsent skal ikke lenger være optional.
-                organisasjon.skalJobbeProsent?.let {
-                    if (it !== 100.0) {
+                organisasjon.skalJobbeProsent.let {
+                    if (it != 100.0) {
                         violations.add(
                             Violation(
                                 parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent && arbeidsgivere.organisasjoner[$index].skal_jobbe",
@@ -547,9 +544,8 @@ internal fun List<OrganisasjonDetaljer>.validate(
                 }
             }
             "nei" -> {
-                //TODO: Fjern wrap med ?.let{ } når dette er prodsatt. skalJobbeProsent skal ikke lenger være optional.
-                organisasjon.skalJobbeProsent?.let {
-                    if (it !== 0.0) {
+                organisasjon.skalJobbeProsent.let {
+                    if (it != 0.0) {
                         violations.add(
                             Violation(
                                 parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent && arbeidsgivere.organisasjoner[$index].skal_jobbe",
@@ -563,8 +559,7 @@ internal fun List<OrganisasjonDetaljer>.validate(
                 }
             }
             "redusert" -> {
-                //TODO: Fjern wrap med ?.let{ } når dette er prodsatt. skalJobbeProsent skal ikke lenger være optional.
-                organisasjon.skalJobbeProsent?.let {
+                organisasjon.skalJobbeProsent.let {
                     if (it !in 1.0..99.9) {
                         violations.add(
                             Violation(
@@ -579,14 +574,13 @@ internal fun List<OrganisasjonDetaljer>.validate(
                 }
             }
             "vet_ikke" -> {
-                //TODO: Fjern wrap med ?.let{ } når dette er prodsatt. skalJobbeProsent skal ikke lenger være optional.
-                organisasjon.skalJobbeProsent?.let {
+                organisasjon.skalJobbeProsent.let {
                     if (it != 0.0) {
                         violations.add(
                             Violation(
                                 parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent && arbeidsgivere.organisasjoner[$index].skal_jobbe",
                                 parameterType = ParameterType.ENTITY,
-                                reason = "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være mellom 0%",
+                                reason = "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være 0%",
                                 invalidValue = this
                             )
                         )
