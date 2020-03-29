@@ -62,7 +62,7 @@ class VedleggService(
         return vedlegg.requireNoNulls()
     }
 
-    suspend fun slettVedleg(
+    suspend fun slettVedlegg(
         vedleggId: VedleggId,
         idToken: IdToken,
         callId: CallId
@@ -74,7 +74,7 @@ class VedleggService(
         )
     }
 
-    suspend fun slettVedleg(
+    suspend fun slettVedlegg(
         vedleggUrls: List<URL>,
         idToken: IdToken,
         callId: CallId
@@ -82,7 +82,7 @@ class VedleggService(
         coroutineScope {
             val futures = mutableListOf<Deferred<Unit>>()
             vedleggUrls.forEach {
-                futures.add(async { slettVedleg(
+                futures.add(async { slettVedlegg(
                     vedleggId = vedleggIdFromUrl(it),
                     idToken = idToken,
                     callId = callId

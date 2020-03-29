@@ -8,13 +8,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 private const val ANTALL_VIRKEDAGER_8_UKER = 40
-private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
-    title = "attachments-too-large",
-    status = 413,
-    detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
-)
+
 private const val MIN_GRAD = 20
 private const val MAX_GRAD = 100
 private const val MAX_FRITEKST_TEGN = 1000
@@ -604,31 +599,6 @@ internal fun List<OrganisasjonDetaljer>.validate(
 private fun BarnDetaljer.gyldigAntallIder(): Boolean {
     val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer).size
     return antallIderSatt == 0 || antallIderSatt == 1
-}
-
-internal fun List<Vedlegg>.validerVedlegg(vedleggUrler: List<URL>) {
-    if (size != vedleggUrler.size) {
-        throw Throwblem(
-            ValidationProblemDetails(
-                violations = setOf(
-                    Violation(
-                        parameterName = "vedlegg",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
-                        invalidValue = vedleggUrler
-                    )
-                )
-            )
-        )
-    }
-    validerTotalStorresle()
-}
-
-private fun List<Vedlegg>.validerTotalStorresle() {
-    val totalSize = sumBy { it.content.size }
-    if (totalSize > MAX_VEDLEGG_SIZE) {
-        throw Throwblem(vedleggTooLargeProblemDetails)
-    }
 }
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
