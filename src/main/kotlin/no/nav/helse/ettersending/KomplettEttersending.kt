@@ -5,12 +5,12 @@ import no.nav.helse.vedlegg.Vedlegg
 import java.time.ZonedDateTime
 
 data class KomplettEttersending (
-    val søker: Soker,
-    val språk: String,
+    val soker: Soker,
+    val sprak: String,
     val mottatt: ZonedDateTime,
     val vedlegg: List<Vedlegg>,
-    val harForståttRettigheterOgPlikter: Boolean,
+    val harForstattRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
     val beskrivelse: String,
-    val søknadstype: String
+    val soknadstype: String
 )

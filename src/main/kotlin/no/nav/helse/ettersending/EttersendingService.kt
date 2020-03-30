@@ -48,14 +48,14 @@ class EttersendingService(
         logger.info("Legger ettersending til prosessering")
 
         val komplettEttersending = KomplettEttersending(
-            søker = søker,
-            språk = ettersending.språk,
+            soker = søker,
+            sprak = ettersending.sprak,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             vedlegg = vedlegg,
-            harForståttRettigheterOgPlikter = ettersending.harForståttRettigheterOgPlikter,
+            harForstattRettigheterOgPlikter = ettersending.harForstattRettigheterOgPlikter,
             harBekreftetOpplysninger = ettersending.harBekreftetOpplysninger,
             beskrivelse = ettersending.beskrivelse,
-            søknadstype = ettersending.søknadstype
+            soknadstype = ettersending.soknadstype
         )
 
         pleiepengesoknadMottakGateway.leggTilProsesseringEttersending(

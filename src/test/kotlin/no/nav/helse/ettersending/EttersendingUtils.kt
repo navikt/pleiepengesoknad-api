@@ -6,7 +6,6 @@ import no.nav.helse.soker.Soker
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
 import java.nio.charset.Charset
-import java.time.Duration
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -18,15 +17,15 @@ class EttersendingUtils {
         private val gyldigFodselsnummerA = "02119970078"
 
         internal val default = Ettersending(
-            språk = "no",
-            søknadstype = "omsorgspenger",
+            sprak = "no",
+            soknadstype = "omsorgspenger",
             beskrivelse = "Beskrivelse av ettersending",
             vedlegg = listOf(
                 URL("http://localhost:8080/vedlegg/1"),
                 URL("http://localhost:8080/vedlegg/2"),
                 URL("http://localhost:8080/vedlegg/3")
             ),
-            harForståttRettigheterOgPlikter = true,
+            harForstattRettigheterOgPlikter = true,
             harBekreftetOpplysninger = true
         )
 
@@ -37,10 +36,10 @@ class EttersendingUtils {
 
         internal val defaultKomplett = KomplettEttersending(
             mottatt = ZonedDateTime.now(),
-            språk = "no",
-            søknadstype = "omsorgspenger",
+            sprak = "no",
+            soknadstype = "omsorgspenger",
             beskrivelse = "Beskrivelse av ettersending",
-            søker = Soker(
+            soker = Soker(
                 aktoerId = "123456",
                 fodselsdato = LocalDate.now().minusYears(25),
                 fodselsnummer = gyldigFodselsnummerA,
@@ -64,7 +63,7 @@ class EttersendingUtils {
                     content = content
                 )
             ),
-            harForståttRettigheterOgPlikter = true,
+            harForstattRettigheterOgPlikter = true,
             harBekreftetOpplysninger = true
         )
     }

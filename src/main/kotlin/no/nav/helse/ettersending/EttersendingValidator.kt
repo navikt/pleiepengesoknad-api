@@ -1,18 +1,16 @@
 package no.nav.helse.ettersending
 
 import no.nav.helse.dusseldorf.ktor.core.*
-import no.nav.helse.vedlegg.Vedlegg
-import java.net.URL
 
 internal fun Ettersending.valider() = mutableSetOf<Violation>().let {
 
-    if (søknadstype != "omsorgspenger") {
+    if (soknadstype != "omsorgspenger") {
         it.add(
             Violation(
                 parameterName = "søknadstype",
                 parameterType = ParameterType.ENTITY,
                 reason = "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
-                invalidValue = søknadstype
+                invalidValue = soknadstype
 
             )
         )
@@ -66,7 +64,7 @@ internal fun Ettersending.valider() = mutableSetOf<Violation>().let {
         )
     }
 
-    if (!harForståttRettigheterOgPlikter) {
+    if (!harForstattRettigheterOgPlikter) {
         it.add(
             Violation(
                 parameterName = "harForståttRettigheterOgPlikter",

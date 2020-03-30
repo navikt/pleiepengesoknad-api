@@ -161,7 +161,7 @@ class EttersendingTests {
             requestEntity = EttersendingUtils.default.copy(
                 vedlegg = listOf(URL(jpegUrl), URL(pdfUrl)),
                 harBekreftetOpplysninger = false,
-                harForståttRettigheterOgPlikter = false
+                harForstattRettigheterOgPlikter = false
             ).somJson()
         )
     }
@@ -197,7 +197,7 @@ class EttersendingTests {
             cookie = cookie,
             requestEntity = EttersendingUtils.default.copy(
                 vedlegg = listOf(URL(jpegUrl), URL(pdfUrl)),
-                søknadstype = "pleiepenger"
+                soknadstype = "pleiepenger"
             ).somJson()
         )
     }
