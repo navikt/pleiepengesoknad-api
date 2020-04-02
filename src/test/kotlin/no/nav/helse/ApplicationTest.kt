@@ -5,12 +5,18 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.HoconApplicationConfig
 import io.ktor.http.*
-import kotlin.test.*
-import io.ktor.server.testing.*
+import io.ktor.server.testing.TestApplicationEngine
+import io.ktor.server.testing.createTestEnvironment
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
 import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.redis.RedisMockUtil
+import no.nav.helse.soknad.Naringstype
+import no.nav.helse.soknad.Regnskapsforer
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeArene
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -18,7 +24,11 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
+import java.time.LocalDate
 import java.util.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 private const val fnr = "290990123456"
 private const val ikkeMyndigFnr = "12125012345"
@@ -49,7 +59,7 @@ class ApplicationTest {
             .stubK9OppslagArbeidsgivere()
             .stubK9Dokument()
 
-        fun getConfig() : ApplicationConfig {
+        fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(TestConfiguration.asMap(wireMockServer = wireMockServer))
@@ -97,9 +107,6 @@ class ApplicationTest {
             }
         }
     }
-
-
-
 
     @Test
     fun `Hente arbeidsgivere`() {
@@ -432,6 +439,409 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Sende søknad med selvstendig næringsvirksomhet som har regnskapsfører`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+                vedleggUrl1 = jpegUrl,
+                virksomheter = listOf(
+                    Virksomhet(
+                        naringstype = listOf(Naringstype.JORDBRUK),
+                        fiskerErPåBladB = false,
+                        fraOgMed = LocalDate.now().minusDays(1),
+                        tilOgMed = LocalDate.now(),
+                        naringsinntekt = 123123,
+                        navnPaVirksomheten = "TullOgTøys",
+                        registrertINorge = true,
+                        organisasjonsnummer = "101010",
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        regnskapsforer = Regnskapsforer(
+                            navn = "Kjell",
+                            telefon = "84554"
+                        )
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad med selvstendig næringsvirksomhet som ikke er gyldig, mangler registrertILand`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "registrertILand",
+                      "reason": "Hvis registrertINorge er false så må registrertILand være satt til noe",
+                      "invalid_value": null
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+                vedleggUrl1 = jpegUrl,
+                virksomheter = listOf(
+                    Virksomhet(
+                        naringstype = listOf(Naringstype.JORDBRUK),
+                        fiskerErPåBladB = false,
+                        fraOgMed = LocalDate.now().minusDays(1),
+                        tilOgMed = LocalDate.now(),
+                        naringsinntekt = 1233123,
+                        navnPaVirksomheten = "TullOgTøys",
+                        registrertINorge = false,
+                        organisasjonsnummer = "101010",
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        regnskapsforer = Regnskapsforer(
+                            navn = "Kjell",
+                            telefon = "84554"
+                        )
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad som inneholder både frilansoppdrag og en selvstendig virksomhet som full json`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = """
+                {
+                  "new_version": true,
+                  "sprak": "nb",
+                  "barn": {
+                    "navn": null,
+                    "fodselsnummer": "03028104560",
+                    "aktoer_id": null,
+                    "fodselsdato": null
+                  },
+                  "arbeidsgivere": {
+                    "organisasjoner": [
+                      
+                    ]
+                  },
+                  "medlemskap": {
+                    "har_bodd_i_utlandet_siste_12_mnd": false,
+                    "skal_bo_i_utlandet_neste_12_mnd": false,
+                    "utenlandsopphold_siste_12_mnd": [
+                      
+                    ],
+                    "utenlandsopphold_neste_12_mnd": [
+                      
+                    ]
+                  },
+                  "fra_og_med": "2020-02-01",
+                  "til_og_med": "2020-02-13",
+                  "vedlegg": [
+                    "                $jpegUrl                "
+                  ],
+                  "har_medsoker": false,
+                  "har_bekreftet_opplysninger": true,
+                  "har_forstatt_rettigheter_og_plikter": true,
+                  "frilans": {
+                    "startdato": "2019-12-06",
+                    "jobber_fortsatt_som_frilans": false
+                  },
+                  "selvstendig_virksomheter": [
+                    {
+                      "naringstype": [
+                        "JORDBRUK_SKOGBRUK",
+                        "DAGMAMMA",
+                        "ANNEN"
+                      ],
+                      "navn_pa_virksomheten": "Tull og tøys",
+                      "registrert_i_norge": true,
+                      "organisasjonsnummer": "85577454",
+                      "fra_og_med": "2020-02-01",
+                      "til_og_med": "2020-02-13",
+                      "naringsinntekt": 9857755,
+                            "varig_endring": {
+                              "dato": "2020-01-03",
+                              "forklaring": "forklaring blablablabla",
+                              "inntekt_etter_endring": "23423"
+                            },
+                      "yrkesaktiv_siste_tre_ferdigliknede_arene": {
+                        "oppstartsdato": "2020-02-01"
+                      },
+                      "regnskapsforer": {
+                        "navn": "Kjell Bjarne",
+                        "telefon": "88788",
+                        "er_nar_venn_familie": true
+                      }
+                    }
+                  ],
+                  "tilsynsordning": {
+                    "svar": "nei"
+                  }
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `Sende søknad med selvstendig næringsvirksomet som har flere gyldige virksomheter, men med en feil`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "registrertILand",
+                      "reason": "Hvis registrertINorge er false så må registrertILand være satt til noe",
+                      "invalid_value": null
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+                vedleggUrl1 = jpegUrl,
+                virksomheter = listOf(
+                    Virksomhet(
+                        naringstype = listOf(Naringstype.JORDBRUK),
+                        fiskerErPåBladB = false,
+                        fraOgMed = LocalDate.now().minusDays(1),
+                        tilOgMed = LocalDate.now(),
+                        naringsinntekt = 1212,
+                        navnPaVirksomheten = "TullOgTøys",
+                        registrertINorge = false,
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+                    ), Virksomhet(
+                        naringstype = listOf(Naringstype.JORDBRUK),
+                        fiskerErPåBladB = false,
+                        fraOgMed = LocalDate.now().minusDays(1),
+                        tilOgMed = LocalDate.now(),
+                        naringsinntekt = 1212,
+                        navnPaVirksomheten = "BariBar",
+                        registrertINorge = true,
+                        organisasjonsnummer = "10110",
+                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+                    )
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `Sende soknad som har skalJobbe lik 'ja', men skalJobbeProsent ulik 100%, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "reason": "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
+                  "invalid_value": [
+                    {
+                      "navn": "Bjeffefirmaet ÆÆÅ",
+                      "skal_jobbe": "ja",
+                      "organisasjonsnummer": "917755736",
+                      "jobber_normalt_timer": 0.0,
+                      "skal_jobbe_prosent": 99.0,
+                      "vet_ikke_ekstrainfo": null
+                    }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                skalJobbe = "ja",
+                skalJobbeProsent = 99.0
+            )
+        )
+    }
+
+    @Test
+    fun `Sende soknad som har skalJobbe lik 'redusert', men skalJobbeProsent ikke ligger mellom 1% - 99,9%, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "reason": "skalJobbeProsent ligger ikke mellom 1% og 99%. Dersom skalJobbe = 'redusert', så må skalJobbeProsent være mellom 1% og 99%",
+                  "invalid_value": [
+                    {
+                      "navn": "Bjeffefirmaet ÆÆÅ",
+                      "skal_jobbe": "redusert",
+                      "organisasjonsnummer": "917755736",
+                      "jobber_normalt_timer": 0.0,
+                      "skal_jobbe_prosent": 100.0,
+                      "vet_ikke_ekstrainfo": null
+                    }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                skalJobbe = "redusert",
+                skalJobbeProsent = 100.0
+            )
+        )
+    }
+
+    @Test
+    fun `Sende soknad som har skalJobbe lik 'nei', men skalJobbeProsent er ulik 0%, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "reason": "skalJobbeProsent er ulik 0%. Dersom skalJobbe = 'nei', så må skalJobbeProsent være 0%",
+                  "invalid_value": [
+                    {
+                      "navn": "Bjeffefirmaet ÆÆÅ",
+                      "skal_jobbe": "nei",
+                      "organisasjonsnummer": "917755736",
+                      "jobber_normalt_timer": 0.0,
+                      "skal_jobbe_prosent": 10.0,
+                      "vet_ikke_ekstrainfo": null
+                    }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                skalJobbe = "nei",
+                skalJobbeProsent = 10.0
+            )
+        )
+    }
+
+    @Test
+    fun `Sende soknad som har skalJobbe lik 'vet_ikke', men skalJobbeProsent er ulik 0%, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være 0%",
+                  "invalid_value": [
+                    {
+                      "navn": "Bjeffefirmaet ÆÆÅ",
+                      "skal_jobbe": "vet_ikke",
+                      "organisasjonsnummer": "917755736",
+                      "jobber_normalt_timer": 0.0,
+                      "skal_jobbe_prosent": 10.0,
+                      "vet_ikke_ekstrainfo": null
+                    }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl,
+                skalJobbe = "vet_ikke",
+                skalJobbeProsent = 10.0
+            )
+        )
+    }
+
+    @Test
     fun `Sende soknad uten ID på barnet`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
@@ -504,7 +914,8 @@ class ApplicationTest {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "12",
-                                "navn": "$forlangtNavn"
+                                "navn": "$forlangtNavn",
+                                "skal_jobbe": "ugyldig"
                             }
                         ]
                     },
@@ -560,7 +971,7 @@ class ApplicationTest {
                       "type": "entity",
                       "name": "arbeidsgivere.organisasjoner[0].skal_jobbe",
                       "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vet_ikke",
-                      "invalid_value": null
+                      "invalid_value": "ugyldig"
                     },
                     {
                       "type": "entity",
@@ -616,12 +1027,105 @@ class ApplicationTest {
                       "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                       "invalid_value": false
                     }
-                ]
-            }
+                  ]
+                }
             """.trimIndent()
         )
     }
 
+    @Test
+    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har ikke godkjent det, skal feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "bekrefterPeriodeOver8Uker",
+                      "reason": "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true",
+                      "invalid_value": null
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+                vedleggUrl1 = jpegUrl,
+                fraOgMed = "2020-01-01",
+                tilOgMed = "2020-02-27",
+                bekrefterPeriodeOver8Uker = false
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har godkjent det, skal ikke feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+                vedleggUrl1 = jpegUrl,
+                fraOgMed = "2020-01-01",
+                tilOgMed = "2020-02-27",
+                bekrefterPeriodeOver8Uker = true
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad hvor perioden er 8 uker(40 virkedager), skal ikke feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+                vedleggUrl1 = jpegUrl,
+                fraOgMed = "2020-01-01",
+                tilOgMed = "2020-02-26"
+            )
+        )
+    }
+
+    @Test
+    fun `Sende søknad hvor perioden er under 8 uker(40 virkedager), skal ikke feile`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+                vedleggUrl1 = jpegUrl,
+                fraOgMed = "2020-01-01",
+                tilOgMed = "2020-02-25"
+            )
+        )
+    }
 
     @Test
     fun `Test haandtering av vedlegg`() {
@@ -669,7 +1173,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Test opplasting av for stort vedlegg` () {
+    fun `Test opplasting av for stort vedlegg`() {
         engine.handleRequestUploadImage(
             cookie = getAuthCookie(gyldigFodselsnummerA),
             vedlegg = ByteArray(8 * 1024 * 1024 + 10),
@@ -679,13 +1183,15 @@ class ApplicationTest {
         )
     }
 
-    private fun requestAndAssert(httpMethod: HttpMethod,
-                                 path : String,
-                                 requestEntity : String? = null,
-                                 expectedResponse : String?,
-                                 expectedCode : HttpStatusCode,
-                                 leggTilCookie : Boolean = true,
-                                 cookie : Cookie = getAuthCookie(fnr)) {
+    private fun requestAndAssert(
+        httpMethod: HttpMethod,
+        path: String,
+        requestEntity: String? = null,
+        expectedResponse: String?,
+        expectedCode: HttpStatusCode,
+        leggTilCookie: Boolean = true,
+        cookie: Cookie = getAuthCookie(fnr)
+    ) {
         with(engine) {
             handleRequest(httpMethod, path) {
                 if (leggTilCookie) addHeader(HttpHeaders.Cookie, cookie.toString())

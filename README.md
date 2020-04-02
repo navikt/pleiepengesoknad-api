@@ -503,6 +503,114 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
 }
 ```
 
+```json
+{
+    "type": "/problem-details/invalid-request-parameters",
+    "title": "invalid-request-parameters",
+    "status": 400,
+    "detail": "Requesten inneholder ugyldige paramtere.",
+    "instance": "about:blank",
+    "invalid_parameters": [
+    {
+      "type": "entity",
+      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+      "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være mellom 0%",
+      "invalid_value": [
+        {
+          "navn": "Bjeffefirmaet ÆÆÅ",
+          "skal_jobbe": "vet_ikke",
+          "organisasjonsnummer": "917755736",
+          "jobber_normalt_timer": null,
+          "skal_jobbe_prosent": 10.0,
+          "vet_ikke_ekstrainfo": null
+        }
+      ]
+    }
+  ]
+}
+```
+
+```json
+{
+  "type": "/problem-details/invalid-request-parameters",
+  "title": "invalid-request-parameters",
+  "status": 400,
+  "detail": "Requesten inneholder ugyldige paramtere.",
+  "instance": "about:blank",
+  "invalid_parameters": [
+    {
+      "type": "entity",
+      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+      "reason": "skalJobbeProsent er ulik 0%. Dersom skalJobbe = 'nei', så må skalJobbeProsent være 0%",
+      "invalid_value": [
+        {
+          "navn": "Bjeffefirmaet ÆÆÅ",
+          "skal_jobbe": "nei",
+          "organisasjonsnummer": "917755736",
+          "jobber_normalt_timer": null,
+          "skal_jobbe_prosent": 10.0,
+          "vet_ikke_ekstrainfo": null
+        }
+      ]
+    }
+  ]
+}
+```
+
+```json
+{
+  "type": "/problem-details/invalid-request-parameters",
+  "title": "invalid-request-parameters",
+  "status": 400,
+  "detail": "Requesten inneholder ugyldige paramtere.",
+  "instance": "about:blank",
+  "invalid_parameters": [
+    {
+      "type": "entity",
+      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+      "reason": "skalJobbeProsent ligger ikke mellom 1% og 99%. Dersom skalJobbe = 'redusert', så må skalJobbeProsent være mellom 1% og 99%",
+      "invalid_value": [
+        {
+          "navn": "Bjeffefirmaet ÆÆÅ",
+          "skal_jobbe": "redusert",
+          "organisasjonsnummer": "917755736",
+          "jobber_normalt_timer": null,
+          "skal_jobbe_prosent": 100.0,
+          "vet_ikke_ekstrainfo": null
+        }
+      ]
+    }
+  ]
+}
+```
+
+````json
+{
+  "type": "/problem-details/invalid-request-parameters",
+  "title": "invalid-request-parameters",
+  "status": 400,
+  "detail": "Requesten inneholder ugyldige paramtere.",
+  "instance": "about:blank",
+  "invalid_parameters": [
+    {
+      "type": "entity",
+      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+      "reason": "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
+      "invalid_value": [
+        {
+          "navn": "Bjeffefirmaet ÆÆÅ",
+          "skal_jobbe": "ja",
+          "organisasjonsnummer": "917755736",
+          "jobber_normalt_timer": null,
+          "skal_jobbe_prosent": 99.0,
+          "vet_ikke_ekstrainfo": null
+        }
+      ]
+    }
+  ]
+}
+````
+
 ### HTTP 401
 
 Ikke autentisert. Ingen payload i resposnen.

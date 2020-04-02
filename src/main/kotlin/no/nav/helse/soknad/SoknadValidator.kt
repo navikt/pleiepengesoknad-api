@@ -3,10 +3,13 @@ package no.nav.helse.soknad
 import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
+private const val ANTALL_VIRKEDAGER_8_UKER = 40
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
     title = "attachments-too-large",
     status = 413,
@@ -105,10 +108,10 @@ internal fun Soknad.validate() {
         violations.addAll(this.validate())
     }
 
-    //Alle oppdrag dersom frilans
-    if (frilans != null) {
-        for (oppdrag in frilans.oppdrag) {
-            violations.addAll(oppdrag.validate())
+
+    if (selvstendigVirksomheter != null && selvstendigVirksomheter.isNotEmpty()) {
+        selvstendigVirksomheter.forEach { virksomhet ->
+            violations.addAll(virksomhet.validate())
         }
     }
 
@@ -159,6 +162,28 @@ internal fun Soknad.validate() {
             )
         )
     }
+
+    //Validerer at brukeren bekrefter dersom perioden er over 8 uker (40 virkedager)
+    if (bekrefterPeriodeOver8Uker != null) {
+        var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
+        var dagSomSkalSjekkes: LocalDate = fraOgMed;
+
+        while (!dagSomSkalSjekkes.isAfter(tilOgMed)) {
+            if (dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
+            dagSomSkalSjekkes = dagSomSkalSjekkes.plusDays(1)
+        }
+
+        if (antallDagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker) {
+            violations.add(
+                Violation(
+                    parameterName = "bekrefterPeriodeOver8Uker",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true"
+                )
+            )
+        }
+    }
+
     if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.har_bodd_i_utlandet_siste_12_mnd")
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skal_bo_i_utlandet_neste_12_mnd")
@@ -193,50 +218,6 @@ internal fun Soknad.validate() {
 
             )
         )
-    }
-    if (harHattInntektSomFrilanser) {
-        if (frilans == null) {
-            violations.add(
-                Violation(
-                    parameterName = "har_hatt_inntekt_som_frilanser",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Dersom søkeren har hatt inntekter som frilanser, skal frilans objektet ikke være null"
-                )
-            )
-        }
-        if (frilans != null) {
-            if (frilans.harHattOppdragForFamilie) {
-                if (frilans.oppdrag.size == 0) {
-                    violations.add(
-                        Violation(
-                            parameterName = "oppdrag",
-                            parameterType = ParameterType.ENTITY,
-                            reason = "Dersom søkeren er frilans og harHattOppdragForFamilie, skal oppdrag arrayet ha et eller flere oppdrag"
-                        )
-                    )
-                }
-            }
-            if (!frilans.harHattOppdragForFamilie && frilans.oppdrag.size > 0) {
-                violations.add(
-                    Violation(
-                        parameterName = "oppdrag",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Dersom søkeren er frilans og IKKE harHattOppdragForFamilie, skal oppdrag arrayet være empty"
-                    )
-                )
-            }
-        }
-    }
-    if (!harHattInntektSomFrilanser) {
-        if (frilans != null) {
-            violations.add(
-                Violation(
-                    parameterName = "har_hatt_inntekt_som_frilanser",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Dersom søkeren IKKE har hatt inntekter som frilanser, skal frilans objektet være null"
-                )
-            )
-        }
     }
 
     beredskap?.apply {
@@ -533,9 +514,7 @@ internal fun List<OrganisasjonDetaljer>.validate(
             )
         }
 
-        // TODO: Fjern etter at dette er merget inn i master og er i prod.
-
-        organisasjon.skalJobbeProsent?.apply {
+        organisasjon.skalJobbeProsent.apply {
             if (this !in 0.0..100.0) {
                 violations.add(
                     Violation(
@@ -550,12 +529,64 @@ internal fun List<OrganisasjonDetaljer>.validate(
 
         when (organisasjon.skalJobbe) {
             "ja" -> {
+                organisasjon.skalJobbeProsent.let {
+                    if (it != 100.0) {
+                        violations.add(
+                            Violation(
+                                parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent && arbeidsgivere.organisasjoner[$index].skal_jobbe",
+                                parameterType = ParameterType.ENTITY,
+                                reason = "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
+                                invalidValue = this
+                            )
+                        )
+                    } else {
+                    }
+                }
             }
             "nei" -> {
+                organisasjon.skalJobbeProsent.let {
+                    if (it != 0.0) {
+                        violations.add(
+                            Violation(
+                                parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent && arbeidsgivere.organisasjoner[$index].skal_jobbe",
+                                parameterType = ParameterType.ENTITY,
+                                reason = "skalJobbeProsent er ulik 0%. Dersom skalJobbe = 'nei', så må skalJobbeProsent være 0%",
+                                invalidValue = this
+                            )
+                        )
+                    } else {
+                    }
+                }
             }
             "redusert" -> {
+                organisasjon.skalJobbeProsent.let {
+                    if (it !in 1.0..99.9) {
+                        violations.add(
+                            Violation(
+                                parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent && arbeidsgivere.organisasjoner[$index].skal_jobbe",
+                                parameterType = ParameterType.ENTITY,
+                                reason = "skalJobbeProsent ligger ikke mellom 1% og 99%. Dersom skalJobbe = 'redusert', så må skalJobbeProsent være mellom 1% og 99%",
+                                invalidValue = this
+                            )
+                        )
+                    } else {
+                    }
+                }
             }
             "vet_ikke" -> {
+                organisasjon.skalJobbeProsent.let {
+                    if (it != 0.0) {
+                        violations.add(
+                            Violation(
+                                parameterName = "arbeidsgivere.organisasjoner[$index].skal_jobbe_prosent && arbeidsgivere.organisasjoner[$index].skal_jobbe",
+                                parameterType = ParameterType.ENTITY,
+                                reason = "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være 0%",
+                                invalidValue = this
+                            )
+                        )
+                    } else {
+                    }
+                }
             }
             else -> violations.add(
                 Violation(

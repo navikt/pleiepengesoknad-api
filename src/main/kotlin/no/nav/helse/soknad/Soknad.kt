@@ -18,6 +18,8 @@ data class Soknad(
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
+    @JsonProperty("bekrefter_periode_over_8_uker")
+    val bekrefterPeriodeOver8Uker: Boolean? = null,// TODO: Fjern optional når prodsatt.
     @JsonProperty("utenlandsopphold_i_perioden")
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     @JsonProperty("ferieuttak_i_perioden")
@@ -29,8 +31,9 @@ data class Soknad(
     val tilsynsordning: Tilsynsordning?,
     val nattevaak: Nattevaak? = null,
     val beredskap: Beredskap? = null,
-    val harHattInntektSomFrilanser: Boolean = false,
     val frilans: Frilans? = null,
+    @JsonProperty("selvstendig_virksomheter")
+    val selvstendigVirksomheter: List<Virksomhet>? = null,
     @JsonProperty("skal_bekrefte_omsorg") val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     @JsonProperty("skal_passe_pa_barnet_i_hele_perioden") val skalPassePaBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     @JsonProperty("beskrivelse_omsorgsrollen") val beskrivelseOmsorgsRollen: String? = null // TODO: Fjern optional når prodsatt.
@@ -71,14 +74,15 @@ data class BarnDetaljer(
 
 data class OrganisasjonDetaljer(
     val navn: String? = null,
-    val skalJobbe: String? = null,
+    val skalJobbe: String,
     val organisasjonsnummer: String,
-    val jobberNormaltTimer: Double? = null,
-    val skalJobbeProsent: Double? = null,
+    val jobberNormaltTimer: Double,
+    val skalJobbeProsent: Double,
     val vetIkkeEkstrainfo: String? = null
 )
 
 enum class TilsynsordningSvar { ja, nei, vet_ikke }
+
 enum class TilsynsordningVetIkkeSvar { er_sporadisk, er_ikke_laget_en_plan, annet }
 
 data class TilsynsordningJa(
@@ -173,12 +177,9 @@ data class Ferieuttak(
 }
 
 data class Frilans(
-    val harHattOppdragForFamilie: Boolean,
-    val harHattInntektSomFosterforelder: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val startdato: LocalDate,
-    val jobberFortsattSomFrilans: Boolean,
-    val oppdrag: List<Oppdrag>
+    val jobberFortsattSomFrilans: Boolean
 )
 
 enum class Arsak {

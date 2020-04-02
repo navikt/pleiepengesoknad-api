@@ -58,6 +58,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             vedlegg = vedlegg,
             arbeidsgivere = soknad.arbeidsgivere,
             medlemskap = soknad.medlemskap,
+            bekrefterPeriodeOver8Uker = soknad.bekrefterPeriodeOver8Uker,
             ferieuttakIPerioden = soknad.ferieuttakIPerioden,
             utenlandsoppholdIPerioden = soknad.utenlandsoppholdIPerioden,
             relasjonTilBarnet = soknad.relasjon(),
@@ -68,8 +69,8 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             tilsynsordning = soknad.tilsynsordning,
             nattevaak = soknad.nattevaak,
             beredskap = soknad.beredskap,
-            harHattInntektSomFrilanser = soknad.harHattInntektSomFrilanser,
             frilans = soknad.frilans,
+            selvstendigVirksomheter = soknad.selvstendigVirksomheter,
             skalBekrefteOmsorg = soknad.skalBekrefteOmsorg,
             skalPassePaBarnetIHelePerioden = soknad.skalPassePaBarnetIHelePerioden,
             beskrivelseOmsorgsRollen = soknad.beskrivelseOmsorgsRollen
