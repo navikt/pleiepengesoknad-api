@@ -6,7 +6,7 @@ import java.time.ZonedDateTime
 
 data class KomplettEttersending (
     val soker: Soker,
-    val sprak: String,
+    val språk: String,
     val mottatt: ZonedDateTime,
     val vedlegg: List<Vedlegg>,
     val harForstattRettigheterOgPlikter: Boolean,
