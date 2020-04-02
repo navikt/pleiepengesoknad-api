@@ -9,7 +9,7 @@ internal fun Ettersending.valider() = mutableSetOf<Violation>().let {
             Violation(
                 parameterName = "søknadstype",
                 parameterType = ParameterType.ENTITY,
-                reason = "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
+                reason = "Feil søknadstype. Kun 'pleiepenger' er tillatt.",
                 invalidValue = soknadstype
 
             )

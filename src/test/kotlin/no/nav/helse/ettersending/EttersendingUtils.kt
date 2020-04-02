@@ -18,7 +18,7 @@ class EttersendingUtils {
 
         internal val default = Ettersending(
             sprak = "no",
-            soknadstype = "omsorgspenger",
+            soknadstype = "pleiepenger",
             beskrivelse = "Beskrivelse av ettersending",
             vedlegg = listOf(
                 URL("http://localhost:8080/vedlegg/1"),

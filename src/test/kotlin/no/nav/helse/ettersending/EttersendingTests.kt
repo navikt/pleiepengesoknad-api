@@ -167,7 +167,7 @@ class EttersendingTests {
     }
 
     @Test
-    fun `Ettersending feiler, dersom søknadstype er annet enn omsorgspenger`() {
+    fun `Ettersending feiler, dersom søknadstype er annet enn pleiepenger`() {
         val cookie =
             getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
@@ -187,8 +187,8 @@ class EttersendingTests {
                 {
                   "type": "entity",
                   "name": "søknadstype",
-                  "reason": "Feil søknadstype. Kun 'omsorgspenger' er tillatt.",
-                  "invalid_value": "pleiepenger"
+                  "reason": "Feil søknadstype. Kun 'pleiepenger' er tillatt.",
+                  "invalid_value": "omsorgspenger"
                 }
               ]
             }
@@ -197,7 +197,7 @@ class EttersendingTests {
             cookie = cookie,
             requestEntity = EttersendingUtils.default.copy(
                 vedlegg = listOf(URL(jpegUrl), URL(pdfUrl)),
-                soknadstype = "pleiepenger"
+                soknadstype = "omsorgspenger"
             ).somJson()
         )
     }
