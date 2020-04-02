@@ -17,7 +17,7 @@ class EttersendingUtils {
         private val gyldigFodselsnummerA = "02119970078"
 
         internal val default = Ettersending(
-            sprak = "no",
+            språk = "no",
             soknadstype = "omsorgspenger",
             beskrivelse = "Beskrivelse av ettersending",
             vedlegg = listOf(
@@ -36,7 +36,7 @@ class EttersendingUtils {
 
         internal val defaultKomplett = KomplettEttersending(
             mottatt = ZonedDateTime.now(),
-            sprak = "no",
+            språk = "no",
             soknadstype = "omsorgspenger",
             beskrivelse = "Beskrivelse av ettersending",
             soker = Soker(
