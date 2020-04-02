@@ -42,7 +42,7 @@ spec:
     - name: REDIS_HOST
       value: pleiepengesoknad-api-redis.default.svc.nais.local
     - name: CORS_ADDRESSES
-      value: https://pleiepengesoknad-q.nav.no
+      value: https://pleiepengesoknad-q.nav.no,https://www-q0.nav.no
     - name: ISSUER
       value: https://login.microsoftonline.com/d38f25aa-eab8-4c50-9f28-ebf92c1256f2/v2.0/
     - name: COOKIE_NAME
