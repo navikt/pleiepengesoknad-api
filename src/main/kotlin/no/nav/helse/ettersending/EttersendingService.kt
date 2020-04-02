@@ -49,7 +49,7 @@ class EttersendingService(
 
         val komplettEttersending = KomplettEttersending(
             soker = søker,
-            språk = ettersending.språk,
+            sprak = ettersending.sprak,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             vedlegg = vedlegg,
             harForstattRettigheterOgPlikter = ettersending.harForstattRettigheterOgPlikter,
