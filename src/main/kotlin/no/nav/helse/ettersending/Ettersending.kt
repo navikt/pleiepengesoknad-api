@@ -7,6 +7,7 @@ data class Ettersending(
     @JsonAlias("språk", "sprak") //TODO fjerne når frontend er oppdatert
     val sprak: String,
     val vedlegg: List<URL>,
+    @JsonAlias("harForståttRettigheterOgPlikter", "harForstattRettigheterOgPlikter") //TODO Fjernes når frontend er oppdatert
     val harForstattRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
     val beskrivelse: String,
