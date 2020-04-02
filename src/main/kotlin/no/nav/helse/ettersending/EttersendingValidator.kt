@@ -4,7 +4,7 @@ import no.nav.helse.dusseldorf.ktor.core.*
 
 internal fun Ettersending.valider() = mutableSetOf<Violation>().let {
 
-    if (soknadstype != "omsorgspenger") {
+    if (soknadstype != "pleiepenger") {
         it.add(
             Violation(
                 parameterName = "søknadstype",
