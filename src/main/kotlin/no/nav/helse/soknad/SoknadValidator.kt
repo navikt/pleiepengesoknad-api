@@ -8,8 +8,13 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
+private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 private const val ANTALL_VIRKEDAGER_8_UKER = 40
-
+private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
+    title = "attachments-too-large",
+    status = 413,
+    detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
+)
 private const val MIN_GRAD = 20
 private const val MAX_GRAD = 100
 private const val MAX_FRITEKST_TEGN = 1000
@@ -97,7 +102,7 @@ class FraOgMedTilOgMedValidator {
 }
 
 internal fun Soknad.validate() {
-    val violations = barn.validate(relasjonTilBarnet)
+    val violations = barn.validate()
     violations.addAll(arbeidsgivere.organisasjoner.validate())
     tilsynsordning?.apply {
         violations.addAll(this.validate())
@@ -119,7 +124,7 @@ internal fun Soknad.validate() {
         )
     )
 
-    // Vedlegg
+    /*// Vedlegg
     if (vedlegg.isEmpty()) {
         violations.add(
             Violation(
@@ -129,7 +134,7 @@ internal fun Soknad.validate() {
                 invalidValue = vedlegg
             )
         )
-    }
+    } TODO: Sett på validering igjen når det er påkrevd igjen*/
 
     vedlegg.mapIndexed { index, url ->
         // Kan oppstå url = null etter Jackson deserialisering
@@ -443,7 +448,7 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
     return violations
 }
 
-internal fun BarnDetaljer.validate(relasjonTilBarnet: String?): MutableSet<Violation> {
+internal fun BarnDetaljer.validate(): MutableSet<Violation> {
 
     val violations = mutableSetOf<Violation>()
 
