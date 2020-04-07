@@ -14,7 +14,7 @@ data class Soknad(
     val barn: BarnDetaljer,
     val relasjonTilBarnet: String? = null,
     val arbeidsgivere: ArbeidsgiverDetaljer,
-    val vedlegg: List<URL> = listOf(),
+    val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
