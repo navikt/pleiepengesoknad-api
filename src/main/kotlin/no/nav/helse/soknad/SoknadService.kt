@@ -5,6 +5,7 @@ import no.nav.helse.general.auth.IdToken
 import no.nav.helse.soker.Soker
 import no.nav.helse.soker.SokerService
 import no.nav.helse.soker.validate
+import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -83,7 +84,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
 
         logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
 
-        vedleggService.slettVedleg(
+        vedleggService.slettVedlegg(
             vedleggUrls = soknad.vedlegg,
             callId = callId,
             idToken = idToken

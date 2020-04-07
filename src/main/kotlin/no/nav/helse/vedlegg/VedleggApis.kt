@@ -74,7 +74,7 @@ fun Route.vedleggApis(
         val vedleggId = VedleggId(eksisterendeVedlegg.vedleggId)
         logger.info("Sletter vedlegg")
         logger.info("$vedleggId")
-        vedleggService.slettVedleg(
+        vedleggService.slettVedlegg(
             vedleggId = vedleggId,
             idToken = idTokenProvider.getIdToken(call),
             callId = call.getCallId()

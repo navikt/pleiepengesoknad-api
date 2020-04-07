@@ -606,29 +606,4 @@ private fun BarnDetaljer.gyldigAntallIder(): Boolean {
     return antallIderSatt == 0 || antallIderSatt == 1
 }
 
-internal fun List<Vedlegg>.validerVedlegg(vedleggUrler: List<URL>) {
-    if (size != vedleggUrler.size) {
-        throw Throwblem(
-            ValidationProblemDetails(
-                violations = setOf(
-                    Violation(
-                        parameterName = "vedlegg",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
-                        invalidValue = vedleggUrler
-                    )
-                )
-            )
-        )
-    }
-    validerTotalStorresle()
-}
-
-private fun List<Vedlegg>.validerTotalStorresle() {
-    val totalSize = sumBy { it.content.size }
-    if (totalSize > MAX_VEDLEGG_SIZE) {
-        throw Throwblem(vedleggTooLargeProblemDetails)
-    }
-}
-
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
