@@ -14,7 +14,7 @@ data class KomplettSoknad(
     val soker: Soker,
     val barn: BarnDetaljer,
     val arbeidsgivere: ArbeidsgiverDetaljer,
-    val vedlegg: List<Vedlegg>,
+    val vedlegg: List<Vedlegg> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     val medlemskap: Medlemskap,
     @JsonProperty("bekrefter_periode_over_8_uker")
     val bekrefterPeriodeOver8Uker: Boolean? = null,

@@ -18,7 +18,7 @@ class BarnValidationTest {
             aktoerId = "10000001",
             navn = "Navn"
         )
-        barn.validate(null).assertFeilPaa(listOf("barn"))
+        barn.validate().assertFeilPaa(listOf("barn"))
     }
 
     @Test
@@ -29,7 +29,7 @@ class BarnValidationTest {
             aktoerId = "10000001",
             navn = null
         )
-        barn.validate(null).assertFeilPaa()
+        barn.validate().assertFeilPaa()
     }
 
 
@@ -41,7 +41,7 @@ class BarnValidationTest {
             aktoerId = null,
             navn = null
         )
-        barn.validate(null).assertFeilPaa()
+        barn.validate().assertFeilPaa()
     }
 
 }
