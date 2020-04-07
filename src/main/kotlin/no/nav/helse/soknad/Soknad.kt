@@ -14,7 +14,7 @@ data class Soknad(
     val barn: BarnDetaljer,
     val relasjonTilBarnet: String? = null,
     val arbeidsgivere: ArbeidsgiverDetaljer,
-    val vedlegg: List<URL>,
+    val vedlegg: List<URL> = listOf(),
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,

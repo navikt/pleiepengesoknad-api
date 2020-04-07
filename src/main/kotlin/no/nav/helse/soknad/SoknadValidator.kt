@@ -102,7 +102,7 @@ class FraOgMedTilOgMedValidator {
 }
 
 internal fun Soknad.validate() {
-    val violations = barn.validate(relasjonTilBarnet)
+    val violations = barn.validate()
     violations.addAll(arbeidsgivere.organisasjoner.validate())
     tilsynsordning?.apply {
         violations.addAll(this.validate())
@@ -124,7 +124,7 @@ internal fun Soknad.validate() {
         )
     )
 
-    // Vedlegg
+    /*// Vedlegg
     if (vedlegg.isEmpty()) {
         violations.add(
             Violation(
@@ -134,7 +134,7 @@ internal fun Soknad.validate() {
                 invalidValue = vedlegg
             )
         )
-    }
+    } TODO: Sett på validering igjen når det er påkrevd igjen*/
 
     vedlegg.mapIndexed { index, url ->
         // Kan oppstå url = null etter Jackson deserialisering
@@ -448,7 +448,7 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
     return violations
 }
 
-internal fun BarnDetaljer.validate(relasjonTilBarnet: String?): MutableSet<Violation> {
+internal fun BarnDetaljer.validate(): MutableSet<Violation> {
 
     val violations = mutableSetOf<Violation>()
 
