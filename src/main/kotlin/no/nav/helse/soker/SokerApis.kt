@@ -29,15 +29,4 @@ fun Route.sokerApis(
             callId = call.getCallId()
         ))
     }
-
-    @Location("/ettersending/soker")
-    class ettersendingSøker
-
-    get { _: ettersendingSøker ->
-        call.respond(sokerService.getSoker(
-            idToken = idTokenProvider.getIdToken(call),
-            callId = call.getCallId()
-        ))
-    }
-
 }
