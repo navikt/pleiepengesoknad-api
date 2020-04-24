@@ -20,7 +20,7 @@ class VirksomhetTest {
             navnPåVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
         virksomhet.validate().assertFeilPaa(listOf("virksomhet.tilogmed og virksomhet.fraogmed"))
     }
@@ -36,7 +36,7 @@ class VirksomhetTest {
             navnPåVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
         virksomhet.validate().assertIngenFeil()
     }
@@ -52,7 +52,7 @@ class VirksomhetTest {
             navnPåVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
         virksomhet.validate().assertIngenFeil()
     }
@@ -67,7 +67,7 @@ class VirksomhetTest {
             navnPåVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
         virksomhet.validate().assertIngenFeil()
     }
@@ -82,7 +82,7 @@ class VirksomhetTest {
             navnPåVirksomheten = "TullOgTøys",
             organisasjonsnummer = null,
             registrertINorge = true,
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
         virksomhet.validate().assertFeilPaa(listOf("organisasjonsnummer"))
     }
@@ -97,7 +97,7 @@ class VirksomhetTest {
             navnPåVirksomheten = "TullOgTøys",
             registrertINorge = false,
             registrertILand = "Sverige",
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
         virksomhet.validate().assertIngenFeil()
     }
@@ -111,7 +111,7 @@ class VirksomhetTest {
             næringsinntekt = 1111,
             navnPåVirksomheten = "TullOgTøys",
             registrertINorge = false,
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
         virksomhet.validate().assertFeilPaa(listOf("registrertILand"))
     }
@@ -126,7 +126,7 @@ class VirksomhetTest {
             navnPåVirksomheten = "TullOgTøys",
             registrertINorge = true,
             organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
             revisor = Revisor(
                 navn = "Kjell",
                 telefon = "9898989",

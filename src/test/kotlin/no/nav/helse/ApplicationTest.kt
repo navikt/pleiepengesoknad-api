@@ -458,7 +458,7 @@ class ApplicationTest {
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = true,
                         organisasjonsnummer = "101010",
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
                         regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
                             telefon = "84554"
@@ -508,7 +508,7 @@ class ApplicationTest {
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
                         organisasjonsnummer = "101010",
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
                         regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
                             telefon = "84554"
@@ -640,7 +640,7 @@ class ApplicationTest {
                         næringsinntekt = 1212,
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
                     ), Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
@@ -650,7 +650,7 @@ class ApplicationTest {
                         navnPåVirksomheten = "BariBar",
                         registrertINorge = true,
                         organisasjonsnummer = "10110",
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
                     )
                 )
             )

@@ -21,13 +21,13 @@ data class Virksomhet(
     val registrertINorge: Boolean,
     @JsonProperty("registrert_i_land")
     val registrertILand: String? = null,
-    val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeArene? = null,
+    val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeÅrene? = null,
     val varigEndring: VarigEndring? = null,
     val regnskapsfører: Regnskapsfører? = null,
     val revisor: Revisor? = null
 )
 
-data class YrkesaktivSisteTreFerdigliknedeArene(
+data class YrkesaktivSisteTreFerdigliknedeÅrene(
     val oppstartsdato: LocalDate
 )
 
