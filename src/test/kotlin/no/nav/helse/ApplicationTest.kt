@@ -13,10 +13,7 @@ import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.redis.RedisMockUtil
-import no.nav.helse.soknad.Naringstype
-import no.nav.helse.soknad.Regnskapsforer
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeArene
+import no.nav.helse.soknad.*
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -453,16 +450,16 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.JORDBRUK),
+                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
-                        naringsinntekt = 123123,
-                        navnPaVirksomheten = "TullOgTøys",
+                        næringsinntekt = 123123,
+                        navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = true,
                         organisasjonsnummer = "101010",
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        regnskapsforer = Regnskapsforer(
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
                             telefon = "84554"
                         )
@@ -503,16 +500,16 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.JORDBRUK),
+                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
-                        naringsinntekt = 1233123,
-                        navnPaVirksomheten = "TullOgTøys",
+                        næringsinntekt = 1233123,
+                        navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
                         organisasjonsnummer = "101010",
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        regnskapsforer = Regnskapsforer(
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
+                        regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
                             telefon = "84554"
                         )
@@ -572,29 +569,28 @@ class ApplicationTest {
                   },
                   "selvstendig_virksomheter": [
                     {
-                      "naringstype": [
+                      "næringstyper": [
                         "JORDBRUK_SKOGBRUK",
                         "DAGMAMMA",
                         "ANNEN"
                       ],
-                      "navn_pa_virksomheten": "Tull og tøys",
+                      "navn_på_virksomheten": "Tull og tøys",
                       "registrert_i_norge": true,
                       "organisasjonsnummer": "85577454",
                       "fra_og_med": "2020-02-01",
                       "til_og_med": "2020-02-13",
-                      "naringsinntekt": 9857755,
+                      "næringsinntekt": 9857755,
                             "varig_endring": {
                               "dato": "2020-01-03",
                               "forklaring": "forklaring blablablabla",
                               "inntekt_etter_endring": "23423"
                             },
-                      "yrkesaktiv_siste_tre_ferdigliknede_arene": {
+                      "yrkesaktiv_siste_tre_ferdigliknede_årene": {
                         "oppstartsdato": "2020-02-01"
                       },
-                      "regnskapsforer": {
+                      "regnskapsfører": {
                         "navn": "Kjell Bjarne",
-                        "telefon": "88788",
-                        "er_nar_venn_familie": true
+                        "telefon": "88788"
                       }
                     }
                   ],
@@ -637,24 +633,24 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.JORDBRUK),
+                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
-                        naringsinntekt = 1212,
-                        navnPaVirksomheten = "TullOgTøys",
+                        næringsinntekt = 1212,
+                        navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
                     ), Virksomhet(
-                        naringstype = listOf(Naringstype.JORDBRUK),
+                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
-                        naringsinntekt = 1212,
-                        navnPaVirksomheten = "BariBar",
+                        næringsinntekt = 1212,
+                        navnPåVirksomheten = "BariBar",
                         registrertINorge = true,
                         organisasjonsnummer = "10110",
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
                     )
                 )
             )

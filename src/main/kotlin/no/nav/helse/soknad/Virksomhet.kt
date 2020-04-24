@@ -7,22 +7,23 @@ import no.nav.helse.dusseldorf.ktor.core.Violation
 import java.time.LocalDate
 
 data class Virksomhet(
-    val naringstype: List<Naringstype>,
+    val næringstyper: List<Næringstyper> = listOf(),
     @JsonProperty("fisker_er_pa_blad_b")
     val fiskerErPåBladB: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
     val tilOgMed: LocalDate? = null,
-    val naringsinntekt: Int? = null,
-    val navnPaVirksomheten: String,
+    val næringsinntekt: Int? = null,
+    val navnPåVirksomheten: String,
     val organisasjonsnummer: String? = null,
     @JsonProperty("registrert_i_norge")
     val registrertINorge: Boolean,
     @JsonProperty("registrert_i_land")
     val registrertILand: String? = null,
-    val yrkesaktivSisteTreFerdigliknedeArene: YrkesaktivSisteTreFerdigliknedeArene? = null,
+    val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeArene? = null,
     val varigEndring: VarigEndring? = null,
-    val regnskapsforer: Regnskapsforer? = null,
+    val regnskapsfører: Regnskapsfører? = null,
     val revisor: Revisor? = null
 )
 
@@ -30,14 +31,15 @@ data class YrkesaktivSisteTreFerdigliknedeArene(
     val oppstartsdato: LocalDate
 )
 
-enum class Naringstype(val detaljert: String) {
-    @JsonProperty("FISKE") FISKER("FISKE"),
-    @JsonProperty("JORDBRUK_SKOGBRUK") JORDBRUK("JORDBRUK_SKOGBRUK"),
-    @JsonProperty("ANNEN") ANNET("ANNEN"),
-    DAGMAMMA("DAGMAMMA")
+enum class Næringstyper {
+    FISKE,
+    JORDBRUK_SKOGBRUK,
+    DAGMAMMA,
+    ANNEN
 }
 
 data class VarigEndring(
+    @JsonFormat(pattern = "yyyy-MM-dd")
     val dato: LocalDate,
     val inntektEtterEndring: Int,
     val forklaring: String
@@ -49,7 +51,7 @@ data class Revisor(
     val kanInnhenteOpplysninger: Boolean
 )
 
-data class Regnskapsforer(
+data class Regnskapsfører(
     val navn: String,
     val telefon: String
 )
