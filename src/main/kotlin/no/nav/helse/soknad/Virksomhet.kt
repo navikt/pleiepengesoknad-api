@@ -19,7 +19,7 @@ data class Virksomhet(
     val organisasjonsnummer: String? = null,
     @JsonProperty("registrert_i_norge")
     val registrertINorge: Boolean,
-    @JsonProperty("registrert_i_land")
+    @JsonProperty("registrert_i_utlandet")
     val registrertIUtlandet: Land? = null,
     val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeÅrene? = null,
     val varigEndring: VarigEndring? = null,
