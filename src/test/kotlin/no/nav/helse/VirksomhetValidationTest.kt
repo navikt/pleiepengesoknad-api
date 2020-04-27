@@ -22,7 +22,7 @@ class VirksomhetTest {
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
-        virksomhet.validate().assertFeilPaa(listOf("virksomhet.tilogmed og virksomhet.fraogmed"))
+        virksomhet.validate(0).assertFeilPaa(listOf("virksomhet.tilogmed og virksomhet.fraogmed"))
     }
 
     @Test
@@ -38,7 +38,7 @@ class VirksomhetTest {
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
-        virksomhet.validate().assertIngenFeil()
+        virksomhet.validate(0).assertIngenFeil()
     }
 
     @Test
@@ -54,7 +54,7 @@ class VirksomhetTest {
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
-        virksomhet.validate().assertIngenFeil()
+        virksomhet.validate(0).assertIngenFeil()
     }
 
     @Test
@@ -69,7 +69,7 @@ class VirksomhetTest {
             organisasjonsnummer = "101010",
             yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
-        virksomhet.validate().assertIngenFeil()
+        virksomhet.validate(0).assertIngenFeil()
     }
 
     @Test
@@ -84,11 +84,11 @@ class VirksomhetTest {
             registrertINorge = true,
             yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
-        virksomhet.validate().assertFeilPaa(listOf("organisasjonsnummer"))
+        virksomhet.validate(0).assertFeilPaa(listOf("selvstendigVirksomheter[0].organisasjonsnummer"))
     }
 
     @Test
-    fun `Hvis virksomheten ikke er registrert i Norge så må registrertILand være satt til noe, validate skal ikke reagere`(){
+    fun `Hvis virksomheten ikke er registrert i Norge så må registrertIUtlandet være satt til noe, validate skal ikke reagere`(){
         val virksomhet = Virksomhet(
             næringstyper = listOf(Næringstyper.ANNEN),
             fiskerErPåBladB = false,
@@ -96,14 +96,17 @@ class VirksomhetTest {
             næringsinntekt = 1111,
             navnPåVirksomheten = "TullOgTøys",
             registrertINorge = false,
-            registrertILand = "Sverige",
+            registrertIUtlandet = Land(
+                landkode = "DEU",
+                landnavn = "Tyskland"
+            ),
             yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
-        virksomhet.validate().assertIngenFeil()
+        virksomhet.validate(0).assertIngenFeil()
     }
 
     @Test
-    fun `Hvis virksomheten ikke er registrert i Norge så må den feile hvis registrertILand ikke er satt til noe, validate skal returnere en violation`(){
+    fun `Hvis virksomheten ikke er registrert i Norge så må den feile hvis registrertIUtlandet ikke er satt til noe, validate skal returnere en violation`(){
         val virksomhet = Virksomhet(
             næringstyper = listOf(Næringstyper.ANNEN),
             fiskerErPåBladB = false,
@@ -113,7 +116,7 @@ class VirksomhetTest {
             registrertINorge = false,
             yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
         )
-        virksomhet.validate().assertFeilPaa(listOf("registrertILand"))
+        virksomhet.validate(0).assertFeilPaa(listOf("selvstendigVirksomheter[0].registrertIUtlandet"))
     }
 
     @Test
@@ -133,7 +136,43 @@ class VirksomhetTest {
                 kanInnhenteOpplysninger = false
             )
         )
-        virksomhet.validate().assertIngenFeil()
+        virksomhet.validate(0).assertIngenFeil()
+    }
+
+    @Test
+    fun `Hvis registrert i utlandet så må landkode være riktig ISO 3166 alpha-3 landkode, validering skal gi feil`(){
+        val virksomhet = Virksomhet(
+            næringstyper = listOf(Næringstyper.ANNEN),
+            fiskerErPåBladB = false,
+            fraOgMed = LocalDate.now(),
+            næringsinntekt = 1111,
+            navnPåVirksomheten = "TullOgTøys",
+            registrertINorge = false,
+            registrertIUtlandet = Land(
+                landnavn = "Tyskland",
+                landkode = "NO"
+            ),
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
+        )
+        virksomhet.validate(0).assertFeilPaa(listOf("selvstendigVirksomheter[0].registrertIUtlandet.landkode"))
+    }
+
+    @Test
+    fun `Hvis registrert i utlandet så må landkode være riktig ISO 3166 alpha-3 landkode`(){
+        val virksomhet = Virksomhet(
+            næringstyper = listOf(Næringstyper.ANNEN),
+            fiskerErPåBladB = false,
+            fraOgMed = LocalDate.now(),
+            næringsinntekt = 1111,
+            navnPåVirksomheten = "TullOgTøys",
+            registrertINorge = false,
+            registrertIUtlandet = Land(
+                landnavn = "Tyskland",
+                landkode = "DEU"
+            ),
+            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
+        )
+        virksomhet.validate(0).assertIngenFeil()
     }
 
     private fun MutableSet<Violation>.assertIngenFeil() = assertTrue(isEmpty())

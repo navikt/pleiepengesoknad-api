@@ -478,21 +478,21 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = "/soknad",
             expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
                     {
-                      "type": "entity",
-                      "name": "registrertILand",
-                      "reason": "Hvis registrertINorge er false så må registrertILand være satt til noe",
-                      "invalid_value": null
+                      "type": "/problem-details/invalid-request-parameters",
+                      "title": "invalid-request-parameters",
+                      "status": 400,
+                      "detail": "Requesten inneholder ugyldige paramtere.",
+                      "instance": "about:blank",
+                      "invalid_parameters": [
+                        {
+                          "type": "entity",
+                          "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                          "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                          "invalid_value": null
+                        }
+                      ]
                     }
-                  ]
-                }
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
@@ -620,8 +620,8 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "registrertILand",
-                      "reason": "Hvis registrertINorge er false så må registrertILand være satt til noe",
+                      "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                       "invalid_value": null
                     }
                   ]

@@ -20,7 +20,7 @@ data class Virksomhet(
     @JsonProperty("registrert_i_norge")
     val registrertINorge: Boolean,
     @JsonProperty("registrert_i_land")
-    val registrertILand: String? = null,
+    val registrertIUtlandet: Land? = null,
     val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeÅrene? = null,
     val varigEndring: VarigEndring? = null,
     val regnskapsfører: Regnskapsfører? = null,
@@ -57,8 +57,10 @@ data class Regnskapsfører(
 )
 
 
-internal fun Virksomhet.validate(): MutableSet<Violation>{
+internal fun Virksomhet.validate(index: Int): MutableSet<Violation>{
     val violations = mutableSetOf<Violation>()
+    val felt = "selvstendigVirksomheter[$index]"
+
 
     if(!harGyldigPeriode()){
         violations.add(
@@ -71,26 +73,35 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
         )
     }
 
-    if(!erRegistrertINorgeGyldigSatt()){
-        violations.add(
-            Violation(
-                parameterName = "organisasjonsnummer",
-                parameterType = ParameterType.ENTITY,
-                reason = "Hvis registrertINorge er true så må også organisasjonsnummer være satt",
-                invalidValue = organisasjonsnummer
-            )
-        )
-    }
-
-    if(!erRegistrertILandGyldigSatt()){
-        violations.add(
-            Violation(
-                parameterName = "registrertILand",
-                parameterType = ParameterType.ENTITY,
-                reason = "Hvis registrertINorge er false så må registrertILand være satt til noe",
-                invalidValue = registrertILand
-            )
-        )
+    when {
+        erVirksomhetIUtlandet() -> {
+            when {
+                erRegistrertIUtlLandetGyldigSatt() -> {
+                    violations.addAll(registrertIUtlandet!!.valider("${felt}.registrertIUtlandet"))
+                }
+                else -> {
+                    violations.add(
+                        Violation(
+                            parameterName = "${felt}.registrertIUtlandet",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Hvis registrertINorge er false må registrertIUtlandet være satt"
+                        )
+                    )
+                }
+            }
+        }
+        erVirksomhetINorge() -> {
+            if (!erRegistrertINorgeGyldigSatt()) {
+                violations.add(
+                    Violation(
+                        parameterName = "${felt}.organisasjonsnummer",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Hvis registrertINorge er true så må også organisasjonsnummer være satt",
+                        invalidValue = organisasjonsnummer
+                    )
+                )
+            }
+        }
     }
 
     return violations
@@ -102,12 +113,12 @@ internal fun Virksomhet.harGyldigPeriode(): Boolean {
     return fraOgMed <= tilOgMed
 }
 
-internal fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean{
-    if(registrertINorge) return !organisasjonsnummer.isNullOrBlank()
-    return true
+private fun Virksomhet.erRegistrertINorge() : Boolean = registrertINorge
+
+private fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean {
+    return !organisasjonsnummer.isNullOrBlank()
 }
 
-internal fun Virksomhet.erRegistrertILandGyldigSatt(): Boolean{
-    if(!registrertINorge) return registrertILand != null && !registrertILand.isNullOrBlank()
-    return true
-}
+private fun Virksomhet.erRegistrertIUtlLandetGyldigSatt(): Boolean = registrertIUtlandet !== null
+private fun Virksomhet.erVirksomhetIUtlandet(): Boolean = !registrertINorge
+private fun Virksomhet.erVirksomhetINorge() = registrertINorge && registrertIUtlandet == null
