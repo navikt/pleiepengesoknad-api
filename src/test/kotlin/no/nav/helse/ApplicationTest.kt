@@ -574,18 +574,18 @@ class ApplicationTest {
                         "DAGMAMMA",
                         "ANNEN"
                       ],
-                      "navn_på_virksomheten": "Tull og tøys",
-                      "registrert_i_norge": true,
+                      "navnPåVirksomheten": "Tull og tøys",
+                      "registrertINorge": true,
                       "organisasjonsnummer": "85577454",
-                      "fra_og_med": "2020-02-01",
-                      "til_og_med": "2020-02-13",
+                      "fraOgMed": "2020-02-01",
+                      "tilOgMed": "2020-02-13",
                       "næringsinntekt": 9857755,
-                            "varig_endring": {
+                            "varigEndring": {
                               "dato": "2020-01-03",
                               "forklaring": "forklaring blablablabla",
-                              "inntekt_etter_endring": "23423"
+                              "inntektEtterEndring": "23423"
                             },
-                      "yrkesaktiv_siste_tre_ferdigliknede_årene": {
+                      "yrkesaktivSisteTreFerdigliknedeÅrene": {
                         "oppstartsdato": "2020-02-01"
                       },
                       "regnskapsfører": {

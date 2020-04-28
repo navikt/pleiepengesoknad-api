@@ -11,16 +11,17 @@ data class Virksomhet(
     @JsonProperty("fisker_er_pa_blad_b")
     val fiskerErPåBladB: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonProperty("fra_og_med")
+    @JsonProperty("fraOgMed")
     val fraOgMed: LocalDate,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val tilOgMed: LocalDate? = null,
     val næringsinntekt: Int? = null,
+    @JsonProperty("navnPåVirksomheten")
     val navnPåVirksomheten: String,
     val organisasjonsnummer: String? = null,
-    @JsonProperty("registrert_i_norge")
+    @JsonProperty("registrertINorge")
     val registrertINorge: Boolean,
-    @JsonProperty("registrert_i_utlandet")
+    @JsonProperty("registrertIUtlandet")
     val registrertIUtlandet: Land? = null,
     val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeÅrene? = null,
     val varigEndring: VarigEndring? = null,
