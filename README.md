@@ -38,7 +38,7 @@ POST @ /soknad -> 202 Response
     "navn": "Iben Olafsson Hansen",
     "fodselsnummer": "01011950021",
     "alternativ_id": null,
-    "aktoer_id": null
+    "aktørId": null
   },
   "relasjon_til_barnet": "mor",
   "fra_og_med": "2019-10-10",
@@ -442,14 +442,14 @@ GET @ /barn -> 200 Response
       "fornavn": "BARN",
       "mellomnavn": "EN",
       "etternavn": "BARNESEN",
-      "aktoer_id": "1000000000001"
+      "aktørId": "1000000000001"
     },
     {
       "fodselsdato": "2001-04-10",
       "fornavn": "BARN",
       "mellomnavn": "TO",
       "etternavn": "BARNESEN",
-      "aktoer_id": "1000000000002"
+      "aktørId": "1000000000002"
     }
   ]
 }

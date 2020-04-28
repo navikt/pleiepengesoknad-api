@@ -2,8 +2,8 @@ package no.nav.helse.ettersending
 
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
-import no.nav.helse.soker.Soker
-import no.nav.helse.soker.SokerService
+import no.nav.helse.soker.Søker
+import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
 import no.nav.helse.soknad.PleiepengesoknadMottakGateway
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
@@ -15,7 +15,7 @@ import java.time.ZonedDateTime
 
 class EttersendingService(
     private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
-    private val søkerService: SokerService,
+    private val søkerService: SøkerService,
     private val vedleggService: VedleggService
 ){
     private companion object {
@@ -28,7 +28,7 @@ class EttersendingService(
         callId: CallId
     ){
         logger.info("Registrerer ettersending. Henter søker")
-        val søker: Soker = søkerService.getSoker(idToken = idToken, callId = callId)
+        val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
 
         logger.info("Søker hentet. Validerer søker.")
         søker.validate()

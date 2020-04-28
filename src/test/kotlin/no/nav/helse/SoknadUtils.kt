@@ -88,14 +88,14 @@ class SoknadUtils {
         }
 
         fun bodyMedAktoerIdPaaBarn(
-            aktoerId: String,
+            aktørId: String,
             vedleggUrl1: String,
             vedleggUrl2: String
         ): String {
             return """
                 {
                     "barn": {
-                        "aktoerId": "$aktoerId"
+                        "aktørId": "$aktørId"
                     },
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",

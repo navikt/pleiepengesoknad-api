@@ -1,7 +1,7 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import no.nav.helse.soker.Soker
+import no.nav.helse.soker.Søker
 import no.nav.helse.vedlegg.Vedlegg
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -11,7 +11,7 @@ data class KomplettSoknad(
     val mottatt: ZonedDateTime,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
-    val soker: Soker,
+    val soker: Søker,
     val barn: BarnDetaljer,
     val arbeidsgivere: ArbeidsgiverDetaljer,
     val vedlegg: List<Vedlegg> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.

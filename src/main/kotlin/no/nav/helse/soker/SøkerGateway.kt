@@ -19,7 +19,7 @@ import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 
-class SokerGateway (
+class SøkerGateway (
     baseUrl: URI,
     apiGatewayApiKey: ApiGatewayApiKey
 ) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {

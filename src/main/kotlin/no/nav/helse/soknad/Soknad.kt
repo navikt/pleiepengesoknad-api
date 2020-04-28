@@ -57,11 +57,11 @@ data class BarnDetaljer(
     val fodselsnummer: String?,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fodselsdato: LocalDate?,
-    val aktoerId: String?,
+    val aktørId: String?,
     val navn: String?
 ) {
     override fun toString(): String {
-        return "BarnDetaljer(aktoerId=${aktoerId}, navn=${navn}, fodselsdato=${fodselsdato}"
+        return "BarnDetaljer(aktoerId=${aktørId}, navn=${navn}, fodselsdato=${fodselsdato}"
     }
 }
 

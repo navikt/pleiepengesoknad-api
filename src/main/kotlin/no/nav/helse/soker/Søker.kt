@@ -12,8 +12,8 @@ private fun erMyndig(fodselsdato: LocalDate) : Boolean {
     return myndighetsDato.isBefore(dagensDato) || myndighetsDato.isEqual(dagensDato)
 }
 
-data class Soker (
-    val aktoerId: String,
+data class Søker (
+    val aktørId: String,
     val fodselsdato: LocalDate,
     val fodselsnummer: String,
     val fornavn: String? = null,

@@ -259,14 +259,14 @@ class ApplicationTest {
                     "fornavn": "BARN",
                     "mellomnavn": "EN",
                     "etternavn": "BARNESEN",
-                    "aktoerId": "1000000000001",
+                    "aktørId": "1000000000001",
                     "harSammeAdresse": true
                 }, {
                     "fodselsdato": "2001-04-10",
                     "fornavn": "BARN",
                     "mellomnavn": "TO",
                     "etternavn": "BARNESEN",
-                    "aktoerId": "1000000000002",
+                    "aktørId": "1000000000002",
                     "harSammeAdresse": true
                 }]
             }
@@ -316,7 +316,7 @@ class ApplicationTest {
         "fornavn": "MOR",
         "mellomnavn": "HEISANN",
         "fodselsnummer": "$fodselsnummer",
-        "aktoerId": "12345",
+        "aktørId": "12345",
         "fodselsdato": "$fodselsdato",
         "myndig": $myndig
     }
@@ -429,7 +429,7 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
             requestEntity = SoknadUtils.bodyMedAktoerIdPaaBarn(
-                aktoerId = "10000000001",
+                aktørId = "10000000001",
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
             )

@@ -1,11 +1,11 @@
 package no.nav.helse.ettersending
 
-import no.nav.helse.soker.Soker
+import no.nav.helse.soker.Søker
 import no.nav.helse.vedlegg.Vedlegg
 import java.time.ZonedDateTime
 
 data class KomplettEttersending (
-    val soker: Soker,
+    val soker: Søker,
     val sprak: String,
     val mottatt: ZonedDateTime,
     val vedlegg: List<Vedlegg>,

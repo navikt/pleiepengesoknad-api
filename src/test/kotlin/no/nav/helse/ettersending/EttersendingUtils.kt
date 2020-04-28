@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
-import no.nav.helse.soker.Soker
+import no.nav.helse.soker.Søker
 import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
 import java.nio.charset.Charset
@@ -43,8 +43,8 @@ class EttersendingUtils {
             sprak = "no",
             soknadstype = "omsorgspenger",
             beskrivelse = "Beskrivelse av ettersending",
-            soker = Soker(
-                aktoerId = "123456",
+            soker = Søker(
+                aktørId = "123456",
                 fodselsdato = LocalDate.now().minusYears(25),
                 fodselsnummer = gyldigFodselsnummerA,
                 fornavn = "Ola",

@@ -76,7 +76,7 @@ class SoknadValidationTest {
         newVersion = null,
         sprak = Sprak.nb,
         barn = BarnDetaljer(
-            aktoerId = null,
+            aktørId = null,
             fodselsnummer = null,
             fodselsdato = null,
             navn = null
@@ -134,7 +134,7 @@ class SoknadValidationTest {
         newVersion = null,
         sprak = Sprak.nb,
         barn = BarnDetaljer(
-            aktoerId = null,
+            aktørId = null,
             fodselsnummer = null,
             fodselsdato = null,
             navn = null

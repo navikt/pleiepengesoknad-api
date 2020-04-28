@@ -607,7 +607,7 @@ internal fun List<OrganisasjonDetaljer>.validate(
 }
 
 private fun BarnDetaljer.gyldigAntallIder(): Boolean {
-    val antallIderSatt = listOfNotNull(aktoerId, fodselsnummer).size
+    val antallIderSatt = listOfNotNull(aktørId, fodselsnummer).size
     return antallIderSatt == 0 || antallIderSatt == 1
 }
 

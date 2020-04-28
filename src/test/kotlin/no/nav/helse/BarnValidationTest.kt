@@ -15,7 +15,7 @@ class BarnValidationTest {
         val barn = BarnDetaljer(
             fodselsnummer = "02119970078",
             fodselsdato = LocalDate.now().minusDays(10),
-            aktoerId = "10000001",
+            aktørId = "10000001",
             navn = "Navn"
         )
         barn.validate().assertFeilPaa(listOf("barn"))
@@ -26,7 +26,7 @@ class BarnValidationTest {
         val barn = BarnDetaljer(
             fodselsnummer = null,
             fodselsdato = null,
-            aktoerId = "10000001",
+            aktørId = "10000001",
             navn = null
         )
         barn.validate().assertFeilPaa()
@@ -38,7 +38,7 @@ class BarnValidationTest {
         val barn = BarnDetaljer(
             fodselsnummer = "02119970078",
             fodselsdato = null,
-            aktoerId = null,
+            aktørId = null,
             navn = null
         )
         barn.validate().assertFeilPaa()

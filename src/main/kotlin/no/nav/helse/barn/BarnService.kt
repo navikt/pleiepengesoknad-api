@@ -30,7 +30,7 @@ class BarnService(
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn,
-        aktoerId = aktør_id,
+        aktørId = aktør_id,
         harSammeAdresse = harSammeAdresse
     )
 }

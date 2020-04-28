@@ -11,6 +11,6 @@ data class Barn (
     val fornavn: String,
     val mellomnavn: String? = null,
     val etternavn: String,
-    val aktoerId: String,
+    val aktørId: String,
     val harSammeAdresse: Boolean
 )

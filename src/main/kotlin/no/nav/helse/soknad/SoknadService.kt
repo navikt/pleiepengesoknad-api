@@ -2,8 +2,8 @@ package no.nav.helse.soknad
 
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
-import no.nav.helse.soker.Soker
-import no.nav.helse.soker.SokerService
+import no.nav.helse.soker.Søker
+import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
@@ -14,7 +14,7 @@ import java.time.ZonedDateTime
 
 
 class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
-                    private val sokerService: SokerService,
+                    private val sokerService: SøkerService,
                     private val vedleggService: VedleggService) {
 
     private companion object {
@@ -27,7 +27,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         callId: CallId
     ) {
         logger.trace("Registrerer søknad. Henter søker")
-        val soker: Soker = sokerService.getSoker(idToken = idToken, callId = callId)
+        val soker: Søker = sokerService.getSoker(idToken = idToken, callId = callId)
 
         logger.trace("Søker hentet. Validerer om søkeren.")
         soker.validate()
@@ -53,7 +53,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             barn = BarnDetaljer(
                 fodselsnummer = soknad.barn.fodselsnummer,
                 fodselsdato = soknad.barn.fodselsdato,
-                aktoerId = soknad.barn.aktoerId,
+                aktørId = soknad.barn.aktørId,
                 navn = soknad.barn.navn
             ),
             vedlegg = vedlegg,
