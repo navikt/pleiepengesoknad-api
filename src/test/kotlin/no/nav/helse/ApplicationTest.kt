@@ -112,7 +112,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "/arbeidsgiver?fraOgMed=2019-01-01&tilOgMed=2019-01-30",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -194,7 +194,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med ugyldig format paa til og fra`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=heisann&til_og_med=hadet",
+            path = "/arbeidsgiver?fraOgMed=heisann&tilOgMed=hadet",
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse = """
                 {
@@ -205,12 +205,12 @@ class ApplicationTest {
                     "instance": "about:blank",
                     "invalid_parameters": [{
                         "type": "query",
-                        "name": "fra_og_med",
+                        "name": "fraOgMed",
                         "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
                         "invalid_value": "heisann"
                     }, {
                         "type": "query",
-                        "name": "til_og_med",
+                        "name": "tilOgMed",
                         "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
                         "invalid_value": "hadet"
                     }]

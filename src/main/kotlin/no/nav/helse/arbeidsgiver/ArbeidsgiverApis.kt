@@ -12,8 +12,8 @@ import no.nav.helse.general.getCallId
 import no.nav.helse.soknad.FraOgMedTilOgMedValidator
 import java.time.LocalDate
 
-private const val fraOgMedQueryName = "fra_og_med"
-private const val tilOgMedQueryName = "til_og_med"
+private const val fraOgMedQueryName = "fraOgMed"
+private const val tilOgMedQueryName = "tilOgMed"
 
 fun Route.arbeidsgiverApis(
     arbeidsgivereService: ArbeidsgivereService,
