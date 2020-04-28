@@ -182,8 +182,96 @@ class SoknadUtils {
                         ]
                     },
                     "harHattInntektSomSelvstendigNaringsdrivende" : true,
-                    "selvstendig_virksomheter" : $virksomheterSomJson
+                    "selvstendigVirksomheter" : $virksomheterSomJson
                     }
+            """.trimIndent()
+        }
+
+        fun bodyMedSelvstendigVirksomhet(vedleggUrl1: String): String {
+            return """
+                {
+                  "barn": {
+                    
+                  },
+                  "relasjonTilBarnet": "mor",
+                  "fraOgMed": "2018-10-10",
+                  "tilOgMed": "2019-10-10",
+                  "arbeidsgivere": {
+                    "organisasjoner": [
+                      {
+                        "organisasjonsnummer": "917755736",
+                        "navn": "Bjeffefirmaet ÆÆÅ",
+                        "skalJobbe": "nei"
+                      }
+                    ]
+                  },
+                  "vedlegg": [
+                    "$vedleggUrl1"
+                  ],
+                  "medlemskap": {
+                    "harBoddIUtlandetSiste12Mnd": false,
+                    "skalBoIUtlandetNeste12Mnd": true
+                  },
+                  "utenlandsoppholdIPerioden": {
+                    "skalOppholdeSegIUtlandetIPerioden": false,
+                    "opphold": [
+                      
+                    ]
+                  },
+                  "harMedsoker": true,
+                  "harBekreftetOpplysninger": true,
+                  "harForstattRettigheterOgPlikter": true,
+                  "ferieuttakIPerioden": {
+                    "skalTaUtFerieIPeriode": true,
+                    "ferieuttak": [
+                      {
+                        "fraOgMed": "2020-01-02",
+                        "tilOgMed": "2020-01-07"
+                      }
+                    ]
+                  },
+                  "harHattInntektSomSelvstendigNaringsdrivende": true,
+                  "selvstendig_virksomheter": [
+                    {
+                      "næringstyper": [
+                        "JORDBRUK_SKOGBRUK"
+                      ],
+                      "fiskerErPåBladB": false,
+                      "fraOgMed": "2020-04-27",
+                      "tilOgMed": "2020-04-28",
+                      "næringsinntekt": 1212,
+                      "navnPåVirksomheten": "TullOgTøys",
+                      "organisasjonsnummer": null,
+                      "registrertINorge": false,
+                      "registrertIUtlandet": null,
+                      "yrkesaktivSisteTreFerdigliknedeÅrene": {
+                        "oppstartsdato": "2020-04-28"
+                      },
+                      "varigEndring": null,
+                      "regnskapsfører": null,
+                      "revisor": null
+                    },
+                    {
+                      "næringstyper": [
+                        "JORDBRUK_SKOGBRUK"
+                      ],
+                      "fiskerErPåBladB": false,
+                      "fraOgMed": "2020-04-27",
+                      "tilOgMed": "2020-04-28",
+                      "næringsinntekt": 1212,
+                      "navnPåVirksomheten": "BariBar",
+                      "organisasjonsnummer": "10110",
+                      "registrertINorge": true,
+                      "registrertIUtlandet": null,
+                      "yrkesaktivSisteTreFerdigliknedeÅrene": {
+                        "oppstartsdato": "2020-04-28"
+                      },
+                      "varigEndring": null,
+                      "regnskapsfører": null,
+                      "revisor": null
+                    }
+                  ]
+                }
             """.trimIndent()
         }
 
