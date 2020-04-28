@@ -11,6 +11,7 @@ data class Virksomhet(
     @JsonProperty("fisker_er_pa_blad_b")
     val fiskerErPåBladB: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonProperty("fra_og_med")
     val fraOgMed: LocalDate,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val tilOgMed: LocalDate? = null,
