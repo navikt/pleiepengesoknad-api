@@ -13,10 +13,7 @@ import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.ktor.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.redis.RedisMockUtil
-import no.nav.helse.soknad.Naringstype
-import no.nav.helse.soknad.Regnskapsforer
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeArene
+import no.nav.helse.soknad.*
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -453,16 +450,16 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.JORDBRUK),
+                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
-                        naringsinntekt = 123123,
-                        navnPaVirksomheten = "TullOgTøys",
+                        næringsinntekt = 123123,
+                        navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = true,
                         organisasjonsnummer = "101010",
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        regnskapsforer = Regnskapsforer(
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                        regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
                             telefon = "84554"
                         )
@@ -481,21 +478,21 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = "/soknad",
             expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
                     {
-                      "type": "entity",
-                      "name": "registrertILand",
-                      "reason": "Hvis registrertINorge er false så må registrertILand være satt til noe",
-                      "invalid_value": null
+                      "type": "/problem-details/invalid-request-parameters",
+                      "title": "invalid-request-parameters",
+                      "status": 400,
+                      "detail": "Requesten inneholder ugyldige paramtere.",
+                      "instance": "about:blank",
+                      "invalid_parameters": [
+                        {
+                          "type": "entity",
+                          "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                          "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                          "invalid_value": null
+                        }
+                      ]
                     }
-                  ]
-                }
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
@@ -503,16 +500,16 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.JORDBRUK),
+                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
-                        naringsinntekt = 1233123,
-                        navnPaVirksomheten = "TullOgTøys",
+                        næringsinntekt = 1233123,
+                        navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
                         organisasjonsnummer = "101010",
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now()),
-                        regnskapsforer = Regnskapsforer(
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                        regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
                             telefon = "84554"
                         )
@@ -572,26 +569,26 @@ class ApplicationTest {
                   },
                   "selvstendigVirksomheter": [
                     {
-                      "naringstype": [
+                      "næringstyper": [
                         "JORDBRUK_SKOGBRUK",
                         "DAGMAMMA",
                         "ANNEN"
                       ],
-                      "navnPaVirksomheten": "Tull og tøys",
+                      "navnPåVirksomheten": "Tull og tøys",
                       "registrertINorge": true,
                       "organisasjonsnummer": "85577454",
                       "fraOgMed": "2020-02-01",
                       "tilOgMed": "2020-02-13",
-                      "naringsinntekt": 9857755,
+                      "næringsinntekt": 9857755,
                             "varigEndring": {
                               "dato": "2020-01-03",
                               "forklaring": "forklaring blablablabla",
                               "inntektEtterEndring": "23423"
                             },
-                      "yrkesaktivSisteTreFerdigliknedeArene": {
+                      "yrkesaktivSisteTreFerdigliknedeÅrene": {
                         "oppstartsdato": "2020-02-01"
                       },
-                      "regnskapsforer": {
+                      "regnskapsfører": {
                         "navn": "Kjell Bjarne",
                         "telefon": "88788"
                       }
@@ -623,8 +620,8 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "registrertILand",
-                      "reason": "Hvis registrertINorge er false så må registrertILand være satt til noe",
+                      "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                       "invalid_value": null
                     }
                   ]
@@ -636,24 +633,24 @@ class ApplicationTest {
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
-                        naringstype = listOf(Naringstype.JORDBRUK),
+                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
-                        naringsinntekt = 1212,
-                        navnPaVirksomheten = "TullOgTøys",
+                        næringsinntekt = 1212,
+                        navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
                     ), Virksomhet(
-                        naringstype = listOf(Naringstype.JORDBRUK),
+                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.now().minusDays(1),
                         tilOgMed = LocalDate.now(),
-                        naringsinntekt = 1212,
-                        navnPaVirksomheten = "BariBar",
+                        næringsinntekt = 1212,
+                        navnPåVirksomheten = "BariBar",
                         registrertINorge = true,
                         organisasjonsnummer = "10110",
-                        yrkesaktivSisteTreFerdigliknedeArene = YrkesaktivSisteTreFerdigliknedeArene(LocalDate.now())
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
                     )
                 )
             )

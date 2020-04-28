@@ -31,7 +31,7 @@ data class Soknad(
     val nattevaak: Nattevaak? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
-    val selvstendigVirksomheter: List<Virksomhet>? = null,
+    val selvstendigVirksomheter: List<Virksomhet> = listOf(),
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePaBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsRollen: String? = null // TODO: Fjern optional når prodsatt.

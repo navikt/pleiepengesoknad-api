@@ -7,34 +7,35 @@ import no.nav.helse.dusseldorf.ktor.core.Violation
 import java.time.LocalDate
 
 data class Virksomhet(
-    val naringstype: List<Naringstype>,
+    val næringstyper: List<Næringstyper> = listOf(),
     val fiskerErPåBladB: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate? = null,
-    val naringsinntekt: Int? = null,
-    val navnPaVirksomheten: String,
+    val næringsinntekt: Int? = null,
+    val navnPåVirksomheten: String,
     val organisasjonsnummer: String? = null,
     val registrertINorge: Boolean,
-    val registrertILand: String? = null,
-    val yrkesaktivSisteTreFerdigliknedeArene: YrkesaktivSisteTreFerdigliknedeArene? = null,
+    val registrertIUtlandet: Land? = null,
+    val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeÅrene? = null,
     val varigEndring: VarigEndring? = null,
-    val regnskapsforer: Regnskapsforer? = null,
+    val regnskapsfører: Regnskapsfører? = null,
     val revisor: Revisor? = null
 )
 
-data class YrkesaktivSisteTreFerdigliknedeArene(
+data class YrkesaktivSisteTreFerdigliknedeÅrene(
     val oppstartsdato: LocalDate
 )
 
-enum class Naringstype(val detaljert: String) {
-    @JsonProperty("FISKE") FISKER("FISKE"),
-    @JsonProperty("JORDBRUK_SKOGBRUK") JORDBRUK("JORDBRUK_SKOGBRUK"),
-    @JsonProperty("ANNEN") ANNET("ANNEN"),
-    DAGMAMMA("DAGMAMMA")
+enum class Næringstyper {
+    FISKE,
+    JORDBRUK_SKOGBRUK,
+    DAGMAMMA,
+    ANNEN
 }
 
 data class VarigEndring(
+    @JsonFormat(pattern = "yyyy-MM-dd")
     val dato: LocalDate,
     val inntektEtterEndring: Int,
     val forklaring: String
@@ -46,14 +47,15 @@ data class Revisor(
     val kanInnhenteOpplysninger: Boolean
 )
 
-data class Regnskapsforer(
+data class Regnskapsfører(
     val navn: String,
     val telefon: String
 )
 
 
-internal fun Virksomhet.validate(): MutableSet<Violation>{
+internal fun Virksomhet.validate(index: Int): MutableSet<Violation>{
     val violations = mutableSetOf<Violation>()
+    val felt = "selvstendigVirksomheter[$index]"
 
     if(!harGyldigPeriode()){
         violations.add(
@@ -66,26 +68,35 @@ internal fun Virksomhet.validate(): MutableSet<Violation>{
         )
     }
 
-    if(!erRegistrertINorgeGyldigSatt()){
-        violations.add(
-            Violation(
-                parameterName = "organisasjonsnummer",
-                parameterType = ParameterType.ENTITY,
-                reason = "Hvis registrertINorge er true så må også organisasjonsnummer være satt",
-                invalidValue = organisasjonsnummer
-            )
-        )
-    }
-
-    if(!erRegistrertILandGyldigSatt()){
-        violations.add(
-            Violation(
-                parameterName = "registrertILand",
-                parameterType = ParameterType.ENTITY,
-                reason = "Hvis registrertINorge er false så må registrertILand være satt til noe",
-                invalidValue = registrertILand
-            )
-        )
+    when {
+        erVirksomhetIUtlandet() -> {
+            when {
+                erRegistrertIUtlLandetGyldigSatt() -> {
+                    violations.addAll(registrertIUtlandet!!.valider("${felt}.registrertIUtlandet"))
+                }
+                else -> {
+                    violations.add(
+                        Violation(
+                            parameterName = "${felt}.registrertIUtlandet",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Hvis registrertINorge er false må registrertIUtlandet være satt"
+                        )
+                    )
+                }
+            }
+        }
+        erVirksomhetINorge() -> {
+            if (!erRegistrertINorgeGyldigSatt()) {
+                violations.add(
+                    Violation(
+                        parameterName = "${felt}.organisasjonsnummer",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "Hvis registrertINorge er true så må også organisasjonsnummer være satt",
+                        invalidValue = organisasjonsnummer
+                    )
+                )
+            }
+        }
     }
 
     return violations
@@ -97,12 +108,12 @@ internal fun Virksomhet.harGyldigPeriode(): Boolean {
     return fraOgMed <= tilOgMed
 }
 
-internal fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean{
-    if(registrertINorge) return !organisasjonsnummer.isNullOrBlank()
-    return true
+private fun Virksomhet.erRegistrertINorge() : Boolean = registrertINorge
+
+private fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean {
+    return !organisasjonsnummer.isNullOrBlank()
 }
 
-internal fun Virksomhet.erRegistrertILandGyldigSatt(): Boolean{
-    if(!registrertINorge) return registrertILand != null && !registrertILand.isNullOrBlank()
-    return true
-}
+private fun Virksomhet.erRegistrertIUtlLandetGyldigSatt(): Boolean = registrertIUtlandet !== null
+private fun Virksomhet.erVirksomhetIUtlandet(): Boolean = !registrertINorge
+private fun Virksomhet.erVirksomhetINorge() = registrertINorge && registrertIUtlandet == null

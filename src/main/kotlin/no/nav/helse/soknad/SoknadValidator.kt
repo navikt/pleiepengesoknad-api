@@ -108,12 +108,7 @@ internal fun Soknad.validate() {
         violations.addAll(this.validate())
     }
 
-
-    if (selvstendigVirksomheter != null && selvstendigVirksomheter.isNotEmpty()) {
-        selvstendigVirksomheter.forEach { virksomhet ->
-            violations.addAll(virksomhet.validate())
-        }
-    }
+    violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter))
 
     // Datoer
     violations.addAll(
@@ -255,6 +250,16 @@ internal fun Soknad.validate() {
     // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
+    }
+}
+
+private fun validerSelvstendigVirksomheter(
+    selvstendigVirksomheter: List<Virksomhet>
+): MutableSet<Violation> = mutableSetOf<Violation>().apply {
+    if (selvstendigVirksomheter.isNotEmpty()) {
+        selvstendigVirksomheter.mapIndexed { index, virksomhet ->
+            addAll(virksomhet.validate(index))
+        }
     }
 }
 
