@@ -7,7 +7,7 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 
 data class KomplettSoknad(
-    val sprak: Sprak?,
+    val sprak: Sprak?, //TODO Språk?
     val mottatt: ZonedDateTime,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,

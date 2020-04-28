@@ -1,5 +1,7 @@
 package no.nav.helse.ettersending
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.soker.Soker
@@ -13,6 +15,8 @@ class EttersendingUtils {
 
     companion object {
         internal val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
+            .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+            .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
 
         private val gyldigFodselsnummerA = "02119970078"
 

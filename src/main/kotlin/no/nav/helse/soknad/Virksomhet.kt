@@ -8,7 +8,6 @@ import java.time.LocalDate
 
 data class Virksomhet(
     val naringstype: List<Naringstype>,
-    @JsonProperty("fisker_er_pa_blad_b")
     val fiskerErPåBladB: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
@@ -16,9 +15,7 @@ data class Virksomhet(
     val naringsinntekt: Int? = null,
     val navnPaVirksomheten: String,
     val organisasjonsnummer: String? = null,
-    @JsonProperty("registrert_i_norge")
     val registrertINorge: Boolean,
-    @JsonProperty("registrert_i_land")
     val registrertILand: String? = null,
     val yrkesaktivSisteTreFerdigliknedeArene: YrkesaktivSisteTreFerdigliknedeArene? = null,
     val varigEndring: VarigEndring? = null,

@@ -234,12 +234,12 @@ class ApplicationTest {
                     "instance": "about:blank",
                     "invalid_parameters": [{
                         "type": "query",
-                        "name": "fra_og_med",
+                        "name": "fraOgMed",
                         "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
                         "invalid_value": null
                     }, {
                         "type": "query",
-                        "name": "til_og_med",
+                        "name": "tilOgMed",
                         "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
                         "invalid_value": null
                     }]
@@ -261,15 +261,15 @@ class ApplicationTest {
                     "fornavn": "BARN",
                     "mellomnavn": "EN",
                     "etternavn": "BARNESEN",
-                    "aktoer_id": "1000000000001",
-                    "har_samme_adresse": true
+                    "aktoerId": "1000000000001",
+                    "harSammeAdresse": true
                 }, {
                     "fodselsdato": "2001-04-10",
                     "fornavn": "BARN",
                     "mellomnavn": "TO",
                     "etternavn": "BARNESEN",
-                    "aktoer_id": "1000000000002",
-                    "har_samme_adresse": true
+                    "aktoerId": "1000000000002",
+                    "harSammeAdresse": true
                 }]
             }
             """.trimIndent(),
@@ -540,7 +540,7 @@ class ApplicationTest {
                   "barn": {
                     "navn": null,
                     "fodselsnummer": "03028104560",
-                    "aktoer_id": null,
+                    "aktoerId": null,
                     "fodselsdato": null
                   },
                   "arbeidsgivere": {
@@ -549,52 +549,51 @@ class ApplicationTest {
                     ]
                   },
                   "medlemskap": {
-                    "har_bodd_i_utlandet_siste_12_mnd": false,
-                    "skal_bo_i_utlandet_neste_12_mnd": false,
-                    "utenlandsopphold_siste_12_mnd": [
+                    "harBoddIUtlandetSiste12Mnd": false,
+                    "skalBoIUtlandetNeste12Mnd": false,
+                    "utenlandsoppholdSiste12Mnd": [
                       
                     ],
-                    "utenlandsopphold_neste_12_mnd": [
+                    "utenlandsoppholdNeste12Mnd": [
                       
                     ]
                   },
-                  "fra_og_med": "2020-02-01",
-                  "til_og_med": "2020-02-13",
+                  "fraOgMed": "2020-02-01",
+                  "tilOgMed": "2020-02-13",
                   "vedlegg": [
                     "                $jpegUrl                "
                   ],
-                  "har_medsoker": false,
-                  "har_bekreftet_opplysninger": true,
-                  "har_forstatt_rettigheter_og_plikter": true,
+                  "harMedsoker": false,
+                  "harBekreftetOpplysninger": true,
+                  "harForstattRettigheterOgPlikter": true,
                   "frilans": {
                     "startdato": "2019-12-06",
-                    "jobber_fortsatt_som_frilans": false
+                    "jobberFortsattSomFrilans": false
                   },
-                  "selvstendig_virksomheter": [
+                  "selvstendigVirksomheter": [
                     {
                       "naringstype": [
                         "JORDBRUK_SKOGBRUK",
                         "DAGMAMMA",
                         "ANNEN"
                       ],
-                      "navn_pa_virksomheten": "Tull og tøys",
-                      "registrert_i_norge": true,
+                      "navnPaVirksomheten": "Tull og tøys",
+                      "registrertINorge": true,
                       "organisasjonsnummer": "85577454",
-                      "fra_og_med": "2020-02-01",
-                      "til_og_med": "2020-02-13",
+                      "fraOgMed": "2020-02-01",
+                      "tilOgMed": "2020-02-13",
                       "naringsinntekt": 9857755,
-                            "varig_endring": {
+                            "varigEndring": {
                               "dato": "2020-01-03",
                               "forklaring": "forklaring blablablabla",
-                              "inntekt_etter_endring": "23423"
+                              "inntektEtterEndring": "23423"
                             },
-                      "yrkesaktiv_siste_tre_ferdigliknede_arene": {
+                      "yrkesaktivSisteTreFerdigliknedeArene": {
                         "oppstartsdato": "2020-02-01"
                       },
                       "regnskapsforer": {
                         "navn": "Kjell Bjarne",
-                        "telefon": "88788",
-                        "er_nar_venn_familie": true
+                        "telefon": "88788"
                       }
                     }
                   ],
@@ -679,16 +678,16 @@ class ApplicationTest {
               "invalid_parameters": [
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
                   "reason": "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skal_jobbe": "ja",
+                      "skalJobbe": "ja",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": 0.0,
-                      "skal_jobbe_prosent": 99.0,
-                      "vet_ikke_ekstrainfo": null
+                      "jobberNormaltTimer": 0.0,
+                      "skalJobbeProsent": 99.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -814,16 +813,16 @@ class ApplicationTest {
               "invalid_parameters": [
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
                   "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være 0%",
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skal_jobbe": "vet_ikke",
+                      "skalJobbe": "vet_ikke",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": 0.0,
-                      "skal_jobbe_prosent": 10.0,
-                      "vet_ikke_ekstrainfo": null
+                      "jobberNormaltTimer": 0.0,
+                      "skalJobbeProsent": 10.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -907,15 +906,15 @@ class ApplicationTest {
                         "navn": "",
                         "fodselsnummer": "29099s12345"
                     },
-                    "relasjon_til_barnet": "mor",
-                    "fra_og_med": "1990-09-29",
-                    "til_og_med": "1990-09-28",
+                    "relasjonTilBarnet": "mor",
+                    "fraOgMed": "1990-09-29",
+                    "tilOgMed": "1990-09-28",
                     "arbeidsgivere": {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "12",
                                 "navn": "$forlangtNavn",
-                                "skal_jobbe": "ugyldig"
+                                "skalJobbe": "ugyldig"
                             }
                         ]
                     },
@@ -924,17 +923,17 @@ class ApplicationTest {
                         null
                     ],
                     "medlemskap" : {},
-                    "utenlandsopphold_i_perioden": {
-                        "skal_oppholde_seg_i_utlandet_i_perioden": false,
+                    "utenlandsoppholdIPerioden": {
+                        "skalOppholdeSegIUtlandetIPerioden": false,
                         "opphold": []
                     },
-                    "har_forstatt_rettigheter_og_plikter": false,
-                  "ferieuttak_i_perioden": {
-                    "skal_ta_ut_ferie_i_periode": true,
+                    "harForstattRettigheterOgPlikter": false,
+                  "ferieuttakIPerioden": {
+                    "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
                       {
-                        "fra_og_med": "2020-01-05",
-                        "til_og_med": "2020-01-07"
+                        "fraOgMed": "2020-01-05",
+                        "tilOgMed": "2020-01-07"
                       }
                     ]
                   }
@@ -969,19 +968,19 @@ class ApplicationTest {
                     },
                     {
                       "type": "entity",
-                      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe",
+                      "name": "arbeidsgivere.organisasjoner[0].skalJobbe",
                       "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vet_ikke",
                       "invalid_value": "ugyldig"
                     },
                     {
                       "type": "entity",
-                      "name": "fra_og_med",
+                      "name": "fraOgMed",
                       "reason": "Fra og med må være før eller lik til og med.",
                       "invalid_value": "1990-09-29"
                     },
                     {
                       "type": "entity",
-                      "name": "til_og_med",
+                      "name": "tilOgMed",
                       "reason": "Til og med må være etter eller lik fra og med.",
                       "invalid_value": "1990-09-28"
                     },
@@ -999,31 +998,31 @@ class ApplicationTest {
                     },
                     {
                       "type": "entity",
-                      "name": "medlemskap.har_bodd_i_utlandet_siste_12_mnd",
+                      "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
                       "reason": "Må settes til true eller false.",
                       "invalid_value": null
                     },
                     {
                       "type": "entity",
-                      "name": "medlemskap.skal_bo_i_utlandet_neste_12_mnd",
+                      "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
                       "reason": "Må settes til true eller false.",
                       "invalid_value": null
                     },
                     {
                       "type": "entity",
-                      "name": "har_medsoker",
+                      "name": "harMedsoker",
                       "reason": "Må settes til true eller false.",
                       "invalid_value": null
                     },
                     {
                       "type": "entity",
-                      "name": "har_bekreftet_opplysninger",
+                      "name": "harBekreftetOpplysninger",
                       "reason": "Opplysningene må bekreftes for å sende inn søknad.",
                       "invalid_value": false
                     },
                     {
                       "type": "entity",
-                      "name": "har_forstatt_rettigheter_og_plikter",
+                      "name": "harForstattRettigheterOgPlikter",
                       "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                       "invalid_value": false
                     }
