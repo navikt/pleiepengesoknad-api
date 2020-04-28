@@ -8,12 +8,13 @@ import java.time.LocalDate
 
 data class Virksomhet(
     val næringstyper: List<Næringstyper> = listOf(),
-    @JsonProperty("fisker_er_pa_blad_b")
+    @JsonProperty("fiskerErPåBladB")
     val fiskerErPåBladB: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("fraOgMed")
     val fraOgMed: LocalDate,
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonProperty("tilOgMed")
     val tilOgMed: LocalDate? = null,
     val næringsinntekt: Int? = null,
     @JsonProperty("navnPåVirksomheten")
@@ -23,7 +24,9 @@ data class Virksomhet(
     val registrertINorge: Boolean,
     @JsonProperty("registrertIUtlandet")
     val registrertIUtlandet: Land? = null,
+    @JsonProperty("yrkesaktivSisteTreFerdigliknedeÅrene")
     val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeÅrene? = null,
+    @JsonProperty("varigEndring")
     val varigEndring: VarigEndring? = null,
     val regnskapsfører: Regnskapsfører? = null,
     val revisor: Revisor? = null
