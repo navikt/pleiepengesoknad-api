@@ -27,10 +27,10 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         callId: CallId
     ) {
         logger.trace("Registrerer søknad. Henter søker")
-        val soker: Søker = sokerService.getSoker(idToken = idToken, callId = callId)
+        val søker: Søker = sokerService.getSoker(idToken = idToken, callId = callId)
 
         logger.trace("Søker hentet. Validerer om søkeren.")
-        soker.validate()
+        søker.validate()
 
         logger.trace("Validert Søker. Henter ${søknad.vedlegg.size} vedlegg.")
         val vedlegg = vedleggService.hentVedlegg(
@@ -44,12 +44,12 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
 
         logger.trace("Legger søknad til prosessering")
 
-        val komplettSoknad = KomplettSoknad(
+        val komplettSoknad = KomplettSøknad(
             språk = søknad.språk,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
             fraOgMed = søknad.fraOgMed,
             tilOgMed = søknad.tilOgMed,
-            soker = soker,
+            søker = søker,
             barn = BarnDetaljer(
                 fodselsnummer = søknad.barn.fodselsnummer,
                 fodselsdato = søknad.barn.fodselsdato,

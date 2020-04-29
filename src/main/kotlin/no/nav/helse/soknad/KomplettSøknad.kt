@@ -7,13 +7,14 @@ import no.nav.helse.vedlegg.Vedlegg
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
-data class KomplettSoknad(
+data class KomplettSøknad(
     @JsonAlias("sprak","språk")
     val språk: Språk? = null,
     val mottatt: ZonedDateTime,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
-    val soker: Søker,
+    @JsonAlias("søker", "soker")
+    val søker: Søker,
     val barn: BarnDetaljer,
     val arbeidsgivere: ArbeidsgiverDetaljer,
     val vedlegg: List<Vedlegg> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.

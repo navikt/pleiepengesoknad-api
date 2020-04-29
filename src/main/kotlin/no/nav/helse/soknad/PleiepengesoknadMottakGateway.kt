@@ -58,7 +58,7 @@ class PleiepengesoknadMottakGateway(
     }
 
     suspend fun leggTilProsessering(
-        soknad : KomplettSoknad,
+        soknad : KomplettSøknad,
         callId: CallId
     ) {
         val authorizationHeader = cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
