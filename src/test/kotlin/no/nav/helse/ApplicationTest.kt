@@ -582,7 +582,7 @@ class ApplicationTest {
                   ],
                   "harMedsøker": false,
                   "harBekreftetOpplysninger": true,
-                  "harForstattRettigheterOgPlikter": true,
+                  "harForståttRettigheterOgPlikter": true,
                   "frilans": {
                     "startdato": "2019-12-06",
                     "jobberFortsattSomFrilans": false
