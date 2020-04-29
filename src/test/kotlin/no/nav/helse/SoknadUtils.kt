@@ -14,7 +14,80 @@ class SoknadUtils {
 
         fun bodyMedsnake_caseOgUtenÆØÅ(fodselsnummer: String, vedleggUrl1: String): String{
            return """
-                
+                {
+                  "new_version": true,
+                  "sprak": "nb",
+                  "barn": {
+                    "navn": "Lille",
+                    "fodselsnummer": "$fodselsnummer",
+                    "aktoer_id": null,
+                    "fodselsdato": "2020-04-17",
+                    "samme_adresse": null
+                  },
+                  "arbeidsgivere": {
+                    "organisasjoner": [
+                      
+                    ]
+                  },
+                  "medlemskap": {
+                    "har_bodd_i_utlandet_siste_12_mnd": true,
+                    "skal_bo_i_utlandet_neste_12_mnd": false,
+                    "utenlandsopphold_siste_12_mnd": [
+                      {
+                        "landnavn": "Bahamas",
+                        "landkode": "BHS",
+                        "fra_og_med": "2020-04-22",
+                        "til_og_med": "2020-04-28"
+                      }
+                    ],
+                    "utenlandsopphold_neste_12_mnd": [
+                      
+                    ]
+                  },
+                  "fra_og_med": "2020-04-01",
+                  "til_og_med": "2020-04-10",
+                  "vedlegg": [
+                    "$vedleggUrl1"
+                  ],
+                  "har_medsoker": true,
+                  "har_bekreftet_opplysninger": true,
+                  "har_forstatt_rettigheter_og_plikter": true,
+                  "ferieuttak_i_perioden": {
+                    "skal_ta_ut_ferie_i_periode": true,
+                    "ferieuttak": [
+                      {
+                        "fra_og_med": "2020-04-06",
+                        "til_og_med": "2020-04-09"
+                      }
+                    ]
+                  },
+                  "har_hatt_inntekt_som_frilanser": true,
+                  "frilans": {
+                    "startdato": "2020-04-02",
+                    "jobber_fortsatt_som_frilans": false
+                  },
+                  "har_hatt_inntekt_som_selvstendig_naringsdrivende": false,
+                  "samtidig_hjemme": true,
+                  "tilsynsordning": {
+                    "svar": "ja",
+                    "ja": {
+                      "mandag": "PT5H0M",
+                      "tirsdag": "PT5H0M",
+                      "onsdag": "PT5H0M",
+                      "torsdag": "PT5H0M",
+                      "fredag": "PT5H0M",
+                      "tilleggsinformasjon": "Forklaring for omsorgstilbud"
+                    }
+                  },
+                  "nattevaak": {
+                    "har_nattevaak": true,
+                    "tilleggsinformasjon": "Må gjøre masse ved nattevåk"
+                  },
+                  "beredskap": {
+                    "i_beredskap": true,
+                    "tilleggsinformasjon": "Må være tilgjengelig ved beredskap blabla"
+                  }
+                }
             """.trimIndent()
         }
 

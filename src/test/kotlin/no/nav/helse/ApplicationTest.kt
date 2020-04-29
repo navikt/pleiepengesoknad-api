@@ -107,7 +107,6 @@ class ApplicationTest {
     }
 
     @Test
-    @Ignore //TODO FIX
     fun `Sende søknad med snake_case og uten ÆØÅ`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
