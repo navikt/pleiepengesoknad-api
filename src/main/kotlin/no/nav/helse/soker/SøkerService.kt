@@ -17,8 +17,8 @@ class SøkerService (
 
     private fun  SøkerGateway.SokerOppslagRespons.tilSoker(fodselsnummer: String) = Søker(
         aktørId = aktør_id,
-        fodselsnummer = fodselsnummer, // TODO: Bør skifte til "alternativ_id" ?
-        fodselsdato = fødselsdato,
+        fødselsnummer = fodselsnummer, // TODO: Bør skifte til "alternativ_id" ?
+        fødselsdato = fødselsdato,
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn

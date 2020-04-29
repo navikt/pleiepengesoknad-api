@@ -327,16 +327,16 @@ class ApplicationTest {
     }
 
     fun expectedGetSokerJson(
-        fodselsnummer: String,
-        fodselsdato: String = "1997-05-25",
+        fødselsnummer: String,
+        fødselsdato: String = "1997-05-25",
         myndig : Boolean = true) = """
     {
         "etternavn": "MORSEN",
         "fornavn": "MOR",
         "mellomnavn": "HEISANN",
-        "fodselsnummer": "$fodselsnummer",
+        "fødselsnummer": "$fødselsnummer",
         "aktørId": "12345",
-        "fodselsdato": "$fodselsdato",
+        "fødselsdato": "$fødselsdato",
         "myndig": $myndig
     }
 """.trimIndent()
@@ -358,8 +358,8 @@ class ApplicationTest {
             path = "/soker",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(
-                fodselsnummer = ikkeMyndigFnr,
-                fodselsdato = ikkeMyndigDato,
+                fødselsnummer = ikkeMyndigFnr,
+                fødselsdato = ikkeMyndigDato,
                 myndig = false
             ),
             cookie = getAuthCookie(ikkeMyndigFnr)

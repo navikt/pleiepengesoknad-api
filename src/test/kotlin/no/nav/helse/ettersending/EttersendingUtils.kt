@@ -45,8 +45,8 @@ class EttersendingUtils {
             beskrivelse = "Beskrivelse av ettersending",
             soker = Søker(
                 aktørId = "123456",
-                fodselsdato = LocalDate.now().minusYears(25),
-                fodselsnummer = gyldigFodselsnummerA,
+                fødselsdato = LocalDate.now().minusYears(25),
+                fødselsnummer = gyldigFodselsnummerA,
                 fornavn = "Ola",
                 etternavn = "Normann"
             ),

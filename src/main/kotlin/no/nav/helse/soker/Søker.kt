@@ -14,11 +14,11 @@ private fun erMyndig(fodselsdato: LocalDate) : Boolean {
 
 data class Søker (
     val aktørId: String,
-    val fodselsdato: LocalDate,
-    val fodselsnummer: String,
+    val fødselsdato: LocalDate,
+    val fødselsnummer: String,
     val fornavn: String? = null,
     val mellomnavn: String? = null,
     val etternavn: String? = null,
-    val myndig : Boolean = erMyndig(fodselsdato)
+    val myndig : Boolean = erMyndig(fødselsdato)
 )
 
