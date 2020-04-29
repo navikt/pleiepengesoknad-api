@@ -68,9 +68,9 @@ class SoknadUtils {
                             ]
                         },
                         "dagerPerUkeBorteFraJobb": 4.0,
-                    "harMedsoker": true,
+                    "harMedsøker": true,
                     "harBekreftetOpplysninger": true,
-                    "harForstattRettigheterOgPlikter": true,
+                    "harForståttRettigheterOgPlikter": true,
                     "ferieuttakIPerioden": {
                     "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
@@ -120,9 +120,9 @@ class SoknadUtils {
                         "skalOppholdeSegIUtlandetIPerioden": false,
                         "opphold": []
                     },
-                    "harMedsoker": false,
+                    "harMedsøker": false,
                     "harBekreftetOpplysninger": true,
-                    "harForstattRettigheterOgPlikter": true,
+                    "harForståttRettigheterOgPlikter": true,
                   "ferieuttakIPerioden": {
                     "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
@@ -169,9 +169,9 @@ class SoknadUtils {
                         "skalOppholdeSegIUtlandetIPerioden": false,
                         "opphold": []
                     },
-                    "harMedsoker": true,
+                    "harMedsøker": true,
                     "harBekreftetOpplysninger": true,
-                    "harForstattRettigheterOgPlikter": true,
+                    "harForståttRettigheterOgPlikter": true,
                     "ferieuttakIPerioden": {
                         "skalTaUtFerieIPeriode": true,
                         "ferieuttak": [
@@ -218,9 +218,9 @@ class SoknadUtils {
                       
                     ]
                   },
-                  "harMedsoker": true,
+                  "harMedsøker": true,
                   "harBekreftetOpplysninger": true,
-                  "harForstattRettigheterOgPlikter": true,
+                  "harForståttRettigheterOgPlikter": true,
                   "ferieuttakIPerioden": {
                     "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
@@ -306,10 +306,10 @@ class SoknadUtils {
                         "skalOppholdeSegIUtlandetIPerioden": false,
                         "opphold": []
                     },
-                    "harMedsoker": true,
+                    "harMedsøker": true,
                     "dagerPerUkeBorteFraJobb": 5.0,
                     "harBekreftetOpplysninger": true,
-                    "harForstattRettigheterOgPlikter": true,
+                    "harForståttRettigheterOgPlikter": true,
                     "ferieuttakIPerioden": {
                         "skalTaUtFerieIPeriode": true,
                         "ferieuttak": [
@@ -380,9 +380,9 @@ class SoknadUtils {
                                 }
                             ]
                         },
-                    "harMedsoker": true,
+                    "harMedsøker": true,
                     "harBekreftetOpplysninger": true,
-                    "harForstattRettigheterOgPlikter": true,
+                    "harForståttRettigheterOgPlikter": true,
                   "ferieuttakIPerioden": {
                     "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
@@ -449,10 +449,10 @@ class SoknadUtils {
                                 }
                             ]
                         },
-                    "harMedsoker": true,
+                    "harMedsøker": true,
                     "bekrefterPeriodeOver8Uker": "$bekrefterPeriodeOver8Uker",
                     "harBekreftetOpplysninger": true,
-                    "harForstattRettigheterOgPlikter": true,
+                    "harForståttRettigheterOgPlikter": true,
                   "ferieuttakIPerioden": {
                     "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [

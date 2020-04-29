@@ -1,5 +1,6 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.helse.soker.Søker
 import no.nav.helse.vedlegg.Vedlegg
@@ -7,7 +8,8 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 
 data class KomplettSoknad(
-    val sprak: Sprak?, //TODO Språk?
+    @JsonAlias("sprak","språk")
+    val språk: Språk? = null,
     val mottatt: ZonedDateTime,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
@@ -23,18 +25,22 @@ data class KomplettSoknad(
     @JsonProperty("ferieuttak_i_perioden")
     val ferieuttakIPerioden: FerieuttakIPerioden?,
     val relasjonTilBarnet: String,
-    val harMedsoker: Boolean,
+    @JsonAlias("harMedsoker", "harMedsøker")
+    val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean?,
-    val harForstattRettigheterOgPlikter: Boolean,
+    @JsonAlias("harForstattRettigheterOgPlikter", "harForståttRettigheterOgPlikter")
+    val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
     val tilsynsordning: Tilsynsordning?,
-    val nattevaak: Nattevaak?,
+    @JsonAlias("nattevaak", "nattevåk")
+    val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
     val harHattInntektSomFrilanser: Boolean = false,
     val frilans: Frilans? = null,
     val harHattInntektSomSelvstendigNaringsdrivende: Boolean = false,
     val selvstendigVirksomheter: List<Virksomhet>? = null,
-    @JsonProperty("skal_bekrefte_omsorg") val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    @JsonProperty("skal_passe_pa_barnet_i_hele_perioden") val skalPassePaBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    @JsonProperty("beskrivelse_omsorgsrollen") val beskrivelseOmsorgsRollen: String? = null // TODO: Fjern optional når prodsatt.
+    val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
+    @JsonAlias("skalPassePåBarnetIHelePerioden", "skalPassePaBarnetIHelePerioden")
+    val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
+    val beskrivelseOmsorgsRollen: String? = null // TODO: Fjern optional når prodsatt.
 )

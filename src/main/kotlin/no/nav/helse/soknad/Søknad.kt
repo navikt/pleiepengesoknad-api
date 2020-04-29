@@ -1,16 +1,18 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
 
-enum class Sprak { nb, nn }
+enum class Språk { nb, nn }
 
-data class Soknad(
+data class Søknad(
     val newVersion: Boolean?,
-    val sprak: Sprak? = null,
+    @JsonAlias("sprak","språk")
+    val språk: Språk? = null,
     val barn: BarnDetaljer,
     val relasjonTilBarnet: String? = null,
     val arbeidsgivere: ArbeidsgiverDetaljer,
@@ -23,17 +25,21 @@ data class Soknad(
     val bekrefterPeriodeOver8Uker: Boolean? = null,// TODO: Fjern optional når prodsatt.
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
-    val harMedsoker: Boolean? = null,
+    @JsonAlias("harMedsoker", "harMedsøker")
+    val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean? = null,
-    val harForstattRettigheterOgPlikter: Boolean,
+    @JsonAlias("harForstattRettigheterOgPlikter", "harForståttRettigheterOgPlikter")
+    val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
     val tilsynsordning: Tilsynsordning?,
-    val nattevaak: Nattevaak? = null,
+    @JsonAlias("nattevaak", "nattevåk")
+    val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
     val selvstendigVirksomheter: List<Virksomhet> = listOf(),
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    val skalPassePaBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
+    @JsonAlias("skalPassePåBarnetIHelePerioden", "skalPassePaBarnetIHelePerioden")
+    val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsRollen: String? = null // TODO: Fjern optional når prodsatt.
 )
 
@@ -61,7 +67,7 @@ data class BarnDetaljer(
     val navn: String?
 ) {
     override fun toString(): String {
-        return "BarnDetaljer(aktoerId=${aktørId}, navn=${navn}, fodselsdato=${fodselsdato}"
+        return "BarnDetaljer(aktørId=${aktørId}, navn=${navn}, fodselsdato=${fodselsdato}"
     }
 }
 
@@ -106,12 +112,13 @@ data class Tilsynsordning(
     val vetIkke: TilsynsordningVetIkke? = null
 )
 
-data class Nattevaak(
-    val harNattevaak: Boolean? = null,
+data class Nattevåk(
+    @JsonAlias("harNattevaak", "harNattevåk")
+    val harNattevåk: Boolean? = null,
     val tilleggsinformasjon: String?
 ) {
     override fun toString(): String {
-        return "Nattevaak(harNattevaak=${harNattevaak})"
+        return "Nattevåk(harNattevåk=${harNattevåk})"
     }
 }
 

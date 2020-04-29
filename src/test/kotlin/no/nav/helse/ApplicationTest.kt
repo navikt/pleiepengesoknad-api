@@ -471,7 +471,6 @@ class ApplicationTest {
     }
 
     @Test
-    @Ignore //TODO: Fix
     fun `Sende søknad med selvstendig næringsvirksomhet som ikke er gyldig, mangler registrertILand`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
@@ -539,7 +538,7 @@ class ApplicationTest {
                   "barn": {
                     "navn": null,
                     "fodselsnummer": "03028104560",
-                    "aktoerId": null,
+                    "aktørId": null,
                     "fodselsdato": null
                   },
                   "arbeidsgivere": {
@@ -562,7 +561,7 @@ class ApplicationTest {
                   "vedlegg": [
                     "                $jpegUrl                "
                   ],
-                  "harMedsoker": false,
+                  "harMedsøker": false,
                   "harBekreftetOpplysninger": true,
                   "harForstattRettigheterOgPlikter": true,
                   "frilans": {
@@ -1009,7 +1008,7 @@ class ApplicationTest {
                     },
                     {
                       "type": "entity",
-                      "name": "harMedsoker",
+                      "name": "harMedsøker",
                       "reason": "Må settes til true eller false.",
                       "invalid_value": null
                     },

@@ -101,7 +101,7 @@ class FraOgMedTilOgMedValidator {
     }
 }
 
-internal fun Soknad.validate() {
+internal fun Søknad.validate() {
     val violations = barn.validate()
     violations.addAll(arbeidsgivere.organisasjoner.validate())
     tilsynsordning?.apply {
@@ -191,7 +191,7 @@ internal fun Soknad.validate() {
     violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
 
-    if (harMedsoker == null) booleanIkkeSatt("harMedsoker")
+    if (harMedsøker == null) booleanIkkeSatt("harMedsøker")
     if (!harBekreftetOpplysninger) {
         violations.add(
             Violation(
@@ -203,7 +203,7 @@ internal fun Soknad.validate() {
             )
         )
     }
-    if (!harForstattRettigheterOgPlikter) {
+    if (!harForståttRettigheterOgPlikter) {
         violations.add(
             Violation(
                 parameterName = "harForstattRettigheterOgPlikter",
@@ -231,8 +231,8 @@ internal fun Soknad.validate() {
         }
     }
 
-    nattevaak?.apply {
-        if (harNattevaak == null) booleanIkkeSatt("nattevaak.harNattevaak")
+    nattevåk?.apply {
+        if (harNattevåk == null) booleanIkkeSatt("nattevåk.harNattevåk")
         tilleggsinformasjon?.apply {
             if (length > MAX_FRITEKST_TEGN) {
                 violations.add(
@@ -462,7 +462,7 @@ internal fun BarnDetaljer.validate(): MutableSet<Violation> {
             Violation(
                 parameterName = "barn",
                 parameterType = ParameterType.ENTITY,
-                reason = "Kan kun sette en av 'aktoerId', 'fodselsnummer' på barnet.",
+                reason = "Kan kun sette en av 'aktørId', 'fodselsnummer' på barnet.",
                 invalidValue = null
             )
         )

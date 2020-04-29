@@ -108,8 +108,6 @@ internal fun Virksomhet.harGyldigPeriode(): Boolean {
     return fraOgMed <= tilOgMed
 }
 
-private fun Virksomhet.erRegistrertINorge() : Boolean = registrertINorge
-
 private fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean {
     return !organisasjonsnummer.isNullOrBlank()
 }

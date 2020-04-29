@@ -22,7 +22,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
     }
 
     suspend fun registrer(
-        soknad: Soknad,
+        søknad: Søknad,
         idToken: IdToken,
         callId: CallId
     ) {
@@ -32,49 +32,49 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         logger.trace("Søker hentet. Validerer om søkeren.")
         soker.validate()
 
-        logger.trace("Validert Søker. Henter ${soknad.vedlegg.size} vedlegg.")
+        logger.trace("Validert Søker. Henter ${søknad.vedlegg.size} vedlegg.")
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
-            vedleggUrls = soknad.vedlegg,
+            vedleggUrls = søknad.vedlegg,
             callId = callId
         )
 
         logger.trace("Vedlegg hentet. Validerer vedleggene.")
-        vedlegg.validerVedlegg(soknad.vedlegg)
+        vedlegg.validerVedlegg(søknad.vedlegg)
 
         logger.trace("Legger søknad til prosessering")
 
         val komplettSoknad = KomplettSoknad(
-            sprak = soknad.sprak,
+            språk = søknad.språk,
             mottatt = ZonedDateTime.now(ZoneOffset.UTC),
-            fraOgMed = soknad.fraOgMed,
-            tilOgMed = soknad.tilOgMed,
+            fraOgMed = søknad.fraOgMed,
+            tilOgMed = søknad.tilOgMed,
             soker = soker,
             barn = BarnDetaljer(
-                fodselsnummer = soknad.barn.fodselsnummer,
-                fodselsdato = soknad.barn.fodselsdato,
-                aktørId = soknad.barn.aktørId,
-                navn = soknad.barn.navn
+                fodselsnummer = søknad.barn.fodselsnummer,
+                fodselsdato = søknad.barn.fodselsdato,
+                aktørId = søknad.barn.aktørId,
+                navn = søknad.barn.navn
             ),
             vedlegg = vedlegg,
-            arbeidsgivere = soknad.arbeidsgivere,
-            medlemskap = soknad.medlemskap,
-            bekrefterPeriodeOver8Uker = soknad.bekrefterPeriodeOver8Uker,
-            ferieuttakIPerioden = soknad.ferieuttakIPerioden,
-            utenlandsoppholdIPerioden = soknad.utenlandsoppholdIPerioden,
-            relasjonTilBarnet = soknad.relasjon(),
-            harMedsoker = soknad.harMedsoker!!,
-            samtidigHjemme = soknad.samtidigHjemme,
-            harBekreftetOpplysninger = soknad.harBekreftetOpplysninger,
-            harForstattRettigheterOgPlikter = soknad.harForstattRettigheterOgPlikter,
-            tilsynsordning = soknad.tilsynsordning,
-            nattevaak = soknad.nattevaak,
-            beredskap = soknad.beredskap,
-            frilans = soknad.frilans,
-            selvstendigVirksomheter = soknad.selvstendigVirksomheter,
-            skalBekrefteOmsorg = soknad.skalBekrefteOmsorg,
-            skalPassePaBarnetIHelePerioden = soknad.skalPassePaBarnetIHelePerioden,
-            beskrivelseOmsorgsRollen = soknad.beskrivelseOmsorgsRollen
+            arbeidsgivere = søknad.arbeidsgivere,
+            medlemskap = søknad.medlemskap,
+            bekrefterPeriodeOver8Uker = søknad.bekrefterPeriodeOver8Uker,
+            ferieuttakIPerioden = søknad.ferieuttakIPerioden,
+            utenlandsoppholdIPerioden = søknad.utenlandsoppholdIPerioden,
+            relasjonTilBarnet = søknad.relasjon(),
+            harMedsøker = søknad.harMedsøker!!,
+            samtidigHjemme = søknad.samtidigHjemme,
+            harBekreftetOpplysninger = søknad.harBekreftetOpplysninger,
+            harForståttRettigheterOgPlikter = søknad.harForståttRettigheterOgPlikter,
+            tilsynsordning = søknad.tilsynsordning,
+            nattevåk = søknad.nattevåk,
+            beredskap = søknad.beredskap,
+            frilans = søknad.frilans,
+            selvstendigVirksomheter = søknad.selvstendigVirksomheter,
+            skalBekrefteOmsorg = søknad.skalBekrefteOmsorg,
+            skalPassePåBarnetIHelePerioden = søknad.skalPassePåBarnetIHelePerioden,
+            beskrivelseOmsorgsRollen = søknad.beskrivelseOmsorgsRollen
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(
@@ -85,7 +85,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
 
         vedleggService.slettVedlegg(
-            vedleggUrls = soknad.vedlegg,
+            vedleggUrls = søknad.vedlegg,
             callId = callId,
             idToken = idToken
         )
@@ -94,4 +94,4 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
     }
 }
 
-private fun Soknad.relasjon() = if (relasjonTilBarnet.isNullOrBlank()) "Forelder" else relasjonTilBarnet
+private fun Søknad.relasjon() = if (relasjonTilBarnet.isNullOrBlank()) "Forelder" else relasjonTilBarnet
