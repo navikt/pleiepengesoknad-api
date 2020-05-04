@@ -33,7 +33,7 @@ data class Søknad(
     @JsonAlias("selvstendig_virksomheter") val selvstendigVirksomheter: List<Virksomhet> = listOf(),
     @JsonAlias("skal_bekrefte_omsorg") val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     @JsonAlias("skal_passe_pa_barnet_i_hele_perioden") val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    @JsonAlias("beskrivelse_omsorgs_rollen") val beskrivelseOmsorgsRollen: String? = null // TODO: Fjern optional når prodsatt.
+    @JsonAlias("beskrivelse_omsorgs_rollen") val beskrivelseOmsorgsrollen: String? = null // TODO: Fjern optional når prodsatt.
 )
 
 data class ArbeidsgiverDetaljer(
@@ -53,14 +53,14 @@ data class UtenlandsoppholdIPerioden(
 )
 
 data class BarnDetaljer(
-    val fodselsnummer: String?,
+    @JsonAlias("fodselsnummer") val fødselsnummer: String?,
     @JsonFormat(pattern = "yyyy-MM-dd")
-    val fodselsdato: LocalDate?,
+    @JsonAlias("fodselsdato") val fødselsdato: LocalDate?,
     @JsonAlias("aktoer_id", "aktoerId") val aktørId: String?,
     val navn: String?
 ) {
     override fun toString(): String {
-        return "BarnDetaljer(aktørId=${aktørId}, navn=${navn}, fodselsdato=${fodselsdato}"
+        return "BarnDetaljer(aktørId=${aktørId}, navn=${navn}, fodselsdato=${fødselsdato}"
     }
 }
 

@@ -1,7 +1,5 @@
 package no.nav.helse.soknad
 
-import com.fasterxml.jackson.annotation.JsonAlias
-import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.helse.soker.Søker
 import no.nav.helse.vedlegg.Vedlegg
 import java.time.LocalDate
@@ -34,5 +32,5 @@ data class KomplettSøknad(
     val selvstendigVirksomheter: List<Virksomhet>? = null,
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    val beskrivelseOmsorgsRollen: String? = null // TODO: Fjern optional når prodsatt.
+    val beskrivelseOmsorgsrollen: String? = null // TODO: Fjern optional når prodsatt.
 )

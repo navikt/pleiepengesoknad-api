@@ -468,24 +468,24 @@ internal fun BarnDetaljer.validate(): MutableSet<Violation> {
         )
     }
 
-    if (fodselsnummer != null && !fodselsnummer.erKunSiffer()) {
+    if (fødselsnummer != null && !fødselsnummer.erKunSiffer()) {
         violations.add(
             Violation(
-                parameterName = "barn.fodselsnummer",
+                parameterName = "barn.fødselsnummer",
                 parameterType = ParameterType.ENTITY,
                 reason = "Ikke gyldig fødselsnummer.",
-                invalidValue = fodselsnummer
+                invalidValue = fødselsnummer
             )
         )
     }
 
-    if (fodselsdato != null && (fodselsdato.isAfter(LocalDate.now()))) {
+    if (fødselsdato != null && (fødselsdato.isAfter(LocalDate.now()))) {
         violations.add(
             Violation(
-                parameterName = "barn.fodselsdato",
+                parameterName = "barn.fødselsdato",
                 parameterType = ParameterType.ENTITY,
                 reason = "Fødselsdato kan ikke være in fremtiden",
-                invalidValue = fodselsdato
+                invalidValue = fødselsdato
             )
         )
     }
@@ -607,7 +607,7 @@ internal fun List<OrganisasjonDetaljer>.validate(
 }
 
 private fun BarnDetaljer.gyldigAntallIder(): Boolean {
-    val antallIderSatt = listOfNotNull(aktørId, fodselsnummer).size
+    val antallIderSatt = listOfNotNull(aktørId, fødselsnummer).size
     return antallIderSatt == 0 || antallIderSatt == 1
 }
 

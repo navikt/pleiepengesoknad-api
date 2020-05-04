@@ -77,8 +77,8 @@ class SoknadValidationTest {
         språk = Språk.nb,
         barn = BarnDetaljer(
             aktørId = null,
-            fodselsnummer = null,
-            fodselsdato = null,
+            fødselsnummer = null,
+            fødselsdato = null,
             navn = null
         ),
         relasjonTilBarnet = "far",
@@ -135,8 +135,8 @@ class SoknadValidationTest {
         språk = Språk.nb,
         barn = BarnDetaljer(
             aktørId = null,
-            fodselsnummer = null,
-            fodselsdato = null,
+            fødselsnummer = null,
+            fødselsdato = null,
             navn = null
         ),
         relasjonTilBarnet = "far",

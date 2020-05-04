@@ -51,8 +51,8 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             tilOgMed = søknad.tilOgMed,
             søker = søker,
             barn = BarnDetaljer(
-                fodselsnummer = søknad.barn.fodselsnummer,
-                fodselsdato = søknad.barn.fodselsdato,
+                fødselsnummer = søknad.barn.fødselsnummer,
+                fødselsdato = søknad.barn.fødselsdato,
                 aktørId = søknad.barn.aktørId,
                 navn = søknad.barn.navn
             ),
@@ -74,7 +74,7 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             selvstendigVirksomheter = søknad.selvstendigVirksomheter,
             skalBekrefteOmsorg = søknad.skalBekrefteOmsorg,
             skalPassePåBarnetIHelePerioden = søknad.skalPassePåBarnetIHelePerioden,
-            beskrivelseOmsorgsRollen = søknad.beskrivelseOmsorgsRollen
+            beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(

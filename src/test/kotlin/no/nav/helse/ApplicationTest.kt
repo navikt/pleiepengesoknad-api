@@ -921,7 +921,7 @@ class ApplicationTest {
                 {
                     "barn": {
                         "navn": "",
-                        "fodselsnummer": "29099s12345"
+                        "fødselsnummer": "29099s12345"
                     },
                     "relasjonTilBarnet": "mor",
                     "fraOgMed": "1990-09-29",
@@ -967,7 +967,7 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "barn.fodselsnummer",
+                      "name": "barn.fødselsnummer",
                       "reason": "Ikke gyldig fødselsnummer.",
                       "invalid_value": "29099s12345"
                     },

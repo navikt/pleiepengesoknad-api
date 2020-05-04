@@ -13,8 +13,8 @@ class BarnValidationTest {
     @Test
     fun `Flere ID'er satt på barnet`() {
         val barn = BarnDetaljer(
-            fodselsnummer = "02119970078",
-            fodselsdato = LocalDate.now().minusDays(10),
+            fødselsnummer = "02119970078",
+            fødselsdato = LocalDate.now().minusDays(10),
             aktørId = "10000001",
             navn = "Navn"
         )
@@ -24,8 +24,8 @@ class BarnValidationTest {
     @Test
     fun `Når AktørId settes som ID på barnet kreves hverken relasjon til barnet eller navn`() {
         val barn = BarnDetaljer(
-            fodselsnummer = null,
-            fodselsdato = null,
+            fødselsnummer = null,
+            fødselsdato = null,
             aktørId = "10000001",
             navn = null
         )
@@ -36,8 +36,8 @@ class BarnValidationTest {
     @Test
     fun `Når Fødselsnummer settes som ID på barnet kreves det relasjon`() {
         val barn = BarnDetaljer(
-            fodselsnummer = "02119970078",
-            fodselsdato = null,
+            fødselsnummer = "02119970078",
+            fødselsdato = null,
             aktørId = null,
             navn = null
         )
