@@ -115,11 +115,11 @@ data class Nattevåk(
 }
 
 data class Beredskap(
-    @JsonAlias("i_beredskap") val iBeredskap: Boolean? = null,
+    @JsonAlias("i_beredskap") val beredskap: Boolean,
     val tilleggsinformasjon: String?
 ) {
     override fun toString(): String {
-        return "Beredskap(beredskap=${iBeredskap})"
+        return "Beredskap(beredskap=${beredskap})"
     }
 }
 
@@ -128,12 +128,12 @@ data class Utenlandsopphold(
     @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("til_og_med") val tilOgMed: LocalDate,
     val landkode: String,
     val landnavn: String,
-    @JsonAlias("er_utenfor_eos") val erUtenforEos: Boolean?,
+    @JsonAlias("er_utenfor_eos") val erUtenforEøs: Boolean?,
     @JsonAlias("er_barnet_innlagt") val erBarnetInnlagt: Boolean?,
     val årsak: Årsak?
 ) {
     override fun toString(): String {
-        return "Utenlandsopphold(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed, landkode='$landkode', landnavn='$landnavn', erUtenforEos=$erUtenforEos, erBarnetInnlagt=$erBarnetInnlagt, årsak=$årsak)"
+        return "Utenlandsopphold(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed, landkode='$landkode', landnavn='$landnavn', erUtenforEos=$erUtenforEøs, erBarnetInnlagt=$erBarnetInnlagt, årsak=$årsak)"
     }
 }
 

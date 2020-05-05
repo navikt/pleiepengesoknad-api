@@ -26,9 +26,7 @@ data class KomplettSøknad(
     val tilsynsordning: Tilsynsordning?,
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
-    val harHattInntektSomFrilanser: Boolean = false,
     val frilans: Frilans? = null,
-    val harHattInntektSomSelvstendigNaringsdrivende: Boolean = false,
     val selvstendigVirksomheter: List<Virksomhet>? = null,
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.

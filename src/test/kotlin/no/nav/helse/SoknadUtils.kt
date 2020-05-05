@@ -12,6 +12,9 @@ class SoknadUtils {
         fun forLangtNavn() =
             "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
 
+        internal val objectMapper = jacksonObjectMapper().pleiepengersoknadConfigured()
+        internal val objectMapperGammeltFormat = jacksonObjectMapper().dusseldorfConfigured()
+
         fun bodyMedsnake_caseOgUtenÆØÅ(fodselsnummer: String, vedleggUrl1: String): String{
            return """
                 {
