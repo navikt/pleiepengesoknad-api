@@ -79,7 +79,9 @@ fun Application.pleiepengesoknadapi() {
 
     install(ContentNegotiation) {
         jackson {
-            pleiepengersoknadConfigured()
+            dusseldorfConfigured()
+                .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+                .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
         }
     }
 
