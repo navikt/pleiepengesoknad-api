@@ -471,8 +471,8 @@ DELETE @/vedlegg/{uuid} (som er url'en returnert som 'Location' header ved oppla
 
 ### Hente arbeidsgivere
 
-- Query parameter 'fraOgTil' og 'tilOgMed' må settes til datoer
-  GET @ /arbeidsgiver?fraOgMed=2019-01-20&tilOgMed=2019-01-30 -> 200 Response
+- Query parameter 'fra_og_til' og 'til_og_med' må settes til datoer
+  GET @ /arbeidsgiver?fra_og_med=2019-01-20&til_og_med=2019-01-30 -> 200 Response
 
 ```json
 {
@@ -548,13 +548,13 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
   "invalid_parameters": [
     {
       "type": "query",
-      "name": "fraOgMed",
+      "name": "fra_og_med",
       "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
       "invalid_value": null
     },
     {
-      "type": "query",
-      "name": "tilOgMed",
+"type":_"query",
+      "name": "til_og_med",
       "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
       "invalid_value": null
     }

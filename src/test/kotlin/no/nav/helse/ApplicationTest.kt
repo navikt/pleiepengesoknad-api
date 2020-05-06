@@ -129,7 +129,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fraOgMed=2019-01-01&tilOgMed=2019-01-30",
+            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -151,7 +151,7 @@ class ApplicationTest {
         wireMockServer.stubK9OppslagArbeidsgivere(simulerFeil = true)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fraOgMed=2019-01-01&tilOgMed=2019-01-30",
+            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -211,7 +211,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med ugyldig format paa til og fra`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fraOgMed=heisann&tilOgMed=hadet",
+            path = "/arbeidsgiver?fra_og_med=heisann&til_og_med=hadet",
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse = """
                 {
@@ -222,12 +222,12 @@ class ApplicationTest {
                     "instance": "about:blank",
                     "invalid_parameters": [{
                         "type": "query",
-                        "name": "fraOgMed",
+                        "name": "fra_og_med",
                         "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
                         "invalid_value": "heisann"
                     }, {
                         "type": "query",
-                        "name": "tilOgMed",
+                        "name": "til_og_med",
                         "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
                         "invalid_value": "hadet"
                     }]
@@ -251,16 +251,48 @@ class ApplicationTest {
                     "instance": "about:blank",
                     "invalid_parameters": [{
                         "type": "query",
-                        "name": "fraOgMed",
+                        "name": "fra_og_med",
                         "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
                         "invalid_value": null
                     }, {
                         "type": "query",
-                        "name": "tilOgMed",
+                        "name": "til_og_med",
                         "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
                         "invalid_value": null
                     }]
                 }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `Hente arbeidsgivere hvor fra_og_med er etter til_og_med`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=2020-01-10&til_og_med=2020-01-01",
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "query",
+                  "name": "fra_og_med",
+                  "reason": "Fra og med må være før eller lik til og med.",
+                  "invalid_value": "2020-01-10"
+                },
+                {
+                  "type": "query",
+                  "name": "til_og_med",
+                  "reason": "Til og med må være etter eller lik fra og med.",
+                  "invalid_value": "2020-01-01"
+                }
+              ]
+            }
             """.trimIndent()
         )
     }
