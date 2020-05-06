@@ -274,14 +274,14 @@ class ApplicationTest {
             expectedResponse = """
             {
                 "barn": [{
-                    "fodselsdato": "2000-08-27",
+                    "fødselsdato": "2000-08-27",
                     "fornavn": "BARN",
                     "mellomnavn": "EN",
                     "etternavn": "BARNESEN",
                     "aktørId": "1000000000001",
                     "harSammeAdresse": true
                 }, {
-                    "fodselsdato": "2001-04-10",
+                    "fødselsdato": "2001-04-10",
                     "fornavn": "BARN",
                     "mellomnavn": "TO",
                     "etternavn": "BARNESEN",

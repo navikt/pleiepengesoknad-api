@@ -7,7 +7,7 @@ data class BarnResponse(
 )
 
 data class Barn (
-    val fodselsdato: LocalDate,
+    val fødselsdato: LocalDate,
     val fornavn: String,
     val mellomnavn: String? = null,
     val etternavn: String,
