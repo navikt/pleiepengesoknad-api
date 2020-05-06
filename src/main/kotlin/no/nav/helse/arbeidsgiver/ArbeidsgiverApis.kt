@@ -115,6 +115,7 @@ internal class FraOgMedTilOgMedValidatorArbeidsgiver {
             return violations
         }
 
+
         private fun parseDate(date: String?): LocalDate? {
             if (date == null) return null
             return try {
