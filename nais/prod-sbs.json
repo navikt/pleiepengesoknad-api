@@ -1,0 +1,27 @@
+{
+  "app": "pleiepengesoknad-api",
+  "cluster": "prod-sbs",
+  "namespace": "default",
+  "team": "dusseldorf",
+  "minReplicas": "1",
+  "maxReplicas": "1",
+  "ingresses": [
+    "https://pleiepengesoknad-api.nav.no",
+    "https://pleiepengesoknad-api.nais.oera.no"
+  ],
+  "env": {
+    "REDIS_HOST": "pleiepengesoknad-api-redis.default.svc.nais.local",
+    "CORS_ADDRESSES": "https://pleiepengesoknad.nav.no,https://www.nav.no",
+    "ISSUER": "https://login.microsoftonline.com/8b7dfc8b-b52e-4741-bde4-d83ea366f94f/v2.0/",
+    "COOKIE_NAME": "selvbetjening-idtoken",
+    "JWKS_URI": "https://login.microsoftonline.com/navnob2c.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_idporten",
+    "K9_OPPSLAG_REGISTER_URL": "https://api-gw.oera.no/helse-reverse-proxy/k9-selvbetjening-oppslag",
+    "PLEIEPENGESOKNAD_MOTTAK_BASE_URL": "https://api-gw.oera.no/helse-reverse-proxy/pleiepengesoknad-mottak",
+    "K9_DOKUMENT_BASE_URL": "https://k9-dokument.nais.oera.no",
+    "AZURE_CLIENT_ID": "c7138cc4-8cef-41bf-99e0-2d3884a106f0",
+    "AZURE_V2_DISCOVERY_ENDPOINT": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration",
+    "SENDE_SOKNAD_TIL_PROSESSERING_SCOPES": "4dc7783f-ee44-4707-ae5c-1d824d19f59c/.default"
+  },
+  "slack-channel": "sif-alerts",
+  "app-alert-ingress": "https://pleiepengesoknad-api.nav.no"
+}
