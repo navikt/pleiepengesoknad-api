@@ -75,8 +75,8 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-sbs
-            RESOURCE: nais/naiserator.yml
-            VARS: nais/dev-sbs.json
+          RESOURCE: nais/naiserator.yml
+          VARS: nais/dev-sbs.json
 
   deploy-prod-sbs:
     name: Deploy to prod-sbs
@@ -89,5 +89,5 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-sbs
-            RESOURCE: nais/naiserator.yml
-            VARS: nais/prod-sbs.json
+          RESOURCE: nais/naiserator.yml
+          VARS: nais/prod-sbs.json
