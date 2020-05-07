@@ -43,12 +43,12 @@ class TilsynsordningValidationTest {
     }
 
     @Test
-    fun `Tilsynsordning Ja - vet_ikke satt`() {
+    fun `Tilsynsordning Ja - vetIkke satt`() {
         medGyldigeDagerSatt(
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
+                svar = TilsynsordningVetIkkeSvar.erIkkeLagetEnPlan
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke"))
     }
 
     @Test
@@ -77,13 +77,13 @@ class TilsynsordningValidationTest {
     }
 
     @Test
-    fun `Tilsynsordning Nei - vet_ikke satt`() {
+    fun `Tilsynsordning Nei - vetIkke satt`() {
         Tilsynsordning(
             svar = TilsynsordningSvar.nei,
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
+                svar = TilsynsordningVetIkkeSvar.erIkkeLagetEnPlan
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke"))
     }
 
     @Test
@@ -91,7 +91,7 @@ class TilsynsordningValidationTest {
         Tilsynsordning(
             svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
+                svar = TilsynsordningVetIkkeSvar.erIkkeLagetEnPlan
             )
         ).validate().assertIngenFeil()
     }
@@ -101,7 +101,7 @@ class TilsynsordningValidationTest {
         Tilsynsordning(
             svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_sporadisk
+                svar = TilsynsordningVetIkkeSvar.erSporadisk
             )
         ).validate().assertIngenFeil()
     }
@@ -112,10 +112,10 @@ class TilsynsordningValidationTest {
         Tilsynsordning(
             svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_sporadisk,
+                svar = TilsynsordningVetIkkeSvar.erSporadisk,
                 annet = "Skulle ikke vært satt"
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke.annet"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke.annet"))
     }
 
     @Test
@@ -136,7 +136,7 @@ class TilsynsordningValidationTest {
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke.annet"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke.annet"))
     }
 
     @Test
@@ -147,7 +147,7 @@ class TilsynsordningValidationTest {
                 svar = TilsynsordningVetIkkeSvar.annet,
                 annet = ForLangFritekst
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke.annet"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke.annet"))
     }
 
     @Test

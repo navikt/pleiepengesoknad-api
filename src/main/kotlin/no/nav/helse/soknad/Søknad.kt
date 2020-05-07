@@ -79,7 +79,7 @@ enum class TilsynsordningSvar {
     @JsonAlias("vet_ikke") vetIkke
 }
 
-enum class TilsynsordningVetIkkeSvar { er_sporadisk, er_ikke_laget_en_plan, annet }
+enum class TilsynsordningVetIkkeSvar { erSporadisk, erIkkeLagetEnPlan, annet }
 
 data class TilsynsordningJa(
     val mandag: Duration?,

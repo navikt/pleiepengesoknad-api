@@ -389,9 +389,9 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
     if (svar != TilsynsordningSvar.vetIkke && vetIkke != null) {
         violations.add(
             Violation(
-                parameterName = "tilsynsordning.vet_ikke",
+                parameterName = "tilsynsordning.vetIkke",
                 parameterType = ParameterType.ENTITY,
-                reason = "Skal kun settes om svar er 'vet_ikke'",
+                reason = "Skal kun settes om svar er 'vetIkke'",
                 invalidValue = vetIkke.toString()
             )
         )
@@ -416,7 +416,7 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
         if (svar != TilsynsordningVetIkkeSvar.annet && annet != null) {
             violations.add(
                 Violation(
-                    parameterName = "tilsynsordning.vet_ikke.annet",
+                    parameterName = "tilsynsordning.vetIkke.annet",
                     parameterType = ParameterType.ENTITY,
                     reason = "Skal kun settes om svar er 'annet''",
                     invalidValue = svar
@@ -427,7 +427,7 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
         if (svar == TilsynsordningVetIkkeSvar.annet && annet.isNullOrBlank()) {
             violations.add(
                 Violation(
-                    parameterName = "tilsynsordning.vet_ikke.annet",
+                    parameterName = "tilsynsordning.vetIkke.annet",
                     parameterType = ParameterType.ENTITY,
                     reason = "Må settes når svar er 'annet",
                     invalidValue = svar
@@ -439,7 +439,7 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
             if (length > MAX_FRITEKST_TEGN) {
                 violations.add(
                     Violation(
-                        parameterName = "tilsynsordning.vet_ikke.annet",
+                        parameterName = "tilsynsordning.vetIkke.annet",
                         parameterType = ParameterType.ENTITY,
                         reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
                         invalidValue = length
