@@ -26,7 +26,6 @@ class ApplicationWithMocks {
                 .stubPleiepengesoknadMottakHealth()
                 .stubOppslagHealth()
                 .stubLeggSoknadTilProsessering("v1/soknad")
-                .stubLeggSoknadTilProsessering("v1/ettersend")
                 .stubK9Dokument()
                 .stubK9OppslagSoker()
                 .stubK9OppslagBarn()
