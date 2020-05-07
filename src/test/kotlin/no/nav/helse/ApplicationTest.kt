@@ -867,7 +867,7 @@ class ApplicationTest {
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "vet_ikke",
+                      "skalJobbe": "vetIkke",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
@@ -883,7 +883,7 @@ class ApplicationTest {
             requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
-                skalJobbe = "vet_ikke",
+                skalJobbe = "vetIkke",
                 skalJobbeProsent = 10.0
             )
         )
@@ -1018,7 +1018,7 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "arbeidsgivere.organisasjoner[0].skalJobbe",
-                      "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vet_ikke",
+                      "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
                       "invalid_value": "ugyldig"
                     },
                     {

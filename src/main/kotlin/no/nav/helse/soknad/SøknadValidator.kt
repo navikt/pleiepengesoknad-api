@@ -577,7 +577,7 @@ internal fun List<OrganisasjonDetaljer>.validate(
                     }
                 }
             }
-            "vet_ikke" -> {
+            "vetIkke" -> {
                 organisasjon.skalJobbeProsent.let {
                     if (it != 0.0) {
                         violations.add(
@@ -596,7 +596,7 @@ internal fun List<OrganisasjonDetaljer>.validate(
                 Violation(
                     parameterName = "arbeidsgivere.organisasjoner[$index].skalJobbe",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vet_ikke",
+                    reason = "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
                     invalidValue = organisasjon.skalJobbe
                 )
             )
