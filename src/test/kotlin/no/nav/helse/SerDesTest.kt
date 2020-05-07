@@ -682,5 +682,4 @@ internal class SerDesTest {
 }
 
 internal fun Søknad.somJson() = SoknadUtils.objectMapper.writeValueAsString(this)
-internal fun Søknad.somJsonGammeltFormat() = SoknadUtils.objectMapperGammeltFormat.writeValueAsString(this)
 internal fun KomplettSøknad.somJson() = SoknadUtils.objectMapper.writeValueAsString(this)
