@@ -241,7 +241,7 @@ POST @ /soknad -> 202 Response
 ##### Ja
 
 - Attributten `ja` være satt.
-- Attributten `vet_ikke` kan ikke være satt.
+- Attributten `vetIkke` kan ikke være satt.
 - Minst en av dagene må være satt (Se format på duration lengre ned)
 - `ja.tilleggsinformasjon` er ikke påkrevd. Om den er satt må den være maks 140 tegn.
 
@@ -261,7 +261,7 @@ POST @ /soknad -> 202 Response
 
 ##### Nei
 
-- Hverken attributten `ja` eller `vet_ikke` kan være satt.
+- Hverken attributten `ja` eller `vetIkke` kan være satt.
 
 ```json
 {
@@ -271,15 +271,15 @@ POST @ /soknad -> 202 Response
 
 ##### Vet ikke
 
-- Attributten `vet_ikke` være satt.
+- Attributten `vetIkke` være satt.
 - Attributten `ja` kan ikke være satt.
-- `vet_ikke.svar` kan være enten `er_sporadisk`, `er_ikke_laget_en_plan` eller `annet`
-- Om `vet_ikke.svar` er `annet` må også attributten `vet_ikke.svar.annet` være satt, men være maks 140 tegn.
+- `vetIkke.svar` kan være enten `er_sporadisk`, `er_ikke_laget_en_plan` eller `annet`
+- Om `vetIkke.svar` er `annet` må også attributten `vetIkke.svar.annet` være satt, men være maks 140 tegn.
 
 ```json
 {
-  "svar": "vet_ikke",
-  "vet_ikke": {
+  "svar": "vetIkke",
+  "vetIkke": {
     "svar": "annet",
     "annet": "Blir for vanskelig å si nå."
   }
@@ -292,7 +292,7 @@ POST @ /soknad -> 202 Response
 
 ```typescript
 {
-    har_hatt_inntekt_som_frilanser?: boolean;
+    harHattInntektSomFrilanser?: boolean;
     frilans?: FrilansApiData;
 }
 ```
@@ -302,7 +302,7 @@ POST @ /soknad -> 202 Response
 ```typescript
 export interface FrilansApiData {
   startdato: ApiStringDate;
-  jobber_fortsatt_som_frilans: boolean;
+  jobberFortsattSomFrilans: boolean;
 }
 ```
 
@@ -548,13 +548,13 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
   "invalid_parameters": [
     {
       "type": "query",
-      "name": "fra_og_med",
+      "name": "fraOgMed",
       "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
       "invalid_value": null
     },
     {
 "type":_"query",
-      "name": "til_og_med",
+      "name": "tilOgMed",
       "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
       "invalid_value": null
     }
@@ -577,7 +577,7 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
       "invalid_value": [
         {
           "navn": "Bjeffefirmaet ÆÆÅ",
-          "skal_jobbe": "vet_ikke",
+          "skalJobbe": "vet_ikke",
           "organisasjonsnummer": "917755736",
           "jobberNormaltTimer": null,
           "skalJobbeProsent": 10.0,
