@@ -36,8 +36,6 @@ import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
-import no.nav.helse.ettersending.EttersendingService
-import no.nav.helse.ettersending.ettersendingApis
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.authorizationStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
@@ -201,15 +199,6 @@ fun Application.pleiepengesoknadapi() {
                 soknadService = SoknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
                     sokerService = sokerService,
-                    vedleggService = vedleggService
-                )
-            )
-
-            ettersendingApis(
-                idTokenProvider = idTokenProvider,
-                ettersendingService = EttersendingService(
-                    pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
-                    søkerService = sokerService,
                     vedleggService = vedleggService
                 )
             )
