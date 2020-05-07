@@ -7,7 +7,8 @@ on:
       - '.gitignore'
       - 'LICENCE'
       - 'CODEOWNERS'
-      - 'nais/alerts.yml'
+      - 'nais/alerterator.yml'
+      - '.github/workflows/apply-alerts.yml'
     branches:
 
 env:
@@ -74,7 +75,8 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-sbs
-          RESOURCE: nais/dev-sbs.yml
+          RESOURCE: nais/naiserator.yml
+          VARS: nais/dev-sbs.json
 
   deploy-prod-sbs:
     name: Deploy to prod-sbs
@@ -87,4 +89,5 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-sbs
-          RESOURCE: nais/prod-sbs.yml
+          RESOURCE: nais/naiserator.yml
+          VARS: nais/prod-sbs.json
