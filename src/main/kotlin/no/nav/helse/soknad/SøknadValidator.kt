@@ -1,7 +1,6 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
-import no.nav.helse.vedlegg.Vedlegg
 import java.net.URL
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -387,7 +386,7 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
         )
     }
 
-    if (svar != TilsynsordningSvar.vet_ikke && vetIkke != null) {
+    if (svar != TilsynsordningSvar.vetIkke && vetIkke != null) {
         violations.add(
             Violation(
                 parameterName = "tilsynsordning.vet_ikke",

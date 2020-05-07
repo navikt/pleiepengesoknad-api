@@ -73,7 +73,11 @@ data class OrganisasjonDetaljer(
     @JsonAlias("vet_ikke_ekstrainfo") val vetIkkeEkstrainfo: String? = null
 )
 
-enum class TilsynsordningSvar { ja, nei, vet_ikke }
+enum class TilsynsordningSvar {
+    ja,
+    nei,
+    @JsonAlias("vet_ikke") vetIkke
+}
 
 enum class TilsynsordningVetIkkeSvar { er_sporadisk, er_ikke_laget_en_plan, annet }
 

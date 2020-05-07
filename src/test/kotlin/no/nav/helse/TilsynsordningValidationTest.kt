@@ -89,7 +89,7 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Er ikke laget en plan enda`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
             )
@@ -99,7 +99,7 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Er sporadisk`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.er_sporadisk
             )
@@ -110,7 +110,7 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Er sporadisk & annet satt`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.er_sporadisk,
                 annet = "Skulle ikke vært satt"
@@ -121,7 +121,7 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Annet satt`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet,
                 annet = "Fordi."
@@ -132,7 +132,7 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Annet ikke satt`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet
             )
@@ -142,7 +142,7 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Annet for lang`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet,
                 annet = ForLangFritekst
@@ -153,7 +153,7 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - annet skal ikke inneholde data i felt`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet,
                 annet = ForLangFritekst
