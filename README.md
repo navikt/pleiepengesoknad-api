@@ -698,11 +698,6 @@ DELETE @ /mellomlagring -> 200 Response
 
 ### Alarmer
 Vi bruker [nais-alerts](https://doc.nais.io/observability/alerts) for å sette opp alarmer. Disse finner man konfigurert i [nais/alerts.yml](nais/alerts.yml).
-For å oppdatere alarmene etter at det er fjernet/lagt til alarm, kan man kjøre følgende kommandoer.
-```shell script
-kubectl config use-context prod-sbs
-kubectl apply -f nais/alerts.yml
-```
 
 ### Redis
 
