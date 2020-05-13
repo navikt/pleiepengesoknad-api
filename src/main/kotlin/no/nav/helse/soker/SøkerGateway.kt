@@ -1,7 +1,5 @@
 package no.nav.helse.soker
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
@@ -13,7 +11,7 @@ import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
-import no.nav.helse.pleiepengersoknadConfigured
+import no.nav.helse.k9SelvbetjeningOppslagKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -28,10 +26,7 @@ class SøkerGateway (
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
         private const val HENTE_SOKER_OPERATION = "hente-soker"
-        private val objectMapper = jacksonObjectMapper().pleiepengersoknadConfigured().apply {
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            registerModule(JavaTimeModule())
-        }
+        private val objectMapper = jacksonObjectMapper().k9SelvbetjeningOppslagKonfigurert()
         private val attributter = Pair("a", listOf("aktør_id", "fornavn", "mellomnavn", "etternavn", "fødselsdato"))
     }
 
