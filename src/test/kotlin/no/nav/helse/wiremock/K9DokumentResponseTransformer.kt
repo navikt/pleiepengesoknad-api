@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.common.FileSource
 import com.github.tomakehurst.wiremock.extension.Parameters
 import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.*
-import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
+import no.nav.helse.pleiepengesøknadKonfigurert
 import no.nav.helse.vedlegg.Vedlegg
 import no.nav.helse.vedlegg.VedleggId
 import java.util.*
@@ -15,7 +15,7 @@ import java.util.*
 class K9DokumentResponseTransformer() : ResponseTransformer() {
 
     val storage = mutableMapOf<VedleggId, Vedlegg>()
-    val objectMapper = jacksonObjectMapper().dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+    val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
 
     override fun getName(): String {
         return "K9DokumentResponseTransformer"
