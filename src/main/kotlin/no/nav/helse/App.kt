@@ -1,6 +1,7 @@
 package no.nav.helse
 
 import com.auth0.jwk.JwkProviderBuilder
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
@@ -76,8 +77,7 @@ fun Application.pleiepengesoknadapi() {
 
     install(ContentNegotiation) {
         jackson {
-            dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-                .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+            pleiepengesøknadKonfigurert()
         }
     }
 
@@ -250,4 +250,9 @@ fun Application.pleiepengesoknadapi() {
             catch (cause: Throwable) { null }
         }
     }
+}
+
+ fun ObjectMapper.pleiepengesøknadKonfigurert(): ObjectMapper {
+    return dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+        .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 }
