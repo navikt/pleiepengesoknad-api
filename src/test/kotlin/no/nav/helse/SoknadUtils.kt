@@ -1,5 +1,7 @@
 package no.nav.helse
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.soknad.Virksomhet
@@ -9,6 +11,88 @@ class SoknadUtils {
     companion object {
         fun forLangtNavn() =
             "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
+
+        internal val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert()
+        internal val objectMapperGammeltFormat = jacksonObjectMapper().dusseldorfConfigured()
+
+        fun bodyMedsnake_caseOgUtenÆØÅ(fodselsnummer: String, vedleggUrl1: String): String{
+           return """
+                {
+                  "new_version": true,
+                  "sprak": "nb",
+                  "barn": {
+                    "navn": "Lille",
+                    "fodselsnummer": "$fodselsnummer",
+                    "aktoer_id": null,
+                    "fodselsdato": "2020-04-17",
+                    "samme_adresse": null
+                  },
+                  "arbeidsgivere": {
+                    "organisasjoner": [
+                      
+                    ]
+                  },
+                  "medlemskap": {
+                    "har_bodd_i_utlandet_siste_12_mnd": true,
+                    "skal_bo_i_utlandet_neste_12_mnd": false,
+                    "utenlandsopphold_siste_12_mnd": [
+                      {
+                        "landnavn": "Bahamas",
+                        "landkode": "BHS",
+                        "fra_og_med": "2020-04-22",
+                        "til_og_med": "2020-04-28"
+                      }
+                    ],
+                    "utenlandsopphold_neste_12_mnd": [
+                      
+                    ]
+                  },
+                  "fra_og_med": "2020-04-01",
+                  "til_og_med": "2020-04-10",
+                  "vedlegg": [
+                    "$vedleggUrl1"
+                  ],
+                  "har_medsoker": true,
+                  "har_bekreftet_opplysninger": true,
+                  "har_forstatt_rettigheter_og_plikter": true,
+                  "ferieuttak_i_perioden": {
+                    "skal_ta_ut_ferie_i_periode": true,
+                    "ferieuttak": [
+                      {
+                        "fra_og_med": "2020-04-06",
+                        "til_og_med": "2020-04-09"
+                      }
+                    ]
+                  },
+                  "har_hatt_inntekt_som_frilanser": true,
+                  "frilans": {
+                    "startdato": "2020-04-02",
+                    "jobber_fortsatt_som_frilans": false
+                  },
+                  "har_hatt_inntekt_som_selvstendig_naringsdrivende": false,
+                  "samtidig_hjemme": true,
+                  "tilsynsordning": {
+                    "svar": "ja",
+                    "ja": {
+                      "mandag": "PT5H0M",
+                      "tirsdag": "PT5H0M",
+                      "onsdag": "PT5H0M",
+                      "torsdag": "PT5H0M",
+                      "fredag": "PT5H0M",
+                      "tilleggsinformasjon": "Forklaring for omsorgstilbud"
+                    }
+                  },
+                  "nattevaak": {
+                    "har_nattevaak": true,
+                    "tilleggsinformasjon": "Må gjøre masse ved nattevåk"
+                  },
+                  "beredskap": {
+                    "i_beredskap": true,
+                    "tilleggsinformasjon": "Må være tilgjengelig ved beredskap blabla"
+                  }
+                }
+            """.trimIndent()
+        }
 
         fun bodyMedFodselsnummerPaaBarn(
             fodselsnummer: String,
@@ -24,16 +108,16 @@ class SoknadUtils {
                         "fodselsnummer": "$fodselsnummer",
                         "navn": "Barn Barnesen"
                     },
-                    "relasjon_til_barnet": "mor",
-                    "fra_og_med": "$fraOgMed",
-                    "til_og_med": "$tilOgMed",
+                    "relasjonTilBarnet": "mor",
+                    "fraOgMed": "$fraOgMed",
+                    "tilOgMed": "$tilOgMed",
                     "arbeidsgivere": {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skal_jobbe_prosent": 50,
-                                "skal_jobbe": "redusert"
+                                "skalJobbeProsent": 50,
+                                "skalJobbe": "redusert"
                             }
                         ]
                     },
@@ -42,67 +126,67 @@ class SoknadUtils {
                         "$vedleggUrl2"
                     ],
                     "medlemskap" : {
-                        "har_bodd_i_utlandet_siste_12_mnd" : false,
-                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                        "harBoddIUtlandetSiste12Mnd" : false,
+                        "skalBoIUtlandetNeste12Mnd" : true
                     },
-                        "utenlandsopphold_i_perioden": {
-                            "skal_oppholde_seg_i_utlandet_i_perioden": true,
+                        "utenlandsoppholdIPerioden": {
+                            "skalOppholdeSegIUtlandetIPerioden": true,
                             "opphold": [
                                 {
-                                    "fra_og_med": "2019-10-10",
-                                    "til_og_med": "2019-11-10",
+                                    "fraOgMed": "2019-10-10",
+                                    "tilOgMed": "2019-11-10",
                                     "landkode": "SE",
                                     "landnavn": "Sverige"
                                 },
                                 {
                                     "landnavn": "USA",
                                     "landkode": "US",
-                                    "fra_og_med": "2020-01-08",
-                                    "til_og_med": "2020-01-09",
-                                    "er_utenfor_eos": true,
-                                    "er_barnet_innlagt": true,
-                                    "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+                                    "fraOgMed": "2020-01-08",
+                                    "tilOgMed": "2020-01-09",
+                                    "erUtenforEos": true,
+                                    "erBarnetInnlagt": true,
+                                    "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                                 }
                             ]
                         },
-                        "dager_per_uke_borte_fra_jobb": 4.0,
-                    "har_medsoker": true,
-                    "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true,
-                  "ferieuttak_i_perioden": {
-                    "skal_ta_ut_ferie_i_periode": true,
+                        "dagerPerUkeBorteFraJobb": 4.0,
+                    "harMedsøker": true,
+                    "harBekreftetOpplysninger": true,
+                    "harForståttRettigheterOgPlikter": true,
+                    "ferieuttakIPerioden": {
+                    "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
                       {
-                        "fra_og_med": "2020-01-05",
-                        "til_og_med": "2020-01-07"
+                        "fraOgMed": "2020-01-05",
+                        "tilOgMed": "2020-01-07"
                       }
                     ]
                   },
-                  "skal_bekrefte_omsorg": true,
-                  "skal_passe_pa_barnet_i_hele_perioden": true,
-                  "beskrivelse_omsorgsrollen": "En kort beskrivelse"
+                  "skalBekrefteOmsorg": true,
+                  "skalPassePaBarnetIHelePerioden": true,
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
                 }
                 """.trimIndent()
         }
 
         fun bodyMedAktoerIdPaaBarn(
-            aktoerId: String,
+            aktørId: String,
             vedleggUrl1: String,
             vedleggUrl2: String
         ): String {
             return """
                 {
                     "barn": {
-                        "aktoer_id": "$aktoerId"
+                        "aktørId": "$aktørId"
                     },
-                    "fra_og_med": "2018-10-10",
-                    "til_og_med": "2019-10-10",
+                    "fraOgMed": "2018-10-10",
+                    "tilOgMed": "2019-10-10",
                     "arbeidsgivere": {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skal_jobbe": "nei"
+                                "skalJobbe": "nei"
                             }
                         ]
                     },
@@ -111,22 +195,22 @@ class SoknadUtils {
                         "$vedleggUrl2"
                     ],
                     "medlemskap" : {
-                        "har_bodd_i_utlandet_siste_12_mnd" : false,
-                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                        "harBoddIUtlandetSiste12Mnd" : false,
+                        "skalBoIUtlandetNeste12Mnd" : true
                     },
                     "utenlandsopphold_i_perioden": {
-                        "skal_oppholde_seg_i_utlandet_i_perioden": false,
+                        "skalOppholdeSegIUtlandetIPerioden": false,
                         "opphold": []
                     },
-                    "har_medsoker": false,
-                    "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true,
-                  "ferieuttak_i_perioden": {
-                    "skal_ta_ut_ferie_i_periode": true,
+                    "harMedsøker": false,
+                    "harBekreftetOpplysninger": true,
+                    "harForståttRettigheterOgPlikter": true,
+                  "ferieuttakIPerioden": {
+                    "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
                       {
-                        "fra_og_med": "2020-01-05",
-                        "til_og_med": "2020-01-07"
+                        "fraOgMed": "2020-01-05",
+                        "tilOgMed": "2020-01-07"
                       }
                     ]
                   }
@@ -136,19 +220,23 @@ class SoknadUtils {
         }
 
         fun bodyMedSelvstendigVirksomheterSomListe(vedleggUrl1: String, virksomheter: List<Virksomhet>): String {
-            val virksomheterSomJson = jacksonObjectMapper().dusseldorfConfigured().writerWithDefaultPrettyPrinter().writeValueAsString(virksomheter)
+            val virksomheterSomJson = jacksonObjectMapper().dusseldorfConfigured()
+                .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+                .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
+                .writerWithDefaultPrettyPrinter().writeValueAsString(virksomheter)
+
             return """
                 {
                     "barn": {},
-                    "relasjon_til_barnet": "mor",
-                    "fra_og_med": "2018-10-10",
-                    "til_og_med": "2019-10-10",
+                    "relasjonTilBarnet": "mor",
+                    "fraOgMed": "2018-10-10",
+                    "tilOgMed": "2019-10-10",
                     "arbeidsgivere": {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skal_jobbe": "nei"
+                                "skalJobbe": "nei"
                             }
                         ]
                     },
@@ -156,27 +244,27 @@ class SoknadUtils {
                         "$vedleggUrl1"
                     ],
                     "medlemskap" : {
-                        "har_bodd_i_utlandet_siste_12_mnd" : false,
-                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                        "harBoddIUtlandetSiste12Mnd" : false,
+                        "skalBoIUtlandetNeste12Mnd" : true
                     },
-                    "utenlandsopphold_i_perioden": {
-                        "skal_oppholde_seg_i_utlandet_i_perioden": false,
+                    "utenlandsoppholdIPerioden": {
+                        "skalOppholdeSegIUtlandetIPerioden": false,
                         "opphold": []
                     },
-                    "har_medsoker": true,
-                    "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true,
-                    "ferieuttak_i_perioden": {
-                        "skal_ta_ut_ferie_i_periode": true,
+                    "harMedsøker": true,
+                    "harBekreftetOpplysninger": true,
+                    "harForståttRettigheterOgPlikter": true,
+                    "ferieuttakIPerioden": {
+                        "skalTaUtFerieIPeriode": true,
                         "ferieuttak": [
                           {
-                            "fra_og_med": "2020-01-02",
-                            "til_og_med": "2020-01-07"
+                            "fraOgMed": "2020-01-02",
+                            "tilOgMed": "2020-01-07"
                           }
                         ]
                     },
-                    "har_hatt_inntekt_som_selvstendig_naringsdrivende" : true,
-                    "selvstendig_virksomheter" : $virksomheterSomJson
+                    "harHattInntektSomSelvstendigNaringsdrivende" : true,
+                    "selvstendigVirksomheter" : $virksomheterSomJson
                     }
             """.trimIndent()
         }
@@ -188,15 +276,15 @@ class SoknadUtils {
             return """
                 {
                     "barn": {},
-                    "relasjon_til_barnet": "mor",
-                    "fra_og_med": "2018-10-10",
-                    "til_og_med": "2019-10-10",
+                    "relasjonTilBarnet": "mor",
+                    "fraOgMed": "2018-10-10",
+                    "tilOgMed": "2019-10-10",
                     "arbeidsgivere": {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skal_jobbe": "nei"
+                                "skalJobbe": "nei"
                             }
                         ]
                     },
@@ -205,23 +293,23 @@ class SoknadUtils {
                         "$vedleggUrl2"
                     ],
                     "medlemskap" : {
-                        "har_bodd_i_utlandet_siste_12_mnd" : false,
-                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                        "harBoddIUtlandetSiste12Mnd" : false,
+                        "skalBoIUtlandetNeste12Mnd" : true
                     },
-                    "utenlandsopphold_i_perioden": {
-                        "skal_oppholde_seg_i_utlandet_i_perioden": false,
+                    "utenlandsoppholdIPerioden": {
+                        "skalOppholdeSegIUtlandetIPerioden": false,
                         "opphold": []
                     },
-                    "har_medsoker": true,
-                    "dager_per_uke_borte_fra_jobb": 5.0,
-                    "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true,
-                    "ferieuttak_i_perioden": {
-                        "skal_ta_ut_ferie_i_periode": true,
+                    "harMedsøker": true,
+                    "dagerPerUkeBorteFraJobb": 5.0,
+                    "harBekreftetOpplysninger": true,
+                    "harForståttRettigheterOgPlikter": true,
+                    "ferieuttakIPerioden": {
+                        "skalTaUtFerieIPeriode": true,
                         "ferieuttak": [
                           {
-                            "fra_og_med": "2020-01-05",
-                            "til_og_med": "2020-01-07"
+                            "fraOgMed": "2020-01-05",
+                            "tilOgMed": "2020-01-07"
                           }
                         ]
                       }
@@ -245,16 +333,16 @@ class SoknadUtils {
                         "fodselsnummer": "$fodselsnummer",
                         "navn": "Barn Barnesen"
                     },
-                    "relasjon_til_barnet": "mor",
-                    "fra_og_med": "$fraOgMed",
-                    "til_og_med": "$tilOgMed",
+                    "relasjonTilBarnet": "mor",
+                    "fraOgMed": "$fraOgMed",
+                    "tilOgMed": "$tilOgMed",
                     "arbeidsgivere": {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skal_jobbe_prosent": $skalJobbeProsent,
-                                "skal_jobbe": "$skalJobbe"
+                                "skalJobbeProsent": $skalJobbeProsent,
+                                "skalJobbe": "$skalJobbe"
                             }
                         ]
                     },
@@ -263,44 +351,44 @@ class SoknadUtils {
                         "$vedleggUrl1"
                     ],
                     "medlemskap" : {
-                        "har_bodd_i_utlandet_siste_12_mnd" : false,
-                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                        "harBoddIUtlandetSiste12Mnd" : false,
+                        "skalBoIUtlandetNeste12Mnd" : true
                     },
-                        "utenlandsopphold_i_perioden": {
-                            "skal_oppholde_seg_i_utlandet_i_perioden": true,
+                        "utenlandsoppholdIPerioden": {
+                            "skalOppholdeSegIUtlandetIPerioden": true,
                             "opphold": [
                                 {
-                                    "fra_og_med": "2019-10-10",
-                                    "til_og_med": "2019-11-10",
+                                    "fraOgMed": "2019-10-10",
+                                    "tilOgMed": "2019-11-10",
                                     "landkode": "SE",
                                     "landnavn": "Sverige"
                                 },
                                 {
                                     "landnavn": "USA",
                                     "landkode": "US",
-                                    "fra_og_med": "2020-01-08",
-                                    "til_og_med": "2020-01-09",
-                                    "er_utenfor_eos": true,
-                                    "er_barnet_innlagt": true,
-                                    "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+                                    "fraOgMed": "2020-01-08",
+                                    "tilOgMed": "2020-01-09",
+                                    "erUtenforEos": true,
+                                    "erBarnetInnlagt": true,
+                                    "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                                 }
                             ]
                         },
-                    "har_medsoker": true,
-                    "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true,
-                  "ferieuttak_i_perioden": {
-                    "skal_ta_ut_ferie_i_periode": true,
+                    "harMedsøker": true,
+                    "harBekreftetOpplysninger": true,
+                    "harForståttRettigheterOgPlikter": true,
+                  "ferieuttakIPerioden": {
+                    "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
                       {
-                        "fra_og_med": "2020-01-05",
-                        "til_og_med": "2020-01-07"
+                        "fraOgMed": "2020-01-05",
+                        "tilOgMed": "2020-01-07"
                       }
                     ]
                   },
-                  "skal_bekrefte_omsorg": true,
-                  "skal_passe_pa_barnet_i_hele_perioden": true,
-                  "beskrivelse_omsorgsrollen": "En kort beskrivelse"
+                  "skalBekrefteOmsorg": true,
+                  "skalPassePaBarnetIHelePerioden": true,
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
                 }
                 """.trimIndent()
         }
@@ -315,15 +403,15 @@ class SoknadUtils {
             return """
                 {
                     "barn": {},
-                    "relasjon_til_barnet": "mor",
-                    "fra_og_med": "$fraOgMed",
-                    "til_og_med": "$tilOgMed",
+                    "relasjonTilBarnet": "mor",
+                    "fraOgMed": "$fraOgMed",
+                    "tilOgMed": "$tilOgMed",
                     "arbeidsgivere": {
                         "organisasjoner": [
                             {
                                  "organisasjonsnummer": "917755736",
                                   "navn": "Bjeffefirmaet ÆÆÅ",
-                                  "skal_jobbe": "nei"
+                                  "skalJobbe": "nei"
                             }
                         ]
                     },
@@ -332,45 +420,45 @@ class SoknadUtils {
                         "$vedleggUrl1"
                     ],
                     "medlemskap" : {
-                        "har_bodd_i_utlandet_siste_12_mnd" : false,
-                        "skal_bo_i_utlandet_neste_12_mnd" : true
+                        "harBoddIUtlandetSiste12Mnd" : false,
+                        "skalBoIUtlandetNeste12Mnd" : true
                     },
-                        "utenlandsopphold_i_perioden": {
-                            "skal_oppholde_seg_i_utlandet_i_perioden": true,
+                        "utenlandsoppholdIPerioden": {
+                            "skalOppholdeSegIUtlandetIPerioden": true,
                             "opphold": [
                                 {
-                                    "fra_og_med": "2019-10-10",
-                                    "til_og_med": "2019-11-10",
+                                    "fraOgMed": "2019-10-10",
+                                    "tilOgMed": "2019-11-10",
                                     "landkode": "SE",
                                     "landnavn": "Sverige"
                                 },
                                 {
                                     "landnavn": "USA",
                                     "landkode": "US",
-                                    "fra_og_med": "2020-01-08",
-                                    "til_og_med": "2020-01-09",
-                                    "er_utenfor_eos": true,
-                                    "er_barnet_innlagt": true,
-                                    "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+                                    "fraOgMed": "2020-01-08",
+                                    "tilOgMed": "2020-01-09",
+                                    "erUtenforEos": true,
+                                    "erBarnetInnlagt": true,
+                                    "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                                 }
                             ]
                         },
-                    "har_medsoker": true,
-                    "bekrefter_periode_over_8_uker": "$bekrefterPeriodeOver8Uker",
-                    "har_bekreftet_opplysninger": true,
-                    "har_forstatt_rettigheter_og_plikter": true,
-                  "ferieuttak_i_perioden": {
-                    "skal_ta_ut_ferie_i_periode": true,
+                    "harMedsøker": true,
+                    "bekrefterPeriodeOver8Uker": "$bekrefterPeriodeOver8Uker",
+                    "harBekreftetOpplysninger": true,
+                    "harForståttRettigheterOgPlikter": true,
+                  "ferieuttakIPerioden": {
+                    "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
                       {
-                        "fra_og_med": "2020-01-05",
-                        "til_og_med": "2020-01-07"
+                        "fraOgMed": "2020-01-05",
+                        "tilOgMed": "2020-01-07"
                       }
                     ]
                   },
-                  "skal_bekrefte_omsorg": true,
-                  "skal_passe_pa_barnet_i_hele_perioden": true,
-                  "beskrivelse_omsorgsrollen": "En kort beskrivelse"
+                  "skalBekrefteOmsorg": true,
+                  "skalPassePaBarnetIHelePerioden": true,
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
                 }
                 """.trimIndent()
         }

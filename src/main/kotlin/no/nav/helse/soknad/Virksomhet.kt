@@ -8,25 +8,16 @@ import java.time.LocalDate
 
 data class Virksomhet(
     val næringstyper: List<Næringstyper> = listOf(),
-    @JsonProperty("fiskerErPåBladB")
     val fiskerErPåBladB: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonProperty("fraOgMed")
     val fraOgMed: LocalDate,
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonProperty("tilOgMed")
     val tilOgMed: LocalDate? = null,
     val næringsinntekt: Int? = null,
-    @JsonProperty("navnPåVirksomheten")
     val navnPåVirksomheten: String,
     val organisasjonsnummer: String? = null,
-    @JsonProperty("registrertINorge")
     val registrertINorge: Boolean,
-    @JsonProperty("registrertIUtlandet")
     val registrertIUtlandet: Land? = null,
-    @JsonProperty("yrkesaktivSisteTreFerdigliknedeÅrene")
     val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeÅrene? = null,
-    @JsonProperty("varigEndring")
     val varigEndring: VarigEndring? = null,
     val regnskapsfører: Regnskapsfører? = null,
     val revisor: Revisor? = null
@@ -65,7 +56,6 @@ data class Regnskapsfører(
 internal fun Virksomhet.validate(index: Int): MutableSet<Violation>{
     val violations = mutableSetOf<Violation>()
     val felt = "selvstendigVirksomheter[$index]"
-
 
     if(!harGyldigPeriode()){
         violations.add(
@@ -117,8 +107,6 @@ internal fun Virksomhet.harGyldigPeriode(): Boolean {
     if (tilOgMed == null) return true // er pågående
     return fraOgMed <= tilOgMed
 }
-
-private fun Virksomhet.erRegistrertINorge() : Boolean = registrertINorge
 
 private fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean {
     return !organisasjonsnummer.isNullOrBlank()

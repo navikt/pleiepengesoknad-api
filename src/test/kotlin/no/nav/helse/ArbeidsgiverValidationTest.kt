@@ -62,7 +62,7 @@ class ArbeidsgiverValidationTest {
             OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ja", jobberNormaltTimer = 37.5, skalJobbeProsent = 100.0),
             OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "nei", jobberNormaltTimer = 37.5, skalJobbeProsent = 0.0),
             OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "redusert", jobberNormaltTimer = 37.5, skalJobbeProsent = 50.0),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "vet_ikke", jobberNormaltTimer = 37.5, skalJobbeProsent = 0.0),
+            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "vetIkke", jobberNormaltTimer = 37.5, skalJobbeProsent = 0.0),
             OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig1", jobberNormaltTimer = -1.0, skalJobbeProsent = 100.0),
             OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig2", jobberNormaltTimer = 37.5, skalJobbeProsent = -1.0)
         )

@@ -17,6 +17,7 @@ import no.nav.helse.soknad.*
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -103,6 +104,25 @@ class ApplicationTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun `Sende søknad med snake_case og uten ÆØÅ`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+        val pdfUrl = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = SoknadUtils.bodyMedsnake_caseOgUtenÆØÅ(
+                fodselsnummer = gyldigFodselsnummerA,
+                vedleggUrl1 = jpegUrl
+            )
+        )
     }
 
     @Test
@@ -246,6 +266,38 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Hente arbeidsgivere hvor fra_og_med er etter til_og_med`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/arbeidsgiver?fra_og_med=2020-01-10&til_og_med=2020-01-01",
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "query",
+                  "name": "fra_og_med",
+                  "reason": "Fra og med må være før eller lik til og med.",
+                  "invalid_value": "2020-01-10"
+                },
+                {
+                  "type": "query",
+                  "name": "til_og_med",
+                  "reason": "Til og med må være etter eller lik fra og med.",
+                  "invalid_value": "2020-01-01"
+                }
+              ]
+            }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun `Henting av barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
@@ -254,19 +306,19 @@ class ApplicationTest {
             expectedResponse = """
             {
                 "barn": [{
-                    "fodselsdato": "2000-08-27",
+                    "fødselsdato": "2000-08-27",
                     "fornavn": "BARN",
                     "mellomnavn": "EN",
                     "etternavn": "BARNESEN",
-                    "aktoer_id": "1000000000001",
-                    "har_samme_adresse": true
+                    "aktørId": "1000000000001",
+                    "harSammeAdresse": true
                 }, {
-                    "fodselsdato": "2001-04-10",
+                    "fødselsdato": "2001-04-10",
                     "fornavn": "BARN",
                     "mellomnavn": "TO",
                     "etternavn": "BARNESEN",
-                    "aktoer_id": "1000000000002",
-                    "har_samme_adresse": true
+                    "aktørId": "1000000000002",
+                    "harSammeAdresse": true
                 }]
             }
             """.trimIndent(),
@@ -307,16 +359,16 @@ class ApplicationTest {
     }
 
     fun expectedGetSokerJson(
-        fodselsnummer: String,
-        fodselsdato: String = "1997-05-25",
+        fødselsnummer: String,
+        fødselsdato: String = "1997-05-25",
         myndig : Boolean = true) = """
     {
         "etternavn": "MORSEN",
         "fornavn": "MOR",
         "mellomnavn": "HEISANN",
-        "fodselsnummer": "$fodselsnummer",
-        "aktoer_id": "12345",
-        "fodselsdato": "$fodselsdato",
+        "fødselsnummer": "$fødselsnummer",
+        "aktørId": "12345",
+        "fødselsdato": "$fødselsdato",
         "myndig": $myndig
     }
 """.trimIndent()
@@ -338,8 +390,8 @@ class ApplicationTest {
             path = "/soker",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(
-                fodselsnummer = ikkeMyndigFnr,
-                fodselsdato = ikkeMyndigDato,
+                fødselsnummer = ikkeMyndigFnr,
+                fødselsdato = ikkeMyndigDato,
                 myndig = false
             ),
             cookie = getAuthCookie(ikkeMyndigFnr)
@@ -428,7 +480,7 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
             requestEntity = SoknadUtils.bodyMedAktoerIdPaaBarn(
-                aktoerId = "10000000001",
+                aktørId = "10000000001",
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
             )
@@ -537,7 +589,7 @@ class ApplicationTest {
                   "barn": {
                     "navn": null,
                     "fodselsnummer": "03028104560",
-                    "aktoer_id": null,
+                    "aktørId": null,
                     "fodselsdato": null
                   },
                   "arbeidsgivere": {
@@ -546,28 +598,28 @@ class ApplicationTest {
                     ]
                   },
                   "medlemskap": {
-                    "har_bodd_i_utlandet_siste_12_mnd": false,
-                    "skal_bo_i_utlandet_neste_12_mnd": false,
-                    "utenlandsopphold_siste_12_mnd": [
+                    "harBoddIUtlandetSiste12Mnd": false,
+                    "skalBoIUtlandetNeste12Mnd": false,
+                    "utenlandsoppholdSiste12Mnd": [
                       
                     ],
-                    "utenlandsopphold_neste_12_mnd": [
+                    "utenlandsoppholdNeste12Mnd": [
                       
                     ]
                   },
-                  "fra_og_med": "2020-02-01",
-                  "til_og_med": "2020-02-13",
+                  "fraOgMed": "2020-02-01",
+                  "tilOgMed": "2020-02-13",
                   "vedlegg": [
                     "                $jpegUrl                "
                   ],
-                  "har_medsoker": false,
-                  "har_bekreftet_opplysninger": true,
-                  "har_forstatt_rettigheter_og_plikter": true,
+                  "harMedsøker": false,
+                  "harBekreftetOpplysninger": true,
+                  "harForståttRettigheterOgPlikter": true,
                   "frilans": {
                     "startdato": "2019-12-06",
-                    "jobber_fortsatt_som_frilans": false
+                    "jobberFortsattSomFrilans": false
                   },
-                  "selvstendig_virksomheter": [
+                  "selvstendigVirksomheter": [
                     {
                       "næringstyper": [
                         "JORDBRUK_SKOGBRUK",
@@ -675,16 +727,16 @@ class ApplicationTest {
               "invalid_parameters": [
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
                   "reason": "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skal_jobbe": "ja",
+                      "skalJobbe": "ja",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": 0.0,
-                      "skal_jobbe_prosent": 99.0,
-                      "vet_ikke_ekstrainfo": null
+                      "jobberNormaltTimer": 0.0,
+                      "skalJobbeProsent": 99.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -720,16 +772,16 @@ class ApplicationTest {
               "invalid_parameters": [
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
                   "reason": "skalJobbeProsent ligger ikke mellom 1% og 99%. Dersom skalJobbe = 'redusert', så må skalJobbeProsent være mellom 1% og 99%",
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skal_jobbe": "redusert",
+                      "skalJobbe": "redusert",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": 0.0,
-                      "skal_jobbe_prosent": 100.0,
-                      "vet_ikke_ekstrainfo": null
+                      "jobberNormaltTimer": 0.0,
+                      "skalJobbeProsent": 100.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -765,16 +817,16 @@ class ApplicationTest {
               "invalid_parameters": [
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
                   "reason": "skalJobbeProsent er ulik 0%. Dersom skalJobbe = 'nei', så må skalJobbeProsent være 0%",
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skal_jobbe": "nei",
+                      "skalJobbe": "nei",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": 0.0,
-                      "skal_jobbe_prosent": 10.0,
-                      "vet_ikke_ekstrainfo": null
+                      "jobberNormaltTimer": 0.0,
+                      "skalJobbeProsent": 10.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -810,16 +862,16 @@ class ApplicationTest {
               "invalid_parameters": [
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
                   "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være 0%",
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skal_jobbe": "vet_ikke",
+                      "skalJobbe": "vetIkke",
                       "organisasjonsnummer": "917755736",
-                      "jobber_normalt_timer": 0.0,
-                      "skal_jobbe_prosent": 10.0,
-                      "vet_ikke_ekstrainfo": null
+                      "jobberNormaltTimer": 0.0,
+                      "skalJobbeProsent": 10.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -831,7 +883,7 @@ class ApplicationTest {
             requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
-                skalJobbe = "vet_ikke",
+                skalJobbe = "vetIkke",
                 skalJobbeProsent = 10.0
             )
         )
@@ -901,17 +953,17 @@ class ApplicationTest {
                 {
                     "barn": {
                         "navn": "",
-                        "fodselsnummer": "29099s12345"
+                        "fødselsnummer": "29099s12345"
                     },
-                    "relasjon_til_barnet": "mor",
-                    "fra_og_med": "1990-09-29",
-                    "til_og_med": "1990-09-28",
+                    "relasjonTilBarnet": "mor",
+                    "fraOgMed": "1990-09-29",
+                    "tilOgMed": "1990-09-28",
                     "arbeidsgivere": {
                         "organisasjoner": [
                             {
                                 "organisasjonsnummer": "12",
                                 "navn": "$forlangtNavn",
-                                "skal_jobbe": "ugyldig"
+                                "skalJobbe": "ugyldig"
                             }
                         ]
                     },
@@ -920,17 +972,17 @@ class ApplicationTest {
                         null
                     ],
                     "medlemskap" : {},
-                    "utenlandsopphold_i_perioden": {
-                        "skal_oppholde_seg_i_utlandet_i_perioden": false,
+                    "utenlandsoppholdIPerioden": {
+                        "skalOppholdeSegIUtlandetIPerioden": false,
                         "opphold": []
                     },
-                    "har_forstatt_rettigheter_og_plikter": false,
-                  "ferieuttak_i_perioden": {
-                    "skal_ta_ut_ferie_i_periode": true,
+                    "harForstattRettigheterOgPlikter": false,
+                  "ferieuttakIPerioden": {
+                    "skalTaUtFerieIPeriode": true,
                     "ferieuttak": [
                       {
-                        "fra_og_med": "2020-01-05",
-                        "til_og_med": "2020-01-07"
+                        "fraOgMed": "2020-01-05",
+                        "tilOgMed": "2020-01-07"
                       }
                     ]
                   }
@@ -947,7 +999,7 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "barn.fodselsnummer",
+                      "name": "barn.fødselsnummer",
                       "reason": "Ikke gyldig fødselsnummer.",
                       "invalid_value": "29099s12345"
                     },
@@ -965,19 +1017,19 @@ class ApplicationTest {
                     },
                     {
                       "type": "entity",
-                      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe",
-                      "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vet_ikke",
+                      "name": "arbeidsgivere.organisasjoner[0].skalJobbe",
+                      "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
                       "invalid_value": "ugyldig"
                     },
                     {
                       "type": "entity",
-                      "name": "fra_og_med",
+                      "name": "fraOgMed",
                       "reason": "Fra og med må være før eller lik til og med.",
                       "invalid_value": "1990-09-29"
                     },
                     {
                       "type": "entity",
-                      "name": "til_og_med",
+                      "name": "tilOgMed",
                       "reason": "Til og med må være etter eller lik fra og med.",
                       "invalid_value": "1990-09-28"
                     },
@@ -995,31 +1047,31 @@ class ApplicationTest {
                     },
                     {
                       "type": "entity",
-                      "name": "medlemskap.har_bodd_i_utlandet_siste_12_mnd",
+                      "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
                       "reason": "Må settes til true eller false.",
                       "invalid_value": null
                     },
                     {
                       "type": "entity",
-                      "name": "medlemskap.skal_bo_i_utlandet_neste_12_mnd",
+                      "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
                       "reason": "Må settes til true eller false.",
                       "invalid_value": null
                     },
                     {
                       "type": "entity",
-                      "name": "har_medsoker",
+                      "name": "harMedsøker",
                       "reason": "Må settes til true eller false.",
                       "invalid_value": null
                     },
                     {
                       "type": "entity",
-                      "name": "har_bekreftet_opplysninger",
+                      "name": "harBekreftetOpplysninger",
                       "reason": "Opplysningene må bekreftes for å sende inn søknad.",
                       "invalid_value": false
                     },
                     {
                       "type": "entity",
-                      "name": "har_forstatt_rettigheter_og_plikter",
+                      "name": "harForstattRettigheterOgPlikter",
                       "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                       "invalid_value": false
                     }

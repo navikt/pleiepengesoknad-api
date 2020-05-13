@@ -13,9 +13,9 @@ class BarnValidationTest {
     @Test
     fun `Flere ID'er satt på barnet`() {
         val barn = BarnDetaljer(
-            fodselsnummer = "02119970078",
-            fodselsdato = LocalDate.now().minusDays(10),
-            aktoerId = "10000001",
+            fødselsnummer = "02119970078",
+            fødselsdato = LocalDate.now().minusDays(10),
+            aktørId = "10000001",
             navn = "Navn"
         )
         barn.validate().assertFeilPaa(listOf("barn"))
@@ -24,9 +24,9 @@ class BarnValidationTest {
     @Test
     fun `Når AktørId settes som ID på barnet kreves hverken relasjon til barnet eller navn`() {
         val barn = BarnDetaljer(
-            fodselsnummer = null,
-            fodselsdato = null,
-            aktoerId = "10000001",
+            fødselsnummer = null,
+            fødselsdato = null,
+            aktørId = "10000001",
             navn = null
         )
         barn.validate().assertFeilPaa()
@@ -36,9 +36,9 @@ class BarnValidationTest {
     @Test
     fun `Når Fødselsnummer settes som ID på barnet kreves det relasjon`() {
         val barn = BarnDetaljer(
-            fodselsnummer = "02119970078",
-            fodselsdato = null,
-            aktoerId = null,
+            fødselsnummer = "02119970078",
+            fødselsdato = null,
+            aktørId = null,
             navn = null
         )
         barn.validate().assertFeilPaa()

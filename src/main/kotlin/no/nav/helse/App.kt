@@ -49,9 +49,9 @@ import no.nav.helse.mellomlagring.mellomlagringApis
 import no.nav.helse.redis.RedisConfig
 import no.nav.helse.redis.RedisConfigurationProperties
 import no.nav.helse.redis.RedisStore
-import no.nav.helse.soker.SokerGateway
-import no.nav.helse.soker.SokerService
-import no.nav.helse.soker.sokerApis
+import no.nav.helse.soker.SøkerGateway
+import no.nav.helse.soker.SøkerService
+import no.nav.helse.soker.søkerApis
 import no.nav.helse.soknad.PleiepengesoknadMottakGateway
 import no.nav.helse.soknad.SoknadService
 import no.nav.helse.soknad.soknadApis
@@ -146,7 +146,7 @@ fun Application.pleiepengesoknadapi() {
             apiGatewayApiKey = apiGatewayApiKey
         )
 
-        val sokerGateway = SokerGateway(
+        val søkerGateway = SøkerGateway(
             baseUrl = configuration.getK9OppslagUrl(),
             apiGatewayApiKey = apiGatewayApiKey
         )
@@ -161,14 +161,14 @@ fun Application.pleiepengesoknadapi() {
             apiGatewayApiKey = apiGatewayApiKey
         )
 
-        val sokerService = SokerService(
-            sokerGateway = sokerGateway
+        val søkerService = SøkerService(
+            søkerGateway = søkerGateway
         )
 
         authenticate {
 
-            sokerApis(
-                sokerService = sokerService,
+            søkerApis(
+                søkerService = søkerService,
                 idTokenProvider = idTokenProvider
             )
 
@@ -203,7 +203,7 @@ fun Application.pleiepengesoknadapi() {
                 idTokenProvider = idTokenProvider,
                 soknadService = SoknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
-                    sokerService = sokerService,
+                    sokerService = søkerService,
                     vedleggService = vedleggService
                 )
             )
@@ -258,8 +258,12 @@ fun Application.pleiepengesoknadapi() {
  fun ObjectMapper.pleiepengesøknadKonfigurert(): ObjectMapper {
     return dusseldorfConfigured().apply {
         configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-        propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
     }
+}
+
+
+fun ObjectMapper.pleiepengesøknadMottakKonfigurert(): ObjectMapper {
+    return pleiepengesøknadKonfigurert().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
 }
 
  fun ObjectMapper.k9DokumentKonfigurert(): ObjectMapper {

@@ -43,12 +43,12 @@ class TilsynsordningValidationTest {
     }
 
     @Test
-    fun `Tilsynsordning Ja - vet_ikke satt`() {
+    fun `Tilsynsordning Ja - vetIkke satt`() {
         medGyldigeDagerSatt(
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
+                svar = TilsynsordningVetIkkeSvar.erIkkeLagetEnPlan
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke"))
     }
 
     @Test
@@ -77,21 +77,21 @@ class TilsynsordningValidationTest {
     }
 
     @Test
-    fun `Tilsynsordning Nei - vet_ikke satt`() {
+    fun `Tilsynsordning Nei - vetIkke satt`() {
         Tilsynsordning(
             svar = TilsynsordningSvar.nei,
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
+                svar = TilsynsordningVetIkkeSvar.erIkkeLagetEnPlan
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke"))
     }
 
     @Test
     fun `Tilsynsordning Vet ikke - Er ikke laget en plan enda`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_ikke_laget_en_plan
+                svar = TilsynsordningVetIkkeSvar.erIkkeLagetEnPlan
             )
         ).validate().assertIngenFeil()
     }
@@ -99,9 +99,9 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Er sporadisk`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_sporadisk
+                svar = TilsynsordningVetIkkeSvar.erSporadisk
             )
         ).validate().assertIngenFeil()
     }
@@ -110,18 +110,18 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Er sporadisk & annet satt`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
-                svar = TilsynsordningVetIkkeSvar.er_sporadisk,
+                svar = TilsynsordningVetIkkeSvar.erSporadisk,
                 annet = "Skulle ikke vært satt"
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke.annet"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke.annet"))
     }
 
     @Test
     fun `Tilsynsordning Vet ikke - Annet satt`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet,
                 annet = "Fordi."
@@ -132,28 +132,28 @@ class TilsynsordningValidationTest {
     @Test
     fun `Tilsynsordning Vet ikke - Annet ikke satt`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke.annet"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke.annet"))
     }
 
     @Test
     fun `Tilsynsordning Vet ikke - Annet for lang`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet,
                 annet = ForLangFritekst
             )
-        ).validate().assertFeilPaa(listOf("tilsynsordning.vet_ikke.annet"))
+        ).validate().assertFeilPaa(listOf("tilsynsordning.vetIkke.annet"))
     }
 
     @Test
     fun `Tilsynsordning Vet ikke - annet skal ikke inneholde data i felt`() {
         Tilsynsordning(
-            svar = TilsynsordningSvar.vet_ikke,
+            svar = TilsynsordningSvar.vetIkke,
             vetIkke = TilsynsordningVetIkke(
                 svar = TilsynsordningVetIkkeSvar.annet,
                 annet = ForLangFritekst

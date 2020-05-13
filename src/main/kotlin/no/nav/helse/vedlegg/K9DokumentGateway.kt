@@ -12,12 +12,10 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry.Companion.retry
-import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.Operation.Companion.monitored
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.k9DokumentKonfigurert
-import no.nav.helse.pleiepengesøknadKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream

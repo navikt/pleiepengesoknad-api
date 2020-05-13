@@ -14,7 +14,6 @@ import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
 import no.nav.helse.k9SelvbetjeningOppslagKonfigurert
-import no.nav.helse.pleiepengesøknadKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI

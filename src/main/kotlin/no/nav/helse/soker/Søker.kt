@@ -12,13 +12,13 @@ private fun erMyndig(fodselsdato: LocalDate) : Boolean {
     return myndighetsDato.isBefore(dagensDato) || myndighetsDato.isEqual(dagensDato)
 }
 
-data class Soker (
-    val aktoerId: String,
-    val fodselsdato: LocalDate,
-    val fodselsnummer: String,
+data class Søker (
+    val aktørId: String,
+    val fødselsdato: LocalDate,
+    val fødselsnummer: String,
     val fornavn: String? = null,
     val mellomnavn: String? = null,
     val etternavn: String? = null,
-    val myndig : Boolean = erMyndig(fodselsdato)
+    val myndig : Boolean = erMyndig(fødselsdato)
 )
 

@@ -1,6 +1,5 @@
 package no.nav.helse.soknad
 
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpPost
@@ -11,13 +10,12 @@ import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.Result
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
-import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import no.nav.helse.pleiepengesøknadKonfigurert
+import no.nav.helse.pleiepengesøknadMottakKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
@@ -32,7 +30,7 @@ class PleiepengesoknadMottakGateway(
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(PleiepengesoknadMottakGateway::class.java)
-        private val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+        private val objectMapper = jacksonObjectMapper().pleiepengesøknadMottakKonfigurert()
     }
 
     private val komplettUrl = Url.buildURL(
@@ -53,7 +51,7 @@ class PleiepengesoknadMottakGateway(
     }
 
     suspend fun leggTilProsessering(
-        soknad : KomplettSoknad,
+        soknad : KomplettSøknad,
         callId: CallId
     ) {
         val authorizationHeader = cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()

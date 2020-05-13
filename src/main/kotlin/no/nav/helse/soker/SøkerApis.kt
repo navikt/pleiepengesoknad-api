@@ -15,8 +15,8 @@ private val logger: Logger = LoggerFactory.getLogger("nav.sokerApis")
 
 
 @KtorExperimentalLocationsAPI
-fun Route.sokerApis(
-    sokerService: SokerService,
+fun Route.søkerApis(
+    søkerService: SøkerService,
     idTokenProvider: IdTokenProvider
 ) {
 
@@ -24,7 +24,7 @@ fun Route.sokerApis(
     class getSoker
 
     get { _: getSoker ->
-        call.respond(sokerService.getSoker(
+        call.respond(søkerService.getSoker(
             idToken = idTokenProvider.getIdToken(call),
             callId = call.getCallId()
         ))

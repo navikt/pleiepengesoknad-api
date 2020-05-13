@@ -72,13 +72,13 @@ class SoknadValidationTest {
         bekrefterPeriodeOver8Uker: Boolean = false,
         fraOgMed: LocalDate = LocalDate.now(),
         tilOgMed: LocalDate = LocalDate.now()
-    ) = Soknad(
+    ) = Søknad(
         newVersion = null,
-        sprak = Sprak.nb,
+        språk = Språk.nb,
         barn = BarnDetaljer(
-            aktoerId = null,
-            fodselsnummer = null,
-            fodselsdato = null,
+            aktørId = null,
+            fødselsnummer = null,
+            fødselsdato = null,
             navn = null
         ),
         relasjonTilBarnet = "far",
@@ -99,11 +99,11 @@ class SoknadValidationTest {
             harBoddIUtlandetSiste12Mnd = false,
             skalBoIUtlandetNeste12Mnd = true
         ),
-        harMedsoker = true,
+        harMedsøker = true,
         samtidigHjemme = true,
 
         harBekreftetOpplysninger = true,
-        harForstattRettigheterOgPlikter = true,
+        harForståttRettigheterOgPlikter = true,
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
@@ -130,13 +130,13 @@ class SoknadValidationTest {
                 )
             )
         )
-    ) = Soknad(
+    ) = Søknad(
         newVersion = null,
-        sprak = Sprak.nb,
+        språk = Språk.nb,
         barn = BarnDetaljer(
-            aktoerId = null,
-            fodselsnummer = null,
-            fodselsdato = null,
+            aktørId = null,
+            fødselsnummer = null,
+            fødselsdato = null,
             navn = null
         ),
         relasjonTilBarnet = "far",
@@ -156,11 +156,11 @@ class SoknadValidationTest {
         fraOgMed = LocalDate.now(),
         tilOgMed = LocalDate.now(),
         medlemskap = medlemskap,
-        harMedsoker = harMedsoker,
+        harMedsøker = harMedsoker,
         samtidigHjemme = samtidigHjemme,
 
         harBekreftetOpplysninger = true,
-        harForstattRettigheterOgPlikter = true,
+        harForståttRettigheterOgPlikter = true,
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf())

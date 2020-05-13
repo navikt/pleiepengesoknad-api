@@ -12,136 +12,195 @@ Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 
 POST @ /soknad -> 202 Response
 
-- sprak er en valgfri attributt. Om den settes må den være enten "nb" for Bokmål eller "nn" for Nynorsk.
+- språk er en valgfri attributt. Om den settes må den være enten "nb" for Bokmål eller "nn" for Nynorsk.
 - Listen med arbeidsgivere inneholder data på samme format som GET @ /arbeidsgiver, med to valgfrie attributter (om en er satt må begge settes);
-- arbeidsgivere.organisasjoner[x].skal_jobbe_prosent er valgfri. Om satt må den være mellom 0.0 og 100.0. Om 'grad' ikke er satt må denne alltid settes.
+- arbeidsgivere.organisasjoner[x].skalJobbeProsent er valgfri. Om satt må den være mellom 0.0 og 100.0. Om 'grad' ikke er satt må denne alltid settes.
 - Listen med organisajoner i arbeidsgivere kan være tom.
 - Vedlegg er en liste med URL'er som peker tilbake på 'Location' headeren returnert i opplasting av vedlegg
 - Det må sendes med minst ett vedlegg
-- Det kan settes kun 1 ID på barnet (alternativ_id, aktoer_id eller fodselsnummer) - Kan også sendes uten ID
-- barn.alternativ_id må være 11 siffer om det er satt
-- barn.fodslsnummer må være et gyldig norsk fødselsnummer om den er satt
-- barn.aktoer_id må være sattil en gyldig Aktør ID om den er satt
-- barn.navn er kun påkrevd om 'barn.fodselsnummer' er satt
-- relasjon_til_barnet er ikke påkrevd om 'barn.aktoer_id' er satt, ellers påkrevd
+- Det kan settes kun 1 ID på barnet (alternativId, aktørId eller fødselsnummer) - Kan også sendes uten ID
+- barn.alternativId må være 11 siffer om det er satt
+- barn.fødslsnummer må være et gyldig norsk fødselsnummer om den er satt
+- barn.aktørId må være sattil en gyldig Aktør ID om den er satt
+- barn.navn er kun påkrevd om 'barn.fødselsnummer' er satt
+- relasjonTilBarnet er ikke påkrevd om 'barn.aktørId' er satt, ellers påkrevd
 - grad er valgfri. Om satt må den være mellom 20 og 100
-- 'har_bekreftet_opplysninger' og 'har_forstatt_rettigheter_og_plikter' må være true
-- 'dager_per_uke_borte_fra_jobb' er valgfri. Om satt må den være mellom 0.5 og 5.0. Om 'grad' ikke er satt og 'har_medsoker' er true må den settes.
+- 'harBekreftetOpplysninger' og 'harForståttRettigheterOgPlikter' må være true
+- 'dagerPerUkeBorteFraJobb' er valgfri. Om satt må den være mellom 0.5 og 5.0. Om 'grad' ikke er satt og 'harMedsøker' er true må den settes.
 - tilsynsordning er ikke påkrevd, se eget avsnitt under om det er satt.
-- beredskap er ikke påkrevd, men om det er satt må 'i_beredskap' være satt og 'tilleggsinformasjon' være maks 1000 tegn om den er satt.
-- nattevaak er ikke påkrevd, men om det er satt må 'har_nattevaak' være satt og 'tilleggsinformasjon' være maks 1000 tegn om den er satt.
+- beredskap er ikke påkrevd, men om det er satt må 'beredskap' være satt og 'tilleggsinformasjon' være maks 1000 tegn om den er satt.
+- nattevåk er ikke påkrevd, men om det er satt må 'harNattevåk' være satt og 'tilleggsinformasjon' være maks 1000 tegn om den er satt.
 
 ```json
 {
-  "sprak": "nb",
+  "newVersion": null,
+  "språk": "nb",
   "barn": {
-    "navn": "Iben Olafsson Hansen",
-    "fodselsnummer": "01011950021",
-    "alternativ_id": null,
-    "aktoer_id": null
+    "fødselsnummer": "123456789",
+    "navn": "Barn Barnesen",
+    "aktørId": "12345",
+    "fødselsdato": "2018-01-01"
   },
-  "relasjon_til_barnet": "mor",
-  "fra_og_med": "2019-10-10",
-  "til_og_med": "2019-11-10",
-  "bekrefter_periode_over_8_uker": true,
-  "skal_bekrefte_omsorg": true,
-  "skal_passe_pa_barnet_i_hele_perioden": true,
-  "beskrivelse_omsorgsrollen": "En kort beskrivelse",
+  "relasjonTilBarnet": "mor",
+  "fraOgMed": "2020-01-01",
+  "tilOgMed": "2020-01-10",
+  "samtidigHjemme": true,
   "arbeidsgivere": {
     "organisasjoner": [
       {
-        "navn": "Telenor",
-        "organisasjonsnummer": "973861778",
-        "skal_jobbe": "ja",
-        "skal_jobber_prosent": 50.24
-      },
-      {
-        "navn": "Maxbo",
-        "organisasjonsnummer": "910831143",
-        "skal_jobbe": "ja",
-        "skal_jobbe_prosent": 25.0
+        "organisasjonsnummer": "917755736",
+        "navn": "Org",
+        "skalJobbeProsent": 10,
+        "jobberNormaltTimer": 10,
+        "skalJobbe": "redusert",
+        "vetIkkeEkstrainfo": null
       }
     ]
   },
   "vedlegg": [
-    "http://pleiepengesoknad-api.nav.no/vedlegg/e2daa60b-2423-401c-aa33-b41dc6b630e7"
+    "http://localhost:8080/vedlegg/1"
   ],
   "medlemskap": {
-    "har_bodd_i_utlandet_siste_12_mnd": false,
-    "skal_bo_i_utlandet_neste_12_mnd": true,
-    "utenlandsopphold_neste_12_mnd": [
+    "harBoddIUtlandetSiste12Mnd": true,
+    "skalBoIUtlandetNeste12Mnd": true,
+    "utenlandsoppholdNeste12Mnd": [
       {
-        "fra_og_med": "2019-10-10",
-        "til_og_med": "2019-11-10",
-        "landkode": "SE",
-        "landnavn": "Sverige"
+        "fraOgMed": "2018-01-01",
+        "tilOgMed": "2018-01-10",
+        "landkode": "DEU",
+        "landnavn": "Tyskland"
       }
     ],
-    "utenlandsopphold_siste_12_mnd": []
+    "utenlandsoppholdSiste12Mnd": [
+      {
+        "fraOgMed": "2017-01-01",
+        "tilOgMed": "2017-01-10",
+        "landkode": "DEU",
+        "landnavn": "Tyskland"
+      }
+    ]
   },
-  "utenlandsopphold_i_perioden": {
-    "skal_oppholde_seg_i_i_utlandet_i_perioden": true,
+  "selvstendigVirksomheter": [
+    {
+      "næringstyper": [
+        "ANNEN"
+      ],
+      "fiskerErPåBladB": false,
+      "organisasjonsnummer": null,
+      "fraOgMed": "2020-01-01",
+      "tilOgMed": null,
+      "næringsinntekt": 1111,
+      "navnPåVirksomheten": "TullOgTøys",
+      "registrertINorge": false,
+      "registrertIUtlandet": {
+        "landnavn": "Tyskland",
+        "landkode": "DEU"
+      },
+      "varigEndring": {
+        "inntektEtterEndring": 9999,
+        "dato": "2020-01-01",
+        "forklaring": "Korona"
+      },
+      "regnskapsfører": {
+        "navn": "Kjell Regnskap",
+        "telefon": "123456789"
+      },
+      "revisor": null,
+      "yrkesaktivSisteTreFerdigliknedeÅrene": {
+        "oppstartsdato": "2018-01-01"
+      }
+    }
+  ],
+  "utenlandsoppholdIPerioden": {
+    "skalOppholdeSegIUtlandetIPerioden": true,
     "opphold": [
       {
-        "fra_og_med": "2019-10-10",
-        "til_og_med": "2019-11-10",
+        "fraOgMed": "2019-10-10",
+        "tilOgMed": "2019-11-10",
         "landkode": "SE",
-        "landnavn": "Sverige"
+        "landnavn": "Sverige",
+        "erUtenforEøs": false,
+        "erBarnetInnlagt": true,
+        "årsak": "ANNET"
       },
       {
-        "landnavn": "USA",
-        "landkode": "US",
-        "fra_og_med": "2020-01-08",
-        "til_og_med": "2020-01-09",
-        "er_utenfor_eos": true,
-        "er_barnet_innlagt": true,
-        "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+        "landnavn": "Sverige",
+        "landkode": "SE",
+        "fraOgMed": "2019-10-10",
+        "tilOgMed": "2019-11-10",
+        "erUtenforEøs": false,
+        "erBarnetInnlagt": true,
+        "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+      },
+      {
+        "landnavn": "Sverige",
+        "landkode": "SE",
+        "fraOgMed": "2019-10-10",
+        "tilOgMed": "2019-11-10",
+        "erUtenforEøs": false,
+        "erBarnetInnlagt": true,
+        "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD"
+      },
+      {
+        "landnavn": "Sverige",
+        "landkode": "SE",
+        "fraOgMed": "2019-10-10",
+        "tilOgMed": "2019-11-10",
+        "erUtenforEøs": false,
+        "erBarnetInnlagt": false,
+        "årsak": null
       }
     ]
   },
-  "ferieuttak_i_perioden": {
-    "skal_ta_ut_ferie_i_periode": true,
+  "harMedsøker": true,
+  "harBekreftetOpplysninger": true,
+  "harForståttRettigheterOgPlikter": true,
+  "ferieuttakIPerioden": {
+    "skalTaUtFerieIPerioden": false,
     "ferieuttak": [
       {
-        "fra_og_med": "2020-01-05",
-        "til_og_med": "2020-01-07"
+        "fraOgMed": "2020-01-05",
+        "tilOgMed": "2020-01-07"
       }
     ]
   },
-  "har_medsoker": true,
-  "samtidig_hjemme": true,
-  "har_bekreftet_opplysninger": true,
-  "har_forstatt_rettigheter_og_plikter": true,
+  "skalBekrefteOmsorg": true,
+  "skalPassePåBarnetIHelePerioden": true,
+  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
+  "bekrefterPeriodeOver8Uker": true,
+  "beredskap": {
+    "beredskap": true,
+    "tilleggsinformasjon": "Ikke beredskap"
+  },
+  "frilans": {
+    "jobberFortsattSomFrilans": true,
+    "startdato": "2018-01-01"
+  },
+  "nattevåk": {
+    "harNattevåk": true,
+    "tilleggsinformasjon": "Har nattevåk"
+  },
   "tilsynsordning": {
     "svar": "ja",
     "ja": {
-      "mandag": "PT7H30M",
-      "tirsdag": null,
-      "onsdag": "PT7H25M",
-      "torsdag": null,
-      "fredag": "PT0S",
-      "tilleggsinformasjon": "Unntatt uke 37. Da er han hjemme hele tiden."
+      "mandag": "PT1H",
+      "tirsdag": "PT1H",
+      "onsdag": "PT1H",
+      "torsdag": "PT1H",
+      "fredag": "PT1H",
+      "tilleggsinformasjon": "Blabla"
+    },
+    "vetIkke": {
+      "svar": "annet",
+      "annet": "Nei"
     }
-  },
-  "beredskap": {
-    "i_beredskap": true,
-    "tilleggsinformasjon": "Må sitte utenfor barnehagen."
-  },
-  "nattevaak": {
-    "har_nattevaak": true,
-    "tilleggsinformasjon": "Må sove om dagen."
-  },
-  "har_hatt_inntekt_som_frilanser": true,
-  "frilans": {
-    "startdato": "2019-01-08",
-    "jobber_fortsatt_som_frilans": true
   }
 }
 ```
 
 #### Utenlandsopphold i perioden
 
-- Attributten `skal_oppholde_seg_i_utlandet_i_perioden` være satt. `true|false`.
+- Attributten `skalOppholdeSegIUtlandetIPerioden` være satt. `true|false`.
 - Attributten `opphold` inneholder to typer data
 
 ###### Opphold i EØS land
@@ -150,8 +209,8 @@ POST @ /soknad -> 202 Response
 {
   "landnavn": "Sverige",
   "landkode": "SE",
-  "fra_og_med": "2020-01-01",
-  "til_og_med": "2020-02-01"
+  "fraOgMed": "2020-01-01",
+  "tilOgMed": "2020-02-01"
 }
 ```
 
@@ -161,28 +220,28 @@ POST @ /soknad -> 202 Response
 {
   "landnavn": "USA",
   "landkode": "US",
-  "fra_og_med": "2020-01-08",
-  "til_og_med": "2020-01-09",
-  "er_utenfor_eos": true,
-  "er_barnet_innlagt": true,
-  "arsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+  "fraOgMed": "2020-01-08",
+  "tilOgMed": "2020-01-09",
+  "erUtenforEøs": true,
+  "erBarnetInnlagt": true,
+  "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
 }
 ```
 
-- Attributten `er_utenfor_eos` er satt til `true`
-- Attributten `er_barnet_innlagt` er satt til `true|false`
-- Attributten `arsak` settes når `er_barnet_innlagt` er `true`. Gyldige verdier er:
+- Attributten `erUtenforEøs` er satt til `true`
+- Attributten `erBarnetInnlagt` er satt til `true|false`
+- Attributten `årsak` settes når `erBarnetInnlagt` er `true`. Gyldige verdier er:
   -- `BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING`
   -- `BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD`
   -- `ANNET`
-- Attributten `arsak` settes til `null` når `er_barnet_innlagt` er `false`
+- Attributten `årsak` settes til `null` når `erBarnetInnlagt` er `false`
 
 #### Tilsynsordning
 
 ##### Ja
 
 - Attributten `ja` være satt.
-- Attributten `vet_ikke` kan ikke være satt.
+- Attributten `vetIkke` kan ikke være satt.
 - Minst en av dagene må være satt (Se format på duration lengre ned)
 - `ja.tilleggsinformasjon` er ikke påkrevd. Om den er satt må den være maks 140 tegn.
 
@@ -202,7 +261,7 @@ POST @ /soknad -> 202 Response
 
 ##### Nei
 
-- Hverken attributten `ja` eller `vet_ikke` kan være satt.
+- Hverken attributten `ja` eller `vetIkke` kan være satt.
 
 ```json
 {
@@ -212,15 +271,15 @@ POST @ /soknad -> 202 Response
 
 ##### Vet ikke
 
-- Attributten `vet_ikke` være satt.
+- Attributten `vetIkke` være satt.
 - Attributten `ja` kan ikke være satt.
-- `vet_ikke.svar` kan være enten `er_sporadisk`, `er_ikke_laget_en_plan` eller `annet`
-- Om `vet_ikke.svar` er `annet` må også attributten `vet_ikke.svar.annet` være satt, men være maks 140 tegn.
+- `vetIkke.svar` kan være enten `er_sporadisk`, `er_ikke_laget_en_plan` eller `annet`
+- Om `vetIkke.svar` er `annet` må også attributten `vetIkke.svar.annet` være satt, men være maks 140 tegn.
 
 ```json
 {
-  "svar": "vet_ikke",
-  "vet_ikke": {
+  "svar": "vetIkke",
+  "vetIkke": {
     "svar": "annet",
     "annet": "Blir for vanskelig å si nå."
   }
@@ -233,7 +292,7 @@ POST @ /soknad -> 202 Response
 
 ```typescript
 {
-    har_hatt_inntekt_som_frilanser?: boolean;
+    harHattInntektSomFrilanser?: boolean;
     frilans?: FrilansApiData;
 }
 ```
@@ -243,7 +302,7 @@ POST @ /soknad -> 202 Response
 ```typescript
 export interface FrilansApiData {
   startdato: ApiStringDate;
-  jobber_fortsatt_som_frilans: boolean;
+  jobberFortsattSomFrilans: boolean;
 }
 ```
 
@@ -270,10 +329,10 @@ export declare enum Næringstype {
 
 export interface VirksomhetApiData {
   naringstype: Næringstype[];
-  fisker_er_pa_blad_b?: boolean;
-  fra_og_med: ApiStringDate;
-  til_og_med?: ApiStringDate | null;
-  er_pagaende?: boolean;
+  fiskerErPaBladB?: boolean;
+  fraOgMed: ApiStringDate;
+  tilOgMed?: ApiStringDate | null;
+  erPagaende?: boolean;
   naringsinntekt: number;
   navn_pa_virksomheten: string;
   organisasjonsnummer?: string;
@@ -334,8 +393,8 @@ GET @/soker -> 200 Response
   "etternavn": "MORSEN",
   "fornavn": "MOR",
   "mellomnavn": "HEISANN",
-  "fodselsnummer": "290990123456",
-  "fodseldato": "1997-10-05",
+  "fødselsnummer": "290990123456",
+  "fødseldato": "1997-10-05",
   "myndig": true
 }
 ```
@@ -438,18 +497,18 @@ GET @ /barn -> 200 Response
 {
   "barn": [
     {
-      "fodselsdato": "2000-08-27",
+      "fødselsdato": "2000-08-27",
       "fornavn": "BARN",
       "mellomnavn": "EN",
       "etternavn": "BARNESEN",
-      "aktoer_id": "1000000000001"
+      "aktørId": "1000000000001"
     },
     {
-      "fodselsdato": "2001-04-10",
+      "fødselsdato": "2001-04-10",
       "fornavn": "BARN",
       "mellomnavn": "TO",
       "etternavn": "BARNESEN",
-      "aktoer_id": "1000000000002"
+      "aktørId": "1000000000002"
     }
   ]
 }
@@ -489,13 +548,13 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
   "invalid_parameters": [
     {
       "type": "query",
-      "name": "fra_og_med",
+      "name": "fraOgMed",
       "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
       "invalid_value": null
     },
     {
-      "type": "query",
-      "name": "til_og_med",
+"type":_"query",
+      "name": "tilOgMed",
       "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
       "invalid_value": null
     }
@@ -513,16 +572,16 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
     "invalid_parameters": [
     {
       "type": "entity",
-      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+      "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
       "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være mellom 0%",
       "invalid_value": [
         {
           "navn": "Bjeffefirmaet ÆÆÅ",
-          "skal_jobbe": "vet_ikke",
+          "skalJobbe": "vet_ikke",
           "organisasjonsnummer": "917755736",
-          "jobber_normalt_timer": null,
-          "skal_jobbe_prosent": 10.0,
-          "vet_ikke_ekstrainfo": null
+          "jobberNormaltTimer": null,
+          "skalJobbeProsent": 10.0,
+          "vetIkkeEkstrainfo": null
         }
       ]
     }
@@ -540,16 +599,16 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
   "invalid_parameters": [
     {
       "type": "entity",
-      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+      "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
       "reason": "skalJobbeProsent er ulik 0%. Dersom skalJobbe = 'nei', så må skalJobbeProsent være 0%",
       "invalid_value": [
         {
           "navn": "Bjeffefirmaet ÆÆÅ",
-          "skal_jobbe": "nei",
+          "skalJobbe": "nei",
           "organisasjonsnummer": "917755736",
-          "jobber_normalt_timer": null,
-          "skal_jobbe_prosent": 10.0,
-          "vet_ikke_ekstrainfo": null
+          "jobberNormaltTimer": null,
+          "skalJobbeProsent": 10.0,
+          "vetIkkeEkstrainfo": null
         }
       ]
     }
@@ -567,16 +626,16 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
   "invalid_parameters": [
     {
       "type": "entity",
-      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+      "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
       "reason": "skalJobbeProsent ligger ikke mellom 1% og 99%. Dersom skalJobbe = 'redusert', så må skalJobbeProsent være mellom 1% og 99%",
       "invalid_value": [
         {
           "navn": "Bjeffefirmaet ÆÆÅ",
-          "skal_jobbe": "redusert",
+          "skalJobbe": "redusert",
           "organisasjonsnummer": "917755736",
-          "jobber_normalt_timer": null,
-          "skal_jobbe_prosent": 100.0,
-          "vet_ikke_ekstrainfo": null
+          "jobberNormaltTimer": null,
+          "skalJobbeProsent": 100.0,
+          "vetIkkeEkstrainfo": null
         }
       ]
     }
@@ -594,16 +653,16 @@ API'et returnerer feilkoder (http > 300) etter [RFC7807](https://tools.ietf.org/
   "invalid_parameters": [
     {
       "type": "entity",
-      "name": "arbeidsgivere.organisasjoner[0].skal_jobbe_prosent && arbeidsgivere.organisasjoner[0].skal_jobbe",
+      "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
       "reason": "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
       "invalid_value": [
         {
           "navn": "Bjeffefirmaet ÆÆÅ",
-          "skal_jobbe": "ja",
+          "skalJobbe": "ja",
           "organisasjonsnummer": "917755736",
-          "jobber_normalt_timer": null,
-          "skal_jobbe_prosent": 99.0,
-          "vet_ikke_ekstrainfo": null
+          "jobberNormaltTimer": null,
+          "skalJobbeProsent": 99.0,
+          "vetIkkeEkstrainfo": null
         }
       ]
     }
@@ -636,6 +695,9 @@ Ikke autorisert til å fullføre requesten. Ingen payload i responsen.
 POST @ /mellomlagring -> 200 Response
 GET @ /mellomlagring -> 200 Response
 DELETE @ /mellomlagring -> 200 Response
+
+### Alarmer
+Vi bruker [nais-alerts](https://doc.nais.io/observability/alerts) for å sette opp alarmer. Disse finner man konfigurert i [nais/alerts.yml](nais/alerts.yml).
 
 ### Redis
 

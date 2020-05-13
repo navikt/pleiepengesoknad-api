@@ -26,14 +26,14 @@ fun Route.soknadApis(
 
     post { _ : sendSoknad ->
         logger.trace("Mottatt ny søknad. Mapper søknad.")
-        val soknad = call.receive<Soknad>()
+        val søknad = call.receive<Søknad>()
         logger.trace("Søknad mappet. Validerer")
-        logger.info("Debugging newVersion=${soknad.newVersion}")
-        soknad.validate()
+        logger.info("Debugging newVersion=${søknad.newVersion}")
+        søknad.validate()
         logger.trace("Validering OK. Registrerer søknad.")
 
         soknadService.registrer(
-            soknad = soknad,
+            søknad = søknad,
             callId = call.getCallId(),
             idToken = idTokenProvider.getIdToken(call)
         )
@@ -46,7 +46,7 @@ fun Route.soknadApis(
     class validerSoknad
 
     post { _: validerSoknad ->
-        val søknad = call.receive<Soknad>()
+        val søknad = call.receive<Søknad>()
         logger.trace("Validerer søknad...")
         søknad.validate()
         logger.trace("Validering Ok.")
