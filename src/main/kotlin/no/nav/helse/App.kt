@@ -77,9 +77,7 @@ fun Application.pleiepengesoknadapi() {
 
     install(ContentNegotiation) {
         jackson {
-            dusseldorfConfigured()
-                .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-                .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
+            pleiepengersoknadConfigured()
         }
     }
 
@@ -257,5 +255,4 @@ fun Application.pleiepengesoknadapi() {
 fun ObjectMapper.pleiepengersoknadConfigured(): ObjectMapper {
     return dusseldorfConfigured()
         .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-        .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
 }

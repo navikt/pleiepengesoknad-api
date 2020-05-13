@@ -1,7 +1,7 @@
 package no.nav.helse
 
 import com.github.tomakehurst.wiremock.http.Cookie
-import no.nav.helse.dusseldorf.ktor.testsupport.jws.LoginService
+import no.nav.helse.dusseldorf.testsupport.jws.LoginService
 
 fun getAuthCookie(
     fnr: String,
