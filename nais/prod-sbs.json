@@ -23,5 +23,6 @@
     "SENDE_SOKNAD_TIL_PROSESSERING_SCOPES": "4dc7783f-ee44-4707-ae5c-1d824d19f59c/.default"
   },
   "slack-channel": "sif-alerts",
+  "slack-notify-type": "<!channel> | pleiepengesoknad-api | ",
   "app-alert-ingress": "https://pleiepengesoknad-api.nav.no"
 }

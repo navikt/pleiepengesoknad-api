@@ -1,6 +1,7 @@
 package no.nav.helse
 
 import com.auth0.jwk.JwkProviderBuilder
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
 import io.ktor.auth.Authentication
@@ -76,6 +77,7 @@ fun Application.pleiepengesoknadapi() {
     install(ContentNegotiation) {
         jackson {
             dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+                .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
         }
     }
 
