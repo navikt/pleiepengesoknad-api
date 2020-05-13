@@ -14,7 +14,7 @@ import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
-import no.nav.helse.pleiepengesøknadKonfigurert
+import no.nav.helse.k9SelvbetjeningOppslagKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -29,10 +29,7 @@ class BarnGateway(
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
         private const val HENTE_BARN_OPERATION = "hente-barn"
-        private val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert().apply {
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            registerModule(JavaTimeModule())
-        }
+        private val objectMapper = jacksonObjectMapper().k9SelvbetjeningOppslagKonfigurert()
         private val attributter = Pair(
             "a", listOf(
                 "barn[].aktør_id",

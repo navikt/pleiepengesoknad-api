@@ -17,6 +17,7 @@ import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.ApiGatewayApiKey
+import no.nav.helse.pleiepengesøknadKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
@@ -31,7 +32,7 @@ class PleiepengesoknadMottakGateway(
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(PleiepengesoknadMottakGateway::class.java)
-        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+        private val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
     }
 
     private val komplettUrl = Url.buildURL(
