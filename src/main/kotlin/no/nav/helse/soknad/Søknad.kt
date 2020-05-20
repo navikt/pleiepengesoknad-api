@@ -1,8 +1,6 @@
 package no.nav.helse.soknad
 
-import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
@@ -11,29 +9,31 @@ enum class Språk { nb, nn }
 
 data class Søknad(
     val newVersion: Boolean?,
-    @JsonAlias("sprak") val språk: Språk? = null,
+    val språk: Språk? = null,
     val barn: BarnDetaljer,
-    @JsonAlias("relasjon_til_barnet") val relasjonTilBarnet: String? = null,
+    val relasjonTilBarnet: String? = null,
     val arbeidsgivere: ArbeidsgiverDetaljer,
     val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
-    @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("fra_og_med") val fraOgMed: LocalDate,
-    @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("til_og_med") val tilOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val fraOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
-    @JsonAlias("bekrefter_periode_over_8_uker") val bekrefterPeriodeOver8Uker: Boolean? = null,// TODO: Fjern optional når prodsatt.
-    @JsonAlias("utenlandsopphold_i_perioden") val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
-    @JsonAlias("ferieuttak_i_perioden") val ferieuttakIPerioden: FerieuttakIPerioden?,
-    @JsonAlias("har_medsoker") val harMedsøker: Boolean? = null,
-    @JsonAlias("samtidig_hjemme") val samtidigHjemme: Boolean? = null,
-    @JsonAlias("har_forstatt_rettigheter_og_plikter") val harForståttRettigheterOgPlikter: Boolean,
-    @JsonAlias("har_bekreftet_opplysninger") val harBekreftetOpplysninger: Boolean,
+    val bekrefterPeriodeOver8Uker: Boolean? = null,// TODO: Fjern optional når prodsatt.
+    val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
+    val ferieuttakIPerioden: FerieuttakIPerioden?,
+    val harMedsøker: Boolean? = null,
+    val samtidigHjemme: Boolean? = null,
+    val harForståttRettigheterOgPlikter: Boolean,
+    val harBekreftetOpplysninger: Boolean,
     val tilsynsordning: Tilsynsordning?,
-    @JsonAlias("nattevaak") val nattevåk: Nattevåk? = null,
+    val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
-    @JsonAlias("selvstendig_virksomheter") val selvstendigVirksomheter: List<Virksomhet> = listOf(),
-    @JsonAlias("skal_bekrefte_omsorg") val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    @JsonAlias("skal_passe_pa_barnet_i_hele_perioden") val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    @JsonAlias("beskrivelse_omsorgs_rollen") val beskrivelseOmsorgsrollen: String? = null // TODO: Fjern optional når prodsatt.
+    val selvstendigVirksomheter: List<Virksomhet> = listOf(),
+    val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
+    val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
+    val beskrivelseOmsorgsrollen: String? = null // TODO: Fjern optional når prodsatt.
 )
 
 data class ArbeidsgiverDetaljer(
@@ -41,22 +41,22 @@ data class ArbeidsgiverDetaljer(
 )
 
 data class Medlemskap(
-    @JsonAlias("har_bodd_i_utlandet_siste_12_mnd") val harBoddIUtlandetSiste12Mnd: Boolean? = null,
-    @JsonAlias("utenlandsopphold_siste_12_mnd") val utenlandsoppholdSiste12Mnd: List<Bosted> = listOf(),
-    @JsonAlias("skal_bo_i_utlandet_neste_12_mnd") val skalBoIUtlandetNeste12Mnd: Boolean? = null,
-    @JsonAlias("utenlandsopphold_neste_12_mnd") val utenlandsoppholdNeste12Mnd: List<Bosted> = listOf()
+    val harBoddIUtlandetSiste12Mnd: Boolean? = null,
+    val utenlandsoppholdSiste12Mnd: List<Bosted> = listOf(),
+    val skalBoIUtlandetNeste12Mnd: Boolean? = null,
+    val utenlandsoppholdNeste12Mnd: List<Bosted> = listOf()
 )
 
 data class UtenlandsoppholdIPerioden(
-    @JsonAlias("skal_oppholde_seg_i_utlandet_i_perioden") val skalOppholdeSegIUtlandetIPerioden: Boolean? = null,
+    val skalOppholdeSegIUtlandetIPerioden: Boolean? = null,
     val opphold: List<Utenlandsopphold> = listOf()
 )
 
 data class BarnDetaljer(
-    @JsonAlias("fodselsnummer") val fødselsnummer: String?,
+    val fødselsnummer: String?,
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @JsonAlias("fodselsdato") val fødselsdato: LocalDate?,
-    @JsonAlias("aktoer_id", "aktoerId") val aktørId: String?,
+    val fødselsdato: LocalDate?,
+    val aktørId: String?,
     val navn: String?
 ) {
     override fun toString(): String {
@@ -66,23 +66,24 @@ data class BarnDetaljer(
 
 data class OrganisasjonDetaljer(
     val navn: String? = null,
-    @JsonAlias("skal_jobbe") val skalJobbe: String,
+    val skalJobbe: String,
     val organisasjonsnummer: String,
-    @JsonAlias("jobber_normalt_timer") val jobberNormaltTimer: Double,
-    @JsonAlias("skal_jobbe_prosent") val skalJobbeProsent: Double,
-    @JsonAlias("vet_ikke_ekstrainfo") val vetIkkeEkstrainfo: String? = null
+    val jobberNormaltTimer: Double,
+    val skalJobbeProsent: Double,
+    val vetIkkeEkstrainfo: String? = null
 )
 
 enum class TilsynsordningSvar {
     ja,
     nei,
-    @JsonAlias("vet_ikke") vetIkke
+    vetIkke
 }
 
 enum class TilsynsordningVetIkkeSvar {
-    @JsonAlias("er_sporadisk") erSporadisk,
-    @JsonAlias("er_ikke_laget_en_plan") erIkkeLagetEnPlan,
-    annet }
+    erSporadisk,
+    erIkkeLagetEnPlan,
+    annet
+}
 
 data class TilsynsordningJa(
     val mandag: Duration?,
@@ -109,11 +110,11 @@ data class TilsynsordningVetIkke(
 data class Tilsynsordning(
     val svar: TilsynsordningSvar,
     val ja: TilsynsordningJa? = null,
-    @JsonAlias("vet_ikke") val vetIkke: TilsynsordningVetIkke? = null
+    val vetIkke: TilsynsordningVetIkke? = null
 )
 
 data class Nattevåk(
-    @JsonAlias("har_nattevaak") val harNattevåk: Boolean? = null,
+    val harNattevåk: Boolean? = null,
     val tilleggsinformasjon: String?
 ) {
     override fun toString(): String {
@@ -122,7 +123,7 @@ data class Nattevåk(
 }
 
 data class Beredskap(
-    @JsonAlias("i_beredskap") val beredskap: Boolean,
+    val beredskap: Boolean,
     val tilleggsinformasjon: String?
 ) {
     override fun toString(): String {
@@ -131,12 +132,14 @@ data class Beredskap(
 }
 
 data class Utenlandsopphold(
-    @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("fra_og_med") val fraOgMed: LocalDate,
-    @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("til_og_med") val tilOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val fraOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val tilOgMed: LocalDate,
     val landkode: String,
     val landnavn: String,
-    @JsonAlias("er_utenfor_eos") val erUtenforEøs: Boolean?,
-    @JsonAlias("er_barnet_innlagt") val erBarnetInnlagt: Boolean?,
+    val erUtenforEøs: Boolean?,
+    val erBarnetInnlagt: Boolean?,
     val årsak: Årsak?
 ) {
     override fun toString(): String {
@@ -145,8 +148,10 @@ data class Utenlandsopphold(
 }
 
 data class Bosted(
-    @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("fra_og_med") val fraOgMed: LocalDate,
-    @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("til_og_med") val tilOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val fraOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val tilOgMed: LocalDate,
     val landkode: String,
     val landnavn: String
 ) {
@@ -156,7 +161,7 @@ data class Bosted(
 }
 
 data class FerieuttakIPerioden(
-    @JsonAlias("skal_ta_ut_ferie_i_periode") val skalTaUtFerieIPerioden: Boolean,
+    val skalTaUtFerieIPerioden: Boolean,
     val ferieuttak: List<Ferieuttak>
 ) {
     override fun toString(): String {
@@ -165,8 +170,10 @@ data class FerieuttakIPerioden(
 }
 
 data class Ferieuttak(
-    @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("fra_og_med") val fraOgMed: LocalDate,
-    @JsonFormat(pattern = "yyyy-MM-dd") @JsonAlias("til_og_med") val tilOgMed: LocalDate
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val fraOgMed: LocalDate,
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    val tilOgMed: LocalDate
 ) {
     override fun toString(): String {
         return "Ferieuttak(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed)"
@@ -176,7 +183,7 @@ data class Ferieuttak(
 data class Frilans(
     @JsonFormat(pattern = "yyyy-MM-dd")
     val startdato: LocalDate,
-    @JsonAlias("jobber_fortsatt_som_frilans") val jobberFortsattSomFrilans: Boolean
+    val jobberFortsattSomFrilans: Boolean
 )
 
 enum class Årsak {

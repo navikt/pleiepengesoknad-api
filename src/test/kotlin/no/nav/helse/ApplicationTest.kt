@@ -107,25 +107,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med snake_case og uten ÆØÅ`(){
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = "/soknad",
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedsnake_caseOgUtenÆØÅ(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl
-            )
-        )
-    }
-
-    @Test
     fun `Hente arbeidsgivere`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,

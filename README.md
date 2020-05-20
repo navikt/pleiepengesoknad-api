@@ -3,6 +3,7 @@
 API for Selvbetjeningsløsning for søknad om pleiepenger
 
 ![CI / CD](https://github.com/navikt/pleiepengesoknad-api/workflows/CI%20/%20CD/badge.svg)
+![NAIS Alerts](https://github.com/navikt/pleiepengesoknad-api/workflows/Alerts/badge.svg)
 
 Benyttet av [pleiepengesoknad](https://github.com/navikt/pleiepengesoknad)
 
