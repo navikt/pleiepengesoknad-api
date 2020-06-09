@@ -22,7 +22,7 @@ data class Søknad(
     val bekrefterPeriodeOver8Uker: Boolean? = null,// TODO: Fjern optional når prodsatt.
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
-    val harMedsøker: Boolean? = null,
+    val harMedsøker: Boolean?,
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
@@ -140,12 +140,18 @@ data class Utenlandsopphold(
     val landnavn: String,
     val erUtenforEøs: Boolean?,
     val erBarnetInnlagt: Boolean?,
+    val perioderBarnetErInnlagt: List<Periode> = listOf(),
     val årsak: Årsak?
 ) {
     override fun toString(): String {
         return "Utenlandsopphold(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed, landkode='$landkode', landnavn='$landnavn', erUtenforEos=$erUtenforEøs, erBarnetInnlagt=$erBarnetInnlagt, årsak=$årsak)"
     }
 }
+
+data class Periode(
+    val fraOgMed: LocalDate,
+    val tilOgMed: LocalDate
+)
 
 data class Bosted(
     @JsonFormat(pattern = "yyyy-MM-dd")

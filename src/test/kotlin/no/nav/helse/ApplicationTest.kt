@@ -871,6 +871,130 @@ class ApplicationTest {
     }
 
     @Test
+    @Ignore // TODO: Fjernes når det er prodsatt
+    fun `Sende soknad som har satt erBarnetInnlagt til true men har ikke oppgitt noen perioder i perioderBarnetErInnlagt`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "Utenlandsopphold[1]",
+                      "reason": "Hvis erBarnetInnlagt er true så må perioderBarnetErInnlagt inneholde minst en periode",
+                      "invalid_value": "perioderBarnetErInnlagt"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = """
+                {
+                  "new_version": true,
+                  "sprak": "nb",
+                  "barn": {
+                    "navn": null,
+                    "fodselsnummer": "03028104560",
+                    "aktørId": null,
+                    "fodselsdato": null
+                  },
+                  "arbeidsgivere": {
+                    "organisasjoner": [
+                      
+                    ]
+                  },
+                  "medlemskap": {
+                    "harBoddIUtlandetSiste12Mnd": false,
+                    "skalBoIUtlandetNeste12Mnd": false,
+                    "utenlandsoppholdSiste12Mnd": [
+                      
+                    ],
+                    "utenlandsoppholdNeste12Mnd": [
+                      
+                    ]
+                  },
+                  "fraOgMed": "2020-02-01",
+                  "tilOgMed": "2020-02-13",
+                  "vedlegg": [
+                    "$jpegUrl"
+                  ],
+                  "harMedsøker": false,
+                  "harBekreftetOpplysninger": true,
+                  "harForståttRettigheterOgPlikter": true,
+                  "frilans": {
+                    "startdato": "2019-12-06",
+                    "jobberFortsattSomFrilans": false
+                  },
+                  "selvstendigVirksomheter": [
+                    {
+                      "næringstyper": [
+                        "JORDBRUK_SKOGBRUK",
+                        "DAGMAMMA",
+                        "ANNEN"
+                      ],
+                      "navnPåVirksomheten": "Tull og tøys",
+                      "registrertINorge": true,
+                      "organisasjonsnummer": "85577454",
+                      "fraOgMed": "2020-02-01",
+                      "tilOgMed": "2020-02-13",
+                      "næringsinntekt": 9857755,
+                      "varigEndring": {
+                        "dato": "2020-01-03",
+                        "forklaring": "forklaring blablablabla",
+                        "inntektEtterEndring": "23423"
+                      },
+                      "yrkesaktivSisteTreFerdigliknedeÅrene": {
+                        "oppstartsdato": "2020-02-01"
+                      },
+                      "regnskapsfører": {
+                        "navn": "Kjell Bjarne",
+                        "telefon": "88788"
+                      }
+                    }
+                  ],
+                  "tilsynsordning": {
+                    "svar": "nei"
+                  },
+                "utenlandsoppholdIPerioden" : 
+                    {
+                      "skalOppholdeSegIUtlandetIPerioden": true,
+                      "opphold": [
+                        {
+                          "fraOgMed": "2019-10-10",
+                          "tilOgMed": "2019-11-10",
+                          "landkode": "SE",
+                          "landnavn": "Sverige"
+                        },
+                        {
+                          "landnavn": "USA",
+                          "landkode": "US",
+                          "fraOgMed": "2020-01-08",
+                          "tilOgMed": "2020-01-09",
+                          "erUtenforEos": true,
+                          "erBarnetInnlagt": true,
+                          "perioderBarnetErInnlagt": [],
+                          "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
+                        }
+                      ]
+                    }
+                }
+
+            """.trimIndent()
+
+        )
+    }
+
+    @Test
     fun `Sende soknad uten ID på barnet`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)

@@ -65,11 +65,17 @@ class SoknadUtils {
                                     "tilOgMed": "2020-01-09",
                                     "erUtenforEos": true,
                                     "erBarnetInnlagt": true,
+                                    "perioderBarnetErInnlagt" : [
+                                      {
+                                        "fraOgMed" : "2020-01-01",
+                                        "tilOgMed": "2020-01-02"
+                                      }
+                                    ],
                                     "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                                 }
                             ]
                         },
-                        "dagerPerUkeBorteFraJobb": 4.0,
+                    "dagerPerUkeBorteFraJobb": 4.0,
                     "harMedsøker": true,
                     "harBekreftetOpplysninger": true,
                     "harForståttRettigheterOgPlikter": true,
@@ -290,6 +296,12 @@ class SoknadUtils {
                                     "tilOgMed": "2020-01-09",
                                     "erUtenforEos": true,
                                     "erBarnetInnlagt": true,
+                                    "perioderBarnetErInnlagt" : [
+                                      {
+                                        "fraOgMed" : "2020-01-01",
+                                        "tilOgMed": "2020-01-02"
+                                      }
+                                    ],
                                     "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                                 }
                             ]
@@ -359,6 +371,12 @@ class SoknadUtils {
                                     "tilOgMed": "2020-01-09",
                                     "erUtenforEos": true,
                                     "erBarnetInnlagt": true,
+                                    "perioderBarnetErInnlagt" : [
+                                      {
+                                        "fraOgMed" : "2020-01-01",
+                                        "tilOgMed": "2020-01-02"
+                                      }
+                                    ],
                                     "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                                 }
                             ]
