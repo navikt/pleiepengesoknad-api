@@ -117,11 +117,17 @@ POST @ /soknad -> 202 Response
     "opphold": [
       {
         "fraOgMed": "2019-10-10",
-        "tilOgMed": "2019-11-10",
+        "tilOgMed": "2019-20-10",
         "landkode": "SE",
         "landnavn": "Sverige",
         "erUtenforEøs": false,
         "erBarnetInnlagt": true,
+        "barnInnlagtPerioder": [
+          {
+            fom: "2019-11-10",
+            tom: "2019-14-10"
+          }
+        ];
         "årsak": "ANNET"
       },
       {
