@@ -124,10 +124,10 @@ POST @ /soknad -> 202 Response
         "erBarnetInnlagt": true,
         "barnInnlagtPerioder": [
           {
-            fom: "2019-11-10",
-            tom: "2019-14-10"
+            "fom": "2019-11-10",
+            "tom": "2019-14-10"
           }
-        ];
+        ],
         "årsak": "ANNET"
       },
       {
