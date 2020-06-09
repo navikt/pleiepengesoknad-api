@@ -871,7 +871,7 @@ class ApplicationTest {
     }
 
     @Test
-    @Ignore // TODO: Fjernes når det er prodsatt
+    @Ignore // TODO: Fjern @Ignore når validering er satt på
     fun `Sende soknad som har satt erBarnetInnlagt til true men har ikke oppgitt noen perioder i perioderBarnetErInnlagt`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)

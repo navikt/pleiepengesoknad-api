@@ -349,7 +349,7 @@ private fun validerUtenladsopphold(
             )
         }
 
-        /* TODO: Fjerne kommentar etter at det har blitt prodsatt i frontend.
+        /* TODO: Sett på validering igjen når det er lansert i frontend
         if(utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()){
             violations.add(
                 Violation(
