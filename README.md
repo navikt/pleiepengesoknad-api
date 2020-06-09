@@ -122,13 +122,21 @@ POST @ /soknad -> 202 Response
         "landnavn": "Sverige",
         "erUtenforEøs": false,
         "erBarnetInnlagt": true,
-        "barnInnlagtPerioder": [
+        "perioderBarnetErInnlagt": [
           {
-            "fom": "2019-11-10",
-            "tom": "2019-14-10"
+            "fraOgMed": "2019-11-10",
+            "tilOgMed": "2019-14-10"
           }
         ],
         "årsak": "ANNET"
+      },
+      {
+        "fraOgMed": "2019-10-10",
+        "tilOgMed": "2019-20-10",
+        "landkode": "SE",
+        "landnavn": "Sverige",
+        "erUtenforEøs": false,
+        "erBarnetInnlagt": false
       },
       {
         "landnavn": "Sverige",
@@ -137,6 +145,12 @@ POST @ /soknad -> 202 Response
         "tilOgMed": "2019-11-10",
         "erUtenforEøs": false,
         "erBarnetInnlagt": true,
+        "perioderBarnetErInnlagt": [
+          {
+            "fraOgMed": "2019-11-10",
+            "tilOgMed": "2019-14-10"
+          }
+        ],
         "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
       },
       {
@@ -146,6 +160,12 @@ POST @ /soknad -> 202 Response
         "tilOgMed": "2019-11-10",
         "erUtenforEøs": false,
         "erBarnetInnlagt": true,
+        "perioderBarnetErInnlagt": [
+          {
+            "fraOgMed": "2019-11-10",
+            "tilOgMed": "2019-14-10"
+          }
+        ],
         "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD"
       },
       {
@@ -155,6 +175,12 @@ POST @ /soknad -> 202 Response
         "tilOgMed": "2019-11-10",
         "erUtenforEøs": false,
         "erBarnetInnlagt": false,
+        "perioderBarnetErInnlagt": [
+          {
+            "fraOgMed": "2019-11-10",
+            "tilOgMed": "2019-14-10"
+          }
+        ],
         "årsak": null
       }
     ]
