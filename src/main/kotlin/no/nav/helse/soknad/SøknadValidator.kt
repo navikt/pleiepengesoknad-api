@@ -348,8 +348,6 @@ private fun validerUtenladsopphold(
                 )
             )
         }
-
-        /* TODO: Sett på validering igjen når det er lansert i frontend
         if(utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()){
             violations.add(
                 Violation(
@@ -360,7 +358,6 @@ private fun validerUtenladsopphold(
                 )
             )
         }
-        */
     }
     return violations
 }
