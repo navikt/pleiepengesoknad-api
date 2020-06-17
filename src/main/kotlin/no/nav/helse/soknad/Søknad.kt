@@ -22,7 +22,7 @@ data class Søknad(
     val bekrefterPeriodeOver8Uker: Boolean? = null,// TODO: Fjern optional når prodsatt.
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
-    val harMedsøker: Boolean?,
+    val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
