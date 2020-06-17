@@ -135,6 +135,12 @@ internal class SerDesTest {
                     landkode = "SE",
                     landnavn = "Sverige",
                     erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
                     erUtenforEøs = false,
                     årsak = Årsak.ANNET
                 ),
@@ -144,6 +150,12 @@ internal class SerDesTest {
                     landkode = "SE",
                     landnavn = "Sverige",
                     erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
                     erUtenforEøs = false,
                     årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
                 ),
@@ -153,6 +165,12 @@ internal class SerDesTest {
                     landkode = "SE",
                     landnavn = "Sverige",
                     erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
                     erUtenforEøs = false,
                     årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
                 ),
@@ -268,6 +286,12 @@ internal class SerDesTest {
                     "landnavn": "Sverige",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": true,
+                    "perioderBarnetErInnlagt" : [
+                      {
+                        "fraOgMed" : "2020-01-01",
+                        "tilOgMed": "2020-01-02"
+                      }
+                    ],
                     "årsak": "ANNET"
                   },
                   {
@@ -277,6 +301,12 @@ internal class SerDesTest {
                     "tilOgMed": "2019-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": true,
+                    "perioderBarnetErInnlagt" : [
+                      {
+                        "fraOgMed" : "2020-01-01",
+                        "tilOgMed": "2020-01-02"
+                      }
+                    ],
                     "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                   },
                   {
@@ -286,6 +316,12 @@ internal class SerDesTest {
                     "tilOgMed": "2019-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": true,
+                    "perioderBarnetErInnlagt" : [
+                      {
+                        "fraOgMed" : "2020-01-01",
+                        "tilOgMed": "2020-01-02"
+                      }
+                    ],
                     "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD"
                   },{
                     "landnavn": "Sverige",
@@ -294,6 +330,7 @@ internal class SerDesTest {
                     "tilOgMed": "2019-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": false,
+                    "perioderBarnetErInnlagt" : [],
                     "årsak": null
                   }
                 ]
@@ -445,6 +482,12 @@ internal class SerDesTest {
                     "landnavn": "Sverige",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": true,
+                    "perioderBarnetErInnlagt" : [
+                      {
+                        "fraOgMed" : "2020-01-01",
+                        "tilOgMed": "2020-01-02"
+                      }
+                    ],
                     "årsak": "ANNET"
                   },
                   {
@@ -454,6 +497,12 @@ internal class SerDesTest {
                     "tilOgMed": "2019-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": true,
+                    "perioderBarnetErInnlagt" : [
+                      {
+                        "fraOgMed" : "2020-01-01",
+                        "tilOgMed": "2020-01-02"
+                      }
+                    ],
                     "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                   },
                   {
@@ -463,6 +512,12 @@ internal class SerDesTest {
                     "tilOgMed": "2019-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": true,
+                    "perioderBarnetErInnlagt" : [
+                      {
+                        "fraOgMed" : "2020-01-01",
+                        "tilOgMed": "2020-01-02"
+                      }
+                    ],
                     "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD"
                   },{
                     "landnavn": "Sverige",
@@ -471,6 +526,7 @@ internal class SerDesTest {
                     "tilOgMed": "2019-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": false,
+                    "perioderBarnetErInnlagt" : [],
                     "årsak": null
                   }
                 ]
@@ -636,6 +692,12 @@ internal class SerDesTest {
                     landkode = "SE",
                     landnavn = "Sverige",
                     erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
                     erUtenforEøs = false,
                     årsak = Årsak.ANNET
                 ),
@@ -645,6 +707,12 @@ internal class SerDesTest {
                     landkode = "SE",
                     landnavn = "Sverige",
                     erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
                     erUtenforEøs = false,
                     årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
                 ),
@@ -654,6 +722,12 @@ internal class SerDesTest {
                     landkode = "SE",
                     landnavn = "Sverige",
                     erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
                     erUtenforEøs = false,
                     årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
                 ),

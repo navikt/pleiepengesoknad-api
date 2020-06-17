@@ -348,6 +348,16 @@ private fun validerUtenladsopphold(
                 )
             )
         }
+        if(utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()){
+            violations.add(
+                Violation(
+                    parameterName = "Utenlandsopphold[$index]",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Hvis erBarnetInnlagt er true så må perioderBarnetErInnlagt inneholde minst en periode",
+                    invalidValue = "perioderBarnetErInnlagt"
+                )
+            )
+        }
     }
     return violations
 }

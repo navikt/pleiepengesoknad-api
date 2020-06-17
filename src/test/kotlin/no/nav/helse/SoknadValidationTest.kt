@@ -158,7 +158,6 @@ class SoknadValidationTest {
         medlemskap = medlemskap,
         harMedsøker = harMedsoker,
         samtidigHjemme = samtidigHjemme,
-
         harBekreftetOpplysninger = true,
         harForståttRettigheterOgPlikter = true,
         tilsynsordning = null,
