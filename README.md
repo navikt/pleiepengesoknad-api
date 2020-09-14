@@ -106,7 +106,6 @@ POST @ /soknad -> 202 Response
         "navn": "Kjell Regnskap",
         "telefon": "123456789"
       },
-      "revisor": null,
       "yrkesaktivSisteTreFerdigliknedeÅrene": {
         "oppstartsdato": "2018-01-01"
       }
@@ -385,12 +384,6 @@ export interface VirksomhetApiData {
   regnskapsforer?: {
     navn: string;
     telefon: string;
-  };
-  har_revisor?: boolean;
-  revisor?: {
-    navn: string;
-    telefon: string;
-    kan_innhente_opplysninger?: boolean;
   };
 }
 ```
