@@ -120,26 +120,6 @@ class VirksomhetTest {
     }
 
     @Test
-    fun `Hvis harRevisor er satt til true så må revisor være et revisorobjekt, validering skal ikke reagere`(){
-        val virksomhet = Virksomhet(
-            næringstyper = listOf(Næringstyper.ANNEN),
-            fiskerErPåBladB = false,
-            fraOgMed = LocalDate.now(),
-            næringsinntekt = 1111,
-            navnPåVirksomheten = "TullOgTøys",
-            registrertINorge = true,
-            organisasjonsnummer = "101010",
-            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
-            revisor = Revisor(
-                navn = "Kjell",
-                telefon = "9898989",
-                kanInnhenteOpplysninger = false
-            )
-        )
-        virksomhet.validate(0).assertIngenFeil()
-    }
-
-    @Test
     fun `Hvis registrert i utlandet så må landkode være riktig ISO 3166 alpha-3 landkode, validering skal gi feil`(){
         val virksomhet = Virksomhet(
             næringstyper = listOf(Næringstyper.ANNEN),

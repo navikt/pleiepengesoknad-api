@@ -270,7 +270,6 @@ internal class SerDesTest {
                       "navn": "Kjell Regnskap",
                       "telefon": "123456789"
                     },
-                    "revisor": null,
                     "yrkesaktivSisteTreFerdigliknedeÅrene": {
                         "oppstartsdato": "2018-01-01"
                         }
@@ -466,7 +465,6 @@ internal class SerDesTest {
                       "navn": "Kjell Regnskap",
                       "telefon": "123456789"
                     },
-                    "revisor": null,
                     "yrkesaktivSisteTreFerdigliknedeÅrene": {
                         "oppstartsdato": "2018-01-01"
                         }
