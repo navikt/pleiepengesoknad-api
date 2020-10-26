@@ -21,13 +21,10 @@ object TestConfiguration {
         corsAdresses : String = "http://localhost:8080"
     ) : Map<String, String> {
 
-        val loginServiceWellKnownJson = wireMockServer?.getLoginServiceV1WellKnownUrl()?.getAsJson()
-
         val map = mutableMapOf(
             Pair("ktor.deployment.port","$port"),
-            Pair("nav.authorization.issuer", "${loginServiceWellKnownJson?.getString("issuer")}"),
+            Pair("nav.authorization.loginservice_discovery_url", "${wireMockServer?.getLoginServiceV1WellKnownUrl()}"),
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
-            Pair("nav.authorization.jwks_uri","${loginServiceWellKnownJson?.getString("jwks_uri")}"),
             Pair("nav.gateways.k9_oppslag_url","$k9OppslagUrl"),
             Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
             Pair("nav.gateways.k9_dokument_url", "$k9DokumentUrl"),
