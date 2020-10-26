@@ -1,6 +1,5 @@
 package no.nav.helse
 
-import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
@@ -9,7 +8,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.jackson.*
@@ -24,7 +22,9 @@ import no.nav.helse.arbeidsgiver.arbeidsgiverApis
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
+import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.clients
+import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.client.buildURL
@@ -37,7 +37,7 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.helse.general.auth.IdTokenProvider
-import no.nav.helse.general.auth.authorizationStatusPages
+import no.nav.helse.general.auth.IdTokenStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
 import no.nav.helse.mellomlagring.MellomlagringService
 import no.nav.helse.mellomlagring.mellomlagringApis
@@ -53,14 +53,10 @@ import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.K9DokumentGateway
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.helse.vedlegg.vedleggApis
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.time.Duration
-import java.util.concurrent.TimeUnit
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
 
-private val logger: Logger = LoggerFactory.getLogger("nav.pleiepengesoknadapi")
 
 @KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
@@ -94,37 +90,22 @@ fun Application.pleiepengesoknadapi() {
     }
 
     val idTokenProvider = IdTokenProvider(cookieName = configuration.getCookieName())
-    //TODO: Kan fjernes etter no/nav/helse/App.kt:108
-    val jwkProvider = JwkProviderBuilder(configuration.getJwksUrl().toURL())
-        .cached(10, 24, TimeUnit.HOURS)
-        .rateLimited(10, 1, TimeUnit.MINUTES)
-        .build()
+    val issuers = configuration.issuers()
 
-    //TODO: refaktorer lik: https://github.com/navikt/dusseldorf-ktor/pull/154#issue-508876256
-    //TODO: issuers kan hentes lik https://github.com/navikt/k9-selvbetjening-oppslag/blob/b3c94359f07c1f0e9304e078f1e3db9ed241ee38/src/main/kotlin/no/nav/k9/SelvbetjeningOppslag.kt#L45
     install(Authentication) {
-        jwt {
-            realm = appId
-            verifier(jwkProvider, configuration.getIssuer()) {
-                acceptNotBefore(10)
-                acceptIssuedAt(10)
-            }
-            authHeader { call ->
-                idTokenProvider
-                    .getIdToken(call)
-                    .medValidertLevel("Level4")
+        multipleJwtIssuers(
+            issuers = issuers,
+            extractHttpAuthHeader = {call ->
+                idTokenProvider.getIdToken(call)
                     .somHttpAuthHeader()
             }
-            validate { credentials ->
-                return@validate JWTPrincipal(credentials.payload)
-            }
-        }
+        )
     }
 
     install(StatusPages) {
         DefaultStatusPages()
         JacksonStatusPages()
-        authorizationStatusPages()
+        IdTokenStatusPages()
     }
 
     install(Locations)
@@ -163,8 +144,7 @@ fun Application.pleiepengesoknadapi() {
             søkerGateway = søkerGateway
         )
 
-        authenticate {
-
+        authenticate(*issuers.allIssuers()) {
             søkerApis(
                 søkerService = søkerService,
                 idTokenProvider = idTokenProvider
@@ -211,7 +191,6 @@ fun Application.pleiepengesoknadapi() {
             healthChecks = setOf(
                 pleiepengesoknadMottakGateway,
                 HttpRequestHealthCheck(mapOf(
-                    configuration.getJwksUrl() to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, includeExpectedStatusEntity = false),
                     Url.buildURL(baseUrl = configuration.getK9DokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
                     Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
                 ))

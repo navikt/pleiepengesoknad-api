@@ -2,41 +2,27 @@ package no.nav.helse
 
 import io.ktor.config.*
 import io.ktor.util.*
-import kotlinx.coroutines.runBlocking
+import no.nav.helse.dusseldorf.ktor.auth.EnforceEqualsOrContains
+import no.nav.helse.dusseldorf.ktor.auth.issuers
+import no.nav.helse.dusseldorf.ktor.auth.withAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.getOptionalList
 import no.nav.helse.dusseldorf.ktor.core.getOptionalString
 import no.nav.helse.dusseldorf.ktor.core.getRequiredList
 import no.nav.helse.dusseldorf.ktor.core.getRequiredString
 import no.nav.helse.general.auth.ApiGatewayApiKey
-import org.json.simple.JSONObject
-import org.json.simple.parser.JSONParser
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.net.URI
-import java.net.URL
-
-//TODO: Kan fjernes etter no/nav/helse/App.kt:108
-private const val ISSUER = "issuer"
-private const val JWKS_URI = "jwks_uri"
-
-//TODO: Kan fjernes etter no/nav/helse/App.kt:108
-private val jsonParser = JSONParser()
-private val logger: Logger = LoggerFactory.getLogger("no.nav.helse.Configuration")
 
 @KtorExperimentalAPI
 data class Configuration(val config: ApplicationConfig) {
 
-    private val discoveryJson =
-        runBlocking { config.getRequiredString("nav.authorization.loginservice_discovery_url", false).discover(listOf(ISSUER, JWKS_URI)) }
+    private val loginServiceClaimRules = setOf(
+        EnforceEqualsOrContains("acr", "Level4")
+    )
 
-    private val issuer = discoveryJson[ISSUER] as String
-    private val jwksUrl = discoveryJson[JWKS_URI] as String
-
-    //TODO: Kan fjernes etter no/nav/helse/App.kt:108
-    internal fun getJwksUrl() = URI(jwksUrl)
-
-    //TODO: Kan fjernes etter no/nav/helse/App.kt:108
-    internal fun getIssuer(): String = issuer
+    internal fun issuers() = config.issuers().withAdditionalClaimRules(mapOf(
+        "login-service-v1" to loginServiceClaimRules,
+        "login-service-v2" to loginServiceClaimRules
+    ))
 
     internal fun getCookieName(): String {
         return config.getRequiredString("nav.authorization.cookie_name", secret = false)
@@ -74,21 +60,4 @@ data class Configuration(val config: ApplicationConfig) {
     internal fun getStoragePassphrase(): String {
         return config.getRequiredString("nav.storage.passphrase", secret = true)
     }
-}
-
-//TODO: Kan fjernes etter no/nav/helse/App.kt:108
-private fun String.discover(requiredAttributes: List<String>): JSONObject {
-    val asText = URL(this).readText()
-    val asJson = jsonParser.parse(asText) as JSONObject
-    return if (asJson.containsKeys(requiredAttributes)) asJson else {
-        throw IllegalStateException("Response fra Discovery Endpoint inneholdt ikke attributtene '[${requiredAttributes.joinToString()}]'. Response='$asText'\"")
-    }
-}
-
-//TODO: Kan fjernes etter no/nav/helse/App.kt:108
-private fun JSONObject.containsKeys(requiredAttributes: List<String>): Boolean {
-    requiredAttributes.forEach {
-        if (!containsKey(it)) return false
-    }
-    return true
 }
