@@ -15,9 +15,11 @@ import org.slf4j.LoggerFactory
 import java.net.URI
 import java.net.URL
 
+//TODO: Kan fjernes etter no/nav/helse/App.kt:108
 private const val ISSUER = "issuer"
 private const val JWKS_URI = "jwks_uri"
 
+//TODO: Kan fjernes etter no/nav/helse/App.kt:108
 private val jsonParser = JSONParser()
 private val logger: Logger = LoggerFactory.getLogger("no.nav.helse.Configuration")
 
@@ -30,8 +32,10 @@ data class Configuration(val config: ApplicationConfig) {
     private val issuer = discoveryJson[ISSUER] as String
     private val jwksUrl = discoveryJson[JWKS_URI] as String
 
+    //TODO: Kan fjernes etter no/nav/helse/App.kt:108
     internal fun getJwksUrl() = URI(jwksUrl)
 
+    //TODO: Kan fjernes etter no/nav/helse/App.kt:108
     internal fun getIssuer(): String = issuer
 
     internal fun getCookieName(): String {
@@ -72,6 +76,7 @@ data class Configuration(val config: ApplicationConfig) {
     }
 }
 
+//TODO: Kan fjernes etter no/nav/helse/App.kt:108
 private fun String.discover(requiredAttributes: List<String>): JSONObject {
     val asText = URL(this).readText()
     val asJson = jsonParser.parse(asText) as JSONObject
@@ -80,6 +85,7 @@ private fun String.discover(requiredAttributes: List<String>): JSONObject {
     }
 }
 
+//TODO: Kan fjernes etter no/nav/helse/App.kt:108
 private fun JSONObject.containsKeys(requiredAttributes: List<String>): Boolean {
     requiredAttributes.forEach {
         if (!containsKey(it)) return false

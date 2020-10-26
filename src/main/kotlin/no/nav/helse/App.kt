@@ -8,20 +8,15 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.*
-import io.ktor.auth.Authentication
-import io.ktor.auth.authenticate
-import io.ktor.auth.jwt.JWTPrincipal
-import io.ktor.auth.jwt.jwt
+import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.features.*
-import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.Url
-import io.ktor.jackson.jackson
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Locations
-import io.ktor.metrics.micrometer.MicrometerMetrics
-import io.ktor.routing.Routing
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.http.*
+import io.ktor.jackson.*
+import io.ktor.locations.*
+import io.ktor.metrics.micrometer.*
+import io.ktor.routing.*
+import io.ktor.util.*
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.helse.arbeidsgiver.ArbeidsgivereGateway
 import no.nav.helse.arbeidsgiver.ArbeidsgivereService
@@ -99,11 +94,14 @@ fun Application.pleiepengesoknadapi() {
     }
 
     val idTokenProvider = IdTokenProvider(cookieName = configuration.getCookieName())
+    //TODO: Kan fjernes etter no/nav/helse/App.kt:108
     val jwkProvider = JwkProviderBuilder(configuration.getJwksUrl().toURL())
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
 
+    //TODO: refaktorer lik: https://github.com/navikt/dusseldorf-ktor/pull/154#issue-508876256
+    //TODO: issuers kan hentes lik https://github.com/navikt/k9-selvbetjening-oppslag/blob/b3c94359f07c1f0e9304e078f1e3db9ed241ee38/src/main/kotlin/no/nav/k9/SelvbetjeningOppslag.kt#L45
     install(Authentication) {
         jwt {
             realm = appId
