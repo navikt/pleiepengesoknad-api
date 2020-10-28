@@ -2,22 +2,20 @@ package no.nav.helse
 
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.ApplicationConfig
-import io.ktor.config.HoconApplicationConfig
+import io.ktor.config.*
 import io.ktor.http.*
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.createTestEnvironment
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.server.testing.*
+import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.redis.RedisMockUtil
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.wiremock.*
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -233,13 +231,11 @@ class ApplicationTest {
                     "invalid_parameters": [{
                         "type": "query",
                         "name": "fra_og_med",
-                        "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
-                        "invalid_value": null
+                        "reason": "Må settes og være på gyldig format (YYYY-MM-DD)"
                     }, {
                         "type": "query",
                         "name": "til_og_med",
-                        "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
-                        "invalid_value": null
+                        "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)"
                     }]
                 }
             """.trimIndent()
@@ -521,8 +517,7 @@ class ApplicationTest {
                         {
                           "type": "entity",
                           "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                          "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
-                          "invalid_value": null
+                          "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt"
                         }
                       ]
                     }
@@ -654,8 +649,7 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
-                      "invalid_value": null
+                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt"
                     }
                   ]
                 }
@@ -716,8 +710,7 @@ class ApplicationTest {
                       "skalJobbe": "ja",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 99.0,
-                      "vetIkkeEkstrainfo": null
+                      "skalJobbeProsent": 99.0
                     }
                   ]
                 }
@@ -761,8 +754,7 @@ class ApplicationTest {
                       "skalJobbe": "redusert",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 100.0,
-                      "vetIkkeEkstrainfo": null
+                      "skalJobbeProsent": 100.0
                     }
                   ]
                 }
@@ -806,8 +798,7 @@ class ApplicationTest {
                       "skalJobbe": "nei",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 10.0,
-                      "vetIkkeEkstrainfo": null
+                      "skalJobbeProsent": 10.0
                     }
                   ]
                 }
@@ -851,8 +842,7 @@ class ApplicationTest {
                       "skalJobbe": "vetIkke",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 10.0,
-                      "vetIkkeEkstrainfo": null
+                      "skalJobbeProsent": 10.0
                     }
                   ]
                 }
@@ -1145,26 +1135,22 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "vedlegg[1]",
-                      "reason": "Ikke gyldig vedlegg URL.",
-                      "invalid_value": null
+                      "reason": "Ikke gyldig vedlegg URL."
                     },
                     {
                       "type": "entity",
                       "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
+                      "reason": "Må settes til true eller false."
                     },
                     {
                       "type": "entity",
                       "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
+                      "reason": "Må settes til true eller false."
                     },
                     {
                       "type": "entity",
                       "name": "harMedsøker",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
+                      "reason": "Må settes til true eller false."
                     },
                     {
                       "type": "entity",
@@ -1203,8 +1189,7 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "bekrefterPeriodeOver8Uker",
-                      "reason": "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true",
-                      "invalid_value": null
+                      "reason": "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true"
                     }
                   ]
                 }

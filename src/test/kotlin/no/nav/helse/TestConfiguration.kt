@@ -1,14 +1,13 @@
 package no.nav.helse
 
-import com.github.kittinunf.fuel.httpGet
 import com.github.tomakehurst.wiremock.WireMockServer
 import no.nav.helse.dusseldorf.testsupport.jws.ClientCredentials
+import no.nav.helse.dusseldorf.testsupport.jws.LoginService
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2WellKnownUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getLoginServiceV1WellKnownUrl
 import no.nav.helse.wiremock.getK9DokumentUrl
 import no.nav.helse.wiremock.getK9OppslagUrl
 import no.nav.helse.wiremock.getPleiepengesoknadMottakUrl
-import org.json.JSONObject
 
 object TestConfiguration {
 
@@ -21,13 +20,9 @@ object TestConfiguration {
         corsAdresses : String = "http://localhost:8080"
     ) : Map<String, String> {
 
-        val loginServiceWellKnownJson = wireMockServer?.getLoginServiceV1WellKnownUrl()?.getAsJson()
-
         val map = mutableMapOf(
             Pair("ktor.deployment.port","$port"),
-            Pair("nav.authorization.issuer", "${loginServiceWellKnownJson?.getString("issuer")}"),
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
-            Pair("nav.authorization.jwks_uri","${loginServiceWellKnownJson?.getString("jwks_uri")}"),
             Pair("nav.gateways.k9_oppslag_url","$k9OppslagUrl"),
             Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
             Pair("nav.gateways.k9_dokument_url", "$k9DokumentUrl"),
@@ -43,6 +38,12 @@ object TestConfiguration {
             map["nav.auth.clients.0.certificate_hex_thumbprint"] = ClientCredentials.ClientA.certificateHexThumbprint
             map["nav.auth.clients.0.discovery_endpoint"] = wireMockServer.getAzureV2WellKnownUrl()
             map["nav.auth.scopes.sende-soknad-til-prosessering"] = "pleiepengesoknad-mottak/.default"
+
+            map["nav.auth.issuers.0.alias"] = "login-service-v1"
+            map["nav.auth.issuers.0.discovery_endpoint"] = wireMockServer.getLoginServiceV1WellKnownUrl()
+            map["nav.auth.issuers.1.alias"] = "login-service-v2"
+            map["nav.auth.issuers.1.discovery_endpoint"] = wireMockServer.getLoginServiceV1WellKnownUrl()
+            map["nav.auth.issuers.1.audience"] = LoginService.V1_0.getAudience()
         }
 
         map["nav.redis.host"] = "localhost"
@@ -51,6 +52,4 @@ object TestConfiguration {
 
         return map.toMap()
     }
-
-    private fun String.getAsJson() = JSONObject(this.httpGet().responseString().third.component1())
 }
