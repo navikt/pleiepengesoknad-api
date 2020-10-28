@@ -231,11 +231,13 @@ class ApplicationTest {
                     "invalid_parameters": [{
                         "type": "query",
                         "name": "fra_og_med",
-                        "reason": "Må settes og være på gyldig format (YYYY-MM-DD)"
+                        "reason": "Må settes og være på gyldig format (YYYY-MM-DD)",
+                        "invalid_value": null
                     }, {
                         "type": "query",
                         "name": "til_og_med",
-                        "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)"
+                        "reason": "Må settes og være på og gyldig format (YYYY-MM-DD)",
+                        "invalid_value": null
                     }]
                 }
             """.trimIndent()
@@ -517,7 +519,8 @@ class ApplicationTest {
                         {
                           "type": "entity",
                           "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                          "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt"
+                          "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                          "invalid_value": null
                         }
                       ]
                     }
@@ -649,7 +652,8 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt"
+                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                      "invalid_value": null
                     }
                   ]
                 }
@@ -710,7 +714,8 @@ class ApplicationTest {
                       "skalJobbe": "ja",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 99.0
+                      "skalJobbeProsent": 99.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -754,7 +759,8 @@ class ApplicationTest {
                       "skalJobbe": "redusert",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 100.0
+                      "skalJobbeProsent": 100.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -798,7 +804,8 @@ class ApplicationTest {
                       "skalJobbe": "nei",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 10.0
+                      "skalJobbeProsent": 10.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -842,7 +849,8 @@ class ApplicationTest {
                       "skalJobbe": "vetIkke",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 10.0
+                      "skalJobbeProsent": 10.0,
+                      "vetIkkeEkstrainfo": null
                     }
                   ]
                 }
@@ -1135,22 +1143,26 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "vedlegg[1]",
-                      "reason": "Ikke gyldig vedlegg URL."
+                      "reason": "Ikke gyldig vedlegg URL.",
+                      "invalid_value": null
                     },
                     {
                       "type": "entity",
                       "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                      "reason": "Må settes til true eller false."
+                      "reason": "Må settes til true eller false.",
+                      "invalid_value": null
                     },
                     {
                       "type": "entity",
                       "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                      "reason": "Må settes til true eller false."
+                      "reason": "Må settes til true eller false.",
+                      "invalid_value": null
                     },
                     {
                       "type": "entity",
                       "name": "harMedsøker",
-                      "reason": "Må settes til true eller false."
+                      "reason": "Må settes til true eller false.",
+                      "invalid_value": null
                     },
                     {
                       "type": "entity",
@@ -1189,7 +1201,8 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "bekrefterPeriodeOver8Uker",
-                      "reason": "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true"
+                      "reason": "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true",
+                        "invalid_value": null
                     }
                   ]
                 }

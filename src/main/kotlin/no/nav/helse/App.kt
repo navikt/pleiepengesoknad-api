@@ -65,6 +65,8 @@ fun Application.pleiepengesoknadapi() {
     logProxyProperties()
     DefaultExports.initialize()
 
+    System.setProperty("dusseldorf.ktor.serializeProblemDetailsWithContentNegotiation", "true")
+
     val configuration = Configuration(environment.config)
     val apiGatewayApiKey = configuration.getApiGatewayApiKey()
     val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients())
