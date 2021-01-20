@@ -28,7 +28,6 @@ class SoknadUtils {
                         "fodselsnummer": "$fodselsnummer",
                         "navn": "Barn Barnesen"
                     },
-                    "relasjonTilBarnet": "mor",
                     "fraOgMed": "$fraOgMed",
                     "tilOgMed": "$tilOgMed",
                     "arbeidsgivere": {
@@ -154,7 +153,6 @@ class SoknadUtils {
             return """
                 {
                     "barn": {},
-                    "relasjonTilBarnet": "mor",
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
                     "arbeidsgivere": {
@@ -202,7 +200,6 @@ class SoknadUtils {
             return """
                 {
                     "barn": {},
-                    "relasjonTilBarnet": "mor",
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
                     "arbeidsgivere": {
@@ -259,7 +256,6 @@ class SoknadUtils {
                         "fodselsnummer": "$fodselsnummer",
                         "navn": "Barn Barnesen"
                     },
-                    "relasjonTilBarnet": "mor",
                     "fraOgMed": "$fraOgMed",
                     "tilOgMed": "$tilOgMed",
                     "arbeidsgivere": {
@@ -335,7 +331,6 @@ class SoknadUtils {
             return """
                 {
                     "barn": {},
-                    "relasjonTilBarnet": "mor",
                     "fraOgMed": "$fraOgMed",
                     "tilOgMed": "$tilOgMed",
                     "arbeidsgivere": {

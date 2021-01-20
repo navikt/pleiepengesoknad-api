@@ -62,7 +62,6 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             bekrefterPeriodeOver8Uker = søknad.bekrefterPeriodeOver8Uker,
             ferieuttakIPerioden = søknad.ferieuttakIPerioden,
             utenlandsoppholdIPerioden = søknad.utenlandsoppholdIPerioden,
-            relasjonTilBarnet = søknad.relasjon(),
             harMedsøker = søknad.harMedsøker!!,
             samtidigHjemme = søknad.samtidigHjemme,
             harBekreftetOpplysninger = søknad.harBekreftetOpplysninger,
@@ -93,5 +92,3 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         logger.trace("Vedlegg slettet.")
     }
 }
-
-private fun Søknad.relasjon() = if (relasjonTilBarnet.isNullOrBlank()) "Forelder" else relasjonTilBarnet

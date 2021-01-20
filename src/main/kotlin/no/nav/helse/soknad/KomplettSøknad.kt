@@ -18,7 +18,6 @@ data class KomplettSøknad(
     val bekrefterPeriodeOver8Uker: Boolean? = null,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
-    val relasjonTilBarnet: String,
     val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean?,
     val harForståttRettigheterOgPlikter: Boolean,

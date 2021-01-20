@@ -1056,7 +1056,6 @@ class ApplicationTest {
                         "navn": "",
                         "fødselsnummer": "29099s12345"
                     },
-                    "relasjonTilBarnet": "mor",
                     "fraOgMed": "1990-09-29",
                     "tilOgMed": "1990-09-28",
                     "arbeidsgivere": {

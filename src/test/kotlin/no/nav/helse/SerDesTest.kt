@@ -42,7 +42,6 @@ internal class SerDesTest {
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen"
             ),
-            relasjonTilBarnet = "mor",
             arbeidsgivere = ArbeidsgiverDetaljer(listOf(
                 OrganisasjonDetaljer(
                     navn = "Org",
@@ -209,7 +208,6 @@ internal class SerDesTest {
                 "aktørId": "12345",
                 "fødselsdato" : "2018-01-01"
               },
-              "relasjonTilBarnet": "mor",
               "fraOgMed": "${LocalDate.now()}",
               "tilOgMed": "${LocalDate.now().plusDays(10)}",
               "arbeidsgivere": {
@@ -400,7 +398,6 @@ internal class SerDesTest {
                 "aktørId": "12345",
                 "fødselsdato" : "2018-01-01"
               },
-              "relasjonTilBarnet": "mor",
               "fraOgMed": "${LocalDate.now()}",
               "tilOgMed": "${LocalDate.now().plusDays(10)}",
               "arbeidsgivere": {
@@ -591,7 +588,6 @@ internal class SerDesTest {
                 etternavn = "Nordmann",
                 fornavn = "Ola"
             ),
-            relasjonTilBarnet = "mor",
             arbeidsgivere = ArbeidsgiverDetaljer(listOf(
                 OrganisasjonDetaljer(
                     navn = "Org",
