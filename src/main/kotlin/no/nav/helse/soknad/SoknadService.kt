@@ -74,7 +74,9 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             selvstendigVirksomheter = søknad.selvstendigVirksomheter,
             skalBekrefteOmsorg = søknad.skalBekrefteOmsorg,
             skalPassePåBarnetIHelePerioden = søknad.skalPassePåBarnetIHelePerioden,
-            beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen
+            beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
+            barnRelasjon = søknad.barnRelasjon,
+            barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(

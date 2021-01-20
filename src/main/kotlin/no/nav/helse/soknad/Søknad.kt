@@ -33,8 +33,19 @@ data class Søknad(
     val selvstendigVirksomheter: List<Virksomhet> = listOf(),
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    val beskrivelseOmsorgsrollen: String? = null // TODO: Fjern optional når prodsatt.
+    val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
+    val barnRelasjon: BarnRelasjon? = null,
+    val barnRelasjonBeskrivelse: String? = null
 )
+
+enum class BarnRelasjon{
+    MOR,
+    MEDMOR,
+    FAR,
+    STEFORELDER,
+    FOSTERFORELDER,
+    ANNET
+}
 
 data class ArbeidsgiverDetaljer(
     val organisasjoner: List<OrganisasjonDetaljer>

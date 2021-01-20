@@ -376,7 +376,9 @@ internal class SerDesTest {
                   "svar": "annet",
                   "annet": "Nei"
                 }
-              }
+              },
+              "barnRelasjon" : null,
+              "barnRelasjonBeskrivelse" : null
             }
         """.trimIndent()
 
@@ -571,7 +573,9 @@ internal class SerDesTest {
                   "svar": "annet",
                   "annet": "Nei"
                 }
-              }
+              },
+              "barnRelasjon" : null,
+              "barnRelasjonBeskrivelse" : null
             }
         """.trimIndent()
 
