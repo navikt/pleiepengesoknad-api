@@ -24,7 +24,6 @@ POST @ /soknad -> 202 Response
 - barn.fødslsnummer må være et gyldig norsk fødselsnummer om den er satt
 - barn.aktørId må være sattil en gyldig Aktør ID om den er satt
 - barn.navn er kun påkrevd om 'barn.fødselsnummer' er satt
-- relasjonTilBarnet er ikke påkrevd om 'barn.aktørId' er satt, ellers påkrevd
 - grad er valgfri. Om satt må den være mellom 20 og 100
 - 'harBekreftetOpplysninger' og 'harForståttRettigheterOgPlikter' må være true
 - 'dagerPerUkeBorteFraJobb' er valgfri. Om satt må den være mellom 0.5 og 5.0. Om 'grad' ikke er satt og 'harMedsøker' er true må den settes.
@@ -42,7 +41,6 @@ POST @ /soknad -> 202 Response
     "aktørId": "12345",
     "fødselsdato": "2018-01-01"
   },
-  "relasjonTilBarnet": "mor",
   "fraOgMed": "2020-01-01",
   "tilOgMed": "2020-01-10",
   "samtidigHjemme": true,
