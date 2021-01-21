@@ -92,7 +92,6 @@ class SoknadValidationTest {
             fødselsdato = null,
             navn = null
         ),
-        relasjonTilBarnet = "far",
         arbeidsgivere = ArbeidsgiverDetaljer(listOf(
             OrganisasjonDetaljer(
                 navn = "Org",
@@ -150,7 +149,6 @@ class SoknadValidationTest {
             fødselsdato = null,
             navn = null
         ),
-        relasjonTilBarnet = "far",
         arbeidsgivere = ArbeidsgiverDetaljer(
             listOf(
                 OrganisasjonDetaljer(

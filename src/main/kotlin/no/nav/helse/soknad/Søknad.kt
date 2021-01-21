@@ -11,7 +11,6 @@ data class Søknad(
     val newVersion: Boolean?,
     val språk: Språk? = null,
     val barn: BarnDetaljer,
-    val relasjonTilBarnet: String? = null,
     val arbeidsgivere: ArbeidsgiverDetaljer,
     val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     @JsonFormat(pattern = "yyyy-MM-dd")
