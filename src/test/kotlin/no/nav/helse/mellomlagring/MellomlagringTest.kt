@@ -1,11 +1,13 @@
 package no.nav.helse.mellomlagring
 
+import com.github.fppt.jedismock.RedisServer
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
 import io.ktor.util.*
 import no.nav.helse.Configuration
 import no.nav.helse.TestConfiguration
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
+import no.nav.helse.mellomlagring.MellomlagringTest.Companion.redisClient
 import no.nav.helse.redis.RedisConfig
 import no.nav.helse.redis.RedisConfigurationProperties
 import no.nav.helse.redis.RedisMockUtil
@@ -21,29 +23,20 @@ import kotlin.test.assertNotNull
 class MellomlagringTest {
 
     private companion object {
-        val wireMockServer = WireMockBuilder()
-            .withAzureSupport()
-            .withNaisStsSupport()
-            .withLoginServiceSupport()
-            .pleiepengesoknadApiConfig()
-            .build()
-            .stubK9DokumentHealth()
-            .stubPleiepengesoknadMottakHealth()
-            .stubOppslagHealth()
-            .stubLeggSoknadTilProsessering("v1/soknad")
-            .stubK9OppslagSoker()
-            .stubK9OppslagBarn()
-            .stubK9OppslagArbeidsgivere()
-            .stubK9Dokument()
+        val redisServer: RedisServer = RedisServer
+            .newRedisServer(6379)
+            .started()
 
-        val redisClient = RedisConfig(RedisConfigurationProperties(true)).redisClient(
-            Configuration(
-                HoconApplicationConfig(ConfigFactory.parseMap(TestConfiguration.asMap(wireMockServer = wireMockServer)))
-            )
+        val redisClient = RedisConfig.redisClient(
+            redisHost = redisServer.host,
+            redisPort = redisServer.bindPort
         )
+
+
         val redisStore = RedisStore(
             redisClient
         )
+
         val mellomlagringService = MellomlagringService(
             redisStore,
             "VerySecretPass"
@@ -53,8 +46,7 @@ class MellomlagringTest {
         @JvmStatic
         fun teardown() {
             redisClient.shutdown()
-            wireMockServer.stop()
-            RedisMockUtil.stopRedisMocked()
+            redisServer.stop()
         }
     }
 
