@@ -68,6 +68,17 @@ class SoknadValidationTest {
         ).validate()
     }
 
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom barnRelasjon er ANNET men barnRelasjonBeskrivelse er tom`() {
+        soknad(
+            harMedsoker = false,
+            skalJobbe = "nei"
+        ).copy(
+            barnRelasjon = BarnRelasjon.ANNET,
+            barnRelasjonBeskrivelse = null
+        ).validate()
+    }
+
     private fun soknadMedFrilans(
         bekrefterPeriodeOver8Uker: Boolean = false,
         fraOgMed: LocalDate = LocalDate.now(),
@@ -160,7 +171,9 @@ class SoknadValidationTest {
         harForståttRettigheterOgPlikter = true,
         tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
-        ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf())
+        ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
+        barnRelasjon = null,
+        barnRelasjonBeskrivelse = null
         // harHattInntektSomFrilanser = false, default == false
     )
 }

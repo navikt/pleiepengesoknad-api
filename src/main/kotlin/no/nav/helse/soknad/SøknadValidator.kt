@@ -102,12 +102,15 @@ class FraOgMedTilOgMedValidator {
 
 internal fun Søknad.validate() {
     val violations = barn.validate()
+
     violations.addAll(arbeidsgivere.organisasjoner.validate())
+    violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter))
+
     tilsynsordning?.apply {
         violations.addAll(this.validate())
     }
 
-    violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter))
+    violations.addAll(validerBarnRelasjon())
 
     // Datoer
     violations.addAll(
@@ -180,13 +183,16 @@ internal fun Søknad.validate() {
 
     if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.harBoddIUtlandetSiste12Mnd")
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
+
     if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skalBoIUtlandetNeste12Mnd")
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
+
     if (utenlandsoppholdIPerioden != null &&
         utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null
     ) {
         booleanIkkeSatt("utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden")
     }
+
     violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
 
@@ -618,6 +624,23 @@ internal fun List<OrganisasjonDetaljer>.validate(
 private fun BarnDetaljer.gyldigAntallIder(): Boolean {
     val antallIderSatt = listOfNotNull(aktørId, fødselsnummer).size
     return antallIderSatt == 0 || antallIderSatt == 1
+}
+
+private fun Søknad.validerBarnRelasjon() : MutableSet<Violation> {
+    val violations = mutableSetOf<Violation>()
+
+    if(barnRelasjon == BarnRelasjon.ANNET && barnRelasjonBeskrivelse.isNullOrBlank()){
+        violations.add(
+            Violation(
+                parameterName = "barnRelasjonBeskrivelse",
+                parameterType = ParameterType.ENTITY,
+                reason = "Når barnRelasjon er ANNET, kan ikke barnRelasjonBeskrivelse være tom",
+                invalidValue = barnRelasjonBeskrivelse
+            )
+        )
+    }
+
+    return violations
 }
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
