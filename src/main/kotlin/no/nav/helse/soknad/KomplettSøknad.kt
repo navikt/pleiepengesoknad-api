@@ -26,7 +26,7 @@ data class KomplettSøknad(
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
     val frilans: Frilans? = null,
-    val selvstendigVirksomheter: List<Virksomhet>? = null,
+    val selvstendigVirksomheter: List<Virksomhet> = listOf(),
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
