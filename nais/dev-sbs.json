@@ -7,6 +7,7 @@
   "maxReplicas": "2",
   "ingresses": [
     "https://pleiepengesoknad-api-q.nav.no",
+    "https://pleiepengesoknad-api.dev.nav.no",
     "https://pleiepengesoknad-api.nais.oera-q.local"
   ],
   "env": {
