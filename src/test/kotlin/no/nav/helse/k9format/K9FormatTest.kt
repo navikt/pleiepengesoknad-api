@@ -52,10 +52,10 @@ class K9FormatTest {
                     "norskIdentitetsnummer" : "123456789",
                     "organisasjonsnummer" : "917755736",
                     "arbeidstidInfo" : {
-                      "jobberNormaltTimerPerDag" : "PT2H",
+                      "jobberNormaltTimerPerDag" : "PT8H",
                       "perioder" : {
                         "2020-01-01/2020-01-20" : {
-                          "faktiskArbeidTimerPerDag" : "PT12M"
+                          "faktiskArbeidTimerPerDag" : "PT3H12M"
                         }
                       }
                     }
@@ -108,10 +108,10 @@ class K9FormatTest {
                     "norskIdentitetsnummer" : "123456789",
                     "organisasjonsnummer" : "917755736",
                     "arbeidstidInfo" : {
-                      "jobberNormaltTimerPerDag" : "PT2H",
+                      "jobberNormaltTimerPerDag" : "PT8H",
                       "perioder" : {
                         "2020-01-01/2020-01-20" : {
-                          "faktiskArbeidTimerPerDag" : "PT12M"
+                          "faktiskArbeidTimerPerDag" : "PT3H12M"
                         }
                       }
                     }

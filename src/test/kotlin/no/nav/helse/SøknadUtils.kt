@@ -435,8 +435,8 @@ class SøknadUtils {
                     OrganisasjonDetaljer(
                         navn = "Org",
                         organisasjonsnummer = "917755736",
-                        skalJobbeProsent = 10.0,
-                        jobberNormaltTimer = 10.0,
+                        skalJobbeProsent = 40.0,
+                        jobberNormaltTimer = 40.0,
                         skalJobbe = "redusert"
                     )
                 )
