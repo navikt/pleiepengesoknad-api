@@ -398,7 +398,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -418,7 +418,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -446,7 +446,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.Forbidden,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -467,7 +467,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedAktoerIdPaaBarn(
+            requestEntity = SøknadUtils.bodyMedAktoerIdPaaBarn(
                 aktørId = "10000000001",
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -486,7 +486,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
@@ -536,7 +536,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
@@ -669,7 +669,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
@@ -733,7 +733,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 skalJobbe = "ja",
@@ -778,7 +778,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 skalJobbe = "redusert",
@@ -823,7 +823,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 skalJobbe = "nei",
@@ -868,7 +868,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 skalJobbe = "vetIkke",
@@ -1011,7 +1011,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyUtenIdPaaBarn(
+            requestEntity = SøknadUtils.bodyUtenIdPaaBarn(
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
             )
@@ -1044,7 +1044,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = finnesIkkeUrl
@@ -1054,7 +1054,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad med ugylidge parametre gir feil`() {
-        val forlangtNavn = SoknadUtils.forLangtNavn()
+        val forlangtNavn = SøknadUtils.forLangtNavn()
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = "/soknad",
@@ -1217,7 +1217,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
                 vedleggUrl1 = jpegUrl,
                 fraOgMed = "2020-01-01",
                 tilOgMed = "2020-02-27",
@@ -1237,7 +1237,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
                 vedleggUrl1 = jpegUrl,
                 fraOgMed = "2020-01-01",
                 tilOgMed = "2020-02-27",
@@ -1257,7 +1257,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
                 vedleggUrl1 = jpegUrl,
                 fraOgMed = "2020-01-01",
                 tilOgMed = "2020-02-26"
@@ -1276,7 +1276,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
                 vedleggUrl1 = jpegUrl,
                 fraOgMed = "2020-01-01",
                 tilOgMed = "2020-02-25"

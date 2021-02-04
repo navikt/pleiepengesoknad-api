@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val dusseldorfKtorVersion = "1.5.0.ae98b7c"
 val ktorVersion = ext.get("ktorVersion").toString()
-
+val k9FormatVersion = "5.1.9"
 val mainClass = "no.nav.helse.AppKt"
 
 plugins {
@@ -23,6 +23,9 @@ dependencies {
     implementation ( "no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
     implementation ( "no.nav.helse:dusseldorf-ktor-auth:$dusseldorfKtorVersion")
     implementation ("io.ktor:ktor-locations:$ktorVersion")
+
+    //K9-format
+    implementation("no.nav.k9:soknad:$k9FormatVersion")
 
     // Client
     implementation ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")

@@ -2,6 +2,7 @@ package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
 import no.nav.helse.vedlegg.Vedlegg
+import no.nav.k9.søknad.Søknad
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -31,5 +32,6 @@ data class KomplettSøknad(
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
     val barnRelasjon: BarnRelasjon? = null,
-    val barnRelasjonBeskrivelse: String? = null
+    val barnRelasjonBeskrivelse: String? = null,
+    val k9FormatSøknad: Søknad? = null
 )

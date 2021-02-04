@@ -2,6 +2,7 @@ package no.nav.helse.soknad
 
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
+import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
@@ -44,9 +45,10 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
 
         logger.trace("Legger søknad til prosessering")
 
-        val komplettSoknad = KomplettSøknad(
+        val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
+        val komplettSøknad = KomplettSøknad(
             språk = søknad.språk,
-            mottatt = ZonedDateTime.now(ZoneOffset.UTC),
+            mottatt = mottatt,
             fraOgMed = søknad.fraOgMed,
             tilOgMed = søknad.tilOgMed,
             søker = søker,
@@ -75,11 +77,12 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             skalPassePåBarnetIHelePerioden = søknad.skalPassePåBarnetIHelePerioden,
             beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
             barnRelasjon = søknad.barnRelasjon,
-            barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse
+            barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
+            k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(
-            soknad = komplettSoknad,
+            søknad = komplettSøknad,
             callId = callId
         )
 
