@@ -50,7 +50,7 @@ class SøknadUtils {
             return """
                 {
                     "barn": {
-                        "fodselsnummer": "$fodselsnummer",
+                        "fødselsnummer": "$fodselsnummer",
                         "navn": "Barn Barnesen"
                     },
                     "fraOgMed": "$fraOgMed",
@@ -127,7 +127,8 @@ class SøknadUtils {
             return """
                 {
                     "barn": {
-                        "aktørId": "$aktørId"
+                        "aktørId": "$aktørId",
+                        "fødselsnummer" : "26104500284"
                     },
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
@@ -177,7 +178,9 @@ class SøknadUtils {
 
             return """
                 {
-                    "barn": {},
+                    "barn": {
+                        "fødselsnummer" : "26104500284"
+                    },
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
                     "arbeidsgivere": {
@@ -224,7 +227,9 @@ class SøknadUtils {
         ): String {
             return """
                 {
-                    "barn": {},
+                    "barn": {
+                        "fødselsdato" : "2021-01-01"
+                    },
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
                     "arbeidsgivere": {
@@ -278,7 +283,7 @@ class SøknadUtils {
             return """
                 {
                     "barn": {
-                        "fodselsnummer": "$fodselsnummer",
+                        "fødselsnummer": "$fodselsnummer",
                         "navn": "Barn Barnesen"
                     },
                     "fraOgMed": "$fraOgMed",
@@ -355,7 +360,9 @@ class SøknadUtils {
             //language=JSON
             return """
                 {
-                    "barn": {},
+                    "barn": {
+                        "fødselsnummer" : "26104500284"
+                    },
                     "fraOgMed": "$fraOgMed",
                     "tilOgMed": "$tilOgMed",
                     "arbeidsgivere": {

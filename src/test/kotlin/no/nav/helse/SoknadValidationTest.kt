@@ -89,7 +89,7 @@ class SoknadValidationTest {
         barn = BarnDetaljer(
             aktørId = null,
             fødselsnummer = null,
-            fødselsdato = null,
+            fødselsdato = LocalDate.now(),
             navn = null
         ),
         arbeidsgivere = ArbeidsgiverDetaljer(listOf(
@@ -146,7 +146,7 @@ class SoknadValidationTest {
         barn = BarnDetaljer(
             aktørId = null,
             fødselsnummer = null,
-            fødselsdato = null,
+            fødselsdato = LocalDate.now(),
             navn = null
         ),
         arbeidsgivere = ArbeidsgiverDetaljer(

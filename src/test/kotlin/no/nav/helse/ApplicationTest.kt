@@ -11,11 +11,9 @@ import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
 import no.nav.helse.redis.RedisMockUtil
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.*
 import no.nav.helse.wiremock.*
+import org.json.JSONObject
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.skyscreamer.jsonassert.JSONAssert
@@ -26,9 +24,10 @@ import java.time.LocalDate
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-private const val fnr = "290990123456"
+private const val fnr = "26104500284"
 private const val ikkeMyndigFnr = "12125012345"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
@@ -286,6 +285,44 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Hente barn og sjekk eksplisit at identitetsnummer ikke blir med ved get kall`(){
+
+        val respons = requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/barn",
+            expectedCode = HttpStatusCode.OK,
+            //language=json
+            expectedResponse = """
+            {
+              "barn": [
+                {
+                  "fødselsdato": "2000-08-27",
+                  "fornavn": "BARN",
+                  "mellomnavn": "EN",
+                  "etternavn": "BARNESEN",
+                  "aktørId": "1000000000001",
+                  "harSammeAdresse": true
+                },
+                {
+                  "fødselsdato": "2001-04-10",
+                  "fornavn": "BARN",
+                  "mellomnavn": "TO",
+                  "etternavn": "BARNESEN",
+                  "aktørId": "1000000000002",
+                  "harSammeAdresse": true
+                }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        val responsSomJSONArray = JSONObject(respons).getJSONArray("barn")
+
+        assertFalse(responsSomJSONArray.getJSONObject(0).has("identitetsnummer"))
+        assertFalse(responsSomJSONArray.getJSONObject(1).has("identitetsnummer"))
+    }
+
+    @Test
     fun `Henting av barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
@@ -341,7 +378,7 @@ class ApplicationTest {
                 "barn": []
             }
             """.trimIndent(),
-            cookie = getAuthCookie(fnr)
+            cookie = getAuthCookie(gyldigFodselsnummerA)
         )
         wireMockServer.stubK9OppslagBarn()
     }
@@ -457,7 +494,7 @@ class ApplicationTest {
 
     @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
     fun `Sende soknad med AktørID som ID på barnet`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie("26104500284")
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
 
@@ -576,7 +613,7 @@ class ApplicationTest {
                   "sprak": "nb",
                   "barn": {
                     "navn": null,
-                    "fodselsnummer": "03028104560",
+                    "fødselsnummer": "03028104560",
                     "aktørId": null,
                     "fodselsdato": null
                   },
@@ -910,7 +947,7 @@ class ApplicationTest {
                   "sprak": "nb",
                   "barn": {
                     "navn": null,
-                    "fodselsnummer": "03028104560",
+                    "fødselsnummer": "03028104560",
                     "aktørId": null,
                     "fodselsdato": null
                   },
@@ -1348,7 +1385,8 @@ class ApplicationTest {
         expectedCode: HttpStatusCode,
         leggTilCookie: Boolean = true,
         cookie: Cookie = getAuthCookie(fnr)
-    ) {
+    ): String? {
+        val respons: String?
         with(engine) {
             handleRequest(httpMethod, path) {
                 if (leggTilCookie) addHeader(HttpHeaders.Cookie, cookie.toString())
@@ -1359,6 +1397,7 @@ class ApplicationTest {
             }.apply {
                 logger.info("Response Entity = ${response.content}")
                 logger.info("Expected Entity = $expectedResponse")
+                respons = response.content
                 assertEquals(expectedCode, response.status())
                 if (expectedResponse != null) {
                     JSONAssert.assertEquals(expectedResponse, response.content!!, true)
@@ -1367,5 +1406,6 @@ class ApplicationTest {
                 }
             }
         }
+        return respons
     }
 }

@@ -145,6 +145,11 @@ fun Application.pleiepengesoknadapi() {
             søkerGateway = søkerGateway
         )
 
+        val barnService = BarnService(
+            barnGateway = barnGateway,
+            cache = configuration.cache()
+        )
+
         authenticate(*issuers.allIssuers()) {
             søkerApis(
                 søkerService = søkerService,
@@ -152,9 +157,7 @@ fun Application.pleiepengesoknadapi() {
             )
 
             barnApis(
-                barnService = BarnService(
-                    barnGateway = barnGateway
-                ),
+                barnService = barnService,
                 idTokenProvider = idTokenProvider
             )
 
@@ -189,7 +192,8 @@ fun Application.pleiepengesoknadapi() {
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
                     sokerService = søkerService,
                     vedleggService = vedleggService
-                )
+                ),
+                barnService = barnService
             )
         }
 

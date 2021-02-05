@@ -43,7 +43,7 @@ private fun getResponse(ident: String): String {
             "fødselsdato": "1990-01-02"
         }
         """.trimIndent()
-        } "290990123456" -> {
+        } "26104500284" -> {
             return """
             {
                 "etternavn": "MORSEN",

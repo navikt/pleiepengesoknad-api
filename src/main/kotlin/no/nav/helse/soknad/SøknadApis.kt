@@ -8,6 +8,7 @@ import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import no.nav.helse.barn.BarnService
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import org.slf4j.Logger
@@ -18,7 +19,8 @@ private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 @KtorExperimentalLocationsAPI
 fun Route.soknadApis(
     søknadService: SøknadService,
-    idTokenProvider: IdTokenProvider
+    idTokenProvider: IdTokenProvider,
+    barnService: BarnService
 ) {
 
     @Location("/soknad")
@@ -28,6 +30,12 @@ fun Route.soknadApis(
         logger.trace("Mottatt ny søknad. Mapper søknad.")
         val søknad = call.receive<Søknad>()
         logger.trace("Søknad mappet. Validerer")
+
+        logger.trace("Oppdaterer barn med identitetsnummer")
+        val listeOverBarnMedFnr = barnService.hentNaaverendeBarn(idTokenProvider.getIdToken(call), call.getCallId())
+        søknad.oppdaterBarnMedFnr(listeOverBarnMedFnr)
+        logger.info("Oppdatering av identitetsnummer på barn OK")
+
         logger.info("Debugging newVersion=${søknad.newVersion}")
         søknad.validate()
         logger.trace("Validering OK. Registrerer søknad.")
