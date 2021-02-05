@@ -23,9 +23,9 @@ data class BarnDetaljer(
     fun manglerIdentitetsnummer(): Boolean = fødselsnummer.isNullOrEmpty()
 
     infix fun oppdaterFødselsnummer(fødselsnummer: String?){
-        logger.info("Fnr før oppdatering = {}", fødselsnummer) //TODO Fjernes
+        logger.info("Fnr før oppdatering = {}", this.fødselsnummer) //TODO Fjernes
         this.fødselsnummer = fødselsnummer
-        logger.info("Fnr etter oppdatering = {}", fødselsnummer) //TODO Fjernes
+        logger.info("Fnr etter oppdatering = {}", this.fødselsnummer) //TODO Fjernes
     }
 }
 
