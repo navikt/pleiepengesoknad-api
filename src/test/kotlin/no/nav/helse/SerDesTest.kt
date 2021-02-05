@@ -52,8 +52,8 @@ internal class SerDesTest {
                   {
                     "organisasjonsnummer": "917755736",
                     "navn": "Org",
-                    "skalJobbeProsent": 10,
-                    "jobberNormaltTimer": 10,
+                    "skalJobbeProsent": 40,
+                    "jobberNormaltTimer": 40,
                     "skalJobbe": "redusert",
                     "vetIkkeEkstrainfo": null
                   }

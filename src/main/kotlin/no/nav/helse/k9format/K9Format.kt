@@ -12,7 +12,7 @@ import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.SøknadId
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap.BeredskapPeriodeInfo
-import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.*
+import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.SøknadInfo
 import no.nav.k9.søknad.ytelse.psb.v1.Uttak
@@ -22,6 +22,8 @@ import java.time.ZonedDateTime
 import no.nav.k9.søknad.Søknad as K9Søknad
 import no.nav.k9.søknad.felles.personopplysninger.Barn as K9Barn
 import no.nav.k9.søknad.felles.personopplysninger.Søker as K9Søker
+import no.nav.k9.søknad.ytelse.psb.v1.Beredskap as K9Beredskap
+import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk as K9Nattevåk
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.Tilsynsordning as K9Tilsynsordning
 
 const val DAGER_PER_UKE = 5
@@ -57,14 +59,9 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
 
 }
 
-fun Søker.tilK9Søker(): K9Søker = K9Søker.builder()
-    .norskIdentitetsnummer(NorskIdentitetsnummer.of(fødselsnummer))
-    .build()
+fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
 
-fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn.builder()
-    .norskIdentitetsnummer(NorskIdentitetsnummer.of(fødselsnummer))
-    .fødselsdato(fødselsdato)
-    .build()
+fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn(NorskIdentitetsnummer.of(fødselsnummer), (fødselsdato))
 
 fun Søknad.byggSøknadInfo(): SøknadInfo = SøknadInfo(
     barnRelasjon?.utskriftsvennlig ?: "Forelder",
@@ -80,25 +77,12 @@ fun Søknad.byggSøknadInfo(): SøknadInfo = SøknadInfo(
 
 fun Beredskap.tilK9Beredskap(
     periode: Periode
-): no.nav.k9.søknad.ytelse.psb.v1.Beredskap? {
-    if (!beredskap) return null
+): K9Beredskap? = if (!beredskap) null else K9Beredskap(mapOf(periode to BeredskapPeriodeInfo(tilleggsinformasjon)))
 
-    val perioder = mutableMapOf<Periode, BeredskapPeriodeInfo>()
+fun Nattevåk.tilK9Nattevåk(
+    periode: Periode
+): K9Nattevåk? = if (harNattevåk == null || !harNattevåk) null else K9Nattevåk(mapOf(periode to NattevåkPeriodeInfo(tilleggsinformasjon)))
 
-    perioder[periode] = BeredskapPeriodeInfo(this.tilleggsinformasjon)
-
-    return no.nav.k9.søknad.ytelse.psb.v1.Beredskap(perioder)
-}
-
-fun Nattevåk.tilK9Nattevåk(periode: Periode): no.nav.k9.søknad.ytelse.psb.v1.Nattevåk? {
-    if (harNattevåk == null || !harNattevåk) return null
-
-    val perioder = mutableMapOf<Periode, NattevåkPeriodeInfo>()
-
-    perioder[periode] = NattevåkPeriodeInfo(tilleggsinformasjon)
-
-    return no.nav.k9.søknad.ytelse.psb.v1.Nattevåk(perioder)
-}
 
 fun Tilsynsordning.tilK9Tilsynsordning(
     periode: Periode
@@ -134,18 +118,14 @@ fun Medlemskap.tilK9Bosteder(): Bosteder? {
     val perioder = mutableMapOf<Periode, Bosteder.BostedPeriodeInfo>()
 
     utenlandsoppholdSiste12Mnd.forEach { bosted ->
-        perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] = Bosteder.BostedPeriodeInfo.builder()
-            .land(Landkode.of(bosted.landkode))
-            .build()
+        perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] = Bosteder.BostedPeriodeInfo(Landkode.of(bosted.landkode))
     }
 
     utenlandsoppholdNeste12Mnd.forEach { bosted ->
-        perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] = Bosteder.BostedPeriodeInfo.builder()
-            .land(Landkode.of(bosted.landkode))
-            .build()
+        perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] = Bosteder.BostedPeriodeInfo(Landkode.of(bosted.landkode))
     }
 
-    return Bosteder.builder().perioder(perioder).build()
+    return Bosteder(perioder)
 }
 
 private fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(
@@ -168,5 +148,5 @@ private fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(
             .build()
     }
 
-    return Utenlandsopphold.builder().perioder(perioder).build()
+    return Utenlandsopphold(perioder)
 }

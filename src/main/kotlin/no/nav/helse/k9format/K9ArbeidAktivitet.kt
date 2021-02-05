@@ -9,23 +9,13 @@ import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 
-internal fun Søknad.byggK9ArbeidAktivitet(søker: Søker): ArbeidAktivitet {
-    val builder = ArbeidAktivitet.builder()
+internal fun Søknad.byggK9ArbeidAktivitet(søker: Søker) = ArbeidAktivitet(
+    arbeidsgivere.tilK9Arbeidstaker(søker.fødselsnummer, Periode(fraOgMed, tilOgMed)),
+    selvstendigVirksomheter.tilK9SelvstendigNæringsdrivende(),
+    frilans?.tilK9Frilanser()
+)
 
-    frilans?.let {
-        builder.frilanser(frilans.tilK9Frilanser())
-    }
-
-    builder.selvstendigNæringsdrivende(selvstendigVirksomheter.tilK9SelvstendigNæringsdrivende())
-    builder.arbeidstaker(arbeidsgivere.tilK9Arbeidstaker(søker.fødselsnummer, Periode(fraOgMed, tilOgMed)))
-
-    return builder.build()
-}
-
-internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser.builder()
-    .jobberFortsattSomFrilans(this.jobberFortsattSomFrilans)
-    .startdato(this.startdato)
-    .build()
+internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser(startdato, jobberFortsattSomFrilans)
 
 internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
     identitetsnummer: String,
@@ -41,14 +31,11 @@ internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
 }
 
 fun List<Virksomhet>.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> = map { virksomhet ->
-    SelvstendigNæringsdrivende.builder()
-        .organisasjonsnummer(Organisasjonsnummer.of(virksomhet.organisasjonsnummer))
-        .virksomhetNavn(virksomhet.navnPåVirksomheten)
-        .periode(
-            Periode(virksomhet.fraOgMed, virksomhet.tilOgMed),
-            virksomhet.tilK9SelvstendingNæringsdrivendeInfo()
-        )
-        .build()
+    SelvstendigNæringsdrivende(
+        mapOf(Periode(virksomhet.fraOgMed, virksomhet.tilOgMed) to virksomhet.tilK9SelvstendingNæringsdrivendeInfo()),
+        Organisasjonsnummer.of(virksomhet.organisasjonsnummer),
+        virksomhet.navnPåVirksomheten
+    )
 }
 
 internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo {

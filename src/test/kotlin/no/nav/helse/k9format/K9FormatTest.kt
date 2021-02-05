@@ -25,6 +25,7 @@ class K9FormatTest {
             {
               "søknadId" : "123",
               "versjon" : "1.0",
+              "språk" : "nb",
               "mottattDato" : "2020-01-02T03:04:05.000Z",
               "søker" : {
                 "norskIdentitetsnummer" : "123456789"
