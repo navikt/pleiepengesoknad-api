@@ -3,7 +3,11 @@ package no.nav.helse.soknad
 import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.time.LocalDate
+
+private val logger: Logger = LoggerFactory.getLogger("no.nav.helse.soknad.BarnDetaljer")
 
 data class BarnDetaljer(
     var fødselsnummer: String?,
@@ -19,7 +23,9 @@ data class BarnDetaljer(
     fun manglerIdentitetsnummer(): Boolean = fødselsnummer.isNullOrEmpty()
 
     infix fun oppdaterFødselsnummer(fødselsnummer: String?){
+        logger.info("Fnr før oppdatering = {}", fødselsnummer) //TODO Fjernes
         this.fødselsnummer = fødselsnummer
+        logger.info("Fnr etter oppdatering = {}", fødselsnummer) //TODO Fjernes
     }
 }
 
