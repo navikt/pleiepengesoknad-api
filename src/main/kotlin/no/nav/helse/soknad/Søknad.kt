@@ -41,7 +41,6 @@ enum class BarnRelasjon{
     MOR,
     MEDMOR,
     FAR,
-    STEFORELDER,
     FOSTERFORELDER,
     ANNET
 }
