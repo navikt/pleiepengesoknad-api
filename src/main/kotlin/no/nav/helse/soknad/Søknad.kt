@@ -37,13 +37,12 @@ data class Søknad(
     val barnRelasjonBeskrivelse: String? = null
 )
 
-enum class BarnRelasjon(val utskriftsvennlig: String) {
-    MOR("Mor"),
-    MEDMOR("Medmor"),
-    FAR("Far"),
-    STEFORELDER("Steforelder"),
-    FOSTERFORELDER("Fosterforelder"),
-    ANNET("Annet")
+enum class BarnRelasjon{
+    MOR,
+    MEDMOR,
+    FAR,
+    FOSTERFORELDER,
+    ANNET
 }
 
 data class ArbeidsgiverDetaljer(
