@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
+import java.util.*
 
 enum class Språk { nb, nn }
 
 data class Søknad(
     val newVersion: Boolean?,
+    val søknadId: String = UUID.randomUUID().toString(),
     val språk: Språk? = null,
     val barn: BarnDetaljer,
     val arbeidsgivere: ArbeidsgiverDetaljer,

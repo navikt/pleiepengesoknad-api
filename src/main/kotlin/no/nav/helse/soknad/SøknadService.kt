@@ -49,6 +49,7 @@ class SøknadService(private val pleiepengesoknadMottakGateway: Pleiepengesoknad
         val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
         val komplettSøknad = KomplettSøknad(
             språk = søknad.språk,
+            søknadId = søknad.søknadId,
             mottatt = mottatt,
             fraOgMed = søknad.fraOgMed,
             tilOgMed = søknad.tilOgMed,

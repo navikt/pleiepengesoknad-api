@@ -36,7 +36,7 @@ fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     val søknadsPeriode = Periode(fraOgMed, tilOgMed)
     val søknad = K9Søknad(
-        SøknadId.of("123"), //TODO Må løses, per nå settes søknadId i mottak
+        SøknadId.of(søknadId),
         k9FormatVersjon,
         mottatt,
         søker.tilK9Søker(),

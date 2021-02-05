@@ -10,33 +10,37 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.*
 import kotlin.test.assertEquals
 
 internal class SerDesTest {
 
     @Test
     fun `Test reserialisering av request`(){
-        JSONAssert.assertEquals(SøknadJson, søknad.somJson(), true)
-        assertEquals(
-            søknad, SøknadUtils.objectMapper.readValue(SøknadJson)
-        )
+        val søknadId = UUID.randomUUID().toString()
+        val søknad = SøknadUtils.defaultSøknad(søknadId)
+        val søknadJson = søknadJson(søknadId)
+
+        JSONAssert.assertEquals(søknadJson, søknad.somJson(), true)
+        assertEquals(søknad, SøknadUtils.objectMapper.readValue(søknadJson))
    }
 
     @Test
     fun `Test serialisering av request til mottak`() {
-        JSONAssert.assertEquals(KomplettSøknadJson, komplettSøknad.somJson(), true)
-        assertEquals(komplettSøknad, SøknadUtils.objectMapper.readValue(KomplettSøknadJson))
+        val søknadId = UUID.randomUUID().toString()
+        val komplettSøknad = komplettSøknad(søknadId)
+        val komplettSøknadJson = komplettSøknadJson(søknadId)
+
+        JSONAssert.assertEquals(komplettSøknadJson, komplettSøknad.somJson(), true)
+        assertEquals(komplettSøknad, SøknadUtils.objectMapper.readValue(komplettSøknadJson))
     }
 
     private companion object {
-        val now = ZonedDateTime.of(2018, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC"))
-        internal val start = LocalDate.parse("2020-01-01")
 
-        val søknad = SøknadUtils.defaultSøknad()
-
-        internal val SøknadJson = """
+        fun søknadJson(søknadsId: String) = """
             {
               "newVersion": null,
+              "søknadId" : "$søknadsId",
               "språk": "nb",
               "samtidigHjemme": true,
               "barn": {
@@ -214,10 +218,11 @@ internal class SerDesTest {
             }
         """.trimIndent()
 
-        internal val KomplettSøknadJson = """
+        fun komplettSøknadJson(søknadsId: String) = """
         {
               "mottatt": "2020-05-05T00:00:00Z",
               "språk": "nb",
+              "søknadId" : "$søknadsId",
               "søker": {
                 "aktørId": "12345",
                 "fødselsnummer": "26104500284",
@@ -411,9 +416,10 @@ internal class SerDesTest {
             } 
         """.trimIndent() //TODO Legge til fullstendig k9FormatSøknad
 
-        internal val komplettSøknad = KomplettSøknad(
+        fun komplettSøknad(søknadsId : String = UUID.randomUUID().toString()) = KomplettSøknad(
             mottatt = LocalDate.parse("2020-05-05").atStartOfDay(ZoneId.of("UTC")),
             språk = Språk.nb,
+            søknadId = "$søknadsId",
             barn = BarnDetaljer(
                 aktørId = "12345",
                 fødselsnummer = "123456789",

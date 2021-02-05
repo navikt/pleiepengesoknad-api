@@ -8,13 +8,15 @@ import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.*
 
 class K9FormatTest {
 
     @Test
     fun `Full PP søknad blir til riktig K9Format`(){
         val mottatt = ZonedDateTime.of(2020, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC"))
-        val søknad = SøknadUtils.defaultSøknad()
+        val søknadId = UUID.randomUUID().toString()
+        val søknad = SøknadUtils.defaultSøknad(søknadId)
         val søker = Søker(
             aktørId = "12345",
             fødselsdato = LocalDate.parse("2000-01-01"),
@@ -23,7 +25,7 @@ class K9FormatTest {
         val k9Format = søknad.tilK9Format(mottatt, søker)
         val forventetK9FormatJson = """
             {
-              "søknadId" : "123",
+              "søknadId" : "$søknadId",
               "versjon" : "1.0",
               "språk" : "nb",
               "mottattDato" : "2020-01-02T03:04:05.000Z",

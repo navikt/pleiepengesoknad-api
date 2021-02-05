@@ -8,6 +8,7 @@ import java.time.ZonedDateTime
 
 data class KomplettSøknad(
     val språk: Språk? = null,
+    val søknadId: String,
     val mottatt: ZonedDateTime,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,

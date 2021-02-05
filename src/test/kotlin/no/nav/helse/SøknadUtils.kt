@@ -421,8 +421,9 @@ class SøknadUtils {
                 """.trimIndent()
         }
 
-        fun defaultSøknad() = Søknad(
+        fun defaultSøknad(søknadId: String = UUID.randomUUID().toString()) = Søknad(
             newVersion = null,
+            søknadId = søknadId,
             språk = Språk.nb,
             barn = BarnDetaljer(
                 fødselsnummer = "123456789",
