@@ -8,18 +8,19 @@ import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
+import no.nav.k9.søknad.JsonUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 
-class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
+class SøknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
                     private val sokerService: SøkerService,
                     private val vedleggService: VedleggService) {
 
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger(SoknadService::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(SøknadService::class.java)
     }
 
     suspend fun registrer(
@@ -80,6 +81,8 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
             k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
         )
+
+        logger.info("K9Format = {}", JsonUtils.toString(komplettSøknad.k9FormatSøknad)) //TODO For test, fjernes før prodsetting
 
         pleiepengesoknadMottakGateway.leggTilProsessering(
             søknad = komplettSøknad,

@@ -17,7 +17,7 @@ private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 
 @KtorExperimentalLocationsAPI
 fun Route.soknadApis(
-    soknadService: SoknadService,
+    søknadService: SøknadService,
     idTokenProvider: IdTokenProvider
 ) {
 
@@ -32,7 +32,7 @@ fun Route.soknadApis(
         søknad.validate()
         logger.trace("Validering OK. Registrerer søknad.")
 
-        soknadService.registrer(
+        søknadService.registrer(
             søknad = søknad,
             callId = call.getCallId(),
             idToken = idTokenProvider.getIdToken(call)
