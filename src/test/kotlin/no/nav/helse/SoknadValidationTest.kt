@@ -1,16 +1,19 @@
 package no.nav.helse
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.helse.k9format.tilK9Format
+import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import java.net.URL
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import kotlin.test.Test
 
 class SoknadValidationTest {
 
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad dersom utenlandsopphold har til og fra dato som ikke kommer i rett rekkefølge`() {
-        soknad(
+        val søknad = soknad(
             harMedsoker = false, skalJobbeProsent = 0.0, medlemskap =  Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -22,12 +25,14 @@ class SoknadValidationTest {
                     )
                 )
             )
-            ).validate()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+        søknad.validate(k9Format)
     }
 
     @Test(expected = Throwblem::class)
     fun `Feiler på søknad dersom utenlandsopphold mangler landkode`() {
-        soknad(
+        val søknad = soknad(
             harMedsoker = false, skalJobbeProsent = 0.0, medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = false,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -39,44 +44,61 @@ class SoknadValidationTest {
                     )
                 )
             )
-        ).validate()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+        søknad.validate(k9Format)
     }
 
     @Test
     fun `Skal ikke feile ved opphold på en dag`() {
-        soknad(
-           harMedsoker = false, skalJobbeProsent = 0.0, skalJobbe = "nei"
-        ).validate()
+        val søknad = soknad(
+            harMedsoker = false, skalJobbeProsent = 0.0, skalJobbe = "nei"
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+
+        søknad.validate(k9Format)
     }
 
     @Test
     fun `Søknad hvor perioden er 40 virkedager, skal ikke feile`(){
-        soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-26")).validate()
+        val søknad = soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-26"))
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+
+        søknad.validate(k9Format)
     }
 
     @Test(expected = Throwblem::class)
     fun `Søknad hvor perioden er 41 virkedager hvor det ikke er bekreftet, skal feile`(){
-        soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-27")).validate()
+        val søknad = soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-27"))
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+
+        søknad.validate(k9Format)
     }
 
     @Test
     fun `Søknad hvor perioden er 41 virkedager hvor det er bekreftet, skal ikke feile`(){
-        soknadMedFrilans(
+        val søknad = soknadMedFrilans(
             bekrefterPeriodeOver8Uker = true,
             fraOgMed = LocalDate.parse("2020-01-01"),
             tilOgMed = LocalDate.parse("2020-02-27")
-        ).validate()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+
+        søknad.validate(k9Format)
     }
 
     @Test(expected = Throwblem::class)
     fun `Skal feile dersom barnRelasjon er ANNET men barnRelasjonBeskrivelse er tom`() {
-        soknad(
+        val søknad = soknad(
             harMedsoker = false,
             skalJobbe = "nei"
         ).copy(
             barnRelasjon = BarnRelasjon.ANNET,
             barnRelasjonBeskrivelse = null
-        ).validate()
+        )
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+
+        søknad.validate(k9Format)
     }
 
     private fun soknadMedFrilans(

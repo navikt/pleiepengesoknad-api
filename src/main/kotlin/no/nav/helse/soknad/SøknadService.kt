@@ -19,9 +19,10 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 
-class SøknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
-                    private val sokerService: SøkerService,
-                    private val vedleggService: VedleggService) {
+class SøknadService(
+    private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
+    private val vedleggService: VedleggService
+) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(SøknadService::class.java)
@@ -30,15 +31,13 @@ class SøknadService(private val pleiepengesoknadMottakGateway: Pleiepengesoknad
     suspend fun registrer(
         søknad: Søknad,
         idToken: IdToken,
-        callId: CallId
+        callId: CallId,
+        k9FormatSøknad: no.nav.k9.søknad.Søknad,
+        søker: Søker,
+        mottatt: ZonedDateTime
     ) {
-        logger.trace("Registrerer søknad. Henter søker")
-        val søker: Søker = sokerService.getSoker(idToken = idToken, callId = callId)
-
-        logger.trace("Søker hentet. Validerer om søkeren.")
-        søker.validate()
-
-        logger.trace("Validert Søker. Henter ${søknad.vedlegg.size} vedlegg.")
+        logger.info("Registrerer søknad")
+        logger.trace("Henter ${søknad.vedlegg.size} vedlegg.")
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
             vedleggUrls = søknad.vedlegg,
@@ -47,12 +46,6 @@ class SøknadService(private val pleiepengesoknadMottakGateway: Pleiepengesoknad
 
         logger.trace("Vedlegg hentet. Validerer vedleggene.")
         vedlegg.validerVedlegg(søknad.vedlegg)
-
-        val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
-
-        logger.info("Mapper om søknad til k9format.")
-        val k9Format = søknad.tilK9Format(mottatt, søker)
-        //TODO Validere k9format
 
         logger.trace("Legger søknad til prosessering")
         val komplettSøknad = KomplettSøknad(
@@ -88,10 +81,13 @@ class SøknadService(private val pleiepengesoknadMottakGateway: Pleiepengesoknad
             beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
             barnRelasjon = søknad.barnRelasjon,
             barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
-            k9FormatSøknad = k9Format
+            k9FormatSøknad = k9FormatSøknad
         )
 
-        logger.info("K9Format = {}", JsonUtils.toString(komplettSøknad.k9FormatSøknad)) //TODO For test, fjernes før prodsetting
+        logger.info(
+            "K9Format = {}",
+            JsonUtils.toString(komplettSøknad.k9FormatSøknad)
+        ) //TODO For test, fjernes før prodsetting
 
         pleiepengesoknadMottakGateway.leggTilProsessering(
             søknad = komplettSøknad,

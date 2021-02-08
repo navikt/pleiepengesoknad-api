@@ -16,6 +16,7 @@ import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.SøknadInfo
 import no.nav.k9.søknad.ytelse.psb.v1.Uttak
+import no.nav.k9.søknad.ytelse.psb.v1.UttakPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -44,11 +45,11 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
             søknadsPeriode,
             byggSøknadInfo(),
             barn.tilK9Barn(),
-            byggK9ArbeidAktivitet(søker),
+            byggK9ArbeidAktivitet(),
             beredskap?.tilK9Beredskap(søknadsPeriode),
             nattevåk?.tilK9Nattevåk(søknadsPeriode),
             tilsynsordning?.tilK9Tilsynsordning(søknadsPeriode),
-            byggK9Arbeidstid(søker),
+            byggK9Arbeidstid(),
             byggK9Uttak(søknadsPeriode),
             ferieuttakIPerioden?.tilK9LovbestemtFerie(),
             medlemskap.tilK9Bosteder(),
@@ -92,12 +93,11 @@ fun Tilsynsordning.tilK9Tilsynsordning(
 }
 
 fun Søknad.byggK9Uttak(periode: Periode): Uttak? {
-    return null
-    /*val perioder = mutableMapOf<Periode, UttakPeriodeInfo>()
+    val perioder = mutableMapOf<Periode, UttakPeriodeInfo>()
 
-    perioder[periode] = UttakPeriodeInfo(null) //TODO Mangler info om dette i brukerdialog
+    perioder[periode] = UttakPeriodeInfo(Duration.ofHours(1)) //TODO Mangler info om dette i brukerdialog
 
-    return Uttak(perioder)*/
+    return Uttak(perioder)
 }
 
 fun FerieuttakIPerioden.tilK9LovbestemtFerie(): LovbestemtFerie? {

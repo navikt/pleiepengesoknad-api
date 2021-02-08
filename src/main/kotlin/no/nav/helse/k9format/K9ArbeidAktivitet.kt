@@ -9,8 +9,8 @@ import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 
-internal fun Søknad.byggK9ArbeidAktivitet(søker: Søker) = ArbeidAktivitet(
-    arbeidsgivere.tilK9Arbeidstaker(søker.fødselsnummer, Periode(fraOgMed, tilOgMed)),
+internal fun Søknad.byggK9ArbeidAktivitet() = ArbeidAktivitet(
+    arbeidsgivere.tilK9Arbeidstaker(Periode(fraOgMed, tilOgMed)),
     selvstendigVirksomheter.tilK9SelvstendigNæringsdrivende(),
     frilans?.tilK9Frilanser()
 )
@@ -18,12 +18,11 @@ internal fun Søknad.byggK9ArbeidAktivitet(søker: Søker) = ArbeidAktivitet(
 internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser(startdato, jobberFortsattSomFrilans)
 
 internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
-    identitetsnummer: String,
     periode: Periode
 ): List<Arbeidstaker> {
     return organisasjoner.map { organisasjon ->
         Arbeidstaker(
-            NorskIdentitetsnummer.of(identitetsnummer),
+            null, //K9 format vil ikke ha både fnr og org nummer
             Organisasjonsnummer.of(organisasjon.organisasjonsnummer),
             organisasjon.tilK9ArbeidstidInfo(periode)
         )
@@ -49,7 +48,7 @@ internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNær
             .registrertIUtlandet(false)
     } else {
         infoBuilder
-            .landkode(Landkode.of(registrertIUtlandet!!.landkode))
+            .landkode(Landkode.of(registrertIUtlandet?.landkode))
             .registrertIUtlandet(true)
     }
 

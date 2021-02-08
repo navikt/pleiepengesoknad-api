@@ -567,6 +567,12 @@ class ApplicationTest {
                           "name": "selvstendigVirksomheter[0].registrertIUtlandet",
                           "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                           "invalid_value": null
+                        },
+                        {
+                          "type": "entity",
+                          "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                          "reason": "$\{validatedValue}",
+                          "invalid_value": "K9-format feilkode: [Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}] ConstraintViolation "
                         }
                       ]
                     }
@@ -700,10 +706,16 @@ class ApplicationTest {
                       "name": "selvstendigVirksomheter[0].registrertIUtlandet",
                       "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                       "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                      "reason": "$\{validatedValue}",
+                      "invalid_value": "K9-format feilkode: [Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}] ConstraintViolation "
                     }
                   ]
                 }
-            """.trimIndent(),
+            """.trimIndent().replace("\\", ""),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
@@ -1100,7 +1112,7 @@ class ApplicationTest {
                 {
                     "barn": {
                         "navn": "",
-                        "fødselsnummer": "29099s12345"
+                        "fødselsnummer": "2909912345"
                     },
                     "fraOgMed": "1990-09-29",
                     "tilOgMed": "1990-09-28",
@@ -1136,93 +1148,111 @@ class ApplicationTest {
                 }
                 """.trimIndent(),
             expectedResponse = """
-               {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "barn.fødselsnummer",
-                      "reason": "Ikke gyldig fødselsnummer.",
-                      "invalid_value": "29099s12345"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
-                      "reason": "Ikke gyldig organisasjonsnummer.",
-                      "invalid_value": "12"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidsgivere.organisasjoner[0].navn",
-                      "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
-                      "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidsgivere.organisasjoner[0].skalJobbe",
-                      "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
-                      "invalid_value": "ugyldig"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "fraOgMed",
-                      "reason": "Fra og med må være før eller lik til og med.",
-                      "invalid_value": "1990-09-29"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "tilOgMed",
-                      "reason": "Til og med må være etter eller lik fra og med.",
-                      "invalid_value": "1990-09-28"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "vedlegg[0]",
-                      "reason": "Ikke gyldig vedlegg URL.",
-                      "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "vedlegg[1]",
-                      "reason": "Ikke gyldig vedlegg URL.",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "harMedsøker",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "harBekreftetOpplysninger",
-                      "reason": "Opplysningene må bekreftes for å sende inn søknad.",
-                      "invalid_value": false
-                    },
-                    {
-                      "type": "entity",
-                      "name": "harForstattRettigheterOgPlikter",
-                      "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
-                      "invalid_value": false
-                    }
-                  ]
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "barn.fødselsnummer",
+                  "reason": "Ikke gyldig fødselsnummer.",
+                  "invalid_value": "2909912345"
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
+                  "reason": "Ikke gyldig organisasjonsnummer.",
+                  "invalid_value": "12"
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].navn",
+                  "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
+                  "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skalJobbe",
+                  "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
+                  "invalid_value": "ugyldig"
+                },
+                {
+                  "type": "entity",
+                  "name": "fraOgMed",
+                  "reason": "Fra og med må være før eller lik til og med.",
+                  "invalid_value": "1990-09-29"
+                },
+                {
+                  "type": "entity",
+                  "name": "tilOgMed",
+                  "reason": "Til og med må være etter eller lik fra og med.",
+                  "invalid_value": "1990-09-28"
+                },
+                {
+                  "type": "entity",
+                  "name": "vedlegg[0]",
+                  "reason": "Ikke gyldig vedlegg URL.",
+                  "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
+                },
+                {
+                  "type": "entity",
+                  "name": "vedlegg[1]",
+                  "reason": "Ikke gyldig vedlegg URL.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
+                  "reason": "Må settes til true eller false.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
+                  "reason": "Må settes til true eller false.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "harMedsøker",
+                  "reason": "Må settes til true eller false.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "harBekreftetOpplysninger",
+                  "reason": "Opplysningene må bekreftes for å sende inn søknad.",
+                  "invalid_value": false
+                },
+                {
+                  "type": "entity",
+                  "name": "harForstattRettigheterOgPlikter",
+                  "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
+                  "invalid_value": false
+                },
+                {
+                  "type": "entity",
+                  "name": "søknadsperiode",
+                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
+                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
+                },
+                {
+                  "type": "entity",
+                  "name": "uttak.perioder",
+                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
+                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidstid.arbeidstaker[\" + i + \"].arbeidstidPeriode",
+                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
+                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
                 }
+              ]
+            }
             """.trimIndent()
         )
     }

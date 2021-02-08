@@ -1,6 +1,9 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.k9.søknad.ValideringsFeil
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -97,7 +100,7 @@ class FraOgMedTilOgMedValidator {
     }
 }
 
-internal fun Søknad.validate() {
+internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations = barn.validate()
 
     violations.addAll(arbeidsgivere.organisasjoner.validate())
@@ -243,6 +246,16 @@ internal fun Søknad.validate() {
         }
     }
 
+    //TODO Flytt til egen metode
+    violations.addAll(PleiepengerSyktBarnValidator().valider(k9FormatSøknad.getYtelse<PleiepengerSyktBarn>()).map {
+        Violation(
+            parameterName = it.felt,
+            parameterType = ParameterType.ENTITY,
+            reason = it.feilmelding,
+            invalidValue = "K9-format feilkode: ${it.feilkode}"
+        )
+    }.sortedBy { it.reason }.toSet())
+
     // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
@@ -345,7 +358,7 @@ private fun validerUtenladsopphold(
                 )
             )
         }
-        if(utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()){
+        if (utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()) {
             violations.add(
                 Violation(
                     parameterName = "Utenlandsopphold[$index]",
@@ -572,10 +585,10 @@ internal fun List<OrganisasjonDetaljer>.validate(
     return violations
 }
 
-private fun Søknad.validerBarnRelasjon() : MutableSet<Violation> {
+private fun Søknad.validerBarnRelasjon(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
-    if(barnRelasjon == BarnRelasjon.ANNET && barnRelasjonBeskrivelse.isNullOrBlank()){
+    if (barnRelasjon == BarnRelasjon.ANNET && barnRelasjonBeskrivelse.isNullOrBlank()) {
         violations.add(
             Violation(
                 parameterName = "barnRelasjonBeskrivelse",
@@ -591,7 +604,7 @@ private fun Søknad.validerBarnRelasjon() : MutableSet<Violation> {
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
 
-internal fun antallVirkedagerIEnPeriode(fraOgMed: LocalDate, tilOgMed: LocalDate) : Int {
+internal fun antallVirkedagerIEnPeriode(fraOgMed: LocalDate, tilOgMed: LocalDate): Int {
     var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
     var dagSomSkalSjekkes: LocalDate = fraOgMed;
 

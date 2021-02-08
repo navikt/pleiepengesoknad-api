@@ -39,6 +39,13 @@ class SøknadUtils {
 
         internal val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert()
 
+        val søker = no.nav.helse.soker.Søker(
+            aktørId = "12345",
+            fødselsdato = LocalDate.parse("2000-01-01"),
+            fornavn = "Kjell",
+            fødselsnummer = "26104500284"
+        )
+
         fun bodyMedFodselsnummerPaaBarn(
             fodselsnummer: String,
             fraOgMed: String? = "2018-10-10",

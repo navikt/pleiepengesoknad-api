@@ -190,10 +190,10 @@ fun Application.pleiepengesoknadapi() {
                 idTokenProvider = idTokenProvider,
                 søknadService = SøknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
-                    sokerService = søkerService,
                     vedleggService = vedleggService
                 ),
-                barnService = barnService
+                barnService = barnService,
+                søkerService = søkerService
             )
         }
 
