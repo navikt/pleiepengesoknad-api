@@ -9,6 +9,8 @@ import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.k9.søknad.JsonUtils
+import no.nav.k9.søknad.SøknadValidator
+import no.nav.k9.søknad.ValideringsFeil
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import org.slf4j.Logger
@@ -46,9 +48,13 @@ class SøknadService(private val pleiepengesoknadMottakGateway: Pleiepengesoknad
         logger.trace("Vedlegg hentet. Validerer vedleggene.")
         vedlegg.validerVedlegg(søknad.vedlegg)
 
-        logger.trace("Legger søknad til prosessering")
-
         val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
+
+        logger.info("Mapper om søknad til k9format.")
+        val k9Format = søknad.tilK9Format(mottatt, søker)
+        //TODO Validere k9format
+
+        logger.trace("Legger søknad til prosessering")
         val komplettSøknad = KomplettSøknad(
             språk = søknad.språk,
             søknadId = søknad.søknadId,
@@ -82,9 +88,9 @@ class SøknadService(private val pleiepengesoknadMottakGateway: Pleiepengesoknad
             beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
             barnRelasjon = søknad.barnRelasjon,
             barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
-            k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
+            k9FormatSøknad = k9Format
         )
-        
+
         logger.info("K9Format = {}", JsonUtils.toString(komplettSøknad.k9FormatSøknad)) //TODO For test, fjernes før prodsetting
 
         pleiepengesoknadMottakGateway.leggTilProsessering(
