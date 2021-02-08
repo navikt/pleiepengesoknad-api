@@ -1,7 +1,6 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
-import java.net.URL
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -165,15 +164,9 @@ internal fun Søknad.validate() {
 
     //Validerer at brukeren bekrefter dersom perioden er over 8 uker (40 virkedager)
     if (bekrefterPeriodeOver8Uker != null) {
-        var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
-        var dagSomSkalSjekkes: LocalDate = fraOgMed;
+        val antallVirkedagerIPerioden = antallVirkedagerIEnPeriode(fraOgMed, tilOgMed)
 
-        while (!dagSomSkalSjekkes.isAfter(tilOgMed)) {
-            if (dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
-            dagSomSkalSjekkes = dagSomSkalSjekkes.plusDays(1)
-        }
-
-        if (antallDagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker) {
+        if (antallVirkedagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker) {
             violations.add(
                 Violation(
                     parameterName = "bekrefterPeriodeOver8Uker",
@@ -668,4 +661,16 @@ fun String.starterMedFodselsdato(): Boolean {
     } catch (cause: Throwable) {
         false
     }
+}
+
+internal fun antallVirkedagerIEnPeriode(fraOgMed: LocalDate, tilOgMed: LocalDate) : Int {
+    var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
+    var dagSomSkalSjekkes: LocalDate = fraOgMed;
+
+    while (!dagSomSkalSjekkes.isAfter(tilOgMed)) {
+        if (dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
+        dagSomSkalSjekkes = dagSomSkalSjekkes.plusDays(1)
+    }
+
+    return antallDagerIPerioden.toInt()
 }
