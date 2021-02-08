@@ -4,26 +4,26 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import no.nav.helse.vedlegg.Vedlegg
+import no.nav.k9.søknad.JsonUtils
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
 
 internal class SerDesTest {
 
     @Test
-    fun `Test reserialisering av request`(){
+    fun `Test reserialisering av request`() {
         val søknadId = UUID.randomUUID().toString()
         val søknad = SøknadUtils.defaultSøknad(søknadId)
         val søknadJson = søknadJson(søknadId)
 
         JSONAssert.assertEquals(søknadJson, søknad.somJson(), true)
         assertEquals(søknad, SøknadUtils.objectMapper.readValue(søknadJson))
-   }
+    }
 
     @Test
     fun `Test serialisering av request til mottak`() {
@@ -239,8 +239,8 @@ internal class SerDesTest {
                 "aktørId": "12345",
                 "fødselsdato" : "2018-01-01"
               },
-              "fraOgMed": "${LocalDate.now()}",
-              "tilOgMed": "${LocalDate.now().plusDays(10)}",
+              "fraOgMed": "2020-01-01",
+              "tilOgMed": "2020-02-01",
               "arbeidsgivere": {
                 "organisasjoner": [
                   {
@@ -414,12 +414,12 @@ internal class SerDesTest {
               "barnRelasjonBeskrivelse" : null,
               "k9FormatSøknad" : null 
             } 
-        """.trimIndent() //TODO Legge til fullstendig k9FormatSøknad
+        """.trimIndent()
 
-        fun komplettSøknad(søknadsId : String = UUID.randomUUID().toString()) = KomplettSøknad(
+        fun komplettSøknad(søknadId: String = UUID.randomUUID().toString()) = KomplettSøknad(
             mottatt = LocalDate.parse("2020-05-05").atStartOfDay(ZoneId.of("UTC")),
             språk = Språk.nb,
-            søknadId = "$søknadsId",
+            søknadId = "$søknadId",
             barn = BarnDetaljer(
                 aktørId = "12345",
                 fødselsnummer = "123456789",
@@ -433,15 +433,17 @@ internal class SerDesTest {
                 etternavn = "Nordmann",
                 fornavn = "Ola"
             ),
-            arbeidsgivere = ArbeidsgiverDetaljer(listOf(
-                OrganisasjonDetaljer(
-                    navn = "Org",
-                    organisasjonsnummer = "917755736",
-                    skalJobbeProsent = 10.0,
-                    jobberNormaltTimer = 10.0,
-                    skalJobbe = "redusert"
+            arbeidsgivere = ArbeidsgiverDetaljer(
+                listOf(
+                    OrganisasjonDetaljer(
+                        navn = "Org",
+                        organisasjonsnummer = "917755736",
+                        skalJobbeProsent = 10.0,
+                        jobberNormaltTimer = 10.0,
+                        skalJobbe = "redusert"
+                    )
                 )
-            )),
+            ),
             vedlegg = listOf(
                 Vedlegg(
                     content = "Test".toByteArray(),
@@ -449,8 +451,8 @@ internal class SerDesTest {
                     title = "Vedlegg"
                 )
             ),
-            fraOgMed = LocalDate.now(),
-            tilOgMed = LocalDate.now().plusDays(10),
+            fraOgMed = LocalDate.parse("2020-01-01"),
+            tilOgMed = LocalDate.parse("2020-02-01"),
             bekrefterPeriodeOver8Uker = true,
             nattevåk = Nattevåk(
                 harNattevåk = true,
@@ -502,17 +504,19 @@ internal class SerDesTest {
                 utenlandsoppholdNeste12Mnd = listOf(
                     Bosted(
                         fraOgMed = LocalDate.parse("2018-01-01"),
-                        tilOgMed =  LocalDate.parse("2018-01-10"),
+                        tilOgMed = LocalDate.parse("2018-01-10"),
                         landnavn = "Tyskland",
                         landkode = "DEU"
-                    )),
+                    )
+                ),
                 utenlandsoppholdSiste12Mnd = listOf(
                     Bosted(
                         fraOgMed = LocalDate.parse("2017-01-01"),
-                        tilOgMed =  LocalDate.parse("2017-01-10"),
+                        tilOgMed = LocalDate.parse("2017-01-10"),
                         landnavn = "Tyskland",
                         landkode = "DEU"
-                    ))
+                    )
+                )
             ),
             harMedsøker = true,
             beredskap = Beredskap(
@@ -524,72 +528,77 @@ internal class SerDesTest {
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
             skalBekrefteOmsorg = true,
-            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
-                Utenlandsopphold(
-                    fraOgMed = LocalDate.parse("2019-10-10"),
-                    tilOgMed = LocalDate.parse("2019-11-10"),
-                    landkode = "SE",
-                    landnavn = "Sverige",
-                    erBarnetInnlagt = true,
-                    perioderBarnetErInnlagt = listOf(
-                        Periode(
-                            fraOgMed = LocalDate.parse("2020-01-01"),
-                            tilOgMed = LocalDate.parse("2020-01-02")
-                        )
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(
+                skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.parse("2019-10-10"),
+                        tilOgMed = LocalDate.parse("2019-11-10"),
+                        landkode = "SE",
+                        landnavn = "Sverige",
+                        erBarnetInnlagt = true,
+                        perioderBarnetErInnlagt = listOf(
+                            Periode(
+                                fraOgMed = LocalDate.parse("2020-01-01"),
+                                tilOgMed = LocalDate.parse("2020-01-02")
+                            )
+                        ),
+                        erUtenforEøs = false,
+                        årsak = Årsak.ANNET
                     ),
-                    erUtenforEøs = false,
-                    årsak = Årsak.ANNET
-                ),
-                Utenlandsopphold(
-                    fraOgMed = LocalDate.parse("2019-10-10"),
-                    tilOgMed = LocalDate.parse("2019-11-10"),
-                    landkode = "SE",
-                    landnavn = "Sverige",
-                    erBarnetInnlagt = true,
-                    perioderBarnetErInnlagt = listOf(
-                        Periode(
-                            fraOgMed = LocalDate.parse("2020-01-01"),
-                            tilOgMed = LocalDate.parse("2020-01-02")
-                        )
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.parse("2019-10-10"),
+                        tilOgMed = LocalDate.parse("2019-11-10"),
+                        landkode = "SE",
+                        landnavn = "Sverige",
+                        erBarnetInnlagt = true,
+                        perioderBarnetErInnlagt = listOf(
+                            Periode(
+                                fraOgMed = LocalDate.parse("2020-01-01"),
+                                tilOgMed = LocalDate.parse("2020-01-02")
+                            )
+                        ),
+                        erUtenforEøs = false,
+                        årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
                     ),
-                    erUtenforEøs = false,
-                    årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
-                ),
-                Utenlandsopphold(
-                    fraOgMed = LocalDate.parse("2019-10-10"),
-                    tilOgMed = LocalDate.parse("2019-11-10"),
-                    landkode = "SE",
-                    landnavn = "Sverige",
-                    erBarnetInnlagt = true,
-                    perioderBarnetErInnlagt = listOf(
-                        Periode(
-                            fraOgMed = LocalDate.parse("2020-01-01"),
-                            tilOgMed = LocalDate.parse("2020-01-02")
-                        )
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.parse("2019-10-10"),
+                        tilOgMed = LocalDate.parse("2019-11-10"),
+                        landkode = "SE",
+                        landnavn = "Sverige",
+                        erBarnetInnlagt = true,
+                        perioderBarnetErInnlagt = listOf(
+                            Periode(
+                                fraOgMed = LocalDate.parse("2020-01-01"),
+                                tilOgMed = LocalDate.parse("2020-01-02")
+                            )
+                        ),
+                        erUtenforEøs = false,
+                        årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
                     ),
-                    erUtenforEøs = false,
-                    årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
-                ),
-                Utenlandsopphold(
-                    fraOgMed = LocalDate.parse("2019-10-10"),
-                    tilOgMed = LocalDate.parse("2019-11-10"),
-                    landkode = "SE",
-                    landnavn = "Sverige",
-                    erBarnetInnlagt = false,
-                    erUtenforEøs = false,
-                    årsak = null
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.parse("2019-10-10"),
+                        tilOgMed = LocalDate.parse("2019-11-10"),
+                        landkode = "SE",
+                        landnavn = "Sverige",
+                        erBarnetInnlagt = false,
+                        erUtenforEøs = false,
+                        årsak = null
+                    )
                 )
-            )),
-            ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf(
-                Ferieuttak(
-                    fraOgMed = LocalDate.parse("2020-01-05"),
-                    tilOgMed = LocalDate.parse("2020-01-07")
+            ),
+            ferieuttakIPerioden = FerieuttakIPerioden(
+                skalTaUtFerieIPerioden = false, ferieuttak = listOf(
+                    Ferieuttak(
+                        fraOgMed = LocalDate.parse("2020-01-05"),
+                        tilOgMed = LocalDate.parse("2020-01-07")
+                    )
                 )
-            )),
+            ),
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01")
-            )
+            ),
+            k9FormatSøknad = null
         )
     }
 }

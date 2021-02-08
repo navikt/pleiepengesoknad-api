@@ -595,8 +595,8 @@ class SøknadUtils {
             )
         )
 
-        fun defaultK9FormatPSB(søknadId: UUID = UUID.randomUUID()) = K9Søknad(
-            SøknadId.of(søknadId.toString()),
+        fun defaultK9FormatPSB(søknadId: String = UUID.randomUUID().toString()) = K9Søknad(
+            SøknadId.of(søknadId),
             Versjon.of("1.0"),
             ZonedDateTime.parse("2020-01-01T10:00:00Z"),
             Søker.builder()

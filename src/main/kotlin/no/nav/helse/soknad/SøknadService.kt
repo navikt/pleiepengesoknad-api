@@ -9,6 +9,8 @@ import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.k9.søknad.JsonUtils
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
@@ -82,7 +84,7 @@ class SøknadService(private val pleiepengesoknadMottakGateway: Pleiepengesoknad
             barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
             k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
         )
-
+        
         logger.info("K9Format = {}", JsonUtils.toString(komplettSøknad.k9FormatSøknad)) //TODO For test, fjernes før prodsetting
 
         pleiepengesoknadMottakGateway.leggTilProsessering(
