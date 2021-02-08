@@ -10,8 +10,10 @@ import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.redis.RedisMockUtil
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.AfterClass
@@ -576,7 +578,7 @@ class ApplicationTest {
                         }
                       ]
                     }
-            """.trimIndent(),
+            """.trimIndent().replace("\\", ""),// TODO: 08/02/2021 Slett .replace() ved fix fra k9-format
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
@@ -715,7 +717,7 @@ class ApplicationTest {
                     }
                   ]
                 }
-            """.trimIndent().replace("\\", ""),
+            """.trimIndent().replace("\\", ""), // TODO: 08/02/2021 Slett .replace() ved fix fra k9-format
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
