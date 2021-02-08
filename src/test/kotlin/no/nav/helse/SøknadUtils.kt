@@ -599,9 +599,7 @@ class SøknadUtils {
             SøknadId.of(søknadId),
             Versjon.of("1.0"),
             ZonedDateTime.parse("2020-01-01T10:00:00Z"),
-            Søker.builder()
-                .norskIdentitetsnummer(NorskIdentitetsnummer.of("12345678910"))
-                .build(),
+            Søker(NorskIdentitetsnummer.of("12345678910")),
             PleiepengerSyktBarn(
                 Periode(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-10")),
                 SøknadInfo(
@@ -749,15 +747,11 @@ class SøknadUtils {
                         Periode(
                             LocalDate.parse("2020-01-01"),
                             LocalDate.parse("2020-01-05")
-                        ) to Bosteder.BostedPeriodeInfo.builder()
-                            .land(Landkode.SPANIA)
-                            .build(),
+                        ) to Bosteder.BostedPeriodeInfo(Landkode.SPANIA),
                         Periode(
                             LocalDate.parse("2020-01-06"),
                             LocalDate.parse("2020-01-10")
-                        ) to Bosteder.BostedPeriodeInfo.builder()
-                            .land(Landkode.NORGE)
-                            .build()
+                        ) to Bosteder.BostedPeriodeInfo(Landkode.NORGE)
                     )
                 ),
                 Utenlandsopphold(
