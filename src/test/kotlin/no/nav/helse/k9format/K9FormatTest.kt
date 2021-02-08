@@ -23,7 +23,9 @@ class K9FormatTest {
             fødselsnummer = "123456789"
         )
         val k9Format = søknad.tilK9Format(mottatt, søker)
-        val forventetK9FormatJson = """
+        val forventetK9FormatJson =
+            //language=json
+            """
             {
               "søknadId" : "$søknadId",
               "versjon" : "1.0",
@@ -52,7 +54,7 @@ class K9FormatTest {
                 },
                 "arbeidAktivitet" : {
                   "arbeidstaker" : [ {
-                    "norskIdentitetsnummer" : "123456789",
+                    "norskIdentitetsnummer" : null,
                     "organisasjonsnummer" : "917755736",
                     "arbeidstidInfo" : {
                       "jobberNormaltTimerPerDag" : "PT8H",
@@ -108,7 +110,7 @@ class K9FormatTest {
                 },
                 "arbeidstid" : {
                   "arbeidstakerList" : [ {
-                    "norskIdentitetsnummer" : "123456789",
+                    "norskIdentitetsnummer" : null,
                     "organisasjonsnummer" : "917755736",
                     "arbeidstidInfo" : {
                       "jobberNormaltTimerPerDag" : "PT8H",
@@ -119,24 +121,16 @@ class K9FormatTest {
                       }
                     }
                   } ],
-                  "frilanserArbeidstidInfo" : {
-                    "jobberNormaltTimerPerDag" : null,
-                    "perioder" : {
-                      "2020-01-01/2020-01-20" : {
-                        "faktiskArbeidTimerPerDag" : null
-                      }
-                    }
-                  },
-                  "selvstendigNæringsdrivendeArbeidstidInfo" : {
-                    "jobberNormaltTimerPerDag" : null,
-                    "perioder" : {
-                      "2020-01-01/.." : {
-                        "faktiskArbeidTimerPerDag" : null
-                      }
+                  "frilanserArbeidstidInfo" : null,
+                  "selvstendigNæringsdrivendeArbeidstidInfo" : null
+                },
+                "uttak" : {
+                  "perioder" : {
+                    "2020-01-01/2020-01-20" : {
+                      "timerPleieAvBarnetPerDag" : "PT1H"
                     }
                   }
                 },
-                "uttak" : null,
                 "lovbestemtFerie" : null,
                 "bosteder" : {
                   "perioder" : {

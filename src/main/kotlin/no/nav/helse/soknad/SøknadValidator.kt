@@ -246,21 +246,23 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
         }
     }
 
-    //TODO Flytt til egen metode
-    violations.addAll(PleiepengerSyktBarnValidator().valider(k9FormatSøknad.getYtelse<PleiepengerSyktBarn>()).map {
-        Violation(
-            parameterName = it.felt,
-            parameterType = ParameterType.ENTITY,
-            reason = it.feilmelding,
-            invalidValue = "K9-format feilkode: ${it.feilkode}"
-        )
-    }.sortedBy { it.reason }.toSet())
+    violations.addAll(validerK9Format(k9FormatSøknad))
 
     // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
 }
+
+private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): MutableSet<Violation> =
+    PleiepengerSyktBarnValidator().valider(k9FormatSøknad.getYtelse<PleiepengerSyktBarn>()).map {
+        Violation(
+            parameterName = it.felt,
+            parameterType = ParameterType.ENTITY,
+            reason = it.feilmelding,
+            invalidValue = "K9-format feilkode: ${it.feilkode}"
+        )
+    }.sortedBy { it.reason }.toMutableSet()
 
 private fun validerSelvstendigVirksomheter(
     selvstendigVirksomheter: List<Virksomhet>
