@@ -67,13 +67,12 @@ internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNær
             .bruttoInntekt(næringsinntekt.toBigDecimal())
     }
 
-    infoBuilder.erVarigEndring(false)
     varigEndring?.let {
         infoBuilder
             .erVarigEndring(true)
             .endringDato(it.dato)
             .endringBegrunnelse(it.forklaring)
-    }
+    } ?: infoBuilder.erVarigEndring(false)
 
     return infoBuilder.build()
 }
