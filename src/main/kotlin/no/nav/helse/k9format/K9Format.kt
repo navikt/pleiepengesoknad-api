@@ -11,12 +11,9 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.SøknadId
+import no.nav.k9.søknad.ytelse.psb.v1.*
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap.BeredskapPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
-import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
-import no.nav.k9.søknad.ytelse.psb.v1.SøknadInfo
-import no.nav.k9.søknad.ytelse.psb.v1.Uttak
-import no.nav.k9.søknad.ytelse.psb.v1.UttakPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -39,7 +36,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
         søker.tilK9Søker(),
         PleiepengerSyktBarn(
             søknadsperiode,
-            byggSøknadInfo(),
+            byggK9DataBruktTilUtledning(),
             barn.tilK9Barn(),
             byggK9ArbeidAktivitet(),
             beredskap?.tilK9Beredskap(søknadsperiode),
@@ -47,6 +44,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
             tilsynsordning?.tilK9Tilsynsordning(søknadsperiode),
             byggK9Arbeidstid(),
             byggK9Uttak(søknadsperiode),
+            byggK9Omsorg(),
             ferieuttakIPerioden?.tilK9LovbestemtFerie(),
             medlemskap.tilK9Bosteder(),
             utenlandsoppholdIPerioden?.tilK9Utenlandsopphold(søknadsperiode)
@@ -59,16 +57,18 @@ fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsn
 
 fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn(NorskIdentitetsnummer.of(fødselsnummer), (fødselsdato))
 
-fun Søknad.byggSøknadInfo(): SøknadInfo = SøknadInfo(
-    barnRelasjon?.utskriftsvennlig ?: "Forelder",
-    skalBekrefteOmsorg,
-    beskrivelseOmsorgsrollen,
+fun Søknad.byggK9DataBruktTilUtledning(): DataBruktTilUtledning = DataBruktTilUtledning(
     harForståttRettigheterOgPlikter,
     harBekreftetOpplysninger,
-    null,
     samtidigHjemme,
     harMedsøker,
     bekrefterPeriodeOver8Uker
+)
+
+fun Søknad.byggK9Omsorg(): Omsorg = Omsorg(
+    barnRelasjon?.utskriftsvennlig ?: "Forelder",
+    skalBekrefteOmsorg,
+    beskrivelseOmsorgsrollen
 )
 
 fun Beredskap.tilK9Beredskap(

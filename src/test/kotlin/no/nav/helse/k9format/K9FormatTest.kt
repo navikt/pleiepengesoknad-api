@@ -29,21 +29,17 @@ class K9FormatTest {
             {
               "søknadId" : "$søknadId",
               "versjon" : "1.0.0",
-              "språk" : "nb",
               "mottattDato" : "2020-01-02T03:04:05.000Z",
               "søker" : {
                 "norskIdentitetsnummer" : "123456789"
               },
+              "språk" : "nb",
               "ytelse" : {
                 "type" : "PLEIEPENGER_SYKT_BARN",
                 "søknadsperiode" : "2020-01-01/2020-01-20",
-                "søknadInfo" : {
-                  "relasjonTilBarnet" : "Forelder",
-                  "samtykketOmsorgForBarnet" : true,
-                  "beskrivelseAvOmsorgsrollen" : "En kort beskrivelse",
+                "dataBruktTilUtledning" : {
                   "harForståttRettigheterOgPlikter" : true,
                   "harBekreftetOpplysninger" : true,
-                  "flereOmsorgspersoner" : null,
                   "samtidigHjemme" : true,
                   "harMedsøker" : true,
                   "bekrefterPeriodeOver8Uker" : true
@@ -131,13 +127,18 @@ class K9FormatTest {
                     }
                   }
                 },
+                "omsorg" : {
+                  "relasjonTilBarnet" : "Forelder",
+                  "samtykketOmsorgForBarnet" : true,
+                  "beskrivelseAvOmsorgsrollen" : "En kort beskrivelse"
+                },
                 "lovbestemtFerie" : null,
                 "bosteder" : {
                   "perioder" : {
-                    "2018-01-01/2018-01-10" : {
+                    "2017-01-01/2017-01-10" : {
                       "land" : "DEU"
                     },
-                    "2017-01-01/2017-01-10" : {
+                    "2018-01-01/2018-01-10" : {
                       "land" : "DEU"
                     }
                   }
@@ -153,7 +154,6 @@ class K9FormatTest {
               }
             }
         """.trimIndent()
-
         JSONAssert.assertEquals(forventetK9FormatJson, JsonUtils.toString(k9Format), true)
     }
 

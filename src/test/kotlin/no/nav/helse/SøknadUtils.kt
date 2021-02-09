@@ -609,11 +609,7 @@ class SøknadUtils {
             Søker(NorskIdentitetsnummer.of("12345678910")),
             PleiepengerSyktBarn(
                 Periode(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-10")),
-                SøknadInfo(
-                    "Far",
-                    true,
-                    "beskriver omsorgsrollen...",
-                    true,
+                DataBruktTilUtledning(
                     true,
                     true,
                     true,
@@ -742,6 +738,11 @@ class SøknadUtils {
                             LocalDate.parse("2020-01-10")
                         ) to UttakPeriodeInfo(Duration.ofHours(2))
                     )
+                ),
+                Omsorg(
+                    "Forelder",
+                    true,
+                    "Blabla beskrivelse"
                 ),
                 LovbestemtFerie(
                     listOf(
