@@ -80,8 +80,15 @@ data class OrganisasjonDetaljer(
     val organisasjonsnummer: String,
     val jobberNormaltTimer: Double,
     val skalJobbeProsent: Double,
-    val vetIkkeEkstrainfo: String? = null
+    val vetIkkeEkstrainfo: String? = null,
+    val arbeidsform: Arbeidsform? = null //TODO 09.02.2021 - Fjerne nullable når prodsatt. Påbudt felt
 )
+
+enum class Arbeidsform{
+    FAST,
+    TURNUS,
+    VARIERENDE
+}
 
 enum class TilsynsordningSvar {
     ja,

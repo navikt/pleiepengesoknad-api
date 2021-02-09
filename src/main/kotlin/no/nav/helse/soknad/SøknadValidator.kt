@@ -524,6 +524,7 @@ internal fun List<OrganisasjonDetaljer>.validate(
                 )
             )
         }
+
         if (organisasjon.navn != null && organisasjon.navn.erBlankEllerLengreEnn(100)) {
             violations.add(
                 Violation(
@@ -534,6 +535,19 @@ internal fun List<OrganisasjonDetaljer>.validate(
                 )
             )
         }
+
+        //TODO 09.02.2021 - Settes på når feltet er prodsatt
+        /*
+        if(organisasjon.arbeidsform == null){
+            violations.add(
+                Violation(
+                    parameterName = "arbeidsgivere.organisasjoner[$index].arbeidsform",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "arbeidsform kan ikke være null",
+                    invalidValue = organisasjon.arbeidsform
+                )
+            )
+        }*/
 
         organisasjon.skalJobbeProsent.apply {
             if (this !in 0.0..100.0) {

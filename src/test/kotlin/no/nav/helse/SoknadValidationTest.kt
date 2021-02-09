@@ -105,7 +105,8 @@ class SoknadValidationTest {
                 organisasjonsnummer = "917755736",
                 skalJobbeProsent = 10.0,
                 jobberNormaltTimer = 10.0,
-                skalJobbe = "redusert"
+                skalJobbe = "redusert",
+                arbeidsform = Arbeidsform.TURNUS
             )
         )),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
@@ -166,7 +167,8 @@ class SoknadValidationTest {
                     skalJobbeProsent = skalJobbeProsent,
                     jobberNormaltTimer = jobberNormalTimer,
                     vetIkkeEkstrainfo = vetIkkeEkstrainfo,
-                    skalJobbe = skalJobbe
+                    skalJobbe = skalJobbe,
+                    arbeidsform = Arbeidsform.TURNUS
                 )
             )
         ),

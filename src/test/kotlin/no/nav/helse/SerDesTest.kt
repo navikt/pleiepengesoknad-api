@@ -48,7 +48,8 @@ internal class SerDesTest {
                     organisasjonsnummer = "917755736",
                     skalJobbeProsent = 10.0,
                     jobberNormaltTimer = 10.0,
-                    skalJobbe = "redusert"
+                    skalJobbe = "redusert",
+                    arbeidsform = Arbeidsform.FAST
                 )
             )),
             vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
@@ -219,7 +220,8 @@ internal class SerDesTest {
                     "skalJobbeProsent": 10,
                     "jobberNormaltTimer": 10,
                     "skalJobbe": "redusert",
-                    "vetIkkeEkstrainfo": null
+                    "vetIkkeEkstrainfo": null,
+                    "arbeidsform": "FAST"
                   }
                 ]
               },
@@ -412,7 +414,8 @@ internal class SerDesTest {
                     "skalJobbeProsent": 10,
                     "jobberNormaltTimer": 10,
                     "skalJobbe": "redusert",
-                    "vetIkkeEkstrainfo": null
+                    "vetIkkeEkstrainfo": null,
+                    "arbeidsform": "FAST"
                   }
                 ]
               },
@@ -601,7 +604,8 @@ internal class SerDesTest {
                     organisasjonsnummer = "917755736",
                     skalJobbeProsent = 10.0,
                     jobberNormaltTimer = 10.0,
-                    skalJobbe = "redusert"
+                    skalJobbe = "redusert",
+                    arbeidsform = Arbeidsform.FAST
                 )
             )),
             vedlegg = listOf(

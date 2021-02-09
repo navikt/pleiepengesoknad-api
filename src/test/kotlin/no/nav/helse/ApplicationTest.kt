@@ -724,7 +724,8 @@ class ApplicationTest {
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 99.0,
-                      "vetIkkeEkstrainfo": null
+                      "vetIkkeEkstrainfo": null,
+                      "arbeidsform": "FAST"
                     }
                   ]
                 }
@@ -769,7 +770,8 @@ class ApplicationTest {
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 100.0,
-                      "vetIkkeEkstrainfo": null
+                      "vetIkkeEkstrainfo": null,
+                      "arbeidsform": "FAST"
                     }
                   ]
                 }
@@ -814,7 +816,8 @@ class ApplicationTest {
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
-                      "vetIkkeEkstrainfo": null
+                      "vetIkkeEkstrainfo": null,
+                      "arbeidsform": "FAST"
                     }
                   ]
                 }
@@ -859,7 +862,8 @@ class ApplicationTest {
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
-                      "vetIkkeEkstrainfo": null
+                      "vetIkkeEkstrainfo": null,
+                      "arbeidsform": "FAST"
                     }
                   ]
                 }
@@ -1076,7 +1080,8 @@ class ApplicationTest {
                             {
                                 "organisasjonsnummer": "12",
                                 "navn": "$forlangtNavn",
-                                "skalJobbe": "ugyldig"
+                                "skalJobbe": "ugyldig",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },

@@ -36,7 +36,8 @@ class SøknadUtils {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
                                 "skalJobbeProsent": 50,
-                                "skalJobbe": "redusert"
+                                "skalJobbe": "redusert",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -113,7 +114,8 @@ class SøknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skalJobbe": "nei"
+                                "skalJobbe": "nei",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -162,7 +164,8 @@ class SøknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skalJobbe": "nei"
+                                "skalJobbe": "nei",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -211,7 +214,8 @@ class SøknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skalJobbe": "nei"
+                                "skalJobbe": "nei",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -268,7 +272,8 @@ class SøknadUtils {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
                                 "skalJobbeProsent": $skalJobbeProsent,
-                                "skalJobbe": "$skalJobbe"
+                                "skalJobbe": "$skalJobbe",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -343,7 +348,8 @@ class SøknadUtils {
                             {
                                  "organisasjonsnummer": "917755736",
                                   "navn": "Bjeffefirmaet ÆÆÅ",
-                                  "skalJobbe": "nei"
+                                  "skalJobbe": "nei",
+                                  "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -385,14 +391,14 @@ class SøknadUtils {
                     "bekrefterPeriodeOver8Uker": "$bekrefterPeriodeOver8Uker",
                     "harBekreftetOpplysninger": true,
                     "harForståttRettigheterOgPlikter": true,
-                  "ferieuttakIPerioden": {
-                    "skalTaUtFerieIPeriode": true,
-                    "ferieuttak": [
-                      {
-                        "fraOgMed": "2020-01-05",
-                        "tilOgMed": "2020-01-07"
-                      }
-                    ]
+                    "ferieuttakIPerioden": {
+                      "skalTaUtFerieIPeriode": true,
+                      "ferieuttak": [
+                        {
+                          "fraOgMed": "2020-01-05",
+                          "tilOgMed": "2020-01-07"
+                        }
+                      ]
                   },
                   "skalBekrefteOmsorg": true,
                   "skalPassePaBarnetIHelePerioden": true,
