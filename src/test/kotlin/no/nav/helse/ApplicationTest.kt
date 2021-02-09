@@ -587,8 +587,8 @@ class ApplicationTest {
                     Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
-                        fraOgMed = LocalDate.now().minusDays(1),
-                        tilOgMed = LocalDate.now(),
+                        fraOgMed = LocalDate.parse("2021-02-07"),
+                        tilOgMed = LocalDate.parse("2021-02-08"),
                         næringsinntekt = 1233123,
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
@@ -726,8 +726,8 @@ class ApplicationTest {
                     Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
-                        fraOgMed = LocalDate.now().minusDays(1),
-                        tilOgMed = LocalDate.now(),
+                        fraOgMed = LocalDate.parse("2021-02-07"),
+                        tilOgMed = LocalDate.parse("2021-02-08"),
                         næringsinntekt = 1212,
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,

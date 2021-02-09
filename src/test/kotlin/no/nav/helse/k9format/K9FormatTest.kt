@@ -127,7 +127,7 @@ class K9FormatTest {
                 "uttak" : {
                   "perioder" : {
                     "2020-01-01/2020-01-20" : {
-                      "timerPleieAvBarnetPerDag" : "PT1H"
+                      "timerPleieAvBarnetPerDag" : "PT7H30M"
                     }
                   }
                 },

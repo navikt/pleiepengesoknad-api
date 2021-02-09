@@ -35,29 +35,28 @@ fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
 fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
-    val søknadsPeriode = Periode(fraOgMed, tilOgMed)
+    val søknadsperiode = Periode(fraOgMed, tilOgMed)
     val søknad = K9Søknad(
         SøknadId.of(søknadId),
         k9FormatVersjon,
         mottatt,
         søker.tilK9Søker(),
         PleiepengerSyktBarn(
-            søknadsPeriode,
+            søknadsperiode,
             byggSøknadInfo(),
             barn.tilK9Barn(),
             byggK9ArbeidAktivitet(),
-            beredskap?.tilK9Beredskap(søknadsPeriode),
-            nattevåk?.tilK9Nattevåk(søknadsPeriode),
-            tilsynsordning?.tilK9Tilsynsordning(søknadsPeriode),
+            beredskap?.tilK9Beredskap(søknadsperiode),
+            nattevåk?.tilK9Nattevåk(søknadsperiode),
+            tilsynsordning?.tilK9Tilsynsordning(søknadsperiode),
             byggK9Arbeidstid(),
-            byggK9Uttak(søknadsPeriode),
+            byggK9Uttak(søknadsperiode),
             ferieuttakIPerioden?.tilK9LovbestemtFerie(),
             medlemskap.tilK9Bosteder(),
-            utenlandsoppholdIPerioden?.tilK9Utenlandsopphold(søknadsPeriode)
+            utenlandsoppholdIPerioden?.tilK9Utenlandsopphold(søknadsperiode)
         )
     )
     return søknad
-
 }
 
 fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
@@ -95,7 +94,7 @@ fun Tilsynsordning.tilK9Tilsynsordning(
 fun Søknad.byggK9Uttak(periode: Periode): Uttak? {
     val perioder = mutableMapOf<Periode, UttakPeriodeInfo>()
 
-    perioder[periode] = UttakPeriodeInfo(Duration.ofHours(1)) //TODO Mangler info om dette i brukerdialog
+    perioder[periode] = UttakPeriodeInfo(Duration.ofHours(7).plusMinutes(30))
 
     return Uttak(perioder)
 }
