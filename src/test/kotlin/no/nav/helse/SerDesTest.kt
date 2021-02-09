@@ -19,14 +19,14 @@ internal class SerDesTest {
     fun `Test reserialisering av request`(){
         JSONAssert.assertEquals(SøknadJson, søknad.somJson(), true)
         assertEquals(
-            søknad, SoknadUtils.objectMapper.readValue(SøknadJson)
+            søknad, SøknadUtils.objectMapper.readValue(SøknadJson)
         )
    }
 
     @Test
     fun `Test serialisering av request til mottak`() {
         JSONAssert.assertEquals(KomplettSøknadJson, komplettSøknad.somJson(), true)
-        assertEquals(komplettSøknad, SoknadUtils.objectMapper.readValue(KomplettSøknadJson))
+        assertEquals(komplettSøknad, SøknadUtils.objectMapper.readValue(KomplettSøknadJson))
     }
 
     private companion object {
@@ -192,7 +192,8 @@ internal class SerDesTest {
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01")
-            )
+            ),
+            harVærtEllerErVernepliktig = true
         )
 
 
@@ -376,7 +377,8 @@ internal class SerDesTest {
                 }
               },
               "barnRelasjon" : null,
-              "barnRelasjonBeskrivelse" : null
+              "barnRelasjonBeskrivelse" : null,
+              "harVærtEllerErVernepliktig" : true
             }
         """.trimIndent()
 
@@ -572,7 +574,8 @@ internal class SerDesTest {
                 }
               },
               "barnRelasjon" : null,
-              "barnRelasjonBeskrivelse" : null
+              "barnRelasjonBeskrivelse" : null,
+              "harVærtEllerErVernepliktig" : true
             }
         """.trimIndent()
 
@@ -748,10 +751,11 @@ internal class SerDesTest {
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01")
-            )
+            ),
+            harVærtEllerErVernepliktig = true
         )
     }
 }
 
-internal fun Søknad.somJson() = SoknadUtils.objectMapper.writeValueAsString(this)
-internal fun KomplettSøknad.somJson() = SoknadUtils.objectMapper.writeValueAsString(this)
+internal fun Søknad.somJson() = SøknadUtils.objectMapper.writeValueAsString(this)
+internal fun KomplettSøknad.somJson() = SøknadUtils.objectMapper.writeValueAsString(this)

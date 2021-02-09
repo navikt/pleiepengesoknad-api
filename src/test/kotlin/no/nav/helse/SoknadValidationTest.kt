@@ -4,6 +4,7 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.soknad.*
 import java.net.URL
 import java.time.LocalDate
+import kotlin.test.Ignore
 import kotlin.test.Test
 
 class SoknadValidationTest {
@@ -79,6 +80,12 @@ class SoknadValidationTest {
         ).validate()
     }
 
+    @Ignore //TODO 09.02.2021 - Settes på når feltet er prodsatt
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom "harVærtEllerErVernepliktig" blir satt til null`(){
+        soknad(skalJobbe = "nei").copy(harVærtEllerErVernepliktig = null).validate()
+    }
+
     private fun soknadMedFrilans(
         bekrefterPeriodeOver8Uker: Boolean = false,
         fraOgMed: LocalDate = LocalDate.now(),
@@ -119,11 +126,13 @@ class SoknadValidationTest {
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
         frilans = Frilans(
             jobberFortsattSomFrilans = true,
-            startdato = LocalDate.now().minusDays(1))
+            startdato = LocalDate.now().minusDays(1)
+        ),
+        harVærtEllerErVernepliktig = true
         )
 
     private fun soknad(
-        harMedsoker: Boolean,
+        harMedsoker: Boolean = true,
         samtidigHjemme: Boolean? = false,
         skalJobbeProsent: Double = 0.0,
         vetIkkeEkstrainfo: String? = null,
@@ -173,7 +182,8 @@ class SoknadValidationTest {
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
         barnRelasjon = null,
-        barnRelasjonBeskrivelse = null
+        barnRelasjonBeskrivelse = null,
+        harVærtEllerErVernepliktig = true
         // harHattInntektSomFrilanser = false, default == false
     )
 }

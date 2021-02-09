@@ -7,7 +7,7 @@ import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.soknad.Virksomhet
 
 
-class SoknadUtils {
+class SøknadUtils {
     companion object {
         fun forLangtNavn() =
             "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
@@ -89,7 +89,8 @@ class SoknadUtils {
                   },
                   "skalBekrefteOmsorg": true,
                   "skalPassePaBarnetIHelePerioden": true,
-                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
+                  "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent()
         }
@@ -99,6 +100,7 @@ class SoknadUtils {
             vedleggUrl1: String,
             vedleggUrl2: String
         ): String {
+            //language=JSON
             return """
                 {
                     "barn": {
@@ -138,8 +140,8 @@ class SoknadUtils {
                         "tilOgMed": "2020-01-07"
                       }
                     ]
-                  }
-                }
+                  },
+                "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent()
         }
@@ -149,7 +151,7 @@ class SoknadUtils {
                 .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
                 .writerWithDefaultPrettyPrinter().writeValueAsString(virksomheter)
-
+            //language=JSON
             return """
                 {
                     "barn": {},
@@ -188,8 +190,9 @@ class SoknadUtils {
                         ]
                     },
                     "harHattInntektSomSelvstendigNaringsdrivende" : true,
-                    "selvstendigVirksomheter" : $virksomheterSomJson
-                    }
+                    "selvstendigVirksomheter" : $virksomheterSomJson,
+                    "harVærtEllerErVernepliktig" : true
+                  }
             """.trimIndent()
         }
 
@@ -197,6 +200,7 @@ class SoknadUtils {
             vedleggUrl1: String,
             vedleggUrl2: String
         ): String {
+            //language=JSON
             return """
                 {
                     "barn": {},
@@ -235,9 +239,9 @@ class SoknadUtils {
                             "tilOgMed": "2020-01-07"
                           }
                         ]
-                      }
-                    }
-                }
+                      },
+                    "harVærtEllerErVernepliktig" : true
+                  }
                 """.trimIndent()
         }
 
@@ -316,7 +320,8 @@ class SoknadUtils {
                   },
                   "skalBekrefteOmsorg": true,
                   "skalPassePaBarnetIHelePerioden": true,
-                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
+                  "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent()
         }
@@ -391,7 +396,8 @@ class SoknadUtils {
                   },
                   "skalBekrefteOmsorg": true,
                   "skalPassePaBarnetIHelePerioden": true,
-                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
+                  "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent()
         }

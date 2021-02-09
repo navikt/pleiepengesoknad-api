@@ -75,7 +75,8 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             skalPassePåBarnetIHelePerioden = søknad.skalPassePåBarnetIHelePerioden,
             beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
             barnRelasjon = søknad.barnRelasjon,
-            barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse
+            barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
+            harVærtEllerErVernepliktig = søknad.harVærtEllerErVernepliktig
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(

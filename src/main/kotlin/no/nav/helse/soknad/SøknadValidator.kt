@@ -252,7 +252,8 @@ internal fun Søknad.validate() {
         }
     }
 
-    // Ser om det er noen valideringsfeil
+    //violations.addAll(nullSjekk(harVærtEllerErVernepliktig, "harVærtEllerErVernepliktig")) //TODO 09.02.2021 - Settes på når prodsatt
+
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
@@ -354,7 +355,7 @@ private fun validerUtenladsopphold(
                 )
             )
         }
-        if(utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()){
+        if (utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()) {
             violations.add(
                 Violation(
                     parameterName = "Utenlandsopphold[$index]",
@@ -626,10 +627,10 @@ private fun BarnDetaljer.gyldigAntallIder(): Boolean {
     return antallIderSatt == 0 || antallIderSatt == 1
 }
 
-private fun Søknad.validerBarnRelasjon() : MutableSet<Violation> {
+private fun Søknad.validerBarnRelasjon(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
-    if(barnRelasjon == BarnRelasjon.ANNET && barnRelasjonBeskrivelse.isNullOrBlank()){
+    if (barnRelasjon == BarnRelasjon.ANNET && barnRelasjonBeskrivelse.isNullOrBlank()) {
         violations.add(
             Violation(
                 parameterName = "barnRelasjonBeskrivelse",
@@ -644,3 +645,20 @@ private fun Søknad.validerBarnRelasjon() : MutableSet<Violation> {
 }
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
+
+internal fun nullSjekk(verdi: Boolean?, navn: String): MutableSet<Violation>{
+    val mangler: MutableSet<Violation> = mutableSetOf()
+
+    if(verdi == null){
+        mangler.add(
+            Violation(
+                parameterName = navn,
+                parameterType = ParameterType.ENTITY,
+                reason = "$navn kan ikke være null",
+                invalidValue = verdi
+            )
+        )
+    }
+
+    return mangler
+}

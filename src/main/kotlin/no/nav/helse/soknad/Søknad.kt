@@ -34,7 +34,8 @@ data class Søknad(
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
     val barnRelasjon: BarnRelasjon? = null,
-    val barnRelasjonBeskrivelse: String? = null
+    val barnRelasjonBeskrivelse: String? = null,
+    val harVærtEllerErVernepliktig: Boolean? = null //Default null for å unngå default false ved feil deserialisering
 )
 
 enum class BarnRelasjon{
