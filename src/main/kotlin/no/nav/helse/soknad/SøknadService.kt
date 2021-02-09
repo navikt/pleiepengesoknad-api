@@ -84,11 +84,6 @@ class SøknadService(
             k9FormatSøknad = k9FormatSøknad
         )
 
-        logger.info(
-            "K9Format = {}",
-            JsonUtils.toString(komplettSøknad.k9FormatSøknad)
-        ) //TODO For test, fjernes før prodsetting
-
         pleiepengesoknadMottakGateway.leggTilProsessering(
             søknad = komplettSøknad,
             callId = callId
