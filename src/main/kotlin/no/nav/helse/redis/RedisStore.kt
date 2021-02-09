@@ -29,6 +29,17 @@ class RedisStore constructor(
         return null
     }
 
+
+    fun update(key: String, value: String): String? {
+        val set = async.set(key, value)
+
+        if (set.await(10, TimeUnit.SECONDS)) {
+            return set.get()
+        }
+
+        return null
+    }
+
     fun delete(key: String): Boolean {
         val del = async.del(key)
 
