@@ -6,7 +6,12 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
+import java.time.Duration
 import java.time.LocalDate
+
+fun Double.tilFaktiskTimerPerUke(prosent: Double) = this.times(prosent.div(100))
+fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
+fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 internal fun Søknad.byggK9ArbeidAktivitet() = ArbeidAktivitet(
     arbeidsgivere.tilK9Arbeidstaker(Periode(fraOgMed, tilOgMed)),

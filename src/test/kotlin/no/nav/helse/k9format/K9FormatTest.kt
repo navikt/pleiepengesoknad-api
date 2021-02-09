@@ -28,7 +28,7 @@ class K9FormatTest {
             """
             {
               "søknadId" : "$søknadId",
-              "versjon" : "1.0",
+              "versjon" : "1.0.0",
               "språk" : "nb",
               "mottattDato" : "2020-01-02T03:04:05.000Z",
               "søker" : {

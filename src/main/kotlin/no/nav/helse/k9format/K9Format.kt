@@ -28,11 +28,7 @@ import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk as K9Nattevåk
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.Tilsynsordning as K9Tilsynsordning
 
 const val DAGER_PER_UKE = 5
-private val k9FormatVersjon = Versjon.of("1.0")
-
-fun Double.tilFaktiskTimerPerUke(prosent: Double) = this.times(prosent.div(100))
-fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
-fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
+private val k9FormatVersjon = Versjon.of("1.0.0")
 
 fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     val søknadsperiode = Periode(fraOgMed, tilOgMed)
