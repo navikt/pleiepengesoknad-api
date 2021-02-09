@@ -1,13 +1,12 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import no.nav.k9.søknad.felles.aktivitet.*
 import no.nav.k9.søknad.felles.type.Landkode
-import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
+import java.time.LocalDate
 
 internal fun Søknad.byggK9ArbeidAktivitet() = ArbeidAktivitet(
     arbeidsgivere.tilK9Arbeidstaker(Periode(fraOgMed, tilOgMed)),
@@ -52,9 +51,9 @@ internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNær
             .registrertIUtlandet(true)
     }
 
-    infoBuilder.erNyoppstartet(true) //TODO Må sjekke hva som er riktig her
-    yrkesaktivSisteTreFerdigliknedeÅrene?.let {
-        infoBuilder.erNyoppstartet(false)
+    when (erEldreEnn3År()) {
+        true -> infoBuilder.erNyoppstartet(false)
+        false -> infoBuilder.erNyoppstartet(true)
     }
 
     regnskapsfører?.let {
@@ -78,6 +77,10 @@ internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNær
 
     return infoBuilder.build()
 }
+
+private fun Virksomhet.erEldreEnn3År() =
+    fraOgMed.isBefore(LocalDate.now().minusYears(3)) || fraOgMed.isEqual(LocalDate.now().minusYears(3))
+
 
 internal fun List<Næringstyper>.tilK9VirksomhetType(): List<VirksomhetType> = map {
     when (it) {
