@@ -2,37 +2,42 @@ package no.nav.helse.soknad
 
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
+import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
+import no.nav.k9.søknad.JsonUtils
+import no.nav.k9.søknad.SøknadValidator
+import no.nav.k9.søknad.ValideringsFeil
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 
-class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
-                    private val sokerService: SøkerService,
-                    private val vedleggService: VedleggService) {
+class SøknadService(
+    private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
+    private val vedleggService: VedleggService
+) {
 
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger(SoknadService::class.java)
+        private val logger: Logger = LoggerFactory.getLogger(SøknadService::class.java)
     }
 
     suspend fun registrer(
         søknad: Søknad,
         idToken: IdToken,
-        callId: CallId
+        callId: CallId,
+        k9FormatSøknad: no.nav.k9.søknad.Søknad,
+        søker: Søker,
+        mottatt: ZonedDateTime
     ) {
-        logger.trace("Registrerer søknad. Henter søker")
-        val søker: Søker = sokerService.getSoker(idToken = idToken, callId = callId)
-
-        logger.trace("Søker hentet. Validerer om søkeren.")
-        søker.validate()
-
-        logger.trace("Validert Søker. Henter ${søknad.vedlegg.size} vedlegg.")
+        logger.info("Registrerer søknad")
+        logger.trace("Henter ${søknad.vedlegg.size} vedlegg.")
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
             vedleggUrls = søknad.vedlegg,
@@ -43,10 +48,10 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
         vedlegg.validerVedlegg(søknad.vedlegg)
 
         logger.trace("Legger søknad til prosessering")
-
-        val komplettSoknad = KomplettSøknad(
+        val komplettSøknad = KomplettSøknad(
             språk = søknad.språk,
-            mottatt = ZonedDateTime.now(ZoneOffset.UTC),
+            søknadId = søknad.søknadId,
+            mottatt = mottatt,
             fraOgMed = søknad.fraOgMed,
             tilOgMed = søknad.tilOgMed,
             søker = søker,
@@ -75,11 +80,12 @@ class SoknadService(private val pleiepengesoknadMottakGateway: PleiepengesoknadM
             skalPassePåBarnetIHelePerioden = søknad.skalPassePåBarnetIHelePerioden,
             beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
             barnRelasjon = søknad.barnRelasjon,
-            barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse
+            barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
+            k9FormatSøknad = k9FormatSøknad
         )
 
         pleiepengesoknadMottakGateway.leggTilProsessering(
-            soknad = komplettSoknad,
+            søknad = komplettSøknad,
             callId = callId
         )
 

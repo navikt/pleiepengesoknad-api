@@ -37,7 +37,8 @@ class BarnGateway(
                 "barn[].mellomnavn",
                 "barn[].etternavn",
                 "barn[].fødselsdato",
-                "barn[].har_samme_adresse"
+                "barn[].har_samme_adresse",
+                "barn[].identitetsnummer"
             )
         )
     }
@@ -88,6 +89,7 @@ class BarnGateway(
         val mellomnavn: String? = null,
         val etternavn: String,
         val aktør_id: String,
-        @JsonProperty("har_samme_adresse") val harSammeAdresse: Boolean
+        @JsonProperty("har_samme_adresse") val harSammeAdresse: Boolean,
+        val identitetsnummer: String? = null
     )
 }

@@ -1,14 +1,17 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import no.nav.helse.barn.Barn
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
+import java.util.*
 
 enum class Språk { nb, nn }
 
 data class Søknad(
     val newVersion: Boolean?,
+    val søknadId: String = UUID.randomUUID().toString(),
     val språk: Språk? = null,
     val barn: BarnDetaljer,
     val arbeidsgivere: ArbeidsgiverDetaljer,
@@ -35,14 +38,28 @@ data class Søknad(
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null
-)
+) {
 
-enum class BarnRelasjon{
-    MOR,
-    MEDMOR,
-    FAR,
-    FOSTERFORELDER,
-    ANNET
+    fun oppdaterBarnMedFnr(listeOverBarn: List<Barn>) {
+        if (barn.manglerIdentitetsnummer()) {
+            barn oppdaterFødselsnummer listeOverBarn.hentIdentitetsnummerForBarn(barn.aktørId)
+        }
+    }
+}
+
+private fun List<Barn>.hentIdentitetsnummerForBarn(aktørId: String?): String? {
+    this.forEach {
+        if (it.aktørId == aktørId) return it.identitetsnummer
+    }
+    return null
+}
+
+enum class BarnRelasjon(val utskriftsvennlig: String) {
+    MOR("Mor"),
+    MEDMOR("Medmor"),
+    FAR("Far"),
+    FOSTERFORELDER("Fosterforelder"),
+    ANNET("Annet")
 }
 
 data class ArbeidsgiverDetaljer(
@@ -60,18 +77,6 @@ data class UtenlandsoppholdIPerioden(
     val skalOppholdeSegIUtlandetIPerioden: Boolean? = null,
     val opphold: List<Utenlandsopphold> = listOf()
 )
-
-data class BarnDetaljer(
-    val fødselsnummer: String?,
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    val fødselsdato: LocalDate?,
-    val aktørId: String?,
-    val navn: String?
-) {
-    override fun toString(): String {
-        return "BarnDetaljer(aktørId=${aktørId}, navn=${navn}, fodselsdato=${fødselsdato}"
-    }
-}
 
 data class OrganisasjonDetaljer(
     val navn: String? = null,

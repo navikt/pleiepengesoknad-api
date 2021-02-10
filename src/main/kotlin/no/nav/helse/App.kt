@@ -42,13 +42,12 @@ import no.nav.helse.general.systemauth.AccessTokenClientResolver
 import no.nav.helse.mellomlagring.MellomlagringService
 import no.nav.helse.mellomlagring.mellomlagringApis
 import no.nav.helse.redis.RedisConfig
-import no.nav.helse.redis.RedisConfigurationProperties
 import no.nav.helse.redis.RedisStore
 import no.nav.helse.soker.SøkerGateway
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.søkerApis
 import no.nav.helse.soknad.PleiepengesoknadMottakGateway
-import no.nav.helse.soknad.SoknadService
+import no.nav.helse.soknad.SøknadService
 import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.K9DokumentGateway
 import no.nav.helse.vedlegg.VedleggService
@@ -146,6 +145,11 @@ fun Application.pleiepengesoknadapi() {
             søkerGateway = søkerGateway
         )
 
+        val barnService = BarnService(
+            barnGateway = barnGateway,
+            cache = configuration.cache()
+        )
+
         authenticate(*issuers.allIssuers()) {
             søkerApis(
                 søkerService = søkerService,
@@ -153,9 +157,7 @@ fun Application.pleiepengesoknadapi() {
             )
 
             barnApis(
-                barnService = BarnService(
-                    barnGateway = barnGateway
-                ),
+                barnService = barnService,
                 idTokenProvider = idTokenProvider
             )
 
@@ -186,11 +188,12 @@ fun Application.pleiepengesoknadapi() {
 
             soknadApis(
                 idTokenProvider = idTokenProvider,
-                soknadService = SoknadService(
+                søknadService = SøknadService(
                     pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
-                    sokerService = søkerService,
                     vedleggService = vedleggService
-                )
+                ),
+                barnService = barnService,
+                søkerService = søkerService
             )
         }
 

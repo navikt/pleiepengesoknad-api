@@ -1,7 +1,9 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
-import java.net.URL
+import no.nav.k9.søknad.ValideringsFeil
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -14,8 +16,6 @@ private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
     status = 413,
     detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
 )
-private const val MIN_GRAD = 20
-private const val MAX_GRAD = 100
 private const val MAX_FRITEKST_TEGN = 1000
 
 class FraOgMedTilOgMedValidator {
@@ -100,7 +100,7 @@ class FraOgMedTilOgMedValidator {
     }
 }
 
-internal fun Søknad.validate() {
+internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations = barn.validate()
 
     violations.addAll(arbeidsgivere.organisasjoner.validate())
@@ -162,15 +162,9 @@ internal fun Søknad.validate() {
 
     //Validerer at brukeren bekrefter dersom perioden er over 8 uker (40 virkedager)
     if (bekrefterPeriodeOver8Uker != null) {
-        var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
-        var dagSomSkalSjekkes: LocalDate = fraOgMed;
+        val antallVirkedagerIPerioden = antallVirkedagerIEnPeriode(fraOgMed, tilOgMed)
 
-        while (!dagSomSkalSjekkes.isAfter(tilOgMed)) {
-            if (dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
-            dagSomSkalSjekkes = dagSomSkalSjekkes.plusDays(1)
-        }
-
-        if (antallDagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker) {
+        if (antallVirkedagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker) {
             violations.add(
                 Violation(
                     parameterName = "bekrefterPeriodeOver8Uker",
@@ -252,11 +246,23 @@ internal fun Søknad.validate() {
         }
     }
 
+    violations.addAll(validerK9Format(k9FormatSøknad))
+
     // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
 }
+
+private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): MutableSet<Violation> =
+    PleiepengerSyktBarnValidator().valider(k9FormatSøknad.getYtelse<PleiepengerSyktBarn>()).map {
+        Violation(
+            parameterName = it.felt,
+            parameterType = ParameterType.ENTITY,
+            reason = it.feilmelding,
+            invalidValue = "K9-format feilkode: ${it.feilkode}"
+        )
+    }.sortedBy { it.reason }.toMutableSet()
 
 private fun validerSelvstendigVirksomheter(
     selvstendigVirksomheter: List<Virksomhet>
@@ -354,7 +360,7 @@ private fun validerUtenladsopphold(
                 )
             )
         }
-        if(utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()){
+        if (utenlandsopphold.erBarnetInnlagt == true && utenlandsopphold.perioderBarnetErInnlagt.isEmpty()) {
             violations.add(
                 Violation(
                     parameterName = "Utenlandsopphold[$index]",
@@ -463,46 +469,6 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
                 )
             }
         }
-    }
-
-    return violations
-}
-
-internal fun BarnDetaljer.validate(): MutableSet<Violation> {
-
-    val violations = mutableSetOf<Violation>()
-
-    if (!gyldigAntallIder()) {
-        violations.add(
-            Violation(
-                parameterName = "barn",
-                parameterType = ParameterType.ENTITY,
-                reason = "Kan kun sette en av 'aktørId', 'fodselsnummer' på barnet.",
-                invalidValue = null
-            )
-        )
-    }
-
-    if (fødselsnummer != null && !fødselsnummer.erKunSiffer()) {
-        violations.add(
-            Violation(
-                parameterName = "barn.fødselsnummer",
-                parameterType = ParameterType.ENTITY,
-                reason = "Ikke gyldig fødselsnummer.",
-                invalidValue = fødselsnummer
-            )
-        )
-    }
-
-    if (fødselsdato != null && (fødselsdato.isAfter(LocalDate.now()))) {
-        violations.add(
-            Violation(
-                parameterName = "barn.fødselsdato",
-                parameterType = ParameterType.ENTITY,
-                reason = "Fødselsdato kan ikke være in fremtiden",
-                invalidValue = fødselsdato
-            )
-        )
     }
 
     return violations
@@ -621,15 +587,10 @@ internal fun List<OrganisasjonDetaljer>.validate(
     return violations
 }
 
-private fun BarnDetaljer.gyldigAntallIder(): Boolean {
-    val antallIderSatt = listOfNotNull(aktørId, fødselsnummer).size
-    return antallIderSatt == 0 || antallIderSatt == 1
-}
-
-private fun Søknad.validerBarnRelasjon() : MutableSet<Violation> {
+private fun Søknad.validerBarnRelasjon(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
-    if(barnRelasjon == BarnRelasjon.ANNET && barnRelasjonBeskrivelse.isNullOrBlank()){
+    if (barnRelasjon == BarnRelasjon.ANNET && barnRelasjonBeskrivelse.isNullOrBlank()) {
         violations.add(
             Violation(
                 parameterName = "barnRelasjonBeskrivelse",
@@ -644,3 +605,15 @@ private fun Søknad.validerBarnRelasjon() : MutableSet<Violation> {
 }
 
 private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
+
+internal fun antallVirkedagerIEnPeriode(fraOgMed: LocalDate, tilOgMed: LocalDate): Int {
+    var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
+    var dagSomSkalSjekkes: LocalDate = fraOgMed;
+
+    while (!dagSomSkalSjekkes.isAfter(tilOgMed)) {
+        if (dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
+        dagSomSkalSjekkes = dagSomSkalSjekkes.plusDays(1)
+    }
+
+    return antallDagerIPerioden.toInt()
+}

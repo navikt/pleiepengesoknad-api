@@ -51,12 +51,12 @@ class PleiepengesoknadMottakGateway(
     }
 
     suspend fun leggTilProsessering(
-        soknad : KomplettSøknad,
+        søknad : KomplettSøknad,
         callId: CallId
     ) {
         val authorizationHeader = cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
 
-        val body = objectMapper.writeValueAsBytes(soknad)
+        val body = objectMapper.writeValueAsBytes(søknad)
         val contentStream = { ByteArrayInputStream(body) }
 
         val httpRequet = komplettUrl

@@ -10,12 +10,12 @@ import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.redis.RedisMockUtil
 import no.nav.helse.soknad.Næringstyper
 import no.nav.helse.soknad.Regnskapsfører
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.wiremock.*
+import org.json.JSONObject
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.skyscreamer.jsonassert.JSONAssert
@@ -26,9 +26,10 @@ import java.time.LocalDate
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-private const val fnr = "290990123456"
+private const val fnr = "26104500284"
 private const val ikkeMyndigFnr = "12125012345"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
@@ -286,6 +287,44 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Hente barn og sjekk eksplisit at identitetsnummer ikke blir med ved get kall`(){
+
+        val respons = requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "/barn",
+            expectedCode = HttpStatusCode.OK,
+            //language=json
+            expectedResponse = """
+            {
+              "barn": [
+                {
+                  "fødselsdato": "2000-08-27",
+                  "fornavn": "BARN",
+                  "mellomnavn": "EN",
+                  "etternavn": "BARNESEN",
+                  "aktørId": "1000000000001",
+                  "harSammeAdresse": true
+                },
+                {
+                  "fødselsdato": "2001-04-10",
+                  "fornavn": "BARN",
+                  "mellomnavn": "TO",
+                  "etternavn": "BARNESEN",
+                  "aktørId": "1000000000002",
+                  "harSammeAdresse": true
+                }
+              ]
+            }
+            """.trimIndent()
+        )
+
+        val responsSomJSONArray = JSONObject(respons).getJSONArray("barn")
+
+        assertFalse(responsSomJSONArray.getJSONObject(0).has("identitetsnummer"))
+        assertFalse(responsSomJSONArray.getJSONObject(1).has("identitetsnummer"))
+    }
+
+    @Test
     fun `Henting av barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
@@ -341,7 +380,7 @@ class ApplicationTest {
                 "barn": []
             }
             """.trimIndent(),
-            cookie = getAuthCookie(fnr)
+            cookie = getAuthCookie(gyldigFodselsnummerA)
         )
         wireMockServer.stubK9OppslagBarn()
     }
@@ -398,7 +437,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -418,7 +457,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -446,7 +485,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.Forbidden,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -457,7 +496,7 @@ class ApplicationTest {
 
     @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
     fun `Sende soknad med AktørID som ID på barnet`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie("26104500284")
         val jpegUrl = engine.jpegUrl(cookie)
         val pdfUrl = engine.pdUrl(cookie)
 
@@ -467,7 +506,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedAktoerIdPaaBarn(
+            requestEntity = SøknadUtils.bodyMedAktoerIdPaaBarn(
                 aktørId = "10000000001",
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
@@ -486,7 +525,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
@@ -530,20 +569,26 @@ class ApplicationTest {
                           "name": "selvstendigVirksomheter[0].registrertIUtlandet",
                           "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                           "invalid_value": null
+                        },
+                        {
+                          "type": "entity",
+                          "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                          "reason": "$\{validatedValue}",
+                          "invalid_value": "K9-format feilkode: [Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}] ConstraintViolation "
                         }
                       ]
                     }
-            """.trimIndent(),
+            """.trimIndent().replace("\\", ""),// TODO: 08/02/2021 Slett .replace() ved fix fra k9-format
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
-                        fraOgMed = LocalDate.now().minusDays(1),
-                        tilOgMed = LocalDate.now(),
+                        fraOgMed = LocalDate.parse("2021-02-07"),
+                        tilOgMed = LocalDate.parse("2021-02-08"),
                         næringsinntekt = 1233123,
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
@@ -576,7 +621,7 @@ class ApplicationTest {
                   "sprak": "nb",
                   "barn": {
                     "navn": null,
-                    "fodselsnummer": "03028104560",
+                    "fødselsnummer": "03028104560",
                     "aktørId": null,
                     "fodselsdato": null
                   },
@@ -663,20 +708,26 @@ class ApplicationTest {
                       "name": "selvstendigVirksomheter[0].registrertIUtlandet",
                       "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                       "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                      "reason": "$\{validatedValue}",
+                      "invalid_value": "K9-format feilkode: [Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}] ConstraintViolation "
                     }
                   ]
                 }
-            """.trimIndent(),
+            """.trimIndent().replace("\\", ""), // TODO: 08/02/2021 Slett .replace() ved fix fra k9-format
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedSelvstendigVirksomheterSomListe(
+            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
                 vedleggUrl1 = jpegUrl,
                 virksomheter = listOf(
                     Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
-                        fraOgMed = LocalDate.now().minusDays(1),
-                        tilOgMed = LocalDate.now(),
+                        fraOgMed = LocalDate.parse("2021-02-07"),
+                        tilOgMed = LocalDate.parse("2021-02-08"),
                         næringsinntekt = 1212,
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
@@ -733,7 +784,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 skalJobbe = "ja",
@@ -778,7 +829,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 skalJobbe = "redusert",
@@ -823,7 +874,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 skalJobbe = "nei",
@@ -868,7 +919,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarOrganisasjon(
+            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 skalJobbe = "vetIkke",
@@ -910,7 +961,7 @@ class ApplicationTest {
                   "sprak": "nb",
                   "barn": {
                     "navn": null,
-                    "fodselsnummer": "03028104560",
+                    "fødselsnummer": "03028104560",
                     "aktørId": null,
                     "fodselsdato": null
                   },
@@ -1011,7 +1062,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyUtenIdPaaBarn(
+            requestEntity = SøknadUtils.bodyUtenIdPaaBarn(
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
             )
@@ -1044,7 +1095,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedFodselsnummerPaaBarn(
+            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
                 fodselsnummer = gyldigFodselsnummerA,
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = finnesIkkeUrl
@@ -1054,7 +1105,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad med ugylidge parametre gir feil`() {
-        val forlangtNavn = SoknadUtils.forLangtNavn()
+        val forlangtNavn = SøknadUtils.forLangtNavn()
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = "/soknad",
@@ -1063,7 +1114,7 @@ class ApplicationTest {
                 {
                     "barn": {
                         "navn": "",
-                        "fødselsnummer": "29099s12345"
+                        "fødselsnummer": "2909912345"
                     },
                     "fraOgMed": "1990-09-29",
                     "tilOgMed": "1990-09-28",
@@ -1099,93 +1150,111 @@ class ApplicationTest {
                 }
                 """.trimIndent(),
             expectedResponse = """
-               {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "barn.fødselsnummer",
-                      "reason": "Ikke gyldig fødselsnummer.",
-                      "invalid_value": "29099s12345"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
-                      "reason": "Ikke gyldig organisasjonsnummer.",
-                      "invalid_value": "12"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidsgivere.organisasjoner[0].navn",
-                      "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
-                      "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidsgivere.organisasjoner[0].skalJobbe",
-                      "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
-                      "invalid_value": "ugyldig"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "fraOgMed",
-                      "reason": "Fra og med må være før eller lik til og med.",
-                      "invalid_value": "1990-09-29"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "tilOgMed",
-                      "reason": "Til og med må være etter eller lik fra og med.",
-                      "invalid_value": "1990-09-28"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "vedlegg[0]",
-                      "reason": "Ikke gyldig vedlegg URL.",
-                      "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
-                    },
-                    {
-                      "type": "entity",
-                      "name": "vedlegg[1]",
-                      "reason": "Ikke gyldig vedlegg URL.",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "harMedsøker",
-                      "reason": "Må settes til true eller false.",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "harBekreftetOpplysninger",
-                      "reason": "Opplysningene må bekreftes for å sende inn søknad.",
-                      "invalid_value": false
-                    },
-                    {
-                      "type": "entity",
-                      "name": "harForstattRettigheterOgPlikter",
-                      "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
-                      "invalid_value": false
-                    }
-                  ]
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "barn.fødselsnummer",
+                  "reason": "Ikke gyldig fødselsnummer.",
+                  "invalid_value": "2909912345"
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
+                  "reason": "Ikke gyldig organisasjonsnummer.",
+                  "invalid_value": "12"
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].navn",
+                  "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
+                  "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidsgivere.organisasjoner[0].skalJobbe",
+                  "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
+                  "invalid_value": "ugyldig"
+                },
+                {
+                  "type": "entity",
+                  "name": "fraOgMed",
+                  "reason": "Fra og med må være før eller lik til og med.",
+                  "invalid_value": "1990-09-29"
+                },
+                {
+                  "type": "entity",
+                  "name": "tilOgMed",
+                  "reason": "Til og med må være etter eller lik fra og med.",
+                  "invalid_value": "1990-09-28"
+                },
+                {
+                  "type": "entity",
+                  "name": "vedlegg[0]",
+                  "reason": "Ikke gyldig vedlegg URL.",
+                  "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
+                },
+                {
+                  "type": "entity",
+                  "name": "vedlegg[1]",
+                  "reason": "Ikke gyldig vedlegg URL.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
+                  "reason": "Må settes til true eller false.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
+                  "reason": "Må settes til true eller false.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "harMedsøker",
+                  "reason": "Må settes til true eller false.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "harBekreftetOpplysninger",
+                  "reason": "Opplysningene må bekreftes for å sende inn søknad.",
+                  "invalid_value": false
+                },
+                {
+                  "type": "entity",
+                  "name": "harForstattRettigheterOgPlikter",
+                  "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
+                  "invalid_value": false
+                },
+                {
+                  "type": "entity",
+                  "name": "søknadsperiode",
+                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
+                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
+                },
+                {
+                  "type": "entity",
+                  "name": "uttak.perioder",
+                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
+                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidstid.arbeidstaker[\" + i + \"].arbeidstidPeriode",
+                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
+                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
                 }
+              ]
+            }
             """.trimIndent()
         )
     }
@@ -1217,7 +1286,7 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
                 vedleggUrl1 = jpegUrl,
                 fraOgMed = "2020-01-01",
                 tilOgMed = "2020-02-27",
@@ -1237,7 +1306,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
                 vedleggUrl1 = jpegUrl,
                 fraOgMed = "2020-01-01",
                 tilOgMed = "2020-02-27",
@@ -1257,7 +1326,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
                 vedleggUrl1 = jpegUrl,
                 fraOgMed = "2020-01-01",
                 tilOgMed = "2020-02-26"
@@ -1276,7 +1345,7 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SoknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
+            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
                 vedleggUrl1 = jpegUrl,
                 fraOgMed = "2020-01-01",
                 tilOgMed = "2020-02-25"
@@ -1348,7 +1417,8 @@ class ApplicationTest {
         expectedCode: HttpStatusCode,
         leggTilCookie: Boolean = true,
         cookie: Cookie = getAuthCookie(fnr)
-    ) {
+    ): String? {
+        val respons: String?
         with(engine) {
             handleRequest(httpMethod, path) {
                 if (leggTilCookie) addHeader(HttpHeaders.Cookie, cookie.toString())
@@ -1359,6 +1429,7 @@ class ApplicationTest {
             }.apply {
                 logger.info("Response Entity = ${response.content}")
                 logger.info("Expected Entity = $expectedResponse")
+                respons = response.content
                 assertEquals(expectedCode, response.status())
                 if (expectedResponse != null) {
                     JSONAssert.assertEquals(expectedResponse, response.content!!, true)
@@ -1367,5 +1438,6 @@ class ApplicationTest {
                 }
             }
         }
+        return respons
     }
 }

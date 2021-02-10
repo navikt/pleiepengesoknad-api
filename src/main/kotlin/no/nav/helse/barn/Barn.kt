@@ -1,5 +1,6 @@
 package no.nav.helse.barn
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.LocalDate
 
 data class BarnResponse(
@@ -12,5 +13,6 @@ data class Barn (
     val mellomnavn: String? = null,
     val etternavn: String,
     val aktørId: String,
-    val harSammeAdresse: Boolean
+    val harSammeAdresse: Boolean,
+    @JsonIgnore var identitetsnummer: String? = null
 )
