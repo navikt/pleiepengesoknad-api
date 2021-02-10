@@ -43,7 +43,7 @@ fun Route.soknadApis(
 
         logger.trace("Henter søker.")
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
-        logger.trace("Søker hentet. Validerer om søkeren.")
+        logger.trace("Søker hentet. Validerer søkeren.")
         søker.validate()
 
         logger.trace("Oppdaterer barn med identitetsnummer")

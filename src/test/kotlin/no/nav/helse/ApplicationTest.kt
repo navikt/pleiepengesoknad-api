@@ -1058,25 +1058,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad uten ID på barnet`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = "/soknad",
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyUtenIdPaaBarn(
-                vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = pdfUrl
-            )
-        )
-    }
-
-    @Test
     fun `Sende soknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)

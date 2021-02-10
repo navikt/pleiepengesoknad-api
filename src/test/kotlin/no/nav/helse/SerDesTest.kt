@@ -7,9 +7,11 @@ import no.nav.helse.vedlegg.Vedlegg
 import no.nav.k9.søknad.JsonUtils
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
+import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -612,7 +614,7 @@ internal class SerDesTest {
                     skalJobbe = "redusert",
                     arbeidsform = Arbeidsform.FAST
                 )
-            ),
+            )),
             vedlegg = listOf(
                 Vedlegg(
                     content = "Test".toByteArray(),

@@ -105,7 +105,10 @@ class SoknadValidationTest {
     @Ignore //TODO 09.02.2021 - Settes på når feltet er prodsatt
     @Test(expected = Throwblem::class)
     fun `Skal feile dersom "harVærtEllerErVernepliktig" blir satt til null`(){
-        soknad(skalJobbe = "nei").copy(harVærtEllerErVernepliktig = null).validate()
+        val søknad = soknad(skalJobbe = "nei").copy(harVærtEllerErVernepliktig = null)
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+
+        søknad.validate(k9Format)
     }
 
     private fun soknadMedFrilans(
