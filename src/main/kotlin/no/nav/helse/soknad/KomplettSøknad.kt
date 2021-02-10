@@ -2,11 +2,13 @@ package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
 import no.nav.helse.vedlegg.Vedlegg
+import no.nav.k9.søknad.Søknad
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
 data class KomplettSøknad(
     val språk: Språk? = null,
+    val søknadId: String,
     val mottatt: ZonedDateTime,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
@@ -32,5 +34,6 @@ data class KomplettSøknad(
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
+    val k9FormatSøknad: Søknad? = null,
     val harVærtEllerErVernepliktig: Boolean? //TODO 09.02.2021 - nullable kan fjernes når det er prodsatt.
 )

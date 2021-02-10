@@ -11,21 +11,10 @@ import kotlin.test.assertTrue
 class BarnValidationTest {
 
     @Test
-    fun `Flere ID'er satt på barnet`() {
-        val barn = BarnDetaljer(
-            fødselsnummer = "02119970078",
-            fødselsdato = LocalDate.now().minusDays(10),
-            aktørId = "10000001",
-            navn = "Navn"
-        )
-        barn.validate().assertFeilPaa(listOf("barn"))
-    }
-
-    @Test
     fun `Når AktørId settes som ID på barnet kreves hverken relasjon til barnet eller navn`() {
         val barn = BarnDetaljer(
             fødselsnummer = null,
-            fødselsdato = null,
+            fødselsdato = LocalDate.parse("2021-01-01"),
             aktørId = "10000001",
             navn = null
         )

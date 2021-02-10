@@ -33,7 +33,7 @@ class BarnResponseTransformer : ResponseTransformer() {
 
 private fun getResponse(ident: String): String {
     when(ident) {
-        "290990123456" -> {
+        "26104500284" -> {
             return """
             {
                 "barn": [{
@@ -42,14 +42,16 @@ private fun getResponse(ident: String): String {
                     "mellomnavn": "EN",
                     "etternavn": "BARNESEN",
                     "aktør_id": "1000000000001",
-                    "har_samme_adresse": true
+                    "har_samme_adresse": true,
+                    "fødselsnummer": "02119970078"
                 }, {
                     "fødselsdato": "2001-04-10",
                     "fornavn": "BARN",
                     "mellomnavn": "TO",
                     "etternavn": "BARNESEN",
                     "aktør_id": "1000000000002",
-                    "har_samme_adresse": true
+                    "har_samme_adresse": true,
+                    "fødselsnummer": "02119970078"
                 }]
             }
             """.trimIndent()
