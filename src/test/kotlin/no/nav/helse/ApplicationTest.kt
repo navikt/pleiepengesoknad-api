@@ -557,28 +557,28 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = "/soknad",
             expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
                     {
-                      "type": "/problem-details/invalid-request-parameters",
-                      "title": "invalid-request-parameters",
-                      "status": 400,
-                      "detail": "Requesten inneholder ugyldige paramtere.",
-                      "instance": "about:blank",
-                      "invalid_parameters": [
-                        {
-                          "type": "entity",
-                          "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                          "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
-                          "invalid_value": null
-                        },
-                        {
-                          "type": "entity",
-                          "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
-                          "reason": "$\{validatedValue}",
-                          "invalid_value": "K9-format feilkode: [Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}] ConstraintViolation "
-                        }
-                      ]
+                      "type": "entity",
+                      "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                      "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                      "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
+                      "invalid_value": "K9-format feilkode: påkrevd"
                     }
-            """.trimIndent().replace("\\", ""),// TODO: 08/02/2021 Slett .replace() ved fix fra k9-format
+                  ]
+                }
+            """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
@@ -697,28 +697,28 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = "/soknad",
             expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
                 {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
-                      "reason": "$\{validatedValue}",
-                      "invalid_value": "K9-format feilkode: [Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}] ConstraintViolation "
-                    }
-                  ]
+                  "type": "entity",
+                  "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                  "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                  "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
+                  "invalid_value": "K9-format feilkode: påkrevd"
                 }
-            """.trimIndent().replace("\\", ""), // TODO: 08/02/2021 Slett .replace() ved fix fra k9-format
+              ]
+            }
+            """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
