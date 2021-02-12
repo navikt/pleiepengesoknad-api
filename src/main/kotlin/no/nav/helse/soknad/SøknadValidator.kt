@@ -148,17 +148,6 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     }
 
     // Booleans (For å forsikre at de er satt og ikke blir default false)
-    fun booleanIkkeSatt(parameterName: String) {
-        violations.add(
-            Violation(
-                parameterName = parameterName,
-                parameterType = ParameterType.ENTITY,
-                reason = "Må settes til true eller false.",
-                invalidValue = null
-
-            )
-        )
-    }
 
     //Validerer at brukeren bekrefter dersom perioden er over 8 uker (40 virkedager)
     if (bekrefterPeriodeOver8Uker != null) {
@@ -175,22 +164,22 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
         }
     }
 
-    if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.harBoddIUtlandetSiste12Mnd")
+    violations.addAll(nullSjekk(medlemskap.harBoddIUtlandetSiste12Mnd, "medlemskap.harBoddIUtlandetSiste12Mnd"))
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
 
-    if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skalBoIUtlandetNeste12Mnd")
+    violations.addAll(nullSjekk(medlemskap.skalBoIUtlandetNeste12Mnd, "medlemskap.skalBoIUtlandetNeste12Mnd"))
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
 
-    if (utenlandsoppholdIPerioden != null &&
-        utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null
-    ) {
-        booleanIkkeSatt("utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden")
+    if(utenlandsoppholdIPerioden != null){
+        violations.addAll(nullSjekk(utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden,
+                "utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden")
+        )
     }
 
     violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
+    violations.addAll(nullSjekk(harMedsøker, "harMedsøker"))
 
-    if (harMedsøker == null) booleanIkkeSatt("harMedsøker")
     if (!harBekreftetOpplysninger) {
         violations.add(
             Violation(
@@ -215,7 +204,8 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     }
 
     beredskap?.apply {
-        if (beredskap == null) booleanIkkeSatt("beredskap.beredskap")
+        violations.addAll(nullSjekk(beredskap, "beredskap.beredskap"))
+
         tilleggsinformasjon?.apply {
             if (length > MAX_FRITEKST_TEGN) {
                 violations.add(
@@ -231,7 +221,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     }
 
     nattevåk?.apply {
-        if (harNattevåk == null) booleanIkkeSatt("nattevåk.harNattevåk")
+        violations.addAll(nullSjekk(nattevåk.harNattevåk, "nattevåk.harNattevåk"))
         tilleggsinformasjon?.apply {
             if (length > MAX_FRITEKST_TEGN) {
                 violations.add(
@@ -264,8 +254,7 @@ private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): Mutable
         )
     }.sortedBy { it.reason }.toMutableSet()
 
-private fun validerSelvstendigVirksomheter(
-    selvstendigVirksomheter: List<Virksomhet>
+private fun validerSelvstendigVirksomheter(selvstendigVirksomheter: List<Virksomhet>
 ): MutableSet<Violation> = mutableSetOf<Violation>().apply {
     if (selvstendigVirksomheter.isNotEmpty()) {
         selvstendigVirksomheter.mapIndexed { index, virksomhet ->
@@ -274,9 +263,7 @@ private fun validerSelvstendigVirksomheter(
     }
 }
 
-private fun validerBosted(
-    list: List<Bosted>
-): MutableSet<Violation> {
+private fun validerBosted(list: List<Bosted>): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
     list.mapIndexed { index, bosted ->
         val fraDataErEtterTilDato = bosted.fraOgMed.isAfter(bosted.tilOgMed)
@@ -314,9 +301,7 @@ private fun validerBosted(
     return violations
 }
 
-private fun validerUtenladsopphold(
-    list: List<Utenlandsopphold>?
-): MutableSet<Violation> {
+private fun validerUtenladsopphold(list: List<Utenlandsopphold>?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
     list?.mapIndexed { index, utenlandsopphold ->
         val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
@@ -374,9 +359,7 @@ private fun validerUtenladsopphold(
     return violations
 }
 
-private fun validerFerieuttakIPerioden(
-    ferieuttakIPerioden: FerieuttakIPerioden?
-): MutableSet<Violation> {
+private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
     ferieuttakIPerioden?.ferieuttak?.mapIndexed { index, ferieuttak ->
         val fraDataErEtterTilDato = ferieuttak.fraOgMed.isAfter(ferieuttak.tilOgMed)
@@ -502,10 +485,11 @@ internal fun antallVirkedagerIEnPeriode(fraOgMed: LocalDate, tilOgMed: LocalDate
 
     return antallDagerIPerioden.toInt()
 }
-internal fun nullSjekk(verdi: Boolean?, navn: String): MutableSet<Violation>{
+
+internal fun nullSjekk(verdi: Boolean?, navn: String): MutableSet<Violation> {
     val mangler: MutableSet<Violation> = mutableSetOf()
 
-    if(verdi == null){
+    if (verdi == null) {
         mangler.add(
             Violation(
                 parameterName = navn,

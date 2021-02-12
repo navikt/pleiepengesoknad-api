@@ -1199,19 +1199,19 @@ class ApplicationTest {
                 {
                   "type": "entity",
                   "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                  "reason": "Må settes til true eller false.",
+                  "reason": "medlemskap.harBoddIUtlandetSiste12Mnd kan ikke være null",
                   "invalid_value": null
                 },
                 {
                   "type": "entity",
                   "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                  "reason": "Må settes til true eller false.",
+                  "reason": "medlemskap.skalBoIUtlandetNeste12Mnd kan ikke være null",
                   "invalid_value": null
                 },
                 {
                   "type": "entity",
                   "name": "harMedsøker",
-                  "reason": "Må settes til true eller false.",
+                  "reason": "harMedsøker kan ikke være null",
                   "invalid_value": null
                 },
                 {
