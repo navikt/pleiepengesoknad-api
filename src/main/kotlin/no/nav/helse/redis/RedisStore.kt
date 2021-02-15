@@ -1,11 +1,16 @@
 package no.nav.helse.redis
 
 import io.lettuce.core.RedisClient
+import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class RedisStore constructor(
-        redisClient: RedisClient) {
+    redisClient: RedisClient
+) {
+    private companion object {
+        val logger = LoggerFactory.getLogger(RedisStore::class.java)
+    }
 
     private val connection = redisClient.connect()
     private val async = connection.async()!!
@@ -22,7 +27,8 @@ class RedisStore constructor(
         val set = async.set(key, value)
 
         if (set.await(10, TimeUnit.SECONDS)) {
-            async.pexpireat(key, expirationDate)
+            val timoutSet = async.pexpireat(key, expirationDate)
+            timoutSet.whenComplete { t: Boolean, _: Throwable ->  logger.info("Expiry set = $t")}
             return set.get()
         }
 
