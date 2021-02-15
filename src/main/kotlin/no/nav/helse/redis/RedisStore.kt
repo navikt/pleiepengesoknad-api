@@ -29,6 +29,7 @@ class RedisStore constructor(
         if (set.await(10, TimeUnit.SECONDS)) {
             val expirationSet = async.pexpireat(key, expirationDate).get()
             if (!expirationSet) throw IllegalStateException("Feilet med å sette expiry på key.")
+            else logger.info("Expiration satt på key")
             return set.get()
         }
 
