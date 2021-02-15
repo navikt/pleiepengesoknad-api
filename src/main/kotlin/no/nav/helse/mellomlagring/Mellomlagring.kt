@@ -39,14 +39,12 @@ fun Route.mellomlagringApis(
         val idToken = idTokenProvider.getIdToken(call)
         val mellomlagring = mellomlagringService.getMellomlagring(idToken.getSubject()!!)
         if (mellomlagring != null) {
-            logger.info("Mellomlagret søknad hentet.")
             call.respondText(
                 contentType = ContentType.Application.Json,
                 text = mellomlagring,
                 status = HttpStatusCode.OK
             )
         } else {
-            logger.info("Mellomlagret søknad ikke funnet.")
             call.respondText(
                 contentType = ContentType.Application.Json,
                 text = "{}",
