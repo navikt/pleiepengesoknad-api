@@ -34,5 +34,6 @@ data class KomplettSøknad(
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
+    val harVærtEllerErVernepliktig: Boolean?, //TODO 09.02.2021 - nullable kan fjernes når det er prodsatt.
     val k9FormatSøknad: Søknad? = null
 )

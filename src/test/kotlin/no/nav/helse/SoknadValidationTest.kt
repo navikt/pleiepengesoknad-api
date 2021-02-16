@@ -6,6 +6,7 @@ import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import java.net.URL
 import java.time.LocalDate
+import kotlin.test.Ignore
 import java.time.ZonedDateTime
 import kotlin.test.Test
 
@@ -101,6 +102,15 @@ class SoknadValidationTest {
         søknad.validate(k9Format)
     }
 
+    @Ignore //TODO 09.02.2021 - Settes på når feltet er prodsatt
+    @Test(expected = Throwblem::class)
+    fun `Skal feile dersom "harVærtEllerErVernepliktig" blir satt til null`(){
+        val søknad = soknad(skalJobbe = "nei").copy(harVærtEllerErVernepliktig = null)
+        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
+
+        søknad.validate(k9Format)
+    }
+
     private fun soknadMedFrilans(
         bekrefterPeriodeOver8Uker: Boolean = false,
         fraOgMed: LocalDate = LocalDate.now(),
@@ -120,7 +130,8 @@ class SoknadValidationTest {
                 organisasjonsnummer = "917755736",
                 skalJobbeProsent = 10.0,
                 jobberNormaltTimer = 10.0,
-                skalJobbe = "redusert"
+                skalJobbe = "redusert",
+                arbeidsform = Arbeidsform.TURNUS
             )
         )),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
@@ -141,11 +152,13 @@ class SoknadValidationTest {
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
         frilans = Frilans(
             jobberFortsattSomFrilans = true,
-            startdato = LocalDate.now().minusDays(1))
+            startdato = LocalDate.now().minusDays(1)
+        ),
+        harVærtEllerErVernepliktig = true
         )
 
     private fun soknad(
-        harMedsoker: Boolean,
+        harMedsoker: Boolean = true,
         samtidigHjemme: Boolean? = false,
         skalJobbeProsent: Double = 0.0,
         vetIkkeEkstrainfo: String? = null,
@@ -179,7 +192,8 @@ class SoknadValidationTest {
                     skalJobbeProsent = skalJobbeProsent,
                     jobberNormaltTimer = jobberNormalTimer,
                     vetIkkeEkstrainfo = vetIkkeEkstrainfo,
-                    skalJobbe = skalJobbe
+                    skalJobbe = skalJobbe,
+                    arbeidsform = Arbeidsform.TURNUS
                 )
             )
         ),
@@ -195,7 +209,8 @@ class SoknadValidationTest {
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
         barnRelasjon = null,
-        barnRelasjonBeskrivelse = null
+        barnRelasjonBeskrivelse = null,
+        harVærtEllerErVernepliktig = true
         // harHattInntektSomFrilanser = false, default == false
     )
 }

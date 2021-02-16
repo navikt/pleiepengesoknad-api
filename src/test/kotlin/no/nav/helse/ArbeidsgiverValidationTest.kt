@@ -1,7 +1,10 @@
 package no.nav.helse
 
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.Arbeidsform.TURNUS
 import no.nav.helse.soknad.OrganisasjonDetaljer
 import no.nav.helse.soknad.validate
+import org.junit.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -18,7 +21,8 @@ class ArbeidsgiverValidationTest {
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbe = "ja",
             jobberNormaltTimer = 37.5,
-            skalJobbeProsent = 100.0
+            skalJobbeProsent = 100.0,
+            arbeidsform = TURNUS
         ))
         assertTrue(organisasjoner.validate().isEmpty())
     }
@@ -29,7 +33,8 @@ class ArbeidsgiverValidationTest {
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = 99.09,
             skalJobbe = "redusert",
-            jobberNormaltTimer = 37.5
+            jobberNormaltTimer = 37.5,
+            arbeidsform = TURNUS
         ))
         assertTrue(organisasjoner.validate().isEmpty())
     }
@@ -40,7 +45,8 @@ class ArbeidsgiverValidationTest {
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = -1.00,
             skalJobbe = "nei",
-            jobberNormaltTimer = 37.5
+            jobberNormaltTimer = 37.5,
+            arbeidsform = TURNUS
         ))
         assertEquals(2, organisasjoner.validate().size)
     }
@@ -51,21 +57,71 @@ class ArbeidsgiverValidationTest {
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = 101.01,
             skalJobbe = "ja",
-            jobberNormaltTimer = 37.5
+            jobberNormaltTimer = 37.5,
+            arbeidsform = TURNUS
         ))
         assertEquals(2, organisasjoner.validate().size)
+    }
+
+    @Ignore //TODO 09.02.2021 - Sett på når feltet er påbudt og prodsatt
+    @Test
+    fun `Mangler arbeidsform`() {
+        val organisasjoner = listOf(OrganisasjonDetaljer(
+            organisasjonsnummer = GYLDIG_ORGNR,
+            skalJobbeProsent = 0.0,
+            skalJobbe = "nei",
+            jobberNormaltTimer = 37.5
+        ))
+        assertEquals(1, organisasjoner.validate().size)
     }
 
     @Test
     fun `feiler på søkand der arbeidsgiver skalJobbe er annet enn tillatt verdi`() {
         val organisasjoner = listOf(
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ja", jobberNormaltTimer = 37.5, skalJobbeProsent = 100.0),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "nei", jobberNormaltTimer = 37.5, skalJobbeProsent = 0.0),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "redusert", jobberNormaltTimer = 37.5, skalJobbeProsent = 50.0),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "vetIkke", jobberNormaltTimer = 37.5, skalJobbeProsent = 0.0),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig1", jobberNormaltTimer = -1.0, skalJobbeProsent = 100.0),
-            OrganisasjonDetaljer(organisasjonsnummer = GYLDIG_ORGNR, skalJobbe = "ugyldig2", jobberNormaltTimer = 37.5, skalJobbeProsent = -1.0)
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR,
+                skalJobbe = "ja",
+                jobberNormaltTimer = 37.5,
+                skalJobbeProsent = 100.0,
+                arbeidsform = TURNUS
+            ),
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR,
+                skalJobbe = "nei",
+                jobberNormaltTimer = 37.5,
+                skalJobbeProsent = 0.0,
+                arbeidsform = TURNUS
+            ),
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR,
+                skalJobbe = "redusert",
+                jobberNormaltTimer = 37.5,
+                skalJobbeProsent = 50.0,
+                arbeidsform = TURNUS
+            ),
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR,
+                skalJobbe = "vetIkke",
+                jobberNormaltTimer = 37.5,
+                skalJobbeProsent = 0.0,
+                arbeidsform = TURNUS
+            ),
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR,
+                skalJobbe = "ugyldig1",
+                jobberNormaltTimer = -1.0,
+                skalJobbeProsent = 100.0,
+                arbeidsform = TURNUS
+            ),
+            OrganisasjonDetaljer(
+                organisasjonsnummer = GYLDIG_ORGNR,
+                skalJobbe = "ugyldig2",
+                jobberNormaltTimer = 37.5,
+                skalJobbeProsent = -1.0,
+                arbeidsform = TURNUS
+            )
         )
+
         assertEquals(3, organisasjoner.validate().size)
     }
 }

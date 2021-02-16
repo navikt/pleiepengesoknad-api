@@ -37,7 +37,8 @@ data class Søknad(
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
     val barnRelasjon: BarnRelasjon? = null,
-    val barnRelasjonBeskrivelse: String? = null
+    val barnRelasjonBeskrivelse: String? = null,
+    val harVærtEllerErVernepliktig: Boolean? = null //Default null for å unngå default false ved feil deserialisering
 ) {
 
     fun oppdaterBarnMedFnr(listeOverBarn: List<Barn>) {
@@ -62,10 +63,6 @@ enum class BarnRelasjon(val utskriftsvennlig: String) {
     ANNET("Annet")
 }
 
-data class ArbeidsgiverDetaljer(
-    val organisasjoner: List<OrganisasjonDetaljer>
-)
-
 data class Medlemskap(
     val harBoddIUtlandetSiste12Mnd: Boolean? = null,
     val utenlandsoppholdSiste12Mnd: List<Bosted> = listOf(),
@@ -76,15 +73,6 @@ data class Medlemskap(
 data class UtenlandsoppholdIPerioden(
     val skalOppholdeSegIUtlandetIPerioden: Boolean? = null,
     val opphold: List<Utenlandsopphold> = listOf()
-)
-
-data class OrganisasjonDetaljer(
-    val navn: String? = null,
-    val skalJobbe: String,
-    val organisasjonsnummer: String,
-    val jobberNormaltTimer: Double,
-    val skalJobbeProsent: Double,
-    val vetIkkeEkstrainfo: String? = null
 )
 
 enum class TilsynsordningSvar {

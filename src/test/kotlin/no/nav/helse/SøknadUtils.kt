@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
+import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.*
 import no.nav.k9.søknad.felles.LovbestemtFerie
 import no.nav.k9.søknad.felles.Versjon
@@ -31,6 +32,7 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.util.*
 import no.nav.k9.søknad.Søknad as K9Søknad
+
 
 class SøknadUtils {
     companion object {
@@ -68,7 +70,8 @@ class SøknadUtils {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
                                 "skalJobbeProsent": 50,
-                                "skalJobbe": "redusert"
+                                "skalJobbe": "redusert",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -121,7 +124,8 @@ class SøknadUtils {
                   },
                   "skalBekrefteOmsorg": true,
                   "skalPassePaBarnetIHelePerioden": true,
-                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
+                  "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent()
         }
@@ -131,11 +135,12 @@ class SøknadUtils {
             vedleggUrl1: String,
             vedleggUrl2: String
         ): String {
+            //language=JSON
             return """
                 {
                     "barn": {
                         "aktørId": "$aktørId",
-                        "fødselsnummer" : "26104500284"
+                        "fødselsdato": "2021-01-01"
                     },
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
@@ -144,7 +149,8 @@ class SøknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skalJobbe": "nei"
+                                "skalJobbe": "nei",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -171,8 +177,8 @@ class SøknadUtils {
                         "tilOgMed": "2020-01-07"
                       }
                     ]
-                  }
-                }
+                  },
+                "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent()
         }
@@ -182,11 +188,11 @@ class SøknadUtils {
                 .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
                 .writerWithDefaultPrettyPrinter().writeValueAsString(virksomheter)
-
+            //language=JSON
             return """
                 {
                     "barn": {
-                        "fødselsnummer" : "26104500284"
+                      "fødselsdato" : "2020-01-01"
                     },
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
@@ -195,7 +201,8 @@ class SøknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skalJobbe": "nei"
+                                "skalJobbe": "nei",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -223,8 +230,9 @@ class SøknadUtils {
                         ]
                     },
                     "harHattInntektSomSelvstendigNaringsdrivende" : true,
-                    "selvstendigVirksomheter" : $virksomheterSomJson
-                    }
+                    "selvstendigVirksomheter" : $virksomheterSomJson,
+                    "harVærtEllerErVernepliktig" : true
+                  }
             """.trimIndent()
         }
 
@@ -232,11 +240,10 @@ class SøknadUtils {
             vedleggUrl1: String,
             vedleggUrl2: String
         ): String {
+            //language=JSON
             return """
                 {
-                    "barn": {
-                        "fødselsdato" : "2021-01-01"
-                    },
+                    "barn": {},
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
                     "arbeidsgivere": {
@@ -244,7 +251,8 @@ class SøknadUtils {
                             {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skalJobbe": "nei"
+                                "skalJobbe": "nei",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -272,9 +280,9 @@ class SøknadUtils {
                             "tilOgMed": "2020-01-07"
                           }
                         ]
-                      }
-                    }
-                }
+                      },
+                    "harVærtEllerErVernepliktig" : true
+                  }
                 """.trimIndent()
         }
 
@@ -301,7 +309,8 @@ class SøknadUtils {
                                 "organisasjonsnummer": "917755736",
                                 "navn": "Bjeffefirmaet ÆÆÅ",
                                 "skalJobbeProsent": $skalJobbeProsent,
-                                "skalJobbe": "$skalJobbe"
+                                "skalJobbe": "$skalJobbe",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -353,7 +362,8 @@ class SøknadUtils {
                   },
                   "skalBekrefteOmsorg": true,
                   "skalPassePaBarnetIHelePerioden": true,
-                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
+                  "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent()
         }
@@ -368,7 +378,7 @@ class SøknadUtils {
             return """
                 {
                     "barn": {
-                        "fødselsnummer" : "26104500284"
+                      "fødselsdato" : "2020-01-01"
                     },
                     "fraOgMed": "$fraOgMed",
                     "tilOgMed": "$tilOgMed",
@@ -377,7 +387,8 @@ class SøknadUtils {
                             {
                                  "organisasjonsnummer": "917755736",
                                   "navn": "Bjeffefirmaet ÆÆÅ",
-                                  "skalJobbe": "nei"
+                                  "skalJobbe": "nei",
+                                  "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -419,18 +430,19 @@ class SøknadUtils {
                     "bekrefterPeriodeOver8Uker": "$bekrefterPeriodeOver8Uker",
                     "harBekreftetOpplysninger": true,
                     "harForståttRettigheterOgPlikter": true,
-                  "ferieuttakIPerioden": {
-                    "skalTaUtFerieIPeriode": true,
-                    "ferieuttak": [
-                      {
-                        "fraOgMed": "2020-01-05",
-                        "tilOgMed": "2020-01-07"
-                      }
-                    ]
+                    "ferieuttakIPerioden": {
+                      "skalTaUtFerieIPeriode": true,
+                      "ferieuttak": [
+                        {
+                          "fraOgMed": "2020-01-05",
+                          "tilOgMed": "2020-01-07"
+                        }
+                      ]
                   },
                   "skalBekrefteOmsorg": true,
                   "skalPassePaBarnetIHelePerioden": true,
-                  "beskrivelseOmsorgsrollen": "En kort beskrivelse"
+                  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
+                  "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent()
         }
@@ -452,7 +464,8 @@ class SøknadUtils {
                         organisasjonsnummer = "917755736",
                         skalJobbeProsent = 40.0,
                         jobberNormaltTimer = 40.0,
-                        skalJobbe = "redusert"
+                        skalJobbe = "redusert",
+                        arbeidsform = Arbeidsform.FAST
                     )
                 )
             ),
@@ -599,7 +612,8 @@ class SøknadUtils {
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01")
-            )
+            ),
+            harVærtEllerErVernepliktig = true
         )
 
         fun defaultK9FormatPSB(søknadId: String = UUID.randomUUID().toString()) = K9Søknad(

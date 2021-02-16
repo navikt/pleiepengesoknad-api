@@ -7,9 +7,11 @@ import no.nav.helse.vedlegg.Vedlegg
 import no.nav.k9.søknad.JsonUtils
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
+import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -36,6 +38,172 @@ internal class SerDesTest {
     }
 
     private companion object {
+        val now = ZonedDateTime.of(2018, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC"))
+        internal val start = LocalDate.parse("2020-01-01")
+
+        internal val søknad = Søknad(
+            newVersion = null,
+            språk = Språk.nb,
+            barn = BarnDetaljer(
+                aktørId = "12345",
+                fødselsnummer = "123456789",
+                fødselsdato = LocalDate.parse("2018-01-01"),
+                navn = "Barn Barnesen"
+            ),
+            arbeidsgivere = ArbeidsgiverDetaljer(listOf(
+                OrganisasjonDetaljer(
+                    navn = "Org",
+                    organisasjonsnummer = "917755736",
+                    skalJobbeProsent = 10.0,
+                    jobberNormaltTimer = 10.0,
+                    skalJobbe = "redusert",
+                    arbeidsform = Arbeidsform.FAST
+                )
+            )),
+            vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
+            fraOgMed = LocalDate.now(),
+            tilOgMed = LocalDate.now().plusDays(10),
+            bekrefterPeriodeOver8Uker = true,
+            nattevåk = Nattevåk(
+                harNattevåk = true,
+                tilleggsinformasjon = "Har nattevåk"
+            ),
+            selvstendigVirksomheter = listOf(
+                Virksomhet(
+                    næringstyper = listOf(Næringstyper.ANNEN),
+                    fiskerErPåBladB = false,
+                    fraOgMed = LocalDate.parse("2020-01-01"),
+                    næringsinntekt = 1111,
+                    navnPåVirksomheten = "TullOgTøys",
+                    registrertINorge = false,
+                    registrertIUtlandet = Land(
+                        landnavn = "Tyskland",
+                        landkode = "DEU"
+                    ),
+                    varigEndring = VarigEndring(
+                        inntektEtterEndring = 9999,
+                        dato = LocalDate.parse("2020-01-01"),
+                        forklaring = "Korona"
+                    ),
+                    regnskapsfører = Regnskapsfører(
+                        "Kjell Regnskap",
+                        "123456789"
+                    ),
+                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
+                )
+            ),
+            skalPassePåBarnetIHelePerioden = true,
+            tilsynsordning = Tilsynsordning(
+                svar = TilsynsordningSvar.ja,
+                ja = TilsynsordningJa(
+                    mandag = Duration.ofHours(1),
+                    tirsdag = Duration.ofHours(1),
+                    onsdag = Duration.ofHours(1),
+                    torsdag = Duration.ofHours(1),
+                    fredag = Duration.ofHours(1),
+                    tilleggsinformasjon = "Blabla"
+                ),
+                vetIkke = TilsynsordningVetIkke(
+                    svar = TilsynsordningVetIkkeSvar.annet,
+                    annet = "Nei"
+                )
+            ),
+            medlemskap = Medlemskap(
+                harBoddIUtlandetSiste12Mnd = true,
+                skalBoIUtlandetNeste12Mnd = true,
+                utenlandsoppholdNeste12Mnd = listOf(
+                    Bosted(
+                        fraOgMed = LocalDate.parse("2018-01-01"),
+                        tilOgMed =  LocalDate.parse("2018-01-10"),
+                        landnavn = "Tyskland",
+                        landkode = "DEU"
+                )),
+                utenlandsoppholdSiste12Mnd = listOf(
+                    Bosted(
+                        fraOgMed = LocalDate.parse("2017-01-01"),
+                        tilOgMed =  LocalDate.parse("2017-01-10"),
+                        landnavn = "Tyskland",
+                        landkode = "DEU"
+                    ))
+            ),
+            harMedsøker = true,
+            beredskap = Beredskap(
+                beredskap = true,
+                tilleggsinformasjon = "Ikke beredskap"
+            ),
+            beskrivelseOmsorgsrollen = "En kort beskrivelse",
+            samtidigHjemme = true,
+            harBekreftetOpplysninger = true,
+            harForståttRettigheterOgPlikter = true,
+            skalBekrefteOmsorg = true,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
+                Utenlandsopphold(
+                    fraOgMed = LocalDate.parse("2019-10-10"),
+                    tilOgMed = LocalDate.parse("2019-11-10"),
+                    landkode = "SE",
+                    landnavn = "Sverige",
+                    erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
+                    erUtenforEøs = false,
+                    årsak = Årsak.ANNET
+                ),
+                Utenlandsopphold(
+                    fraOgMed = LocalDate.parse("2019-10-10"),
+                    tilOgMed = LocalDate.parse("2019-11-10"),
+                    landkode = "SE",
+                    landnavn = "Sverige",
+                    erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
+                    erUtenforEøs = false,
+                    årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
+                ),
+                Utenlandsopphold(
+                    fraOgMed = LocalDate.parse("2019-10-10"),
+                    tilOgMed = LocalDate.parse("2019-11-10"),
+                    landkode = "SE",
+                    landnavn = "Sverige",
+                    erBarnetInnlagt = true,
+                    perioderBarnetErInnlagt = listOf(
+                        Periode(
+                            fraOgMed = LocalDate.parse("2020-01-01"),
+                            tilOgMed = LocalDate.parse("2020-01-02")
+                        )
+                    ),
+                    erUtenforEøs = false,
+                    årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
+                ),
+                Utenlandsopphold(
+                    fraOgMed = LocalDate.parse("2019-10-10"),
+                    tilOgMed = LocalDate.parse("2019-11-10"),
+                    landkode = "SE",
+                    landnavn = "Sverige",
+                    erBarnetInnlagt = false,
+                    erUtenforEøs = false,
+                    årsak = null
+                )
+            )),
+            ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf(
+                Ferieuttak(
+                    fraOgMed = LocalDate.parse("2020-01-05"),
+                    tilOgMed = LocalDate.parse("2020-01-07")
+                )
+            )),
+            frilans = Frilans(
+                jobberFortsattSomFrilans = true,
+                startdato = LocalDate.parse("2018-01-01")
+            ),
+            harVærtEllerErVernepliktig = true
+        )
 
         fun søknadJson(søknadsId: String) = """
             {
@@ -59,7 +227,8 @@ internal class SerDesTest {
                     "skalJobbeProsent": 40,
                     "jobberNormaltTimer": 40,
                     "skalJobbe": "redusert",
-                    "vetIkkeEkstrainfo": null
+                    "vetIkkeEkstrainfo": null,
+                    "arbeidsform": "FAST"
                   }
                 ]
               },
@@ -214,7 +383,8 @@ internal class SerDesTest {
                 "vetIkke" : null
               },
               "barnRelasjon" : null,
-              "barnRelasjonBeskrivelse" : null
+              "barnRelasjonBeskrivelse" : null,
+              "harVærtEllerErVernepliktig" : true
             }
         """.trimIndent()
 
@@ -249,7 +419,8 @@ internal class SerDesTest {
                     "skalJobbeProsent": 10,
                     "jobberNormaltTimer": 10,
                     "skalJobbe": "redusert",
-                    "vetIkkeEkstrainfo": null
+                    "vetIkkeEkstrainfo": null,
+                    "arbeidsform": "FAST"
                   }
                 ]
               },
@@ -412,6 +583,7 @@ internal class SerDesTest {
               },
               "barnRelasjon" : null,
               "barnRelasjonBeskrivelse" : null,
+              "harVærtEllerErVernepliktig" : true,
               "k9FormatSøknad" : null 
             } 
         """.trimIndent()
@@ -433,17 +605,16 @@ internal class SerDesTest {
                 etternavn = "Nordmann",
                 fornavn = "Ola"
             ),
-            arbeidsgivere = ArbeidsgiverDetaljer(
-                listOf(
-                    OrganisasjonDetaljer(
-                        navn = "Org",
-                        organisasjonsnummer = "917755736",
-                        skalJobbeProsent = 10.0,
-                        jobberNormaltTimer = 10.0,
-                        skalJobbe = "redusert"
-                    )
+            arbeidsgivere = ArbeidsgiverDetaljer(listOf(
+                OrganisasjonDetaljer(
+                    navn = "Org",
+                    organisasjonsnummer = "917755736",
+                    skalJobbeProsent = 10.0,
+                    jobberNormaltTimer = 10.0,
+                    skalJobbe = "redusert",
+                    arbeidsform = Arbeidsform.FAST
                 )
-            ),
+            )),
             vedlegg = listOf(
                 Vedlegg(
                     content = "Test".toByteArray(),
@@ -598,6 +769,7 @@ internal class SerDesTest {
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01")
             ),
+            harVærtEllerErVernepliktig = true,
             k9FormatSøknad = null
         )
     }

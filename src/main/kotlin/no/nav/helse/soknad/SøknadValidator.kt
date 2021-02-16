@@ -148,17 +148,6 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     }
 
     // Booleans (For å forsikre at de er satt og ikke blir default false)
-    fun booleanIkkeSatt(parameterName: String) {
-        violations.add(
-            Violation(
-                parameterName = parameterName,
-                parameterType = ParameterType.ENTITY,
-                reason = "Må settes til true eller false.",
-                invalidValue = null
-
-            )
-        )
-    }
 
     //Validerer at brukeren bekrefter dersom perioden er over 8 uker (40 virkedager)
     if (bekrefterPeriodeOver8Uker != null) {
@@ -175,22 +164,22 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
         }
     }
 
-    if (medlemskap.harBoddIUtlandetSiste12Mnd == null) booleanIkkeSatt("medlemskap.harBoddIUtlandetSiste12Mnd")
+    violations.addAll(nullSjekk(medlemskap.harBoddIUtlandetSiste12Mnd, "medlemskap.harBoddIUtlandetSiste12Mnd"))
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdSiste12Mnd))
 
-    if (medlemskap.skalBoIUtlandetNeste12Mnd == null) booleanIkkeSatt("medlemskap.skalBoIUtlandetNeste12Mnd")
+    violations.addAll(nullSjekk(medlemskap.skalBoIUtlandetNeste12Mnd, "medlemskap.skalBoIUtlandetNeste12Mnd"))
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
 
-    if (utenlandsoppholdIPerioden != null &&
-        utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == null
-    ) {
-        booleanIkkeSatt("utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden")
+    if(utenlandsoppholdIPerioden != null){
+        violations.addAll(nullSjekk(utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden,
+                "utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden")
+        )
     }
 
     violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
+    violations.addAll(nullSjekk(harMedsøker, "harMedsøker"))
 
-    if (harMedsøker == null) booleanIkkeSatt("harMedsøker")
     if (!harBekreftetOpplysninger) {
         violations.add(
             Violation(
@@ -215,7 +204,8 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     }
 
     beredskap?.apply {
-        if (beredskap == null) booleanIkkeSatt("beredskap.beredskap")
+        violations.addAll(nullSjekk(beredskap, "beredskap.beredskap"))
+
         tilleggsinformasjon?.apply {
             if (length > MAX_FRITEKST_TEGN) {
                 violations.add(
@@ -231,7 +221,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     }
 
     nattevåk?.apply {
-        if (harNattevåk == null) booleanIkkeSatt("nattevåk.harNattevåk")
+        violations.addAll(nullSjekk(nattevåk.harNattevåk, "nattevåk.harNattevåk"))
         tilleggsinformasjon?.apply {
             if (length > MAX_FRITEKST_TEGN) {
                 violations.add(
@@ -246,9 +236,9 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
         }
     }
 
+    //violations.addAll(nullSjekk(harVærtEllerErVernepliktig, "harVærtEllerErVernepliktig")) //TODO 09.02.2021 - Settes på når prodsatt
     violations.addAll(validerK9Format(k9FormatSøknad))
 
-    // Ser om det er noen valideringsfeil
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
@@ -264,8 +254,7 @@ private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): Mutable
         )
     }.sortedBy { it.reason }.toMutableSet()
 
-private fun validerSelvstendigVirksomheter(
-    selvstendigVirksomheter: List<Virksomhet>
+private fun validerSelvstendigVirksomheter(selvstendigVirksomheter: List<Virksomhet>
 ): MutableSet<Violation> = mutableSetOf<Violation>().apply {
     if (selvstendigVirksomheter.isNotEmpty()) {
         selvstendigVirksomheter.mapIndexed { index, virksomhet ->
@@ -274,9 +263,7 @@ private fun validerSelvstendigVirksomheter(
     }
 }
 
-private fun validerBosted(
-    list: List<Bosted>
-): MutableSet<Violation> {
+private fun validerBosted(list: List<Bosted>): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
     list.mapIndexed { index, bosted ->
         val fraDataErEtterTilDato = bosted.fraOgMed.isAfter(bosted.tilOgMed)
@@ -314,9 +301,7 @@ private fun validerBosted(
     return violations
 }
 
-private fun validerUtenladsopphold(
-    list: List<Utenlandsopphold>?
-): MutableSet<Violation> {
+private fun validerUtenladsopphold(list: List<Utenlandsopphold>?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
     list?.mapIndexed { index, utenlandsopphold ->
         val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
@@ -374,9 +359,7 @@ private fun validerUtenladsopphold(
     return violations
 }
 
-private fun validerFerieuttakIPerioden(
-    ferieuttakIPerioden: FerieuttakIPerioden?
-): MutableSet<Violation> {
+private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
     ferieuttakIPerioden?.ferieuttak?.mapIndexed { index, ferieuttak ->
         val fraDataErEtterTilDato = ferieuttak.fraOgMed.isAfter(ferieuttak.tilOgMed)
@@ -474,119 +457,6 @@ internal fun Tilsynsordning.validate(): MutableSet<Violation> {
     return violations
 }
 
-internal fun List<OrganisasjonDetaljer>.validate(
-): MutableSet<Violation> {
-    val violations = mutableSetOf<Violation>()
-
-    mapIndexed { index, organisasjon ->
-        if (!organisasjon.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].organisasjonsnummer",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Ikke gyldig organisasjonsnummer.",
-                    invalidValue = organisasjon.organisasjonsnummer
-                )
-            )
-        }
-        if (organisasjon.navn != null && organisasjon.navn.erBlankEllerLengreEnn(100)) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].navn",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
-                    invalidValue = organisasjon.navn
-                )
-            )
-        }
-
-        organisasjon.skalJobbeProsent.apply {
-            if (this !in 0.0..100.0) {
-                violations.add(
-                    Violation(
-                        parameterName = "arbeidsgivere.organisasjoner[$index].skalJobbeProsent",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Skal jobbe prosent må være mellom 0 og 100.",
-                        invalidValue = this
-                    )
-                )
-            }
-        }
-
-        when (organisasjon.skalJobbe) {
-            "ja" -> {
-                organisasjon.skalJobbeProsent.let {
-                    if (it != 100.0) {
-                        violations.add(
-                            Violation(
-                                parameterName = "arbeidsgivere.organisasjoner[$index].skalJobbeProsent && arbeidsgivere.organisasjoner[$index].skalJobbe",
-                                parameterType = ParameterType.ENTITY,
-                                reason = "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
-                                invalidValue = this
-                            )
-                        )
-                    } else {
-                    }
-                }
-            }
-            "nei" -> {
-                organisasjon.skalJobbeProsent.let {
-                    if (it != 0.0) {
-                        violations.add(
-                            Violation(
-                                parameterName = "arbeidsgivere.organisasjoner[$index].skalJobbeProsent && arbeidsgivere.organisasjoner[$index].skalJobbe",
-                                parameterType = ParameterType.ENTITY,
-                                reason = "skalJobbeProsent er ulik 0%. Dersom skalJobbe = 'nei', så må skalJobbeProsent være 0%",
-                                invalidValue = this
-                            )
-                        )
-                    } else {
-                    }
-                }
-            }
-            "redusert" -> {
-                organisasjon.skalJobbeProsent.let {
-                    if (it !in 1.0..99.9) {
-                        violations.add(
-                            Violation(
-                                parameterName = "arbeidsgivere.organisasjoner[$index].skalJobbeProsent && arbeidsgivere.organisasjoner[$index].skalJobbe",
-                                parameterType = ParameterType.ENTITY,
-                                reason = "skalJobbeProsent ligger ikke mellom 1% og 99%. Dersom skalJobbe = 'redusert', så må skalJobbeProsent være mellom 1% og 99%",
-                                invalidValue = this
-                            )
-                        )
-                    } else {
-                    }
-                }
-            }
-            "vetIkke" -> {
-                organisasjon.skalJobbeProsent.let {
-                    if (it != 0.0) {
-                        violations.add(
-                            Violation(
-                                parameterName = "arbeidsgivere.organisasjoner[$index].skalJobbeProsent && arbeidsgivere.organisasjoner[$index].skalJobbe",
-                                parameterType = ParameterType.ENTITY,
-                                reason = "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være 0%",
-                                invalidValue = this
-                            )
-                        )
-                    } else {
-                    }
-                }
-            }
-            else -> violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].skalJobbe",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
-                    invalidValue = organisasjon.skalJobbe
-                )
-            )
-        }
-    }
-    return violations
-}
-
 private fun Søknad.validerBarnRelasjon(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
@@ -604,8 +474,6 @@ private fun Søknad.validerBarnRelasjon(): MutableSet<Violation> {
     return violations
 }
 
-private fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength
-
 internal fun antallVirkedagerIEnPeriode(fraOgMed: LocalDate, tilOgMed: LocalDate): Int {
     var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
     var dagSomSkalSjekkes: LocalDate = fraOgMed;
@@ -616,4 +484,21 @@ internal fun antallVirkedagerIEnPeriode(fraOgMed: LocalDate, tilOgMed: LocalDate
     }
 
     return antallDagerIPerioden.toInt()
+}
+
+internal fun nullSjekk(verdi: Boolean?, navn: String): MutableSet<Violation> {
+    val mangler: MutableSet<Violation> = mutableSetOf()
+
+    if (verdi == null) {
+        mangler.add(
+            Violation(
+                parameterName = navn,
+                parameterType = ParameterType.ENTITY,
+                reason = "$navn kan ikke være null",
+                invalidValue = verdi
+            )
+        )
+    }
+
+    return mangler
 }

@@ -557,28 +557,28 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = "/soknad",
             expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
                     {
-                      "type": "/problem-details/invalid-request-parameters",
-                      "title": "invalid-request-parameters",
-                      "status": 400,
-                      "detail": "Requesten inneholder ugyldige paramtere.",
-                      "instance": "about:blank",
-                      "invalid_parameters": [
-                        {
-                          "type": "entity",
-                          "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                          "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
-                          "invalid_value": null
-                        },
-                        {
-                          "type": "entity",
-                          "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
-                          "reason": "$\{validatedValue}",
-                          "invalid_value": "K9-format feilkode: [Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}] ConstraintViolation "
-                        }
-                      ]
+                      "type": "entity",
+                      "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                      "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                      "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
+                      "invalid_value": "K9-format feilkode: påkrevd"
                     }
-            """.trimIndent().replace("\\", ""),// TODO: 08/02/2021 Slett .replace() ved fix fra k9-format
+                  ]
+                }
+            """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
@@ -681,7 +681,8 @@ class ApplicationTest {
                   ],
                   "tilsynsordning": {
                     "svar": "nei"
-                  }
+                  },
+                  "harVærtEllerErVernepliktig" : true
                 }
             """.trimIndent()
         )
@@ -696,28 +697,28 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = "/soknad",
             expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
                 {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
-                      "reason": "$\{validatedValue}",
-                      "invalid_value": "K9-format feilkode: [Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}] ConstraintViolation "
-                    }
-                  ]
+                  "type": "entity",
+                  "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                  "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                  "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
+                  "invalid_value": "K9-format feilkode: påkrevd"
                 }
-            """.trimIndent().replace("\\", ""), // TODO: 08/02/2021 Slett .replace() ved fix fra k9-format
+              ]
+            }
+            """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
@@ -775,7 +776,8 @@ class ApplicationTest {
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 99.0,
-                      "vetIkkeEkstrainfo": null
+                      "vetIkkeEkstrainfo": null,
+                      "arbeidsform": "FAST"
                     }
                   ]
                 }
@@ -820,7 +822,8 @@ class ApplicationTest {
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 100.0,
-                      "vetIkkeEkstrainfo": null
+                      "vetIkkeEkstrainfo": null,
+                      "arbeidsform": "FAST"
                     }
                   ]
                 }
@@ -865,7 +868,8 @@ class ApplicationTest {
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
-                      "vetIkkeEkstrainfo": null
+                      "vetIkkeEkstrainfo": null,
+                      "arbeidsform": "FAST"
                     }
                   ]
                 }
@@ -910,7 +914,8 @@ class ApplicationTest {
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
-                      "vetIkkeEkstrainfo": null
+                      "vetIkkeEkstrainfo": null,
+                      "arbeidsform": "FAST"
                     }
                   ]
                 }
@@ -955,7 +960,9 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = """
+            requestEntity =
+            //language=JSON
+            """
                 {
                   "new_version": true,
                   "sprak": "nb",
@@ -1043,29 +1050,10 @@ class ApplicationTest {
                           "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                         }
                       ]
-                    }
+                    },
+                    "harVærtEllerErVernepliktig" : true
                 }
-
             """.trimIndent()
-        )
-    }
-
-    @Test
-    fun `Sende soknad uten ID på barnet`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = "/soknad",
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyUtenIdPaaBarn(
-                vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = pdfUrl
-            )
         )
     }
 
@@ -1110,7 +1098,9 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = "/soknad",
             expectedCode = HttpStatusCode.BadRequest,
-            requestEntity = """
+            requestEntity =
+            //language=JSON
+            """
                 {
                     "barn": {
                         "navn": "",
@@ -1123,7 +1113,8 @@ class ApplicationTest {
                             {
                                 "organisasjonsnummer": "12",
                                 "navn": "$forlangtNavn",
-                                "skalJobbe": "ugyldig"
+                                "skalJobbe": "ugyldig",
+                                "arbeidsform": "FAST"
                             }
                         ]
                     },
@@ -1145,8 +1136,8 @@ class ApplicationTest {
                         "tilOgMed": "2020-01-07"
                       }
                     ]
-                  }
-                }
+                  },
+                  "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent(),
             expectedResponse = """
@@ -1208,19 +1199,19 @@ class ApplicationTest {
                 {
                   "type": "entity",
                   "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                  "reason": "Må settes til true eller false.",
+                  "reason": "medlemskap.harBoddIUtlandetSiste12Mnd kan ikke være null",
                   "invalid_value": null
                 },
                 {
                   "type": "entity",
                   "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                  "reason": "Må settes til true eller false.",
+                  "reason": "medlemskap.skalBoIUtlandetNeste12Mnd kan ikke være null",
                   "invalid_value": null
                 },
                 {
                   "type": "entity",
                   "name": "harMedsøker",
-                  "reason": "Må settes til true eller false.",
+                  "reason": "harMedsøker kan ikke være null",
                   "invalid_value": null
                 },
                 {
