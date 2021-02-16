@@ -35,19 +35,14 @@ class RedisStore constructor(
     }
 
     fun update(key: String, value: String): String? {
-        val ttl = getTTL(key)
+        val ttl = getPTTL(key)
         return set(key, value, Calendar.getInstance().let {
             it.add(Calendar.MILLISECOND, ttl.toInt())
             it.time
         })
     }
 
-    fun getTTL(key: String): Long {
-        val pttl = async.pttl(key)
-        return if (pttl.await(10, TimeUnit.SECONDS)) {
-            return pttl.get()
-        } else pttl.get()
-    }
+    fun getPTTL(key: String): Long = async.pttl(key).get()
 
     fun delete(key: String): Boolean {
         val del = async.del(key)
@@ -63,7 +58,7 @@ class RedisStore constructor(
     private fun settExpiration(key: String, expirationDate: Long) {
         val await = async.pexpireat(key, expirationDate).await(10, TimeUnit.SECONDS)
         if (await) {
-            logger.info("Expiration satt på key med PTTL=${getTTL(key)} ms")
+            logger.info("Expiration satt på key med PTTL=${getPTTL(key)} ms")
         } else throw IllegalStateException("Feilet med å sette expiry på key.")
 
     }
