@@ -68,7 +68,7 @@ class MellomlagringTest {
         )
         val verdi = mellomlagringService.getMellomlagring(key)
         assertEquals("test", verdi)
-        val ttl = mellomlagringService.getTTL(key)
+        val ttl = mellomlagringService.getTTLInMs(key)
         assertNotEquals(ttl, "-2")
         assertNotEquals(ttl, "-1")
 
@@ -96,8 +96,8 @@ class MellomlagringTest {
         val forventetVerdi1 = mellomlagringService.getMellomlagring(fnr)
         logger.info("Hentet mellomlagret verdi = {}", forventetVerdi1)
         assertEquals("test", forventetVerdi1)
-        assertNotEquals(mellomlagringService.getTTL(fnr), "-2")
-        assertNotEquals(mellomlagringService.getTTL(fnr), "-1")
+        assertNotEquals(mellomlagringService.getTTLInMs(fnr), "-2")
+        assertNotEquals(mellomlagringService.getTTLInMs(fnr), "-1")
 
         Awaitility.waitAtMost(ONE_SECOND).untilAsserted {
             val forventetVerdi2 = mellomlagringService.getMellomlagring(fnr)

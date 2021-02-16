@@ -50,5 +50,5 @@ class MellomlagringService @KtorExperimentalAPI constructor(
         redisStore.delete(nøkkelPrefiks + fnr)
     }
 
-    fun getTTL(fnr: String): Long = redisStore.getTTL(nøkkelPrefiks + fnr)
+    fun getTTLInMs(fnr: String): Long = redisStore.getPTTL(nøkkelPrefiks + fnr)
 }
