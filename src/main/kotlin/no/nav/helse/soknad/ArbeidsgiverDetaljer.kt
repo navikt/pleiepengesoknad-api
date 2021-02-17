@@ -16,7 +16,7 @@ data class OrganisasjonDetaljer(
     val jobberNormaltTimer: Double,
     val skalJobbeProsent: Double,
     val vetIkkeEkstrainfo: String? = null,
-    val arbeidsform: Arbeidsform? = null //TODO 09.02.2021 - Fjerne nullable når prodsatt. Påbudt felt
+    val arbeidsform: Arbeidsform,
 )
 
 enum class Arbeidsform{
@@ -50,19 +50,6 @@ internal fun List<OrganisasjonDetaljer>.validate(): MutableSet<Violation> {
                 )
             )
         }
-
-        //TODO 09.02.2021 - Settes på når feltet er prodsatt
-        /*
-        if(organisasjon.arbeidsform == null){
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].arbeidsform",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "arbeidsform kan ikke være null",
-                    invalidValue = organisasjon.arbeidsform
-                )
-            )
-        }*/
 
         organisasjon.skalJobbeProsent.apply {
             if (this !in 0.0..100.0) {

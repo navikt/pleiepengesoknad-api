@@ -81,7 +81,7 @@ class SøknadService(
             beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
             barnRelasjon = søknad.barnRelasjon,
             barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
-            harVærtEllerErVernepliktig = søknad.harVærtEllerErVernepliktig,
+            harVærtEllerErVernepliktig = søknad.harVærtEllerErVernepliktig!!,
             k9FormatSøknad = k9FormatSøknad
         )
 
