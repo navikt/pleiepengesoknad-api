@@ -63,18 +63,6 @@ class ArbeidsgiverValidationTest {
         assertEquals(2, organisasjoner.validate().size)
     }
 
-    @Ignore //TODO 09.02.2021 - Sett på når feltet er påbudt og prodsatt
-    @Test
-    fun `Mangler arbeidsform`() {
-        val organisasjoner = listOf(OrganisasjonDetaljer(
-            organisasjonsnummer = GYLDIG_ORGNR,
-            skalJobbeProsent = 0.0,
-            skalJobbe = "nei",
-            jobberNormaltTimer = 37.5
-        ))
-        assertEquals(1, organisasjoner.validate().size)
-    }
-
     @Test
     fun `feiler på søkand der arbeidsgiver skalJobbe er annet enn tillatt verdi`() {
         val organisasjoner = listOf(
