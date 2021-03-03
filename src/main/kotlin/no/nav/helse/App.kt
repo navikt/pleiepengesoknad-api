@@ -194,7 +194,8 @@ fun Application.pleiepengesoknadapi() {
                     vedleggService = vedleggService
                 ),
                 barnService = barnService,
-                søkerService = søkerService
+                søkerService = søkerService,
+                vedleggService = vedleggService
             )
         }
 
