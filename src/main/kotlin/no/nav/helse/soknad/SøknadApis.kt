@@ -1,13 +1,11 @@
 package no.nav.helse.soknad
 
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.locations.KtorExperimentalLocationsAPI
-import io.ktor.locations.Location
-import io.ktor.locations.post
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.Route
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.locations.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import no.nav.helse.barn.BarnService
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
@@ -15,10 +13,12 @@ import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
+import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
+import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.ZonedDateTime
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 
@@ -27,7 +27,8 @@ fun Route.soknadApis(
     søknadService: SøknadService,
     idTokenProvider: IdTokenProvider,
     barnService: BarnService,
-    søkerService: SøkerService
+    søkerService: SøkerService,
+    vedleggService: VedleggService
 ) {
 
     @Location("/soknad")
@@ -84,6 +85,13 @@ fun Route.soknadApis(
 
         val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
         søknad.validate(k9FormatSøknad)
+
+        val vedlegg = vedleggService.hentVedlegg(
+            idToken = idToken,
+            vedleggUrls = søknad.vedlegg,
+            callId = callId
+        )
+        vedlegg.validerVedlegg(søknad.vedlegg)
 
         logger.trace("Validering Ok.")
         call.respond(HttpStatusCode.Accepted)
