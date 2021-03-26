@@ -40,7 +40,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
             søknadsperiode,
             byggK9DataBruktTilUtledning(),
             barn.tilK9Barn(),
-            byggK9ArbeidAktivitet(),
+            byggK9OpptjeningAktivitet(),
             beredskap?.tilK9Beredskap(søknadsperiode),
             nattevåk?.tilK9Nattevåk(søknadsperiode),
             tilsynsordning?.tilK9Tilsynsordning(søknadsperiode),

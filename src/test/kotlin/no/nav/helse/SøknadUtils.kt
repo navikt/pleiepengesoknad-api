@@ -634,6 +634,7 @@ class SøknadUtils {
                     null
                 ),
                 OpptjeningAktivitet(
+                    null,
                     listOf(
                         SelvstendigNæringsdrivende(
                             mapOf(

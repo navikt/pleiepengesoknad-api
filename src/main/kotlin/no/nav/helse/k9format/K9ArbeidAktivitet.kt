@@ -14,7 +14,8 @@ fun Double.tilFaktiskTimerPerUke(prosent: Double) = this.times(prosent.div(100))
 fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
 fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
-internal fun Søknad.byggK9ArbeidAktivitet() = OpptjeningAktivitet(
+internal fun Søknad.byggK9OpptjeningAktivitet() = OpptjeningAktivitet(
+    null, // arbeidstaker er ikke nødvendig i opptjeningAktivitet for psb.
     selvstendigVirksomheter.tilK9SelvstendigNæringsdrivende(),
     frilans?.tilK9Frilanser()
 )
