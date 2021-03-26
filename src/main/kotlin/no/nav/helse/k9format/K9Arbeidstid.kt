@@ -1,11 +1,10 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.Frilans
 import no.nav.helse.soknad.Søknad
 import no.nav.helse.soknad.Virksomhet
-import no.nav.k9.søknad.felles.aktivitet.Arbeidstaker
 import no.nav.k9.søknad.felles.type.Periode
+import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstid
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
@@ -22,10 +21,11 @@ fun Frilans.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo {
     val perioder = mutableMapOf<Periode, ArbeidstidPeriodeInfo>()
 
     perioder[periode] = ArbeidstidPeriodeInfo(
+        null, //TODO Mangler denne verdien i brukerdialog
         null //TODO Mangler denne verdien i brukerdialog
     )
 
-    return ArbeidstidInfo(null, perioder) //TODO Mangler denne verdien i brukerdialog
+    return ArbeidstidInfo(perioder)
 }
 
 fun List<Virksomhet>.tilK9ArbeidstidInfo(): ArbeidstidInfo? {
@@ -34,8 +34,9 @@ fun List<Virksomhet>.tilK9ArbeidstidInfo(): ArbeidstidInfo? {
 
     forEach { virksomhet ->
         //TODO Er dette riktig å bruke periode fra virksomheten eller periode for søknadsperioden
-        perioder[Periode(virksomhet.fraOgMed, virksomhet.tilOgMed)] = ArbeidstidPeriodeInfo(null) //TODO Mangler denne verdien i brukerdialog
+        perioder[Periode(virksomhet.fraOgMed, virksomhet.tilOgMed)] =
+            ArbeidstidPeriodeInfo(null, null) //TODO Mangler denne verdien i brukerdialog
     }
 
-    return ArbeidstidInfo(null, perioder) //TODO Mangler denne verdien i brukerdialog
+    return ArbeidstidInfo(perioder)
 }

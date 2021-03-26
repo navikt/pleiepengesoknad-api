@@ -48,19 +48,7 @@ class K9FormatTest {
                   "norskIdentitetsnummer" : "123456789",
                   "fødselsdato" : "2018-01-01"
                 },
-                "arbeidAktivitet" : {
-                  "arbeidstaker" : [ {
-                    "norskIdentitetsnummer" : null,
-                    "organisasjonsnummer" : "917755736",
-                    "arbeidstidInfo" : {
-                      "jobberNormaltTimerPerDag" : "PT8H",
-                      "perioder" : {
-                        "2020-01-01/2020-01-20" : {
-                          "faktiskArbeidTimerPerDag" : "PT3H12M"
-                        }
-                      }
-                    }
-                  } ],
+                "opptjeningAktivitet" : {
                   "selvstendigNæringsdrivende" : [ {
                     "perioder" : {
                       "2020-01-01/.." : {
@@ -80,10 +68,12 @@ class K9FormatTest {
                   } ],
                   "frilanser" : {
                     "startdato" : "2018-01-01",
+                    "sluttdato": null,
                     "jobberFortsattSomFrilans" : true
                   }
                 },
                 "beredskap" : {
+                  "perioderSomSkalSlettes": null,
                   "perioder" : {
                     "2020-01-01/2020-01-20" : {
                       "tilleggsinformasjon" : "Ikke beredskap"
@@ -91,6 +81,7 @@ class K9FormatTest {
                   }
                 },
                 "nattevåk" : {
+                  "perioderSomSkalSlettes": null,
                   "perioder" : {
                     "2020-01-01/2020-01-20" : {
                       "tilleggsinformasjon" : "Har nattevåk"
@@ -109,9 +100,9 @@ class K9FormatTest {
                     "norskIdentitetsnummer" : null,
                     "organisasjonsnummer" : "917755736",
                     "arbeidstidInfo" : {
-                      "jobberNormaltTimerPerDag" : "PT8H",
                       "perioder" : {
                         "2020-01-01/2020-01-20" : {
+                          "jobberNormaltTimerPerDag" : "PT8H",
                           "faktiskArbeidTimerPerDag" : "PT3H12M"
                         }
                       }
@@ -134,6 +125,7 @@ class K9FormatTest {
                 },
                 "lovbestemtFerie" : null,
                 "bosteder" : {
+                  "perioderSomSkalSlettes": null,
                   "perioder" : {
                     "2017-01-01/2017-01-10" : {
                       "land" : "DEU"

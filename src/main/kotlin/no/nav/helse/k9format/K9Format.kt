@@ -2,11 +2,13 @@ package no.nav.helse.k9format
 
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
-import no.nav.k9.søknad.felles.LovbestemtFerie
+import no.nav.helse.soknad.Beredskap
+import no.nav.helse.soknad.Nattevåk
 import no.nav.k9.søknad.felles.Versjon
 import no.nav.k9.søknad.felles.personopplysninger.Bosteder
 import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold
-import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold.*
+import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold.UtenlandsoppholdPeriodeInfo
+import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold.UtenlandsoppholdÅrsak
 import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.Periode
@@ -98,10 +100,10 @@ fun Søknad.byggK9Uttak(periode: Periode): Uttak? {
 fun FerieuttakIPerioden.tilK9LovbestemtFerie(): LovbestemtFerie? {
     if (!skalTaUtFerieIPerioden) return null
 
-    val perioder = mutableListOf<Periode>()
+    val perioder = mutableMapOf<Periode, LovbestemtFerie.LovbestemtFeriePeriodeInfo>()
 
     ferieuttak.forEach { ferieuttak ->
-        perioder.add(Periode(ferieuttak.fraOgMed, ferieuttak.tilOgMed))
+        perioder[Periode(ferieuttak.fraOgMed, ferieuttak.tilOgMed)] = LovbestemtFerie.LovbestemtFeriePeriodeInfo()
     }
 
     return LovbestemtFerie(perioder)
