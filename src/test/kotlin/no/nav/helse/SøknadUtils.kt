@@ -1,15 +1,12 @@
 package no.nav.helse
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
-import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.*
-import no.nav.k9.søknad.felles.LovbestemtFerie
 import no.nav.k9.søknad.felles.Versjon
-import no.nav.k9.søknad.felles.aktivitet.*
+import no.nav.k9.søknad.felles.opptjening.*
 import no.nav.k9.søknad.felles.personopplysninger.Barn
 import no.nav.k9.søknad.felles.personopplysninger.Bosteder
 import no.nav.k9.søknad.felles.personopplysninger.Søker
@@ -21,6 +18,7 @@ import no.nav.k9.søknad.felles.type.SøknadId
 import no.nav.k9.søknad.ytelse.psb.v1.*
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap
 import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk
+import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstid
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
@@ -635,55 +633,55 @@ class SøknadUtils {
                     NorskIdentitetsnummer.of("10987654321"),
                     null
                 ),
-                ArbeidAktivitet.builder()
-                    .frilanser(Frilanser(LocalDate.parse("2020-01-01"), true))
-                    .selvstendigNæringsdrivende(
-                        listOf(
-                            SelvstendigNæringsdrivende(
-                                mapOf(
-                                    Periode(
-                                        LocalDate.parse("2018-01-01"),
-                                        LocalDate.parse("2020-01-01")
-                                    ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
-                                        .erNyoppstartet(true)
-                                        .registrertIUtlandet(false)
-                                        .bruttoInntekt(BigDecimal(5_000_000))
-                                        .erVarigEndring(true)
-                                        .endringDato(LocalDate.parse("2020-01-01"))
-                                        .endringBegrunnelse("Grunnet Covid-19")
-                                        .landkode(Landkode.NORGE)
-                                        .regnskapsførerNavn("Regnskapsfører Svensen")
-                                        .regnskapsførerTelefon("+4799887766")
-                                        .virksomhetstyper(listOf(VirksomhetType.DAGMAMMA, VirksomhetType.ANNEN))
-                                        .build()
-                                ),
-                                Organisasjonsnummer.of("12345678910112233444455667"),
-                                "Mamsen Bamsen AS"
+                OpptjeningAktivitet(
+                    null,
+                    listOf(
+                        SelvstendigNæringsdrivende(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2018-01-01"),
+                                    LocalDate.parse("2020-01-01")
+                                ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
+                                    .erNyoppstartet(true)
+                                    .registrertIUtlandet(false)
+                                    .bruttoInntekt(BigDecimal(5_000_000))
+                                    .erVarigEndring(true)
+                                    .endringDato(LocalDate.parse("2020-01-01"))
+                                    .endringBegrunnelse("Grunnet Covid-19")
+                                    .landkode(Landkode.NORGE)
+                                    .regnskapsførerNavn("Regnskapsfører Svensen")
+                                    .regnskapsførerTelefon("+4799887766")
+                                    .virksomhetstyper(listOf(VirksomhetType.DAGMAMMA, VirksomhetType.ANNEN))
+                                    .build()
                             ),
-                            SelvstendigNæringsdrivende(
-                                mapOf(
-                                    Periode(
-                                        LocalDate.parse("2015-01-01"),
-                                        LocalDate.parse("2017-01-01")
-                                    ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
-                                        .erNyoppstartet(false)
-                                        .registrertIUtlandet(true)
-                                        .bruttoInntekt(BigDecimal(500_000))
-                                        .erVarigEndring(false)
-                                        .endringDato(null)
-                                        .endringBegrunnelse(null)
-                                        .landkode(Landkode.SPANIA)
-                                        .regnskapsførerNavn(null)
-                                        .regnskapsførerTelefon(null)
-                                        .virksomhetstyper(listOf(VirksomhetType.FISKE))
-                                        .build()
-                                ),
-                                Organisasjonsnummer.of("54549049090490498048940940"),
-                                "Something Fishy AS"
+                            Organisasjonsnummer.of("12345678910112233444455667"),
+                            "Mamsen Bamsen AS"
+                        ),
+                        SelvstendigNæringsdrivende(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2015-01-01"),
+                                    LocalDate.parse("2017-01-01")
+                                ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
+                                    .erNyoppstartet(false)
+                                    .registrertIUtlandet(true)
+                                    .bruttoInntekt(BigDecimal(500_000))
+                                    .erVarigEndring(false)
+                                    .endringDato(null)
+                                    .endringBegrunnelse(null)
+                                    .landkode(Landkode.SPANIA)
+                                    .regnskapsførerNavn(null)
+                                    .regnskapsførerTelefon(null)
+                                    .virksomhetstyper(listOf(VirksomhetType.FISKE))
+                                    .build()
                             ),
-                        )
-                    )
-                    .build(),
+                            Organisasjonsnummer.of("54549049090490498048940940"),
+                            "Something Fishy AS"
+                        ),
+                    ),
+                    Frilanser(LocalDate.parse("2020-01-01"), null, true)
+                ),
+
                 Beredskap(
                     mapOf(
                         Periode(
@@ -726,16 +724,15 @@ class SøknadUtils {
                             NorskIdentitetsnummer.of("12345678910"),
                             Organisasjonsnummer.of("926032925"),
                             ArbeidstidInfo(
-                                Duration.ofHours(8),
                                 mapOf(
                                     Periode(
                                         LocalDate.parse("2018-01-01"),
                                         LocalDate.parse("2020-01-05")
-                                    ) to ArbeidstidPeriodeInfo(Duration.ofHours(4)),
+                                    ) to ArbeidstidPeriodeInfo(Duration.ofHours(8), Duration.ofHours(4)),
                                     Periode(
                                         LocalDate.parse("2020-01-06"),
                                         LocalDate.parse("2020-01-10")
-                                    ) to ArbeidstidPeriodeInfo(Duration.ofHours(2))
+                                    ) to ArbeidstidPeriodeInfo(Duration.ofHours(8), Duration.ofHours(2))
                                 )
                             )
                         )
@@ -760,9 +757,9 @@ class SøknadUtils {
                     "Blabla beskrivelse"
                 ),
                 LovbestemtFerie(
-                    listOf(
-                        Periode(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-05")),
-                        Periode(LocalDate.parse("2020-01-06"), LocalDate.parse("2020-01-10"))
+                    mapOf(
+                        Periode(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-05")) to LovbestemtFerie.LovbestemtFeriePeriodeInfo(),
+                        Periode(LocalDate.parse("2020-01-06"), LocalDate.parse("2020-01-10")) to LovbestemtFerie.LovbestemtFeriePeriodeInfo()
                     )
                 ),
                 Bosteder(

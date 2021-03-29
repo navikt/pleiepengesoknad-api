@@ -556,6 +556,7 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = "/soknad",
+            //language=json
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -572,12 +573,12 @@ class ApplicationTest {
                     },
                     {
                       "type": "entity",
-                      "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                      "name": "opptjeningAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
                       "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
                       "invalid_value": "K9-format feilkode: påkrevd"
                     }
                   ]
-                }
+                }   
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
@@ -696,6 +697,7 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = "/soknad",
+            //language=json
             expectedResponse = """
             {
               "type": "/problem-details/invalid-request-parameters",
@@ -712,7 +714,7 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "arbeidAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                  "name": "opptjeningAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
                   "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
                   "invalid_value": "K9-format feilkode: påkrevd"
                 }
@@ -1140,6 +1142,7 @@ class ApplicationTest {
                   "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent(),
+            //language=json
             expectedResponse = """
             {
               "type": "/problem-details/invalid-request-parameters",
@@ -1228,21 +1231,9 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "søknadsperiode",
-                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
-                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
-                },
-                {
-                  "type": "entity",
-                  "name": "uttak.perioder",
-                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
-                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
-                },
-                {
-                  "type": "entity",
-                  "name": "arbeidstid.arbeidstaker[\" + i + \"].arbeidstidPeriode",
-                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
-                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
+                  "name": "java.lang.IllegalArgumentException",
+                  "reason": "Til og med dato før fra og med dato: 1990-09-29>1990-09-28",
+                  "invalid_value": "K9-format feilkode: nullIllegalArgumentException"
                 }
               ]
             }

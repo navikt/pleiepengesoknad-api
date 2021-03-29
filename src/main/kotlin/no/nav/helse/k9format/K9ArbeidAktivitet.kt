@@ -1,9 +1,10 @@
 package no.nav.helse.k9format
 
 import no.nav.helse.soknad.*
-import no.nav.k9.søknad.felles.aktivitet.*
+import no.nav.k9.søknad.felles.opptjening.*
 import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.Periode
+import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.Duration
@@ -13,13 +14,13 @@ fun Double.tilFaktiskTimerPerUke(prosent: Double) = this.times(prosent.div(100))
 fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
 fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
-internal fun Søknad.byggK9ArbeidAktivitet() = ArbeidAktivitet(
-    arbeidsgivere.tilK9Arbeidstaker(Periode(fraOgMed, tilOgMed)),
+internal fun Søknad.byggK9OpptjeningAktivitet() = OpptjeningAktivitet(
+    null, // arbeidstaker er ikke nødvendig i opptjeningAktivitet for psb.
     selvstendigVirksomheter.tilK9SelvstendigNæringsdrivende(),
     frilans?.tilK9Frilanser()
 )
 
-internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser(startdato, jobberFortsattSomFrilans)
+internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser(startdato, null, jobberFortsattSomFrilans) // TODO: 26/03/2021 mangler sluttdato på Frilanser
 
 internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
     periode: Periode
@@ -102,7 +103,7 @@ fun OrganisasjonDetaljer.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo {
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
     val faktiskArbeidstimerPerDag = faktiskTimerPerUke.tilTimerPerDag().tilDuration()
 
-    perioder[periode] = ArbeidstidPeriodeInfo(faktiskArbeidstimerPerDag)
+    perioder[periode] = ArbeidstidPeriodeInfo(normalTimerPerDag, faktiskArbeidstimerPerDag)
 
-    return ArbeidstidInfo(normalTimerPerDag, perioder)
+    return ArbeidstidInfo(perioder)
 }
