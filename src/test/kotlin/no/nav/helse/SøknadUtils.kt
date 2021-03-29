@@ -1,5 +1,6 @@
 package no.nav.helse
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -186,7 +187,7 @@ class SøknadUtils {
         fun bodyMedSelvstendigVirksomheterSomListe(vedleggUrl1: String, virksomheter: List<Virksomhet>): String {
             val virksomheterSomJson = jacksonObjectMapper().dusseldorfConfigured()
                 .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-                .setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE)
+                .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
                 .writerWithDefaultPrettyPrinter().writeValueAsString(virksomheter)
             //language=JSON
             return """

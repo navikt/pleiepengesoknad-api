@@ -1,9 +1,6 @@
 package no.nav.helse
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.*
@@ -258,7 +255,7 @@ fun ObjectMapper.pleiepengesøknadMottakKonfigurert(): ObjectMapper {
  fun ObjectMapper.k9DokumentKonfigurert(): ObjectMapper {
      return jacksonObjectMapper().dusseldorfConfigured().apply {
          configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-         propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
+         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
      }
 }
 
@@ -266,6 +263,6 @@ fun ObjectMapper.pleiepengesøknadMottakKonfigurert(): ObjectMapper {
      return jacksonObjectMapper().dusseldorfConfigured().apply {
          configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
          registerModule(JavaTimeModule())
-         propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
+         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
      }
 }
