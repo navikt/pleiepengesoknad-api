@@ -59,7 +59,7 @@ class ApplicationTest {
             .stubK9Dokument()
 
         val redisServer: RedisServer = RedisServer
-            .newRedisServer(6379).started()
+            .newRedisServer().started()
 
         fun getConfig(): ApplicationConfig {
 
