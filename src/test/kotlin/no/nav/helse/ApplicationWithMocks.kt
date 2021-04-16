@@ -1,7 +1,7 @@
 package no.nav.helse
 
 import com.github.fppt.jedismock.RedisServer
-import io.ktor.server.testing.withApplication
+import io.ktor.server.testing.*
 import no.nav.helse.dusseldorf.testsupport.asArguments
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
@@ -34,7 +34,7 @@ class ApplicationWithMocks {
                 .stubK9OppslagArbeidsgivere()
 
             val redisServer: RedisServer = RedisServer
-                .newRedisServer(6379)
+                .newRedisServer()
                 .started()
 
             val testArgs = TestConfiguration.asMap(
