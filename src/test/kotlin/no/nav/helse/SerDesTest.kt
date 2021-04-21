@@ -45,7 +45,7 @@ internal class SerDesTest {
             språk = Språk.nb,
             barn = BarnDetaljer(
                 aktørId = "12345",
-                fødselsnummer = "123456789",
+                fødselsnummer = "03028104560",
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen"
             ),
@@ -86,7 +86,7 @@ internal class SerDesTest {
                     ),
                     regnskapsfører = Regnskapsfører(
                         "Kjell Regnskap",
-                        "123456789"
+                        "03028104560"
                     ),
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
                 )
@@ -213,7 +213,7 @@ internal class SerDesTest {
               "språk": "nb",
               "samtidigHjemme": true,
               "barn": {
-                "fødselsnummer": "123456789",
+                "fødselsnummer": "03028104560",
                 "navn": "Barn Barnesen",
                 "fødselsdato" : "2018-01-01",
                 "aktørId" : null
@@ -421,7 +421,7 @@ internal class SerDesTest {
               },
               "samtidigHjemme": true,
               "barn": {
-                "fødselsnummer": "123456789",
+                "fødselsnummer": "03028104560",
                 "navn": "Barn Barnesen",
                 "aktørId": "12345",
                 "fødselsdato" : "2018-01-01"
@@ -625,7 +625,7 @@ internal class SerDesTest {
             søknadId = "$søknadId",
             barn = BarnDetaljer(
                 aktørId = "12345",
-                fødselsnummer = "123456789",
+                fødselsnummer = "03028104560",
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen"
             ),

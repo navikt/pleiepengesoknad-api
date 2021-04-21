@@ -10,10 +10,7 @@ import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.*
 import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.AfterClass
@@ -764,6 +761,50 @@ class ApplicationTest {
                     )
                 )
             )
+        )
+    }
+
+    @Test
+    fun `Gitt innsendt søknad har tom virksomhets liste med selvstendigArbeidsforhold satt, forvent feil`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            //language=json
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "selvstendigArbeidsforhold",
+                  "reason": "selvstendigVirksomheter kan ikke være tom dersom selvstendigArbeidsforhold er satt.",
+                  "invalid_value": []
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString())
+                .copy(
+                    selvstendigVirksomheter = listOf(),
+                    selvstendigArbeidsforhold = Arbeidsforhold(
+                        skalJobbe = SkalJobbe.NEI,
+                        arbeidsform = Arbeidsform.FAST,
+                        jobberNormaltTimer = 40.0,
+                        skalJobbeTimer = 0.0,
+                        skalJobbeProsent = 0.0
+                    )
+                )
+                .somJson()
         )
     }
 

@@ -451,7 +451,7 @@ class SøknadUtils {
             søknadId = søknadId,
             språk = Språk.nb,
             barn = BarnDetaljer(
-                fødselsnummer = "123456789",
+                fødselsnummer = "03028104560",
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen",
                 aktørId = null

@@ -34,7 +34,7 @@ data class Søknad(
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
     val selvstendigVirksomheter: List<Virksomhet> = listOf(),
-    val selvstendigArbeidsforhold: Arbeidsforhold? = null, // TODO: 21/04/2021 Fjern nullable etter lansering.
+    val selvstendigArbeidsforhold: Arbeidsforhold? = null,
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
