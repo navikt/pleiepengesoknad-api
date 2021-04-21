@@ -616,7 +616,9 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = """
+            requestEntity =
+            //language=json
+            """
                 {
                   "new_version": true,
                   "sprak": "nb",
@@ -651,7 +653,14 @@ class ApplicationTest {
                   "harForståttRettigheterOgPlikter": true,
                   "frilans": {
                     "startdato": "2019-12-06",
-                    "jobberFortsattSomFrilans": false
+                    "jobberFortsattSomFrilans": false,
+                    "arbeidsforhold": {
+                      "skalJobbe": "nei",
+                      "arbeidsform": "FAST",
+                      "jobberNormaltTimer": 40.0,
+                      "skalJobbeTimer": 0.0,
+                      "skalJobbeProsent": 0.0
+                    }
                   },
                   "selvstendigVirksomheter": [
                     {
@@ -680,6 +689,13 @@ class ApplicationTest {
                       }
                     }
                   ],
+                  "selvstendigArbeidsforhold": {
+                      "skalJobbe": "nei",
+                      "arbeidsform": "FAST",
+                      "jobberNormaltTimer": 40.0,
+                      "skalJobbeTimer": 0.0,
+                      "skalJobbeProsent": 0.0
+                  },
                   "tilsynsordning": {
                     "svar": "nei"
                   },

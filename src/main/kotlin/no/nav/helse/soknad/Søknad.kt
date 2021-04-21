@@ -1,6 +1,7 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonValue
 import no.nav.helse.barn.Barn
 import java.net.URL
 import java.time.Duration
@@ -33,6 +34,7 @@ data class Søknad(
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
     val selvstendigVirksomheter: List<Virksomhet> = listOf(),
+    val selvstendigArbeidsforhold: Arbeidsforhold? = null, // TODO: 21/04/2021 Fjern nullable etter lansering.
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
@@ -191,11 +193,27 @@ data class Ferieuttak(
 data class Frilans(
     @JsonFormat(pattern = "yyyy-MM-dd")
     val startdato: LocalDate,
-    val jobberFortsattSomFrilans: Boolean
+    val jobberFortsattSomFrilans: Boolean,
+    val arbeidsforhold: Arbeidsforhold? = null // TODO: 21/04/2021 Fjern nullable etter lansering.
 )
 
 enum class Årsak {
     BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING,
     BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD,
     ANNET,
+}
+
+data class Arbeidsforhold(
+    val skalJobbe:SkalJobbe,
+    val arbeidsform: Arbeidsform,
+    val jobberNormaltTimer: Double,
+    val skalJobbeTimer: Double,
+    val skalJobbeProsent: Double
+)
+
+enum class SkalJobbe(@JsonValue val verdi: String) {
+    JA("ja"),
+    NEI("nei"),
+    REDUSERT("redusert"),
+    VET_IKKE("vetIkke"),
 }

@@ -500,6 +500,13 @@ class SøknadUtils {
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
                 )
             ),
+            selvstendigArbeidsforhold = Arbeidsforhold(
+                skalJobbe = SkalJobbe.NEI,
+                arbeidsform = Arbeidsform.FAST,
+                jobberNormaltTimer = 40.0,
+                skalJobbeTimer = 0.0,
+                skalJobbeProsent = 0.0
+            ),
             skalPassePåBarnetIHelePerioden = true,
             tilsynsordning = Tilsynsordning(
                 svar = TilsynsordningSvar.ja,
@@ -610,7 +617,14 @@ class SøknadUtils {
             ),
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
-                startdato = LocalDate.parse("2018-01-01")
+                startdato = LocalDate.parse("2018-01-01"),
+                arbeidsforhold = Arbeidsforhold(
+                    skalJobbe = SkalJobbe.NEI,
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    skalJobbeTimer = 0.0,
+                    skalJobbeProsent = 0.0
+                )
             ),
             harVærtEllerErVernepliktig = true
         )

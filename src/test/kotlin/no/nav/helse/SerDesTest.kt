@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import no.nav.helse.vedlegg.Vedlegg
-import no.nav.k9.søknad.JsonUtils
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.net.URL
@@ -205,7 +204,9 @@ internal class SerDesTest {
             harVærtEllerErVernepliktig = true
         )
 
-        fun søknadJson(søknadsId: String) = """
+        fun søknadJson(søknadsId: String) =
+            //language=json
+            """
             {
               "newVersion": null,
               "søknadId" : "$søknadsId",
@@ -283,6 +284,13 @@ internal class SerDesTest {
                         }
                 }
               ],
+              "selvstendigArbeidsforhold": {
+                  "skalJobbe": "nei",
+                  "arbeidsform": "FAST",
+                  "jobberNormaltTimer": 40.0,
+                  "skalJobbeTimer": 0.0,
+                  "skalJobbeProsent": 0.0
+              },
               "utenlandsoppholdIPerioden": {
                 "skalOppholdeSegIUtlandetIPerioden": true,
                 "opphold": [
@@ -364,7 +372,14 @@ internal class SerDesTest {
               },
               "frilans": {
               "jobberFortsattSomFrilans": true,
-              "startdato": "2018-01-01"
+              "startdato": "2018-01-01",
+              "arbeidsforhold": {
+                      "skalJobbe": "nei",
+                      "arbeidsform": "FAST",
+                      "jobberNormaltTimer": 40.0,
+                      "skalJobbeTimer": 0.0,
+                      "skalJobbeProsent": 0.0
+                  }
               },
               "nattevåk": {
                 "harNattevåk": true,
@@ -388,7 +403,9 @@ internal class SerDesTest {
             }
         """.trimIndent()
 
-        fun komplettSøknadJson(søknadsId: String) = """
+        fun komplettSøknadJson(søknadsId: String) =
+            //language=json
+            """
         {
               "mottatt": "2020-05-05T00:00:00Z",
               "språk": "nb",
@@ -479,6 +496,13 @@ internal class SerDesTest {
                         }
                 }
               ],
+              "selvstendigArbeidsforhold": {
+                  "skalJobbe": "nei",
+                  "arbeidsform": "FAST",
+                  "jobberNormaltTimer": 40.0,
+                  "skalJobbeTimer": 0.0,
+                  "skalJobbeProsent": 0.0
+              },
               "utenlandsoppholdIPerioden": {
                 "skalOppholdeSegIUtlandetIPerioden": true,
                 "opphold": [
@@ -560,7 +584,14 @@ internal class SerDesTest {
               },
               "frilans": {
               "jobberFortsattSomFrilans": true,
-              "startdato": "2018-01-01"
+              "startdato": "2018-01-01",
+              "arbeidsforhold": {
+                      "skalJobbe": "nei",
+                      "arbeidsform": "FAST",
+                      "jobberNormaltTimer": 40.0,
+                      "skalJobbeTimer": 0.0,
+                      "skalJobbeProsent": 0.0
+                  }
               },
               "nattevåk": {
                 "harNattevåk": true,
@@ -652,6 +683,13 @@ internal class SerDesTest {
                     ),
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
                 )
+            ),
+            selvstendigArbeidsforhold = Arbeidsforhold(
+                skalJobbe = SkalJobbe.NEI,
+                arbeidsform = Arbeidsform.FAST,
+                jobberNormaltTimer = 40.0,
+                skalJobbeTimer = 0.0,
+                skalJobbeProsent = 0.0
             ),
             skalPassePåBarnetIHelePerioden = true,
             tilsynsordning = Tilsynsordning(
@@ -767,7 +805,14 @@ internal class SerDesTest {
             ),
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
-                startdato = LocalDate.parse("2018-01-01")
+                startdato = LocalDate.parse("2018-01-01"),
+                arbeidsforhold = Arbeidsforhold(
+                    skalJobbe = SkalJobbe.NEI,
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    skalJobbeTimer = 0.0,
+                    skalJobbeProsent = 0.0
+                )
             ),
             harVærtEllerErVernepliktig = true,
             k9FormatSøknad = null

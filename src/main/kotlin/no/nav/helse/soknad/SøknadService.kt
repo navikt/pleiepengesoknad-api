@@ -2,20 +2,11 @@ package no.nav.helse.soknad
 
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
-import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
-import no.nav.helse.soker.SøkerService
-import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
-import no.nav.k9.søknad.JsonUtils
-import no.nav.k9.søknad.SøknadValidator
-import no.nav.k9.søknad.ValideringsFeil
-import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
-import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 
@@ -76,6 +67,7 @@ class SøknadService(
             beredskap = søknad.beredskap,
             frilans = søknad.frilans,
             selvstendigVirksomheter = søknad.selvstendigVirksomheter,
+            selvstendigArbeidsforhold = søknad.selvstendigArbeidsforhold,
             skalBekrefteOmsorg = søknad.skalBekrefteOmsorg,
             skalPassePåBarnetIHelePerioden = søknad.skalPassePåBarnetIHelePerioden,
             beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
