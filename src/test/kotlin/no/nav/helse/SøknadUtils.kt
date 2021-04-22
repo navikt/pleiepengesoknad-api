@@ -456,6 +456,8 @@ class SøknadUtils {
                 navn = "Barn Barnesen",
                 aktørId = null
             ),
+            barnRelasjon = BarnRelasjon.ANNET,
+            barnRelasjonBeskrivelse = "Gudfar til barnet",
             arbeidsgivere = ArbeidsgiverDetaljer(
                 listOf(
                     OrganisasjonDetaljer(

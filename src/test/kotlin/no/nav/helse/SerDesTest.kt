@@ -86,7 +86,7 @@ internal class SerDesTest {
                     ),
                     regnskapsfører = Regnskapsfører(
                         "Kjell Regnskap",
-                        "03028104560"
+                        "123456789"
                     ),
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
                 )
@@ -397,8 +397,8 @@ internal class SerDesTest {
                 },
                 "vetIkke" : null
               },
-              "barnRelasjon" : null,
-              "barnRelasjonBeskrivelse" : null,
+              "barnRelasjon" : "ANNET",
+              "barnRelasjonBeskrivelse" : "Gudfar til barnet",
               "harVærtEllerErVernepliktig" : true
             }
         """.trimIndent()
