@@ -119,9 +119,9 @@ class K9FormatTest {
                   }
                 },
                 "omsorg" : {
-                  "relasjonTilBarnet" : "Forelder",
+                  "relasjonTilBarnet" : "Annet",
                   "samtykketOmsorgForBarnet" : true,
-                  "beskrivelseAvOmsorgsrollen" : "En kort beskrivelse"
+                  "beskrivelseAvOmsorgsrollen" : "Gudfar til barnet"
                 },
                 "lovbestemtFerie" : null,
                 "bosteder" : {

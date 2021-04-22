@@ -70,7 +70,7 @@ fun Søknad.byggK9DataBruktTilUtledning(): DataBruktTilUtledning = DataBruktTilU
 fun Søknad.byggK9Omsorg(): Omsorg = Omsorg(
     barnRelasjon?.utskriftsvennlig ?: "Forelder",
     skalBekrefteOmsorg,
-    beskrivelseOmsorgsrollen
+    barnRelasjonBeskrivelse
 )
 
 fun Beredskap.tilK9Beredskap(
