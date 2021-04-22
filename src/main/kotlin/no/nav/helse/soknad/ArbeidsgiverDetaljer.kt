@@ -11,7 +11,7 @@ data class ArbeidsgiverDetaljer(
 
 data class OrganisasjonDetaljer(
     val navn: String? = null,
-    val skalJobbe: String,
+    val skalJobbe: SkalJobbe,
     val organisasjonsnummer: String,
     val jobberNormaltTimer: Double,
     val skalJobbeProsent: Double,
@@ -65,7 +65,7 @@ internal fun List<OrganisasjonDetaljer>.validate(): MutableSet<Violation> {
         }
 
         when (organisasjon.skalJobbe) {
-            "ja" -> {
+            SkalJobbe.JA -> {
                 organisasjon.skalJobbeProsent.let {
                     if (it != 100.0) {
                         violations.add(
@@ -80,7 +80,7 @@ internal fun List<OrganisasjonDetaljer>.validate(): MutableSet<Violation> {
                     }
                 }
             }
-            "nei" -> {
+            SkalJobbe.NEI -> {
                 organisasjon.skalJobbeProsent.let {
                     if (it != 0.0) {
                         violations.add(
@@ -95,7 +95,7 @@ internal fun List<OrganisasjonDetaljer>.validate(): MutableSet<Violation> {
                     }
                 }
             }
-            "redusert" -> {
+            SkalJobbe.REDUSERT -> {
                 organisasjon.skalJobbeProsent.let {
                     if (it !in 1.0..99.9) {
                         violations.add(
@@ -110,7 +110,7 @@ internal fun List<OrganisasjonDetaljer>.validate(): MutableSet<Violation> {
                     }
                 }
             }
-            "vetIkke" -> {
+            SkalJobbe.VET_IKKE -> {
                 organisasjon.skalJobbeProsent.let {
                     if (it != 0.0) {
                         violations.add(
@@ -125,14 +125,6 @@ internal fun List<OrganisasjonDetaljer>.validate(): MutableSet<Violation> {
                     }
                 }
             }
-            else -> violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere.organisasjoner[$index].skalJobbe",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
-                    invalidValue = organisasjon.skalJobbe
-                )
-            )
         }
     }
     return violations

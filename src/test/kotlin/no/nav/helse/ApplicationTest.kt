@@ -905,7 +905,7 @@ class ApplicationTest {
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "ja",
+                      "skalJobbe": "JA",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 99.0,
@@ -951,7 +951,7 @@ class ApplicationTest {
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "redusert",
+                      "skalJobbe": "REDUSERT",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 100.0,
@@ -997,7 +997,7 @@ class ApplicationTest {
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "nei",
+                      "skalJobbe": "NEI",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
@@ -1043,7 +1043,7 @@ class ApplicationTest {
                   "invalid_value": [
                     {
                       "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "vetIkke",
+                      "skalJobbe": "VET_IKKE",
                       "organisasjonsnummer": "917755736",
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
@@ -1215,7 +1215,7 @@ class ApplicationTest {
                             {
                                 "organisasjonsnummer": "12",
                                 "navn": "$forlangtNavn",
-                                "skalJobbe": "ugyldig",
+                                "skalJobbe": "NEI",
                                 "arbeidsform": "FAST"
                             }
                         ]
@@ -1268,12 +1268,6 @@ class ApplicationTest {
                   "name": "arbeidsgivere.organisasjoner[0].navn",
                   "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
                   "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
-                },
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skalJobbe",
-                  "reason": "Skal jobbe har ikke riktig verdi. Gyldige verdier er: ja, nei, redusert, vetIkke",
-                  "invalid_value": "ugyldig"
                 },
                 {
                   "type": "entity",

@@ -1,7 +1,7 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonValue
 import no.nav.helse.barn.Barn
 import java.net.URL
 import java.time.Duration
@@ -211,9 +211,9 @@ data class Arbeidsforhold(
     val skalJobbeProsent: Double
 )
 
-enum class SkalJobbe(@JsonValue val verdi: String) {
-    JA("ja"),
-    NEI("nei"),
-    REDUSERT("redusert"),
-    VET_IKKE("vetIkke"),
+enum class SkalJobbe {
+    @JsonAlias("ja") JA,
+    @JsonAlias("nei") NEI,
+    @JsonAlias("redusert") REDUSERT,
+    @JsonAlias("vetIkke") VET_IKKE
 }

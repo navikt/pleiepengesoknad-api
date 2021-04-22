@@ -472,7 +472,7 @@ class SøknadUtils {
                         organisasjonsnummer = "917755736",
                         skalJobbeProsent = 40.0,
                         jobberNormaltTimer = 40.0,
-                        skalJobbe = "redusert",
+                        skalJobbe = SkalJobbe.REDUSERT,
                         arbeidsform = Arbeidsform.FAST
                     )
                 )

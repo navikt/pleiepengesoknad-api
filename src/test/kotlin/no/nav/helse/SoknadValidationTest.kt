@@ -2,11 +2,9 @@ package no.nav.helse
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.k9format.tilK9Format
-import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import java.net.URL
 import java.time.LocalDate
-import kotlin.test.Ignore
 import java.time.ZonedDateTime
 import kotlin.test.Test
 
@@ -53,7 +51,7 @@ class SoknadValidationTest {
     @Test
     fun `Skal ikke feile ved opphold på en dag`() {
         val søknad = soknad(
-            harMedsoker = false, skalJobbeProsent = 0.0, skalJobbe = "nei"
+            harMedsoker = false, skalJobbeProsent = 0.0, skalJobbe = SkalJobbe.NEI
         )
         val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
 
@@ -92,7 +90,7 @@ class SoknadValidationTest {
     fun `Skal feile dersom barnRelasjon er ANNET men barnRelasjonBeskrivelse er tom`() {
         val søknad = soknad(
             harMedsoker = false,
-            skalJobbe = "nei"
+            skalJobbe = SkalJobbe.NEI
         ).copy(
             barnRelasjon = BarnRelasjon.ANNET,
             barnRelasjonBeskrivelse = null
@@ -104,7 +102,7 @@ class SoknadValidationTest {
 
     @Test(expected = Throwblem::class)
     fun `Skal feile dersom "harVærtEllerErVernepliktig" blir satt til null`(){
-        val søknad = soknad(skalJobbe = "nei").copy(harVærtEllerErVernepliktig = null)
+        val søknad = soknad(skalJobbe = SkalJobbe.NEI).copy(harVærtEllerErVernepliktig = null)
         val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
 
         søknad.validate(k9Format)
@@ -129,7 +127,7 @@ class SoknadValidationTest {
                 organisasjonsnummer = "917755736",
                 skalJobbeProsent = 10.0,
                 jobberNormaltTimer = 10.0,
-                skalJobbe = "redusert",
+                skalJobbe = SkalJobbe.REDUSERT,
                 arbeidsform = Arbeidsform.TURNUS
             )
         )),
@@ -162,7 +160,7 @@ class SoknadValidationTest {
         skalJobbeProsent: Double = 0.0,
         vetIkkeEkstrainfo: String? = null,
         jobberNormalTimer: Double = 0.0,
-        skalJobbe: String = "ja",
+        skalJobbe: SkalJobbe = SkalJobbe.JA,
         medlemskap: Medlemskap = Medlemskap(
             harBoddIUtlandetSiste12Mnd = false,
             skalBoIUtlandetNeste12Mnd = true,

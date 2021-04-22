@@ -55,7 +55,7 @@ internal class SerDesTest {
                     organisasjonsnummer = "917755736",
                     skalJobbeProsent = 10.0,
                     jobberNormaltTimer = 10.0,
-                    skalJobbe = "redusert",
+                    skalJobbe = SkalJobbe.REDUSERT,
                     arbeidsform = Arbeidsform.FAST
                 )
             )),
@@ -227,7 +227,7 @@ internal class SerDesTest {
                     "navn": "Org",
                     "skalJobbeProsent": 40,
                     "jobberNormaltTimer": 40,
-                    "skalJobbe": "redusert",
+                    "skalJobbe": "REDUSERT",
                     "vetIkkeEkstrainfo": null,
                     "arbeidsform": "FAST"
                   }
@@ -285,7 +285,7 @@ internal class SerDesTest {
                 }
               ],
               "selvstendigArbeidsforhold": {
-                  "skalJobbe": "nei",
+                  "skalJobbe": "NEI",
                   "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
                   "skalJobbeTimer": 0.0,
@@ -374,7 +374,7 @@ internal class SerDesTest {
               "jobberFortsattSomFrilans": true,
               "startdato": "2018-01-01",
               "arbeidsforhold": {
-                      "skalJobbe": "nei",
+                      "skalJobbe": "NEI",
                       "arbeidsform": "FAST",
                       "jobberNormaltTimer": 40.0,
                       "skalJobbeTimer": 0.0,
@@ -435,7 +435,7 @@ internal class SerDesTest {
                     "navn": "Org",
                     "skalJobbeProsent": 10,
                     "jobberNormaltTimer": 10,
-                    "skalJobbe": "redusert",
+                    "skalJobbe": "REDUSERT",
                     "vetIkkeEkstrainfo": null,
                     "arbeidsform": "FAST"
                   }
@@ -497,7 +497,7 @@ internal class SerDesTest {
                 }
               ],
               "selvstendigArbeidsforhold": {
-                  "skalJobbe": "nei",
+                  "skalJobbe": "NEI",
                   "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
                   "skalJobbeTimer": 0.0,
@@ -586,7 +586,7 @@ internal class SerDesTest {
               "jobberFortsattSomFrilans": true,
               "startdato": "2018-01-01",
               "arbeidsforhold": {
-                      "skalJobbe": "nei",
+                      "skalJobbe": "NEI",
                       "arbeidsform": "FAST",
                       "jobberNormaltTimer": 40.0,
                       "skalJobbeTimer": 0.0,
@@ -642,7 +642,7 @@ internal class SerDesTest {
                     organisasjonsnummer = "917755736",
                     skalJobbeProsent = 10.0,
                     jobberNormaltTimer = 10.0,
-                    skalJobbe = "redusert",
+                    skalJobbe = SkalJobbe.REDUSERT,
                     arbeidsform = Arbeidsform.FAST
                 )
             )),
