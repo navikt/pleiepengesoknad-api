@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import no.nav.helse.vedlegg.Vedlegg
-import no.nav.k9.søknad.JsonUtils
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.net.URL
@@ -205,6 +204,7 @@ internal class SerDesTest {
             harVærtEllerErVernepliktig = true
         )
 
+        //language=json
         fun søknadJson(søknadsId: String) = """
             {
               "newVersion": null,
@@ -382,8 +382,8 @@ internal class SerDesTest {
                 },
                 "vetIkke" : null
               },
-              "barnRelasjon" : null,
-              "barnRelasjonBeskrivelse" : null,
+              "barnRelasjon" : "ANNET",
+              "barnRelasjonBeskrivelse" : "Gudfar til barnet",
               "harVærtEllerErVernepliktig" : true
             }
         """.trimIndent()
