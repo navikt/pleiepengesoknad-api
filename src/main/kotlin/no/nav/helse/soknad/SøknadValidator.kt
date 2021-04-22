@@ -260,6 +260,18 @@ private fun validerSelvstendigVirksomheter(
         selvstendigVirksomheter.mapIndexed { index, virksomhet ->
             addAll(virksomhet.validate(index))
         }
+
+        if(selvstendigArbeidsforhold == null) {
+            add(
+                Violation(
+                    parameterName = "selvstendigArbeidsforhold",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "selvstendigArbeidsforhold kan ikke være null dersom selvstendigVirksomheter ikke er tom.",
+                    invalidValue = selvstendigArbeidsforhold
+                )
+            )
+        }
+
     } else {
         if (selvstendigArbeidsforhold != null) {
             add(

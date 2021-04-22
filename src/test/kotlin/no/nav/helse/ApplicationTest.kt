@@ -29,6 +29,7 @@ import kotlin.test.assertTrue
 private const val fnr = "26104500284"
 private const val ikkeMyndigFnr = "12125012345"
 private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
+
 // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
 private val gyldigFodselsnummerA = "02119970078"
 private val ikkeMyndigDato = "2050-12-12"
@@ -61,10 +62,12 @@ class ApplicationTest {
         fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
-            val testConfig = ConfigFactory.parseMap(TestConfiguration.asMap(
-                wireMockServer = wireMockServer,
-                redisServer = redisServer
-            ))
+            val testConfig = ConfigFactory.parseMap(
+                TestConfiguration.asMap(
+                    wireMockServer = wireMockServer,
+                    redisServer = redisServer
+                )
+            )
 
             val mergedConfig = testConfig.withFallback(fileConfig)
 
@@ -284,7 +287,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Hente barn og sjekk eksplisit at identitetsnummer ikke blir med ved get kall`(){
+    fun `Hente barn og sjekk eksplisit at identitetsnummer ikke blir med ved get kall`() {
 
         val respons = requestAndAssert(
             httpMethod = HttpMethod.Get,
@@ -385,7 +388,8 @@ class ApplicationTest {
     fun expectedGetSokerJson(
         fødselsnummer: String,
         fødselsdato: String = "1997-05-25",
-        myndig : Boolean = true) = """
+        myndig: Boolean = true
+    ) = """
     {
         "etternavn": "MORSEN",
         "fornavn": "MOR",
@@ -540,6 +544,13 @@ class ApplicationTest {
                             telefon = "84554"
                         )
                     )
+                ),
+                selvstendigArbeidsForhold = Arbeidsforhold(
+                    skalJobbe = SkalJobbe.NEI,
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    skalJobbeTimer = 0.0,
+                    skalJobbeProsent = 0.0
                 )
             )
         )
@@ -597,13 +608,20 @@ class ApplicationTest {
                             telefon = "84554"
                         )
                     )
+                ),
+                selvstendigArbeidsForhold = Arbeidsforhold(
+                    skalJobbe = SkalJobbe.NEI,
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    skalJobbeTimer = 0.0,
+                    skalJobbeProsent = 0.0
                 )
             )
         )
     }
 
     @Test
-    fun `Sende søknad som inneholder både frilansoppdrag og en selvstendig virksomhet som full json`(){
+    fun `Sende søknad som inneholder både frilansoppdrag og en selvstendig virksomhet som full json`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -703,7 +721,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med selvstendig næringsvirksomet som har flere gyldige virksomheter, men med en feil`(){
+    fun `Sende søknad med selvstendig næringsvirksomet som har flere gyldige virksomheter, men med en feil`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -759,13 +777,20 @@ class ApplicationTest {
                         organisasjonsnummer = "10110",
                         yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
                     )
+                ),
+                selvstendigArbeidsForhold = Arbeidsforhold(
+                    skalJobbe = SkalJobbe.NEI,
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    skalJobbeTimer = 0.0,
+                    skalJobbeProsent = 0.0
                 )
             )
         )
     }
 
     @Test
-    fun `Gitt innsendt søknad har tom virksomhets liste med selvstendigArbeidsforhold satt, forvent feil`(){
+    fun `Gitt innsendt søknad har tom virksomhets liste med selvstendigArbeidsforhold satt, forvent feil`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -809,7 +834,56 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad som har skalJobbe lik 'ja', men skalJobbeProsent ulik 100%, skal feile`(){
+    fun `Gitt innsendt søknad har virksomhets liste med selvstendigArbeidsforhold som null, forvent feil`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            //language=json
+            expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
+                {
+                  "type": "entity",
+                  "name": "selvstendigArbeidsforhold",
+                  "reason": "selvstendigArbeidsforhold kan ikke være null dersom selvstendigVirksomheter ikke er tom.",
+                  "invalid_value": null
+                }
+              ]
+            }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString())
+                .copy(
+                    selvstendigVirksomheter = listOf(
+                        Virksomhet(
+                            næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
+                            fiskerErPåBladB = false,
+                            fraOgMed = LocalDate.parse("2021-02-07"),
+                            tilOgMed = LocalDate.parse("2021-02-08"),
+                            næringsinntekt = 1212,
+                            navnPåVirksomheten = "TullOgTøys",
+                            registrertINorge = false,
+                            registrertIUtlandet = Land("DEU", "Tyskeland"),
+                            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
+                        )
+                    ),
+                    selvstendigArbeidsforhold = null
+                )
+                .somJson()
+        )
+    }
+
+    @Test
+    fun `Sende soknad som har skalJobbe lik 'ja', men skalJobbeProsent ulik 100%, skal feile`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -855,7 +929,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad som har skalJobbe lik 'redusert', men skalJobbeProsent ikke ligger mellom 1% - 99,9%, skal feile`(){
+    fun `Sende soknad som har skalJobbe lik 'redusert', men skalJobbeProsent ikke ligger mellom 1% - 99,9%, skal feile`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -901,7 +975,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad som har skalJobbe lik 'nei', men skalJobbeProsent er ulik 0%, skal feile`(){
+    fun `Sende soknad som har skalJobbe lik 'nei', men skalJobbeProsent er ulik 0%, skal feile`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -947,7 +1021,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad som har skalJobbe lik 'vet_ikke', men skalJobbeProsent er ulik 0%, skal feile`(){
+    fun `Sende soknad som har skalJobbe lik 'vet_ikke', men skalJobbeProsent er ulik 0%, skal feile`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -993,7 +1067,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad som har satt erBarnetInnlagt til true men har ikke oppgitt noen perioder i perioderBarnetErInnlagt`(){
+    fun `Sende soknad som har satt erBarnetInnlagt til true men har ikke oppgitt noen perioder i perioderBarnetErInnlagt`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -1054,37 +1128,6 @@ class ApplicationTest {
                   "harMedsøker": false,
                   "harBekreftetOpplysninger": true,
                   "harForståttRettigheterOgPlikter": true,
-                  "frilans": {
-                    "startdato": "2019-12-06",
-                    "jobberFortsattSomFrilans": false
-                  },
-                  "selvstendigVirksomheter": [
-                    {
-                      "næringstyper": [
-                        "JORDBRUK_SKOGBRUK",
-                        "DAGMAMMA",
-                        "ANNEN"
-                      ],
-                      "navnPåVirksomheten": "Tull og tøys",
-                      "registrertINorge": true,
-                      "organisasjonsnummer": "85577454",
-                      "fraOgMed": "2020-02-01",
-                      "tilOgMed": "2020-02-13",
-                      "næringsinntekt": 9857755,
-                      "varigEndring": {
-                        "dato": "2020-01-03",
-                        "forklaring": "forklaring blablablabla",
-                        "inntektEtterEndring": "23423"
-                      },
-                      "yrkesaktivSisteTreFerdigliknedeÅrene": {
-                        "oppstartsdato": "2020-02-01"
-                      },
-                      "regnskapsfører": {
-                        "navn": "Kjell Bjarne",
-                        "telefon": "88788"
-                      }
-                    }
-                  ],
                   "tilsynsordning": {
                     "svar": "nei"
                   },
@@ -1299,7 +1342,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har ikke godkjent det, skal feile`(){
+    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har ikke godkjent det, skal feile`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -1335,7 +1378,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har godkjent det, skal ikke feile`(){
+    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har godkjent det, skal ikke feile`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -1355,7 +1398,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad hvor perioden er 8 uker(40 virkedager), skal ikke feile`(){
+    fun `Sende søknad hvor perioden er 8 uker(40 virkedager), skal ikke feile`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 
@@ -1374,7 +1417,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad hvor perioden er under 8 uker(40 virkedager), skal ikke feile`(){
+    fun `Sende søknad hvor perioden er under 8 uker(40 virkedager), skal ikke feile`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
 

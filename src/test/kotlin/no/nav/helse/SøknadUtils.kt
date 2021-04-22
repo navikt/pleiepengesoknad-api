@@ -182,11 +182,17 @@ class SøknadUtils {
                 """.trimIndent()
         }
 
-        fun bodyMedSelvstendigVirksomheterSomListe(vedleggUrl1: String, virksomheter: List<Virksomhet>): String {
-            val virksomheterSomJson = jacksonObjectMapper().dusseldorfConfigured()
+        fun bodyMedSelvstendigVirksomheterSomListe(
+            vedleggUrl1: String,
+            virksomheter: List<Virksomhet>,
+            selvstendigArbeidsForhold: Arbeidsforhold
+        ): String {
+            val mapper = jacksonObjectMapper().dusseldorfConfigured()
                 .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
-                .writerWithDefaultPrettyPrinter().writeValueAsString(virksomheter)
+                .writerWithDefaultPrettyPrinter()
+            val virksomheterSomJson = mapper.writeValueAsString(virksomheter)
+            val selvstendigArbeidsForholdSomJson = mapper.writeValueAsString(selvstendigArbeidsForhold)
             //language=JSON
             return """
                 {
@@ -230,6 +236,7 @@ class SøknadUtils {
                     },
                     "harHattInntektSomSelvstendigNaringsdrivende" : true,
                     "selvstendigVirksomheter" : $virksomheterSomJson,
+                    "selvstendigArbeidsforhold": $selvstendigArbeidsForholdSomJson,
                     "harVærtEllerErVernepliktig" : true
                   }
             """.trimIndent()
