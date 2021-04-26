@@ -1,7 +1,6 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.dusseldorf.ktor.core.*
-import no.nav.k9.søknad.ValideringsFeil
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import java.time.DayOfWeek
@@ -104,7 +103,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations = barn.validate()
 
     violations.addAll(arbeidsgivere.organisasjoner.validate())
-    violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter))
+    violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter, selvstendigArbeidsforhold))
 
     tilsynsordning?.apply {
         violations.addAll(this.validate())
@@ -254,11 +253,35 @@ private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): Mutable
         )
     }.sortedBy { it.reason }.toMutableSet()
 
-private fun validerSelvstendigVirksomheter(selvstendigVirksomheter: List<Virksomhet>
+private fun validerSelvstendigVirksomheter(
+    selvstendigVirksomheter: List<Virksomhet>, selvstendigArbeidsforhold: Arbeidsforhold?
 ): MutableSet<Violation> = mutableSetOf<Violation>().apply {
     if (selvstendigVirksomheter.isNotEmpty()) {
         selvstendigVirksomheter.mapIndexed { index, virksomhet ->
             addAll(virksomhet.validate(index))
+        }
+
+        if(selvstendigArbeidsforhold == null) {
+            add(
+                Violation(
+                    parameterName = "selvstendigArbeidsforhold",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "selvstendigArbeidsforhold kan ikke være null dersom selvstendigVirksomheter ikke er tom.",
+                    invalidValue = selvstendigArbeidsforhold
+                )
+            )
+        }
+
+    } else {
+        if (selvstendigArbeidsforhold != null) {
+            add(
+                Violation(
+                    parameterName = "selvstendigArbeidsforhold",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "selvstendigVirksomheter kan ikke være tom dersom selvstendigArbeidsforhold er satt.",
+                    invalidValue = selvstendigVirksomheter
+                )
+            )
         }
     }
 }

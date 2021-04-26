@@ -45,7 +45,7 @@ class K9FormatTest {
                   "bekrefterPeriodeOver8Uker" : true
                 },
                 "barn" : {
-                  "norskIdentitetsnummer" : "123456789",
+                  "norskIdentitetsnummer" : "03028104560",
                   "fødselsdato" : "2018-01-01"
                 },
                 "opptjeningAktivitet" : {

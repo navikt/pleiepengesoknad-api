@@ -182,11 +182,17 @@ class SøknadUtils {
                 """.trimIndent()
         }
 
-        fun bodyMedSelvstendigVirksomheterSomListe(vedleggUrl1: String, virksomheter: List<Virksomhet>): String {
-            val virksomheterSomJson = jacksonObjectMapper().dusseldorfConfigured()
+        fun bodyMedSelvstendigVirksomheterSomListe(
+            vedleggUrl1: String,
+            virksomheter: List<Virksomhet>,
+            selvstendigArbeidsForhold: Arbeidsforhold
+        ): String {
+            val mapper = jacksonObjectMapper().dusseldorfConfigured()
                 .configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
                 .setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE)
-                .writerWithDefaultPrettyPrinter().writeValueAsString(virksomheter)
+                .writerWithDefaultPrettyPrinter()
+            val virksomheterSomJson = mapper.writeValueAsString(virksomheter)
+            val selvstendigArbeidsForholdSomJson = mapper.writeValueAsString(selvstendigArbeidsForhold)
             //language=JSON
             return """
                 {
@@ -230,6 +236,7 @@ class SøknadUtils {
                     },
                     "harHattInntektSomSelvstendigNaringsdrivende" : true,
                     "selvstendigVirksomheter" : $virksomheterSomJson,
+                    "selvstendigArbeidsforhold": $selvstendigArbeidsForholdSomJson,
                     "harVærtEllerErVernepliktig" : true
                   }
             """.trimIndent()
@@ -451,7 +458,7 @@ class SøknadUtils {
             søknadId = søknadId,
             språk = Språk.nb,
             barn = BarnDetaljer(
-                fødselsnummer = "123456789",
+                fødselsnummer = "03028104560",
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen",
                 aktørId = null
@@ -465,7 +472,7 @@ class SøknadUtils {
                         organisasjonsnummer = "917755736",
                         skalJobbeProsent = 40.0,
                         jobberNormaltTimer = 40.0,
-                        skalJobbe = "redusert",
+                        skalJobbe = SkalJobbe.REDUSERT,
                         arbeidsform = Arbeidsform.FAST
                     )
                 )
@@ -501,6 +508,13 @@ class SøknadUtils {
                     ),
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
                 )
+            ),
+            selvstendigArbeidsforhold = Arbeidsforhold(
+                skalJobbe = SkalJobbe.NEI,
+                arbeidsform = Arbeidsform.FAST,
+                jobberNormaltTimer = 40.0,
+                skalJobbeTimer = 0.0,
+                skalJobbeProsent = 0.0
             ),
             skalPassePåBarnetIHelePerioden = true,
             tilsynsordning = Tilsynsordning(
@@ -612,7 +626,14 @@ class SøknadUtils {
             ),
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
-                startdato = LocalDate.parse("2018-01-01")
+                startdato = LocalDate.parse("2018-01-01"),
+                arbeidsforhold = Arbeidsforhold(
+                    skalJobbe = SkalJobbe.NEI,
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    skalJobbeTimer = 0.0,
+                    skalJobbeProsent = 0.0
+                )
             ),
             harVærtEllerErVernepliktig = true
         )

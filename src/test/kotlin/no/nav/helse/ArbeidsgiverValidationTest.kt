@@ -1,10 +1,9 @@
 package no.nav.helse
 
-import no.nav.helse.soknad.Arbeidsform
 import no.nav.helse.soknad.Arbeidsform.TURNUS
 import no.nav.helse.soknad.OrganisasjonDetaljer
+import no.nav.helse.soknad.SkalJobbe
 import no.nav.helse.soknad.validate
-import org.junit.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -19,7 +18,7 @@ class ArbeidsgiverValidationTest {
     fun `Ingen informasjon om arbeidsuker satt`() {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
-            skalJobbe = "ja",
+            skalJobbe = SkalJobbe.JA,
             jobberNormaltTimer = 37.5,
             skalJobbeProsent = 100.0,
             arbeidsform = TURNUS
@@ -32,7 +31,7 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = 99.09,
-            skalJobbe = "redusert",
+            skalJobbe = SkalJobbe.REDUSERT,
             jobberNormaltTimer = 37.5,
             arbeidsform = TURNUS
         ))
@@ -44,7 +43,7 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = -1.00,
-            skalJobbe = "nei",
+            skalJobbe = SkalJobbe.NEI,
             jobberNormaltTimer = 37.5,
             arbeidsform = TURNUS
         ))
@@ -56,60 +55,10 @@ class ArbeidsgiverValidationTest {
         val organisasjoner = listOf(OrganisasjonDetaljer(
             organisasjonsnummer = GYLDIG_ORGNR,
             skalJobbeProsent = 101.01,
-            skalJobbe = "ja",
+            skalJobbe = SkalJobbe.JA,
             jobberNormaltTimer = 37.5,
             arbeidsform = TURNUS
         ))
         assertEquals(2, organisasjoner.validate().size)
-    }
-
-    @Test
-    fun `feiler på søkand der arbeidsgiver skalJobbe er annet enn tillatt verdi`() {
-        val organisasjoner = listOf(
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR,
-                skalJobbe = "ja",
-                jobberNormaltTimer = 37.5,
-                skalJobbeProsent = 100.0,
-                arbeidsform = TURNUS
-            ),
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR,
-                skalJobbe = "nei",
-                jobberNormaltTimer = 37.5,
-                skalJobbeProsent = 0.0,
-                arbeidsform = TURNUS
-            ),
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR,
-                skalJobbe = "redusert",
-                jobberNormaltTimer = 37.5,
-                skalJobbeProsent = 50.0,
-                arbeidsform = TURNUS
-            ),
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR,
-                skalJobbe = "vetIkke",
-                jobberNormaltTimer = 37.5,
-                skalJobbeProsent = 0.0,
-                arbeidsform = TURNUS
-            ),
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR,
-                skalJobbe = "ugyldig1",
-                jobberNormaltTimer = -1.0,
-                skalJobbeProsent = 100.0,
-                arbeidsform = TURNUS
-            ),
-            OrganisasjonDetaljer(
-                organisasjonsnummer = GYLDIG_ORGNR,
-                skalJobbe = "ugyldig2",
-                jobberNormaltTimer = 37.5,
-                skalJobbeProsent = -1.0,
-                arbeidsform = TURNUS
-            )
-        )
-
-        assertEquals(3, organisasjoner.validate().size)
     }
 }

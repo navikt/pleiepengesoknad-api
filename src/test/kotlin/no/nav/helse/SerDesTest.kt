@@ -45,7 +45,7 @@ internal class SerDesTest {
             språk = Språk.nb,
             barn = BarnDetaljer(
                 aktørId = "12345",
-                fødselsnummer = "123456789",
+                fødselsnummer = "03028104560",
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen"
             ),
@@ -55,7 +55,7 @@ internal class SerDesTest {
                     organisasjonsnummer = "917755736",
                     skalJobbeProsent = 10.0,
                     jobberNormaltTimer = 10.0,
-                    skalJobbe = "redusert",
+                    skalJobbe = SkalJobbe.REDUSERT,
                     arbeidsform = Arbeidsform.FAST
                 )
             )),
@@ -204,15 +204,16 @@ internal class SerDesTest {
             harVærtEllerErVernepliktig = true
         )
 
-        //language=json
-        fun søknadJson(søknadsId: String) = """
+        fun søknadJson(søknadsId: String) =
+            //language=json
+            """
             {
               "newVersion": null,
               "søknadId" : "$søknadsId",
               "språk": "nb",
               "samtidigHjemme": true,
               "barn": {
-                "fødselsnummer": "123456789",
+                "fødselsnummer": "03028104560",
                 "navn": "Barn Barnesen",
                 "fødselsdato" : "2018-01-01",
                 "aktørId" : null
@@ -226,7 +227,7 @@ internal class SerDesTest {
                     "navn": "Org",
                     "skalJobbeProsent": 40,
                     "jobberNormaltTimer": 40,
-                    "skalJobbe": "redusert",
+                    "skalJobbe": "REDUSERT",
                     "vetIkkeEkstrainfo": null,
                     "arbeidsform": "FAST"
                   }
@@ -283,6 +284,13 @@ internal class SerDesTest {
                         }
                 }
               ],
+              "selvstendigArbeidsforhold": {
+                  "skalJobbe": "NEI",
+                  "arbeidsform": "FAST",
+                  "jobberNormaltTimer": 40.0,
+                  "skalJobbeTimer": 0.0,
+                  "skalJobbeProsent": 0.0
+              },
               "utenlandsoppholdIPerioden": {
                 "skalOppholdeSegIUtlandetIPerioden": true,
                 "opphold": [
@@ -364,7 +372,14 @@ internal class SerDesTest {
               },
               "frilans": {
               "jobberFortsattSomFrilans": true,
-              "startdato": "2018-01-01"
+              "startdato": "2018-01-01",
+              "arbeidsforhold": {
+                      "skalJobbe": "NEI",
+                      "arbeidsform": "FAST",
+                      "jobberNormaltTimer": 40.0,
+                      "skalJobbeTimer": 0.0,
+                      "skalJobbeProsent": 0.0
+                  }
               },
               "nattevåk": {
                 "harNattevåk": true,
@@ -388,7 +403,9 @@ internal class SerDesTest {
             }
         """.trimIndent()
 
-        fun komplettSøknadJson(søknadsId: String) = """
+        fun komplettSøknadJson(søknadsId: String) =
+            //language=json
+            """
         {
               "mottatt": "2020-05-05T00:00:00Z",
               "språk": "nb",
@@ -404,7 +421,7 @@ internal class SerDesTest {
               },
               "samtidigHjemme": true,
               "barn": {
-                "fødselsnummer": "123456789",
+                "fødselsnummer": "03028104560",
                 "navn": "Barn Barnesen",
                 "aktørId": "12345",
                 "fødselsdato" : "2018-01-01"
@@ -418,7 +435,7 @@ internal class SerDesTest {
                     "navn": "Org",
                     "skalJobbeProsent": 10,
                     "jobberNormaltTimer": 10,
-                    "skalJobbe": "redusert",
+                    "skalJobbe": "REDUSERT",
                     "vetIkkeEkstrainfo": null,
                     "arbeidsform": "FAST"
                   }
@@ -479,6 +496,13 @@ internal class SerDesTest {
                         }
                 }
               ],
+              "selvstendigArbeidsforhold": {
+                  "skalJobbe": "NEI",
+                  "arbeidsform": "FAST",
+                  "jobberNormaltTimer": 40.0,
+                  "skalJobbeTimer": 0.0,
+                  "skalJobbeProsent": 0.0
+              },
               "utenlandsoppholdIPerioden": {
                 "skalOppholdeSegIUtlandetIPerioden": true,
                 "opphold": [
@@ -560,7 +584,14 @@ internal class SerDesTest {
               },
               "frilans": {
               "jobberFortsattSomFrilans": true,
-              "startdato": "2018-01-01"
+              "startdato": "2018-01-01",
+              "arbeidsforhold": {
+                      "skalJobbe": "NEI",
+                      "arbeidsform": "FAST",
+                      "jobberNormaltTimer": 40.0,
+                      "skalJobbeTimer": 0.0,
+                      "skalJobbeProsent": 0.0
+                  }
               },
               "nattevåk": {
                 "harNattevåk": true,
@@ -594,7 +625,7 @@ internal class SerDesTest {
             søknadId = "$søknadId",
             barn = BarnDetaljer(
                 aktørId = "12345",
-                fødselsnummer = "123456789",
+                fødselsnummer = "03028104560",
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen"
             ),
@@ -611,7 +642,7 @@ internal class SerDesTest {
                     organisasjonsnummer = "917755736",
                     skalJobbeProsent = 10.0,
                     jobberNormaltTimer = 10.0,
-                    skalJobbe = "redusert",
+                    skalJobbe = SkalJobbe.REDUSERT,
                     arbeidsform = Arbeidsform.FAST
                 )
             )),
@@ -652,6 +683,13 @@ internal class SerDesTest {
                     ),
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
                 )
+            ),
+            selvstendigArbeidsforhold = Arbeidsforhold(
+                skalJobbe = SkalJobbe.NEI,
+                arbeidsform = Arbeidsform.FAST,
+                jobberNormaltTimer = 40.0,
+                skalJobbeTimer = 0.0,
+                skalJobbeProsent = 0.0
             ),
             skalPassePåBarnetIHelePerioden = true,
             tilsynsordning = Tilsynsordning(
@@ -767,7 +805,14 @@ internal class SerDesTest {
             ),
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
-                startdato = LocalDate.parse("2018-01-01")
+                startdato = LocalDate.parse("2018-01-01"),
+                arbeidsforhold = Arbeidsforhold(
+                    skalJobbe = SkalJobbe.NEI,
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    skalJobbeTimer = 0.0,
+                    skalJobbeProsent = 0.0
+                )
             ),
             harVærtEllerErVernepliktig = true,
             k9FormatSøknad = null
