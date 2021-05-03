@@ -373,6 +373,7 @@ internal class SerDesTest {
               "frilans": {
               "jobberFortsattSomFrilans": true,
               "startdato": "2018-01-01",
+              "sluttdato": null,
               "arbeidsforhold": {
                       "skalJobbe": "NEI",
                       "arbeidsform": "FAST",
@@ -585,6 +586,7 @@ internal class SerDesTest {
               "frilans": {
               "jobberFortsattSomFrilans": true,
               "startdato": "2018-01-01",
+              "sluttdato": null,
               "arbeidsforhold": {
                       "skalJobbe": "NEI",
                       "arbeidsform": "FAST",
