@@ -41,7 +41,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
         .medSøknadInfo(byggK9DataBruktTilUtledning())
 
     barnRelasjon?.let { barnRelasjonBeskrivelse?.let { psb.medOmsorg(byggK9Omsorg()) } }
-    beredskap?.let { psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
+    beredskap?.let { if (it.beredskap) psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
     nattevåk?.let { psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
     tilsynsordning?.let { if (it.ja != null) psb.medTilsynsordning(tilsynsordning.tilK9Tilsynsordning(søknadsperiode)) }
     ferieuttakIPerioden?.let {
@@ -84,7 +84,7 @@ fun Søknad.byggK9Omsorg(): Omsorg {
 
 fun Beredskap.tilK9Beredskap(
     periode: Periode
-): K9Beredskap? = if (!beredskap) null else K9Beredskap()
+): K9Beredskap = K9Beredskap()
     .medPerioder(
         mapOf(
             periode to BeredskapPeriodeInfo()
