@@ -20,7 +20,10 @@ internal fun Søknad.byggK9OpptjeningAktivitet() = OpptjeningAktivitet(
     frilans?.tilK9Frilanser()
 )
 
-internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser(startdato, null, jobberFortsattSomFrilans) // TODO: 26/03/2021 mangler sluttdato på Frilanser
+internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser()
+    .medStartDato(startdato)
+    .medSluttDato(sluttdato)
+    .medJobberFortsattSomFrilans(jobberFortsattSomFrilans)
 
 internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
     periode: Periode
