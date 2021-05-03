@@ -42,7 +42,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
 
     barnRelasjon?.let { barnRelasjonBeskrivelse?.let { psb.medOmsorg(byggK9Omsorg()) } }
     beredskap?.let { if (it.beredskap) psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
-    nattevåk?.let { psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
+    nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
     tilsynsordning?.let { if (it.ja != null) psb.medTilsynsordning(tilsynsordning.tilK9Tilsynsordning(søknadsperiode)) }
     ferieuttakIPerioden?.let {
         if (it.ferieuttak.isNotEmpty() && it.skalTaUtFerieIPerioden) {
@@ -94,7 +94,7 @@ fun Beredskap.tilK9Beredskap(
 
 fun Nattevåk.tilK9Nattevåk(
     periode: Periode
-): K9Nattevåk? = if (harNattevåk == null || !harNattevåk) null else K9Nattevåk().medPerioder(
+): K9Nattevåk? = K9Nattevåk().medPerioder(
     mapOf(
         periode to NattevåkPeriodeInfo().medTilleggsinformasjon(tilleggsinformasjon)
     )
