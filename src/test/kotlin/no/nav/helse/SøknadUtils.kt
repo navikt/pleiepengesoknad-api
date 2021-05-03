@@ -617,7 +617,7 @@ class SøknadUtils {
                 )
             ),
             ferieuttakIPerioden = FerieuttakIPerioden(
-                skalTaUtFerieIPerioden = false, ferieuttak = listOf(
+                skalTaUtFerieIPerioden = true, ferieuttak = listOf(
                     Ferieuttak(
                         fraOgMed = LocalDate.parse("2020-01-05"),
                         tilOgMed = LocalDate.parse("2020-01-07")
@@ -643,179 +643,211 @@ class SøknadUtils {
             Versjon.of("1.0"),
             ZonedDateTime.parse("2020-01-01T10:00:00Z"),
             Søker(NorskIdentitetsnummer.of("12345678910")),
-            PleiepengerSyktBarn(
-                Periode(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-10")),
-                DataBruktTilUtledning(
-                    true,
-                    true,
-                    true,
-                    true,
-                    true
-                ),
-                Barn(
-                    NorskIdentitetsnummer.of("10987654321"),
-                    null
-                ),
-                OpptjeningAktivitet(
-                    null,
-                    listOf(
-                        SelvstendigNæringsdrivende(
-                            mapOf(
-                                Periode(
-                                    LocalDate.parse("2018-01-01"),
-                                    LocalDate.parse("2020-01-01")
-                                ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
-                                    .erNyoppstartet(true)
-                                    .registrertIUtlandet(false)
-                                    .bruttoInntekt(BigDecimal(5_000_000))
-                                    .erVarigEndring(true)
-                                    .endringDato(LocalDate.parse("2020-01-01"))
-                                    .endringBegrunnelse("Grunnet Covid-19")
-                                    .landkode(Landkode.NORGE)
-                                    .regnskapsførerNavn("Regnskapsfører Svensen")
-                                    .regnskapsførerTelefon("+4799887766")
-                                    .virksomhetstyper(listOf(VirksomhetType.DAGMAMMA, VirksomhetType.ANNEN))
-                                    .build()
-                            ),
-                            Organisasjonsnummer.of("12345678910112233444455667"),
-                            "Mamsen Bamsen AS"
-                        ),
-                        SelvstendigNæringsdrivende(
-                            mapOf(
-                                Periode(
-                                    LocalDate.parse("2015-01-01"),
-                                    LocalDate.parse("2017-01-01")
-                                ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
-                                    .erNyoppstartet(false)
-                                    .registrertIUtlandet(true)
-                                    .bruttoInntekt(BigDecimal(500_000))
-                                    .erVarigEndring(false)
-                                    .endringDato(null)
-                                    .endringBegrunnelse(null)
-                                    .landkode(Landkode.SPANIA)
-                                    .regnskapsførerNavn(null)
-                                    .regnskapsførerTelefon(null)
-                                    .virksomhetstyper(listOf(VirksomhetType.FISKE))
-                                    .build()
-                            ),
-                            Organisasjonsnummer.of("54549049090490498048940940"),
-                            "Something Fishy AS"
-                        ),
-                    ),
-                    Frilanser(LocalDate.parse("2020-01-01"), null, true)
-                ),
-
-                Beredskap(
-                    mapOf(
-                        Periode(
-                            LocalDate.parse("2020-01-01"),
-                            LocalDate.parse("2020-01-05")
-                        ) to Beredskap.BeredskapPeriodeInfo("Jeg skal være i beredskap. Basta!"),
-                        Periode(
-                            LocalDate.parse("2020-01-07"),
-                            LocalDate.parse("2020-01-10")
-                        ) to Beredskap.BeredskapPeriodeInfo("Jeg skal være i beredskap i denne perioden også. Basta!")
+            PleiepengerSyktBarn()
+                .medSøknadsperiode(Periode(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-10")))
+                .medSøknadInfo(
+                    DataBruktTilUtledning(
+                        true,
+                        true,
+                        true,
+                        true,
+                        true
                     )
-                ),
-                Nattevåk(
-                    mapOf(
-                        Periode(
-                            LocalDate.parse("2020-01-01"),
-                            LocalDate.parse("2020-01-05")
-                        ) to Nattevåk.NattevåkPeriodeInfo("Jeg skal ha nattevåk. Basta!"),
-                        Periode(
-                            LocalDate.parse("2020-01-07"),
-                            LocalDate.parse("2020-01-10")
-                        ) to Nattevåk.NattevåkPeriodeInfo("Jeg skal ha nattevåk i perioden også. Basta!")
-                    )
-                ),
-                Tilsynsordning(
-                    mapOf(
-                        Periode(
-                            LocalDate.parse("2020-01-01"),
-                            LocalDate.parse("2020-01-05")
-                        ) to TilsynPeriodeInfo(Duration.ofHours(8)),
-                        Periode(
-                            LocalDate.parse("2020-01-06"),
-                            LocalDate.parse("2020-01-10")
-                        ) to TilsynPeriodeInfo(Duration.ofHours(4))
-                    )
-                ),
-                Arbeidstid(
-                    listOf(
-                        Arbeidstaker(
-                            NorskIdentitetsnummer.of("12345678910"),
-                            Organisasjonsnummer.of("926032925"),
-                            ArbeidstidInfo(
+                )
+                .medBarn(Barn(NorskIdentitetsnummer.of("10987654321"), null))
+                .medOpptjeningAktivitet(
+                    OpptjeningAktivitet(
+                        null,
+                        listOf(
+                            SelvstendigNæringsdrivende(
                                 mapOf(
                                     Periode(
                                         LocalDate.parse("2018-01-01"),
-                                        LocalDate.parse("2020-01-05")
-                                    ) to ArbeidstidPeriodeInfo(Duration.ofHours(8), Duration.ofHours(4)),
+                                        LocalDate.parse("2020-01-01")
+                                    ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
+                                        .erNyoppstartet(true)
+                                        .registrertIUtlandet(false)
+                                        .bruttoInntekt(BigDecimal(5_000_000))
+                                        .erVarigEndring(true)
+                                        .endringDato(LocalDate.parse("2020-01-01"))
+                                        .endringBegrunnelse("Grunnet Covid-19")
+                                        .landkode(Landkode.NORGE)
+                                        .regnskapsførerNavn("Regnskapsfører Svensen")
+                                        .regnskapsførerTelefon("+4799887766")
+                                        .virksomhetstyper(listOf(VirksomhetType.DAGMAMMA, VirksomhetType.ANNEN))
+                                        .build()
+                                ),
+                                Organisasjonsnummer.of("12345678910112233444455667"),
+                                "Mamsen Bamsen AS"
+                            ),
+                            SelvstendigNæringsdrivende(
+                                mapOf(
                                     Periode(
-                                        LocalDate.parse("2020-01-06"),
-                                        LocalDate.parse("2020-01-10")
-                                    ) to ArbeidstidPeriodeInfo(Duration.ofHours(8), Duration.ofHours(2))
+                                        LocalDate.parse("2015-01-01"),
+                                        LocalDate.parse("2017-01-01")
+                                    ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
+                                        .erNyoppstartet(false)
+                                        .registrertIUtlandet(true)
+                                        .bruttoInntekt(BigDecimal(500_000))
+                                        .erVarigEndring(false)
+                                        .endringDato(null)
+                                        .endringBegrunnelse(null)
+                                        .landkode(Landkode.SPANIA)
+                                        .regnskapsførerNavn(null)
+                                        .regnskapsførerTelefon(null)
+                                        .virksomhetstyper(listOf(VirksomhetType.FISKE))
+                                        .build()
+                                ),
+                                Organisasjonsnummer.of("54549049090490498048940940"),
+                                "Something Fishy AS"
+                            ),
+                        ),
+                        Frilanser(LocalDate.parse("2020-01-01"), null, true)
+                    )
+                )
+                .medBeredskap(
+                    Beredskap()
+                        .medPerioder(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2020-01-01"),
+                                    LocalDate.parse("2020-01-05")
+                                ) to Beredskap.BeredskapPeriodeInfo()
+                                    .medTilleggsinformasjon("Jeg skal være i beredskap. Basta!"),
+                                Periode(
+                                    LocalDate.parse("2020-01-07"),
+                                    LocalDate.parse("2020-01-10")
+                                ) to Beredskap.BeredskapPeriodeInfo()
+                                    .medTilleggsinformasjon("Jeg skal være i beredskap i denne perioden også. Basta!")
+                            )
+                        )
+                )
+                .medNattevåk(
+                    Nattevåk()
+                        .medPerioder(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2020-01-01"),
+                                    LocalDate.parse("2020-01-05")
+                                ) to Nattevåk.NattevåkPeriodeInfo()
+                                    .medTilleggsinformasjon("Jeg skal ha nattevåk. Basta!"),
+                                Periode(
+                                    LocalDate.parse("2020-01-07"),
+                                    LocalDate.parse("2020-01-10")
+                                ) to Nattevåk.NattevåkPeriodeInfo()
+                                    .medTilleggsinformasjon("Jeg skal ha nattevåk i perioden også. Basta!")
+                            )
+                        )
+                )
+                .medTilsynsordning(
+                    Tilsynsordning()
+                        .medPerioder(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2020-01-01"),
+                                    LocalDate.parse("2020-01-05")
+                                ) to TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(Duration.ofHours(8)),
+                                Periode(
+                                    LocalDate.parse("2020-01-06"),
+                                    LocalDate.parse("2020-01-10")
+                                ) to TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(Duration.ofHours(4))
+                            )
+                        )
+                )
+                .medArbeidstid(
+                    Arbeidstid()
+                        .medArbeidstaker(
+                            listOf(
+                                Arbeidstaker(
+                                    NorskIdentitetsnummer.of("12345678910"),
+                                    Organisasjonsnummer.of("926032925"),
+                                    ArbeidstidInfo(
+                                        mapOf(
+                                            Periode(
+                                                LocalDate.parse("2018-01-01"),
+                                                LocalDate.parse("2020-01-05")
+                                            ) to ArbeidstidPeriodeInfo(Duration.ofHours(8), Duration.ofHours(4)),
+                                            Periode(
+                                                LocalDate.parse("2020-01-06"),
+                                                LocalDate.parse("2020-01-10")
+                                            ) to ArbeidstidPeriodeInfo(Duration.ofHours(8), Duration.ofHours(2))
+                                        )
+                                    )
                                 )
                             )
                         )
-                    ),
-                    null, null
-                ),
-                Uttak(
-                    mapOf(
-                        Periode(
-                            LocalDate.parse("2020-01-01"),
-                            LocalDate.parse("2020-01-05")
-                        ) to UttakPeriodeInfo(Duration.ofHours(4)),
-                        Periode(
-                            LocalDate.parse("2020-01-06"),
-                            LocalDate.parse("2020-01-10")
-                        ) to UttakPeriodeInfo(Duration.ofHours(2))
-                    )
-                ),
-                Omsorg(
-                    "Forelder",
-                    true,
-                    "Blabla beskrivelse"
-                ),
-                LovbestemtFerie(
-                    mapOf(
-                        Periode(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-05")) to LovbestemtFerie.LovbestemtFeriePeriodeInfo(),
-                        Periode(LocalDate.parse("2020-01-06"), LocalDate.parse("2020-01-10")) to LovbestemtFerie.LovbestemtFeriePeriodeInfo()
-                    )
-                ),
-                Bosteder(
-                    mapOf(
-                        Periode(
-                            LocalDate.parse("2020-01-01"),
-                            LocalDate.parse("2020-01-05")
-                        ) to Bosteder.BostedPeriodeInfo(Landkode.SPANIA),
-                        Periode(
-                            LocalDate.parse("2020-01-06"),
-                            LocalDate.parse("2020-01-10")
-                        ) to Bosteder.BostedPeriodeInfo(Landkode.NORGE)
-                    )
-                ),
-                Utenlandsopphold(
-                    mapOf(
-                        Periode(
-                            LocalDate.parse("2020-01-01"),
-                            LocalDate.parse("2020-01-05")
-                        ) to Utenlandsopphold.UtenlandsoppholdPeriodeInfo.builder()
-                            .land(Landkode.CANADA)
-                            .årsak(Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD)
-                            .build(),
-                        Periode(
-                            LocalDate.parse("2020-01-06"),
-                            LocalDate.parse("2020-01-10")
-                        ) to Utenlandsopphold.UtenlandsoppholdPeriodeInfo.builder()
-                            .land(Landkode.SVERIGE)
-                            .årsak(Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING)
-                            .build()
-                    )
                 )
-            )
+                .medUttak(
+                    Uttak()
+                        .medPerioder(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2020-01-01"),
+                                    LocalDate.parse("2020-01-05")
+                                ) to UttakPeriodeInfo(Duration.ofHours(4)),
+                                Periode(
+                                    LocalDate.parse("2020-01-06"),
+                                    LocalDate.parse("2020-01-10")
+                                ) to UttakPeriodeInfo(Duration.ofHours(2))
+                            )
+                        )
+                )
+                .medOmsorg(
+                    Omsorg()
+                        .medRelasjonTilBarnet(Omsorg.BarnRelasjon.MOR)
+                        .medBeskrivelseAvOmsorgsrollen("Blabla beskrivelse")
+                )
+                .medLovbestemtFerie(
+                    LovbestemtFerie()
+                        .medPerioder(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2020-01-01"),
+                                    LocalDate.parse("2020-01-05")
+                                ) to LovbestemtFerie.LovbestemtFeriePeriodeInfo(),
+                                Periode(
+                                    LocalDate.parse("2020-01-06"),
+                                    LocalDate.parse("2020-01-10")
+                                ) to LovbestemtFerie.LovbestemtFeriePeriodeInfo()
+                            )
+                        )
+                )
+                .medBosteder(
+                    Bosteder()
+                        .medPerioder(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2020-01-01"),
+                                    LocalDate.parse("2020-01-05")
+                                ) to Bosteder.BostedPeriodeInfo().medLand(Landkode.SPANIA),
+                                Periode(
+                                    LocalDate.parse("2020-01-06"),
+                                    LocalDate.parse("2020-01-10")
+                                ) to Bosteder.BostedPeriodeInfo().medLand(Landkode.NORGE)
+                            )
+                        )
+                )
+                .medUtenlandsopphold(
+                    Utenlandsopphold()
+                        .medPerioder(
+                            mapOf(
+                                Periode(
+                                    LocalDate.parse("2020-01-01"),
+                                    LocalDate.parse("2020-01-05")
+                                ) to Utenlandsopphold.UtenlandsoppholdPeriodeInfo.builder()
+                                    .land(Landkode.CANADA)
+                                    .årsak(Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD)
+                                    .build(),
+                                Periode(
+                                    LocalDate.parse("2020-01-06"),
+                                    LocalDate.parse("2020-01-10")
+                                ) to Utenlandsopphold.UtenlandsoppholdPeriodeInfo.builder()
+                                    .land(Landkode.SVERIGE)
+                                    .årsak(Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING)
+                                    .build()
+                            )
+                        )
+                )
         )
     }
 }

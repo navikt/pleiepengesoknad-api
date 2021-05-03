@@ -31,28 +31,29 @@ private val k9FormatVersjon = Versjon.of("1.0.0")
 
 fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     val søknadsperiode = Periode(fraOgMed, tilOgMed)
-    val søknad = K9Søknad(
-        SøknadId.of(søknadId),
-        k9FormatVersjon,
-        mottatt,
-        søker.tilK9Søker(),
-        PleiepengerSyktBarn(
-            søknadsperiode,
-            byggK9DataBruktTilUtledning(),
-            barn.tilK9Barn(),
-            byggK9OpptjeningAktivitet(),
-            beredskap?.tilK9Beredskap(søknadsperiode),
-            nattevåk?.tilK9Nattevåk(søknadsperiode),
-            tilsynsordning?.tilK9Tilsynsordning(søknadsperiode),
-            byggK9Arbeidstid(),
-            byggK9Uttak(søknadsperiode),
-            byggK9Omsorg(),
-            ferieuttakIPerioden?.tilK9LovbestemtFerie(),
-            medlemskap.tilK9Bosteder(),
-            utenlandsoppholdIPerioden?.tilK9Utenlandsopphold(søknadsperiode)
-        )
-    )
-    return søknad
+    val psb = PleiepengerSyktBarn()
+        .medSøknadsperiode(søknadsperiode)
+        .medBarn(barn.tilK9Barn())
+        .medOpptjeningAktivitet(byggK9OpptjeningAktivitet())
+        .medArbeidstid(byggK9Arbeidstid())
+        .medUttak(byggK9Uttak(søknadsperiode))
+        .medBosteder(medlemskap.tilK9Bosteder())
+        .medSøknadInfo(byggK9DataBruktTilUtledning())
+
+    barnRelasjon?.let { barnRelasjonBeskrivelse?.let { psb.medOmsorg(byggK9Omsorg()) } }
+    beredskap?.let { psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
+    nattevåk?.let { psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
+    tilsynsordning?.let { if (it.ja != null) psb.medTilsynsordning(tilsynsordning.tilK9Tilsynsordning(søknadsperiode)) }
+    ferieuttakIPerioden?.let {
+        if (it.ferieuttak.isNotEmpty() && it.skalTaUtFerieIPerioden) {
+            psb.medLovbestemtFerie(ferieuttakIPerioden.tilK9LovbestemtFerie())
+        }
+    }
+    utenlandsoppholdIPerioden?.let {
+        psb.medUtenlandsopphold(utenlandsoppholdIPerioden.tilK9Utenlandsopphold(søknadsperiode))
+    }
+
+    return K9Søknad(SøknadId.of(søknadId), k9FormatVersjon, mottatt, søker.tilK9Søker(), psb)
 }
 
 fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
@@ -67,25 +68,49 @@ fun Søknad.byggK9DataBruktTilUtledning(): DataBruktTilUtledning = DataBruktTilU
     bekrefterPeriodeOver8Uker
 )
 
-fun Søknad.byggK9Omsorg(): Omsorg = Omsorg(
-    barnRelasjon?.utskriftsvennlig ?: "Forelder",
-    skalBekrefteOmsorg,
-    barnRelasjonBeskrivelse
-)
+fun Søknad.byggK9Omsorg(): Omsorg {
+    return Omsorg()
+        .medRelasjonTilBarnet(
+            when (barnRelasjon) {
+                BarnRelasjon.FAR -> Omsorg.BarnRelasjon.FAR
+                BarnRelasjon.MOR -> Omsorg.BarnRelasjon.MOR
+                BarnRelasjon.FOSTERFORELDER -> Omsorg.BarnRelasjon.FOSTERFORELDER
+                BarnRelasjon.MEDMOR -> Omsorg.BarnRelasjon.MEDMOR
+                BarnRelasjon.ANNET -> Omsorg.BarnRelasjon.ANNET
+                else -> null
+            }
+        ).medBeskrivelseAvOmsorgsrollen(barnRelasjonBeskrivelse)
+}
 
 fun Beredskap.tilK9Beredskap(
     periode: Periode
-): K9Beredskap? = if (!beredskap) null else K9Beredskap(mapOf(periode to BeredskapPeriodeInfo(tilleggsinformasjon)))
+): K9Beredskap? = if (!beredskap) null else K9Beredskap()
+    .medPerioder(
+        mapOf(
+            periode to BeredskapPeriodeInfo()
+                .medTilleggsinformasjon(tilleggsinformasjon)
+        )
+    )
 
 fun Nattevåk.tilK9Nattevåk(
     periode: Periode
-): K9Nattevåk? = if (harNattevåk == null || !harNattevåk) null else K9Nattevåk(mapOf(periode to NattevåkPeriodeInfo(tilleggsinformasjon)))
+): K9Nattevåk? = if (harNattevåk == null || !harNattevåk) null else K9Nattevåk().medPerioder(
+    mapOf(
+        periode to NattevåkPeriodeInfo().medTilleggsinformasjon(tilleggsinformasjon)
+    )
+)
 
 
 fun Tilsynsordning.tilK9Tilsynsordning(
     periode: Periode
 ): K9Tilsynsordning? = when (svar) {
-    TilsynsordningSvar.ja -> K9Tilsynsordning(mutableMapOf(periode to TilsynPeriodeInfo(ja!!.snittTilsynsTimerPerDag())))
+    TilsynsordningSvar.ja -> K9Tilsynsordning()
+        .medPerioder(
+            mutableMapOf(
+                periode to TilsynPeriodeInfo()
+                    .medEtablertTilsynTimerPerDag(ja!!.snittTilsynsTimerPerDag())
+            )
+        )
     else -> null
 }
 
@@ -94,11 +119,11 @@ fun Søknad.byggK9Uttak(periode: Periode): Uttak? {
 
     perioder[periode] = UttakPeriodeInfo(Duration.ofHours(7).plusMinutes(30))
 
-    return Uttak(perioder)
+    return Uttak().medPerioder(perioder)
 }
 
-fun FerieuttakIPerioden.tilK9LovbestemtFerie(): LovbestemtFerie? {
-    if (!skalTaUtFerieIPerioden) return null
+fun FerieuttakIPerioden.tilK9LovbestemtFerie(): LovbestemtFerie {
+    if (!skalTaUtFerieIPerioden) return LovbestemtFerie()
 
     val perioder = mutableMapOf<Periode, LovbestemtFerie.LovbestemtFeriePeriodeInfo>()
 
@@ -106,30 +131,30 @@ fun FerieuttakIPerioden.tilK9LovbestemtFerie(): LovbestemtFerie? {
         perioder[Periode(ferieuttak.fraOgMed, ferieuttak.tilOgMed)] = LovbestemtFerie.LovbestemtFeriePeriodeInfo()
     }
 
-    return LovbestemtFerie(perioder)
+    return LovbestemtFerie().medPerioder(perioder)
 }
 
 fun Medlemskap.tilK9Bosteder(): Bosteder? {
-    if (utenlandsoppholdSiste12Mnd.isEmpty() && utenlandsoppholdNeste12Mnd.isEmpty()) return null
-
     val perioder = mutableMapOf<Periode, Bosteder.BostedPeriodeInfo>()
 
     utenlandsoppholdSiste12Mnd.forEach { bosted ->
-        perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] = Bosteder.BostedPeriodeInfo(Landkode.of(bosted.landkode))
+        if (!bosted.landkode.isNullOrEmpty()) perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] =
+            Bosteder.BostedPeriodeInfo()
+                .medLand(Landkode.of(bosted.landkode))
     }
 
     utenlandsoppholdNeste12Mnd.forEach { bosted ->
-        perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] = Bosteder.BostedPeriodeInfo(Landkode.of(bosted.landkode))
+        if (!bosted.landkode.isNullOrEmpty()) perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] =
+            Bosteder.BostedPeriodeInfo()
+                .medLand(Landkode.of(bosted.landkode))
     }
 
-    return Bosteder(perioder)
+    return Bosteder().medPerioder(perioder)
 }
 
 private fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(
     periode: Periode
-): Utenlandsopphold? {
-    if (opphold.isEmpty()) return null
-
+): Utenlandsopphold {
     val perioder = mutableMapOf<Periode, UtenlandsoppholdPeriodeInfo>()
 
     opphold.forEach {
@@ -145,5 +170,5 @@ private fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(
             .build()
     }
 
-    return Utenlandsopphold(perioder)
+    return Utenlandsopphold().medPerioder(perioder)
 }
