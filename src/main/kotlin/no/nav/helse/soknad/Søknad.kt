@@ -58,11 +58,11 @@ private fun List<Barn>.hentIdentitetsnummerForBarn(aktørId: String?): String? {
 }
 
 enum class BarnRelasjon(val utskriftsvennlig: String) {
-    MOR("Mor"),
-    MEDMOR("Medmor"),
-    FAR("Far"),
-    FOSTERFORELDER("Fosterforelder"),
-    ANNET("Annet")
+    MOR("MOR"),
+    MEDMOR("MEDMOR"),
+    FAR("FAR"),
+    FOSTERFORELDER("FOSTERFORELDER"),
+    ANNET("ANNET")
 }
 
 data class Medlemskap(

@@ -354,7 +354,7 @@ internal class SerDesTest {
               "harBekreftetOpplysninger": true,
               "harForståttRettigheterOgPlikter": true,
               "ferieuttakIPerioden": {
-                "skalTaUtFerieIPerioden": false,
+                "skalTaUtFerieIPerioden": true,
                 "ferieuttak": [
                   {
                     "fraOgMed": "2020-01-05",

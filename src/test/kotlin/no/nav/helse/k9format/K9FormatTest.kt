@@ -36,7 +36,11 @@ class K9FormatTest {
               "språk" : "nb",
               "ytelse" : {
                 "type" : "PLEIEPENGER_SYKT_BARN",
-                "søknadsperiode" : "2020-01-01/2020-01-20",
+                "søknadsperiode" : [
+                  "2020-01-01/2020-01-20"
+                ],
+                "endringsperiode": [],
+                "infoFraPunsj": null,
                 "dataBruktTilUtledning" : {
                   "harForståttRettigheterOgPlikter" : true,
                   "harBekreftetOpplysninger" : true,
@@ -73,7 +77,7 @@ class K9FormatTest {
                   }
                 },
                 "beredskap" : {
-                  "perioderSomSkalSlettes": null,
+                  "perioderSomSkalSlettes": {},
                   "perioder" : {
                     "2020-01-01/2020-01-20" : {
                       "tilleggsinformasjon" : "Ikke beredskap"
@@ -81,7 +85,7 @@ class K9FormatTest {
                   }
                 },
                 "nattevåk" : {
-                  "perioderSomSkalSlettes": null,
+                  "perioderSomSkalSlettes": {},
                   "perioder" : {
                     "2020-01-01/2020-01-20" : {
                       "tilleggsinformasjon" : "Har nattevåk"
@@ -93,7 +97,8 @@ class K9FormatTest {
                     "2020-01-01/2020-01-20" : {
                       "etablertTilsynTimerPerDag" : "PT1H"
                     }
-                  }
+                  },
+                  "perioderSomSkalSlettes": {}
                 },
                 "arbeidstid" : {
                   "arbeidstakerList" : [ {
@@ -116,16 +121,21 @@ class K9FormatTest {
                     "2020-01-01/2020-01-20" : {
                       "timerPleieAvBarnetPerDag" : "PT7H30M"
                     }
-                  }
+                  },
+                  "perioderSomSkalSlettes": {}
                 },
                 "omsorg" : {
-                  "relasjonTilBarnet" : "Annet",
-                  "samtykketOmsorgForBarnet" : true,
+                  "relasjonTilBarnet" : "ANNET",
                   "beskrivelseAvOmsorgsrollen" : "Gudfar til barnet"
                 },
-                "lovbestemtFerie" : null,
+                "lovbestemtFerie" : {
+                  "perioder": {
+                    "2020-01-05/2020-01-07": {}
+                  },
+                  "perioderSomSkalSlettes": {}
+                },
                 "bosteder" : {
-                  "perioderSomSkalSlettes": null,
+                  "perioderSomSkalSlettes": {},
                   "perioder" : {
                     "2017-01-01/2017-01-10" : {
                       "land" : "DEU"
@@ -141,7 +151,8 @@ class K9FormatTest {
                       "land" : "SE",
                       "årsak" : null
                     }
-                  }
+                  },
+                  "perioderSomSkalSlettes": {}
                 }
               }
             }

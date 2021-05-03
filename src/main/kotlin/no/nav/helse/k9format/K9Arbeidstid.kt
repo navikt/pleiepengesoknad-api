@@ -14,7 +14,8 @@ internal fun Søknad.byggK9Arbeidstid(): Arbeidstid {
     val selvstendigNæringsdrivendeArbeidstidInfo = null //selvstendigVirksomheter.tilK9ArbeidstidInfo() //TODO 08.02.2021 - Når vi har nok info
     val arbeidstakerList: List<Arbeidstaker> = arbeidsgivere.tilK9Arbeidstaker(Periode(fraOgMed, tilOgMed))
 
-    return Arbeidstid(arbeidstakerList, frilanserArbeidstidInfo, selvstendigNæringsdrivendeArbeidstidInfo)
+    return Arbeidstid()
+        .medArbeidstaker(arbeidstakerList)
 }
 
 fun Frilans.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo {
