@@ -83,7 +83,7 @@ fun Søknad.byggK9Omsorg() = Omsorg()
             BarnRelasjon.ANNET -> Omsorg.BarnRelasjon.ANNET
             else -> null
         }
-    ).medBeskrivelseAvOmsorgsrollen(beskrivelseOmsorgsrollen)
+    ).medBeskrivelseAvOmsorgsrollen(barnRelasjonBeskrivelse)
 
 fun Beredskap.tilK9Beredskap(
     periode: Periode
