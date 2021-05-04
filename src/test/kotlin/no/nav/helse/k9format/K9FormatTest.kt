@@ -126,7 +126,7 @@ class K9FormatTest {
                 },
                 "omsorg" : {
                   "relasjonTilBarnet" : "ANNET",
-                  "beskrivelseAvOmsorgsrollen" : "En kort beskrivelse"
+                  "beskrivelseAvOmsorgsrollen" : "Gudfar til barnet"
                 },
                 "lovbestemtFerie" : {
                   "perioder": {
