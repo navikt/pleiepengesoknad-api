@@ -13,9 +13,14 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.SøknadId
-import no.nav.k9.søknad.ytelse.psb.v1.*
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap.BeredskapPeriodeInfo
+import no.nav.k9.søknad.ytelse.psb.v1.DataBruktTilUtledning
+import no.nav.k9.søknad.ytelse.psb.v1.LovbestemtFerie
 import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
+import no.nav.k9.søknad.ytelse.psb.v1.Omsorg
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.Uttak
+import no.nav.k9.søknad.ytelse.psb.v1.UttakPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -40,7 +45,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
         .medBosteder(medlemskap.tilK9Bosteder())
         .medSøknadInfo(byggK9DataBruktTilUtledning())
 
-    barnRelasjon?.let { barnRelasjonBeskrivelse?.let { psb.medOmsorg(byggK9Omsorg()) } }
+    barnRelasjon?.let {  psb.medOmsorg(byggK9Omsorg()) }
     beredskap?.let { if (it.beredskap) psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
     nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
     tilsynsordning?.let { if (it.ja != null) psb.medTilsynsordning(tilsynsordning.tilK9Tilsynsordning(søknadsperiode)) }
@@ -68,19 +73,17 @@ fun Søknad.byggK9DataBruktTilUtledning(): DataBruktTilUtledning = DataBruktTilU
     bekrefterPeriodeOver8Uker
 )
 
-fun Søknad.byggK9Omsorg(): Omsorg {
-    return Omsorg()
-        .medRelasjonTilBarnet(
-            when (barnRelasjon) {
-                BarnRelasjon.FAR -> Omsorg.BarnRelasjon.FAR
-                BarnRelasjon.MOR -> Omsorg.BarnRelasjon.MOR
-                BarnRelasjon.FOSTERFORELDER -> Omsorg.BarnRelasjon.FOSTERFORELDER
-                BarnRelasjon.MEDMOR -> Omsorg.BarnRelasjon.MEDMOR
-                BarnRelasjon.ANNET -> Omsorg.BarnRelasjon.ANNET
-                else -> null
-            }
-        ).medBeskrivelseAvOmsorgsrollen(barnRelasjonBeskrivelse)
-}
+fun Søknad.byggK9Omsorg() = Omsorg()
+    .medRelasjonTilBarnet(
+        when (barnRelasjon) {
+            BarnRelasjon.FAR -> Omsorg.BarnRelasjon.FAR
+            BarnRelasjon.MOR -> Omsorg.BarnRelasjon.MOR
+            BarnRelasjon.FOSTERFORELDER -> Omsorg.BarnRelasjon.FOSTERFORELDER
+            BarnRelasjon.MEDMOR -> Omsorg.BarnRelasjon.MEDMOR
+            BarnRelasjon.ANNET -> Omsorg.BarnRelasjon.ANNET
+            else -> null
+        }
+    ).medBeskrivelseAvOmsorgsrollen(beskrivelseOmsorgsrollen)
 
 fun Beredskap.tilK9Beredskap(
     periode: Periode
