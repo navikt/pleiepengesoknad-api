@@ -22,8 +22,11 @@ import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.Uttak
 import no.nav.k9.søknad.ytelse.psb.v1.UttakPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
+import java.time.DayOfWeek
 import java.time.Duration
+import java.time.LocalDate
 import java.time.ZonedDateTime
+import kotlin.streams.toList
 import no.nav.k9.søknad.Søknad as K9Søknad
 import no.nav.k9.søknad.felles.personopplysninger.Barn as K9Barn
 import no.nav.k9.søknad.felles.personopplysninger.Søker as K9Søker
@@ -45,7 +48,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
         .medBosteder(medlemskap.tilK9Bosteder())
         .medSøknadInfo(byggK9DataBruktTilUtledning())
 
-    barnRelasjon?.let {  psb.medOmsorg(byggK9Omsorg()) }
+    barnRelasjon?.let { psb.medOmsorg(byggK9Omsorg()) }
     beredskap?.let { if (it.beredskap) psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
     nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
     tilsynsordning?.let { if (it.ja != null) psb.medTilsynsordning(tilsynsordning.tilK9Tilsynsordning(søknadsperiode)) }
@@ -104,17 +107,25 @@ fun Nattevåk.tilK9Nattevåk(
 )
 
 
-fun Tilsynsordning.tilK9Tilsynsordning(
-    periode: Periode
-): K9Tilsynsordning? = when (svar) {
-    TilsynsordningSvar.ja -> K9Tilsynsordning()
-        .medPerioder(
-            mutableMapOf(
-                periode to TilsynPeriodeInfo()
-                    .medEtablertTilsynTimerPerDag(ja!!.snittTilsynsTimerPerDag())
+fun Tilsynsordning.tilK9Tilsynsordning(periode: Periode) = K9Tilsynsordning().apply {
+    periode.fraOgMed.datesUntil(periode.tilOgMed.plusDays(1)).toList().map { dato: LocalDate ->
+
+        when (dato.dayOfWeek) {
+            DayOfWeek.MONDAY -> ja!!.mandag
+            DayOfWeek.TUESDAY -> ja!!.tirsdag
+            DayOfWeek.WEDNESDAY -> ja!!.onsdag
+            DayOfWeek.THURSDAY -> ja!!.torsdag
+            DayOfWeek.FRIDAY -> ja!!.fredag
+            else -> null
+        }?.let { tilsynLengde: Duration ->
+            this.leggeTilPeriode(
+                Periode(dato, dato),
+                TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
+                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(tilsynLengde)
+                )
             )
-        )
-    else -> null
+        }
+    }
 }
 
 fun Søknad.byggK9Uttak(periode: Periode): Uttak? {
