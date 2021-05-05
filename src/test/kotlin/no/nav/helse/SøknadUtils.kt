@@ -6,18 +6,27 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.soknad.*
 import no.nav.k9.søknad.felles.Versjon
-import no.nav.k9.søknad.felles.opptjening.*
+import no.nav.k9.søknad.felles.opptjening.Frilanser
+import no.nav.k9.søknad.felles.opptjening.OpptjeningAktivitet
+import no.nav.k9.søknad.felles.opptjening.SelvstendigNæringsdrivende
 import no.nav.k9.søknad.felles.personopplysninger.Barn
 import no.nav.k9.søknad.felles.personopplysninger.Bosteder
 import no.nav.k9.søknad.felles.personopplysninger.Søker
 import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold
 import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
+import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.SøknadId
-import no.nav.k9.søknad.ytelse.psb.v1.*
+import no.nav.k9.søknad.felles.type.VirksomhetType
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap
+import no.nav.k9.søknad.ytelse.psb.v1.DataBruktTilUtledning
+import no.nav.k9.søknad.ytelse.psb.v1.LovbestemtFerie
 import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk
+import no.nav.k9.søknad.ytelse.psb.v1.Omsorg
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.Uttak
+import no.nav.k9.søknad.ytelse.psb.v1.UttakPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstid
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
@@ -682,7 +691,7 @@ class SøknadUtils {
                             ),
                             SelvstendigNæringsdrivende(
                                 mapOf(
-                                    Periode(
+                                    no.nav.k9.søknad.felles.type.Periode(
                                         LocalDate.parse("2015-01-01"),
                                         LocalDate.parse("2017-01-01")
                                     ) to SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
@@ -834,17 +843,15 @@ class SøknadUtils {
                                 Periode(
                                     LocalDate.parse("2020-01-01"),
                                     LocalDate.parse("2020-01-05")
-                                ) to Utenlandsopphold.UtenlandsoppholdPeriodeInfo.builder()
-                                    .land(Landkode.CANADA)
-                                    .årsak(Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD)
-                                    .build(),
+                                ) to Utenlandsopphold.UtenlandsoppholdPeriodeInfo()
+                                    .medLand(Landkode.CANADA)
+                                    .medÅrsak(Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD),
                                 Periode(
                                     LocalDate.parse("2020-01-06"),
                                     LocalDate.parse("2020-01-10")
-                                ) to Utenlandsopphold.UtenlandsoppholdPeriodeInfo.builder()
-                                    .land(Landkode.SVERIGE)
-                                    .årsak(Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING)
-                                    .build()
+                                ) to Utenlandsopphold.UtenlandsoppholdPeriodeInfo()
+                                    .medLand(Landkode.SVERIGE)
+                                    .medÅrsak(Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING)
                             )
                         )
                 )

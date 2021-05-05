@@ -1,9 +1,18 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.*
-import no.nav.k9.søknad.felles.opptjening.*
+import no.nav.helse.soknad.ArbeidsgiverDetaljer
+import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.OrganisasjonDetaljer
+import no.nav.helse.soknad.Søknad
+import no.nav.helse.soknad.Virksomhet
+import no.nav.k9.søknad.felles.opptjening.Frilanser
+import no.nav.k9.søknad.felles.opptjening.OpptjeningAktivitet
+import no.nav.k9.søknad.felles.opptjening.SelvstendigNæringsdrivende
 import no.nav.k9.søknad.felles.type.Landkode
+import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
+import no.nav.k9.søknad.felles.type.VirksomhetType
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
