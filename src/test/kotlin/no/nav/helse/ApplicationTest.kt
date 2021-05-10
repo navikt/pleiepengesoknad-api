@@ -10,8 +10,26 @@ import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.Land
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SkalJobbe
+import no.nav.helse.soknad.Tilsynsuke
+import no.nav.helse.soknad.VetPeriode
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9Dokument
+import no.nav.helse.wiremock.stubK9DokumentHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
 import org.json.JSONObject
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -1368,6 +1386,143 @@ class ApplicationTest {
                 tilOgMed = "2020-02-27",
                 bekrefterPeriodeOver8Uker = false
             )
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbud, der søker vet hele perioden, men tilsyn er null, og vetMinAntallTimer er ulik null`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.tilsyn",
+                      "reason": "'tilsyn' kan ikke være null, dersom 'vetPerioden' er 'VET_HELE_PERIODEN'",
+                      "invalid_value": null
+                    },
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.vetMinAntallTimer",
+                      "reason": "'vetMinAntallTimer' må være null, dersom 'vetPerioden' er 'VET_HELE_PERIODEN'",
+                      "invalid_value": null
+                    }
+                  ]
+}
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbud = Omsorgstilbud(
+                        vetPerioden = VetPeriode.VET_HELE_PERIODEN,
+                        tilsyn = null,
+                        vetMinAntallTimer = true
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbud, der søker er usikker på perioden, men vet minimum antall timer, men tilsyn er null `() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.tilsyn",
+                      "reason": "'tilsyn' kan ikke være null, dersom 'vetPerioden' er 'USIKKER' og 'vetMinAntallTimer' er true",
+                      "invalid_value": null
+                    }
+                  ]
+                }
+
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbud = Omsorgstilbud(
+                        vetPerioden = VetPeriode.USIKKER,
+                        tilsyn = null,
+                        vetMinAntallTimer = true
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbud, der søker er usikker på perioden, men vet ikke minimum antall timer, og tilsyn er ulik null `() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.tilsyn",
+                      "reason": "'tilsyn' må være null, dersom 'vetPerioden' er 'USIKKER' og 'vetMinAntallTimer' er ulik true",
+                      "invalid_value": {
+                        "mandag": "PT5H",
+                        "tirsdag": "PT5H",
+                        "onsdag": "PT5H",
+                        "torsdag": "PT5H",
+                        "fredag": "PT5H"
+                      }
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbud = Omsorgstilbud(
+                        vetPerioden = VetPeriode.USIKKER,
+                        tilsyn = Tilsynsuke(
+                            mandag = Duration.ofHours(5),
+                            tirsdag = Duration.ofHours(5),
+                            onsdag = Duration.ofHours(5),
+                            torsdag = Duration.ofHours(5),
+                            fredag = Duration.ofHours(5),
+                        ),
+                        vetMinAntallTimer = null
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
         )
     }
 

@@ -113,6 +113,10 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
         violations.addAll(this.validate())
     }
 
+    omsorgstilbud?.apply {
+        violations.addAll(this.validate())
+    }
+
     violations.addAll(validerBarnRelasjon())
 
     // Datoer
@@ -173,9 +177,12 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     violations.addAll(nullSjekk(medlemskap.skalBoIUtlandetNeste12Mnd, "medlemskap.skalBoIUtlandetNeste12Mnd"))
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
 
-    if(utenlandsoppholdIPerioden != null){
-        violations.addAll(nullSjekk(utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden,
-                "utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden")
+    if (utenlandsoppholdIPerioden != null) {
+        violations.addAll(
+            nullSjekk(
+                utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden,
+                "utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden"
+            )
         )
     }
 
@@ -265,7 +272,7 @@ private fun validerSelvstendigVirksomheter(
             addAll(virksomhet.validate(index))
         }
 
-        if(selvstendigArbeidsforhold == null) {
+        if (selvstendigArbeidsforhold == null) {
             add(
                 Violation(
                     parameterName = "selvstendigArbeidsforhold",
@@ -405,9 +412,53 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
 }
 
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
-    tilsyn
-    vetMinAntallTimer
-    vetPerioden
+    when (vetPerioden) {
+        VetPeriode.VET_HELE_PERIODEN -> {
+            if (tilsyn == null) {
+                add(
+                    Violation(
+                        parameterName = "omsorgstilbud.tilsyn",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "'tilsyn' kan ikke være null, dersom 'vetPerioden' er 'VET_HELE_PERIODEN'",
+                        invalidValue = tilsyn
+                    )
+                )
+            }
+            if (vetMinAntallTimer != null) {
+                add(
+                    Violation(
+                        parameterName = "omsorgstilbud.vetMinAntallTimer",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "'vetMinAntallTimer' må være null, dersom 'vetPerioden' er 'VET_HELE_PERIODEN'",
+                        invalidValue = tilsyn
+                    )
+                )
+            }
+        }
+
+        VetPeriode.USIKKER -> {
+            if (vetMinAntallTimer == true && tilsyn == null) {
+                add(
+                    Violation(
+                        parameterName = "omsorgstilbud.tilsyn",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "'tilsyn' kan ikke være null, dersom 'vetPerioden' er 'USIKKER' og 'vetMinAntallTimer' er true",
+                        invalidValue = tilsyn
+                    )
+                )
+            }
+            if (vetMinAntallTimer != true && tilsyn != null) {
+                add(
+                    Violation(
+                        parameterName = "omsorgstilbud.tilsyn",
+                        parameterType = ParameterType.ENTITY,
+                        reason = "'tilsyn' må være null, dersom 'vetPerioden' er 'USIKKER' og 'vetMinAntallTimer' er ulik true",
+                        invalidValue = tilsyn
+                    )
+                )
+            }
+        }
+    }
 }
 
 internal fun Tilsynsordning.validate(): MutableSet<Violation> {
