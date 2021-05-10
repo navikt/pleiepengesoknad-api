@@ -191,7 +191,7 @@ class K9FormatTest {
                 torsdag = Duration.ofHours(5),
                 fredag = Duration.ofHours(5)
             ),
-            vetPerioden = VetPeriode.VET_HELE_PERIODEN
+            vetPeriode = VetPeriode.VET_HELE_PERIODEN
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
@@ -232,7 +232,7 @@ class K9FormatTest {
                 torsdag = Duration.ofHours(5),
                 fredag = Duration.ofHours(5)
             ),
-            vetPerioden = VetPeriode.VET_HELE_PERIODEN
+            vetPeriode = VetPeriode.VET_HELE_PERIODEN
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
@@ -271,7 +271,7 @@ class K9FormatTest {
                 null,
                 fredag = Duration.ofHours(5)
             ),
-            vetPerioden = VetPeriode.VET_HELE_PERIODEN
+            vetPeriode = VetPeriode.VET_HELE_PERIODEN
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
@@ -310,7 +310,7 @@ class K9FormatTest {
                 torsdag = Duration.ofHours(10),
                 fredag = Duration.ofHours(10)
             ),
-            vetPerioden = VetPeriode.VET_HELE_PERIODEN
+            vetPeriode = VetPeriode.VET_HELE_PERIODEN
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)

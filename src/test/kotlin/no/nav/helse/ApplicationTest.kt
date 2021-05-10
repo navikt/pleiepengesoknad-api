@@ -1425,7 +1425,7 @@ class ApplicationTest {
             requestEntity = SøknadUtils
                 .defaultSøknad(UUID.randomUUID().toString()).copy(
                     omsorgstilbud = Omsorgstilbud(
-                        vetPerioden = VetPeriode.VET_HELE_PERIODEN,
+                        vetPeriode = VetPeriode.VET_HELE_PERIODEN,
                         tilsyn = null,
                         vetMinAntallTimer = true
                     ),
@@ -1465,7 +1465,7 @@ class ApplicationTest {
             requestEntity = SøknadUtils
                 .defaultSøknad(UUID.randomUUID().toString()).copy(
                     omsorgstilbud = Omsorgstilbud(
-                        vetPerioden = VetPeriode.USIKKER,
+                        vetPeriode = VetPeriode.USIKKER,
                         tilsyn = null,
                         vetMinAntallTimer = true
                     ),
@@ -1510,7 +1510,7 @@ class ApplicationTest {
             requestEntity = SøknadUtils
                 .defaultSøknad(UUID.randomUUID().toString()).copy(
                     omsorgstilbud = Omsorgstilbud(
-                        vetPerioden = VetPeriode.USIKKER,
+                        vetPeriode = VetPeriode.USIKKER,
                         tilsyn = Tilsynsuke(
                             mandag = Duration.ofHours(5),
                             tirsdag = Duration.ofHours(5),

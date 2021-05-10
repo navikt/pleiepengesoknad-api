@@ -109,6 +109,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     violations.addAll(arbeidsgivere.organisasjoner.validate())
     violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter, selvstendigArbeidsforhold))
 
+    // TODO: 10/05/2021 utgår
     tilsynsordning?.apply {
         violations.addAll(this.validate())
     }
@@ -412,7 +413,7 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
 }
 
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
-    when (vetPerioden) {
+    when (vetPeriode) {
         VetPeriode.VET_HELE_PERIODEN -> {
             if (tilsyn == null) {
                 add(

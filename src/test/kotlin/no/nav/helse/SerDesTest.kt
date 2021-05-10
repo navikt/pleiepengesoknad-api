@@ -428,7 +428,7 @@ internal class SerDesTest {
                   "torsdag": "PT1H",
                   "fredag": "PT1H"
                 },
-                "vetPerioden": "USIKKER",
+                "vetPeriode": "USIKKER",
                 "vetMinAntallTimer": true
               },
               "barnRelasjon" : "ANNET",
@@ -641,7 +641,7 @@ internal class SerDesTest {
                   "torsdag": "PT1H",
                   "fredag": "PT1H"
                 },
-                "vetPerioden": "USIKKER",
+                "vetPeriode": "USIKKER",
                 "vetMinAntallTimer": true
               },
               "barnRelasjon" : null,
@@ -732,7 +732,7 @@ internal class SerDesTest {
                     torsdag = Duration.ofHours(1),
                     fredag = Duration.ofHours(1)
                 ),
-                vetPerioden = VetPeriode.USIKKER,
+                vetPeriode = VetPeriode.USIKKER,
                 vetMinAntallTimer = true
             ),
             medlemskap = Medlemskap(

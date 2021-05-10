@@ -534,7 +534,7 @@ class SøknadUtils {
                     torsdag = Duration.ofHours(1),
                     fredag = Duration.ofHours(1)
                 ),
-                vetPerioden = VetPeriode.USIKKER,
+                vetPeriode = VetPeriode.USIKKER,
                 vetMinAntallTimer = true
             ),
             medlemskap = Medlemskap(
