@@ -29,7 +29,8 @@ data class Søknad(
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val tilsynsordning: Tilsynsordning?,
+    val tilsynsordning: Tilsynsordning? = null, // TODO: 10/05/2021 utgår
+    val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
@@ -77,31 +78,35 @@ data class UtenlandsoppholdIPerioden(
     val opphold: List<Utenlandsopphold> = listOf()
 )
 
+// TODO: 10/05/2021 Ugår
 enum class TilsynsordningSvar {
     ja,
     nei,
     vetIkke
 }
 
+// TODO: 10/05/2021 Utgår
 enum class TilsynsordningVetIkkeSvar {
     erSporadisk,
     erIkkeLagetEnPlan,
     annet
 }
 
+// TODO: 10/05/2021 Utgår
 data class TilsynsordningJa(
     val mandag: Duration?,
     val tirsdag: Duration?,
     val onsdag: Duration?,
     val torsdag: Duration?,
     val fredag: Duration?,
-    val tilleggsinformasjon: String? = null
+    val tilleggsinformasjon: String? = null // TODO: 07/05/2021 utgår
 ) {
     override fun toString(): String {
         return "TilsynsordningJa(mandag=${mandag}, tirsdag=${tirsdag}, onsdag=${onsdag}, torsdag=${torsdag}, fredag=${fredag})"
     }
 }
 
+// TODO: 10/05/2021 Utgår
 data class TilsynsordningVetIkke(
     val svar: TilsynsordningVetIkkeSvar,
     val annet: String? = null
@@ -111,10 +116,30 @@ data class TilsynsordningVetIkke(
     }
 }
 
+// TODO: 10/05/2021 Utgår
 data class Tilsynsordning(
-    val svar: TilsynsordningSvar,
+    val svar: TilsynsordningSvar? = null,
     val ja: TilsynsordningJa? = null,
     val vetIkke: TilsynsordningVetIkke? = null
+)
+
+data class Omsorgstilbud(
+    val tilsyn: Tilsynsuke? = null,
+    val vetPerioden: VetPeriode,
+    val vetMinAntallTimer: Boolean? = null
+)
+
+enum class VetPeriode {
+    VET_HELE_PERIODEN,
+    USIKKER
+}
+
+data class Tilsynsuke(
+    val mandag: Duration? = null,
+    val tirsdag: Duration? = null,
+    val onsdag: Duration? = null,
+    val torsdag: Duration? = null,
+    val fredag: Duration? = null
 )
 
 data class Nattevåk(

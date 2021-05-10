@@ -1,6 +1,10 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.ParameterType
+import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import java.time.DayOfWeek
@@ -398,6 +402,12 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
         }
     }
     return violations
+}
+
+fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
+    tilsyn
+    vetMinAntallTimer
+    vetPerioden
 }
 
 internal fun Tilsynsordning.validate(): MutableSet<Violation> {

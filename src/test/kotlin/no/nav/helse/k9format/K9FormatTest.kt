@@ -2,9 +2,9 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.Tilsynsordning
-import no.nav.helse.soknad.TilsynsordningJa
-import no.nav.helse.soknad.TilsynsordningSvar
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.Tilsynsuke
+import no.nav.helse.soknad.VetPeriode
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.junit.Test
@@ -183,16 +183,15 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
-        val k9Tilsynsordning = Tilsynsordning(
-            svar = TilsynsordningSvar.ja,
-            ja = TilsynsordningJa(
+        val k9Tilsynsordning = Omsorgstilbud(
+            tilsyn = Tilsynsuke(
                 mandag = Duration.ofHours(5),
                 tirsdag = Duration.ofHours(5),
                 onsdag = Duration.ofHours(5),
                 torsdag = Duration.ofHours(5),
-                fredag = Duration.ofHours(5),
-                tilleggsinformasjon = null
-            )
+                fredag = Duration.ofHours(5)
+            ),
+            vetPerioden = VetPeriode.VET_HELE_PERIODEN
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
@@ -225,16 +224,15 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
-        val k9Tilsynsordning = Tilsynsordning(
-            svar = TilsynsordningSvar.ja,
-            ja = TilsynsordningJa(
+        val k9Tilsynsordning = Omsorgstilbud(
+            tilsyn = Tilsynsuke(
                 mandag = Duration.ofHours(5),
                 tirsdag = Duration.ofHours(5),
                 onsdag = Duration.ofHours(5),
                 torsdag = Duration.ofHours(5),
-                fredag = Duration.ofHours(5),
-                tilleggsinformasjon = null
-            )
+                fredag = Duration.ofHours(5)
+            ),
+            vetPerioden = VetPeriode.VET_HELE_PERIODEN
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
@@ -265,16 +263,15 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
-        val k9Tilsynsordning = Tilsynsordning(
-            svar = TilsynsordningSvar.ja,
-            ja = TilsynsordningJa(
+        val k9Tilsynsordning = Omsorgstilbud(
+            tilsyn = Tilsynsuke(
                 mandag = Duration.ofHours(5),
                 tirsdag = Duration.ofHours(5),
                 onsdag = Duration.ofHours(5),
                 null,
-                fredag = Duration.ofHours(5),
-                tilleggsinformasjon = null
-            )
+                fredag = Duration.ofHours(5)
+            ),
+            vetPerioden = VetPeriode.VET_HELE_PERIODEN
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
@@ -305,16 +302,15 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
-        val k9Tilsynsordning = Tilsynsordning(
-            svar = TilsynsordningSvar.ja,
-            ja = TilsynsordningJa(
+        val k9Tilsynsordning = Omsorgstilbud(
+            tilsyn = Tilsynsuke(
                 mandag = Duration.ofHours(10),
                 tirsdag = Duration.ofHours(10),
                 onsdag = Duration.ofHours(10),
                 torsdag = Duration.ofHours(10),
-                fredag = Duration.ofHours(10),
-                tilleggsinformasjon = null
-            )
+                fredag = Duration.ofHours(10)
+            ),
+            vetPerioden = VetPeriode.VET_HELE_PERIODEN
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)

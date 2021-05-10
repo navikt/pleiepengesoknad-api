@@ -24,7 +24,8 @@ data class KomplettSøknad(
     val samtidigHjemme: Boolean?,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val tilsynsordning: Tilsynsordning?,
+    val tilsynsordning: Tilsynsordning? =  null, // TODO: 10/05/2021 Utgår
+    val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
     val frilans: Frilans? = null,
