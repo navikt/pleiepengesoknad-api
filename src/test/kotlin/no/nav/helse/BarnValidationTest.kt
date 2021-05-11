@@ -13,14 +13,13 @@ class BarnValidationTest {
     @Test
     fun `Når AktørId settes som ID på barnet kreves hverken relasjon til barnet eller navn`() {
         val barn = BarnDetaljer(
-            fødselsnummer = null,
+            fødselsnummer = "02119970078",
             fødselsdato = LocalDate.parse("2021-01-01"),
             aktørId = "10000001",
             navn = null
         )
         barn.validate().assertFeilPaa()
     }
-
 
     @Test
     fun `Når Fødselsnummer settes som ID på barnet kreves det relasjon`() {
@@ -31,6 +30,17 @@ class BarnValidationTest {
             navn = null
         )
         barn.validate().assertFeilPaa()
+    }
+
+    @Test
+    fun `Skal gi feil dersom fødselsnummer ikke settes`() {
+        val barn = BarnDetaljer(
+            fødselsnummer = null,
+            fødselsdato = null,
+            aktørId = null,
+            navn = null
+        )
+        barn.validate().assertFeilPaa(listOf("barn.fødselsnummer"))
     }
 
 }
