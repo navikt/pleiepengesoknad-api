@@ -117,7 +117,7 @@ class SoknadValidationTest {
         språk = Språk.nb,
         barn = BarnDetaljer(
             aktørId = null,
-            fødselsnummer = null,
+            fødselsnummer = "02119970078",
             fødselsdato = LocalDate.now(),
             navn = null
         ),
@@ -177,7 +177,7 @@ class SoknadValidationTest {
         språk = Språk.nb,
         barn = BarnDetaljer(
             aktørId = null,
-            fødselsnummer = null,
+            fødselsnummer = "02119970078",
             fødselsdato = LocalDate.now(),
             navn = null
         ),

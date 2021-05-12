@@ -508,7 +508,7 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
             requestEntity = SøknadUtils.bodyMedAktoerIdPaaBarn(
-                aktørId = "10000000001",
+                aktørId = "1000000000001",
                 vedleggUrl1 = jpegUrl,
                 vedleggUrl2 = pdfUrl
             )
