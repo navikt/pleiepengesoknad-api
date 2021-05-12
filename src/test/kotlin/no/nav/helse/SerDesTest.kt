@@ -17,6 +17,7 @@ import no.nav.helse.soknad.Medlemskap
 import no.nav.helse.soknad.Nattevåk
 import no.nav.helse.soknad.Næringstyper
 import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.OmsorgstilbudFasteDager
 import no.nav.helse.soknad.OrganisasjonDetaljer
 import no.nav.helse.soknad.Periode
 import no.nav.helse.soknad.Regnskapsfører
@@ -28,11 +29,10 @@ import no.nav.helse.soknad.TilsynsordningJa
 import no.nav.helse.soknad.TilsynsordningSvar
 import no.nav.helse.soknad.TilsynsordningVetIkke
 import no.nav.helse.soknad.TilsynsordningVetIkkeSvar
-import no.nav.helse.soknad.Tilsynsuke
 import no.nav.helse.soknad.Utenlandsopphold
 import no.nav.helse.soknad.UtenlandsoppholdIPerioden
 import no.nav.helse.soknad.VarigEndring
-import no.nav.helse.soknad.VetPeriode
+import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.Årsak
@@ -421,15 +421,15 @@ internal class SerDesTest {
               },
               "tilsynsordning": null,
               "omsorgstilbud": {
-                "tilsyn": {
+                "fasteDager": {
                   "mandag": "PT1H",
                   "tirsdag": "PT1H",
                   "onsdag": "PT1H",
                   "torsdag": "PT1H",
                   "fredag": "PT1H"
                 },
-                "vetPeriode": "USIKKER",
-                "vetMinAntallTimer": true
+                "vetOmsorgstilbud": "VET_ALLE_TIMER",
+                "enkeltDager": null
               },
               "barnRelasjon" : "ANNET",
               "barnRelasjonBeskrivelse" : "Gudfar til barnet",
@@ -634,15 +634,15 @@ internal class SerDesTest {
               },
               "tilsynsordning": null,
               "omsorgstilbud": {
-                "tilsyn": {
+                "fasteDager": {
                   "mandag": "PT1H",
                   "tirsdag": "PT1H",
                   "onsdag": "PT1H",
                   "torsdag": "PT1H",
                   "fredag": "PT1H"
                 },
-                "vetPeriode": "USIKKER",
-                "vetMinAntallTimer": true
+                "vetOmsorgstilbud": "VET_ALLE_TIMER",
+                "enkeltDager": null
               },
               "barnRelasjon" : null,
               "barnRelasjonBeskrivelse" : null,
@@ -725,15 +725,14 @@ internal class SerDesTest {
             ),
             skalPassePåBarnetIHelePerioden = true,
             omsorgstilbud = Omsorgstilbud(
-                tilsyn = Tilsynsuke(
+                fasteDager = OmsorgstilbudFasteDager(
                     mandag = Duration.ofHours(1),
                     tirsdag = Duration.ofHours(1),
                     onsdag = Duration.ofHours(1),
                     torsdag = Duration.ofHours(1),
                     fredag = Duration.ofHours(1)
                 ),
-                vetPeriode = VetPeriode.USIKKER,
-                vetMinAntallTimer = true
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
             ),
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,

@@ -527,15 +527,14 @@ class SøknadUtils {
             ),
             skalPassePåBarnetIHelePerioden = true,
             omsorgstilbud = Omsorgstilbud(
-                tilsyn = Tilsynsuke(
+                fasteDager = OmsorgstilbudFasteDager(
                     mandag = Duration.ofHours(1),
                     tirsdag = Duration.ofHours(1),
                     onsdag = Duration.ofHours(1),
                     torsdag = Duration.ofHours(1),
                     fredag = Duration.ofHours(1)
                 ),
-                vetPeriode = VetPeriode.USIKKER,
-                vetMinAntallTimer = true
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
             ),
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,

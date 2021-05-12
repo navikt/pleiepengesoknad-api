@@ -413,48 +413,39 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
 }
 
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
-    when (vetPeriode) {
-        VetPeriode.VET_HELE_PERIODEN -> {
-            if (tilsyn == null) {
+    when(val vet = vetOmsorgstilbud) {
+        VetOmsorgstilbud.VET_IKKE -> {
+            if (fasteDager != null || (enkeltDager != null && enkeltDager.isNotEmpty())) {
                 add(
                     Violation(
-                        parameterName = "omsorgstilbud.tilsyn",
+                        parameterName = "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
                         parameterType = ParameterType.ENTITY,
-                        reason = "'tilsyn' kan ikke være null, dersom 'vetPerioden' er 'VET_HELE_PERIODEN'",
-                        invalidValue = tilsyn
-                    )
-                )
-            }
-            if (vetMinAntallTimer != null) {
-                add(
-                    Violation(
-                        parameterName = "omsorgstilbud.vetMinAntallTimer",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "'vetMinAntallTimer' må være null, dersom 'vetPerioden' er 'VET_HELE_PERIODEN'",
-                        invalidValue = tilsyn
+                        reason = "Dersom vetOmsorgstilbud er '$vet', så kan verken 'fasteDager' eller 'enkeltDager' være satt.",
+                        invalidValue = "enkeltDager = $enkeltDager, fasteDager = $fasteDager"
                     )
                 )
             }
         }
 
-        VetPeriode.USIKKER -> {
-            if (vetMinAntallTimer == true && tilsyn == null) {
+        else -> {
+            if (fasteDager == null && (enkeltDager == null || enkeltDager.isEmpty())) {
                 add(
                     Violation(
-                        parameterName = "omsorgstilbud.tilsyn",
+                        parameterName = "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
                         parameterType = ParameterType.ENTITY,
-                        reason = "'tilsyn' kan ikke være null, dersom 'vetPerioden' er 'USIKKER' og 'vetMinAntallTimer' er true",
-                        invalidValue = tilsyn
+                        reason = "Dersom vetOmsorgstilbud er '$vet', så må enten 'fasteDager' eller 'enkeltDager' være satt.",
+                        invalidValue = "enkeltDager = $enkeltDager, fasteDager = $fasteDager"
                     )
                 )
             }
-            if (vetMinAntallTimer != true && tilsyn != null) {
+
+            if (fasteDager != null && (enkeltDager != null && enkeltDager.isNotEmpty())) {
                 add(
                     Violation(
-                        parameterName = "omsorgstilbud.tilsyn",
+                        parameterName = "omsorgstilbud.fasteDager og omsorgstilbud.enkeltDager",
                         parameterType = ParameterType.ENTITY,
-                        reason = "'tilsyn' må være null, dersom 'vetPerioden' er 'USIKKER' og 'vetMinAntallTimer' er ulik true",
-                        invalidValue = tilsyn
+                        reason = "Både 'fasteDager' og 'enkeltDager' kan ikke være satt samtidig.",
+                        invalidValue = "enkeltDager = $enkeltDager, fasteDager = $fasteDager"
                     )
                 )
             }
