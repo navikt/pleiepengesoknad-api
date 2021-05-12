@@ -206,7 +206,7 @@ class SøknadUtils {
             return """
                 {
                     "barn": {
-                      "fødselsdato" : "2020-01-01"
+                      "fødselsnummer" : "02119970078"
                     },
                     "fraOgMed": "2018-10-10",
                     "tilOgMed": "2019-10-10",
@@ -393,7 +393,7 @@ class SøknadUtils {
             return """
                 {
                     "barn": {
-                      "fødselsdato" : "2020-01-01"
+                      "fødselsnummer" : "02119970078"
                     },
                     "fraOgMed": "$fraOgMed",
                     "tilOgMed": "$tilOgMed",

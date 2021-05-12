@@ -17,7 +17,7 @@ data class BarnDetaljer(
     val navn: String?
 ) {
     override fun toString(): String {
-        return "BarnDetaljer(aktørId=${aktørId}, navn=${navn}, fodselsdato=${fødselsdato}"
+        return "BarnDetaljer(aktørId=***, navn=***, fodselsdato=***"
     }
 
     fun manglerIdentitetsnummer(): Boolean = fødselsnummer.isNullOrEmpty()
@@ -31,12 +31,12 @@ data class BarnDetaljer(
 internal fun BarnDetaljer.validate(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
-    if(fødselsnummer.isNullOrEmpty() && fødselsdato == null){
+    if(fødselsnummer.isNullOrEmpty()){
         violations.add(
             Violation(
                 parameterName = "barn.fødselsnummer",
                 parameterType = ParameterType.ENTITY,
-                reason = "Kan ikke ha null for både fødselsnummer og fødselsdato",
+                reason = "Fødselsnummer må være satt",
                 invalidValue = fødselsnummer
             )
         )

@@ -43,7 +43,7 @@ private fun getResponse(ident: String): String {
                     "etternavn": "BARNESEN",
                     "aktør_id": "1000000000001",
                     "har_samme_adresse": true,
-                    "fødselsnummer": "02119970078"
+                    "identitetsnummer": "02119970078"
                 }, {
                     "fødselsdato": "2001-04-10",
                     "fornavn": "BARN",
@@ -51,7 +51,7 @@ private fun getResponse(ident: String): String {
                     "etternavn": "BARNESEN",
                     "aktør_id": "1000000000002",
                     "har_samme_adresse": true,
-                    "fødselsnummer": "02119970078"
+                    "identitetsnummer": "02119970078"
                 }]
             }
             """.trimIndent()
