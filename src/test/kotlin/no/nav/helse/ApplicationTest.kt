@@ -1517,7 +1517,7 @@ class ApplicationTest {
                       "type": "entity",
                       "name": "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
                       "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'fasteDager' eller 'enkeltDager' være satt.",
-                      "invalid_value": "enkeltDager = [Omsorgsdag(dato=2020-01-01, tid=PT7H)], fasteDager = null"
+                      "invalid_value": "enkeltDager = [OmsorgstilbudEnkeltDag(dato=2020-01-01, tid=PT7H)], fasteDager = null"
                     }
                   ]
                 }
@@ -1557,7 +1557,7 @@ class ApplicationTest {
                       "type": "entity",
                       "name": "omsorgstilbud.fasteDager og omsorgstilbud.enkeltDager",
                       "reason": "Både 'fasteDager' og 'enkeltDager' kan ikke være satt samtidig.",
-                      "invalid_value": "enkeltDager = [Omsorgsdag(dato=2020-01-01, tid=PT7H)], fasteDager = OmsorgstilbudFasteDager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
+                      "invalid_value": "enkeltDager = [OmsorgstilbudEnkeltDag(dato=2020-01-01, tid=PT7H)], fasteDager = OmsorgstilbudFasteDager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
                     }
                   ]
                 }
