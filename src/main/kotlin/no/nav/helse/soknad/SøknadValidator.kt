@@ -428,7 +428,7 @@ fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
         }
 
         else -> {
-            if (fasteDager == null && (enkeltDager == null || enkeltDager.isEmpty())) {
+            if (fasteDager == null && enkeltDager.isNullOrEmpty()) {
                 add(
                     Violation(
                         parameterName = "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
