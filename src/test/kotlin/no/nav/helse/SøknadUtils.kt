@@ -526,16 +526,15 @@ class SøknadUtils {
                 skalJobbeProsent = 0.0
             ),
             skalPassePåBarnetIHelePerioden = true,
-            tilsynsordning = Tilsynsordning(
-                svar = TilsynsordningSvar.ja,
-                ja = TilsynsordningJa(
+            omsorgstilbud = Omsorgstilbud(
+                fasteDager = OmsorgstilbudFasteDager(
                     mandag = Duration.ofHours(1),
                     tirsdag = Duration.ofHours(1),
                     onsdag = Duration.ofHours(1),
                     torsdag = Duration.ofHours(1),
-                    fredag = Duration.ofHours(1),
-                    tilleggsinformasjon = "Blabla"
-                )
+                    fredag = Duration.ofHours(1)
+                ),
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
             ),
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,

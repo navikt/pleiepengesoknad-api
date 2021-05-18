@@ -10,8 +10,27 @@ import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.Land
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
+import no.nav.helse.soknad.OmsorgstilbudFasteDager
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SkalJobbe
+import no.nav.helse.soknad.VetOmsorgstilbud
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9Dokument
+import no.nav.helse.wiremock.stubK9DokumentHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
 import org.json.JSONObject
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -1368,6 +1387,195 @@ class ApplicationTest {
                 tilOgMed = "2020-02-27",
                 bekrefterPeriodeOver8Uker = false
             )
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbud, der søker vet alle timer, men både fasteDager og enkeltDager er null`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
+                      "reason": "Dersom vetOmsorgstilbud er 'VET_ALLE_TIMER', så må enten 'fasteDager' eller 'enkeltDager' være satt.",
+                      "invalid_value": "enkeltDager = null, fasteDager = null"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbud = Omsorgstilbud(vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbud, der søker vet noen timer, men både fasteDager og enkeltDager null`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
+                      "reason": "Dersom vetOmsorgstilbud er 'VET_NOEN_TIMER', så må enten 'fasteDager' eller 'enkeltDager' være satt.",
+                      "invalid_value": "enkeltDager = null, fasteDager = null"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbud = Omsorgstilbud(vetOmsorgstilbud = VetOmsorgstilbud.VET_NOEN_TIMER),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbud, der søker ikke vet timene, men fasteDager er satt`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
+                      "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'fasteDager' eller 'enkeltDager' være satt.",
+                      "invalid_value": "enkeltDager = null, fasteDager = OmsorgstilbudFasteDager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbud = Omsorgstilbud(
+                        vetOmsorgstilbud = VetOmsorgstilbud.VET_IKKE,
+                        fasteDager = OmsorgstilbudFasteDager(mandag = Duration.ofHours(7))
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbud, der søker ikke vet timene, men enkeltDager er satt`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
+                      "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'fasteDager' eller 'enkeltDager' være satt.",
+                      "invalid_value": "enkeltDager = [OmsorgstilbudEnkeltDag(dato=2020-01-01, tid=PT7H)], fasteDager = null"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbud = Omsorgstilbud(
+                        vetOmsorgstilbud = VetOmsorgstilbud.VET_IKKE,
+                        enkeltDager = listOf(
+                            OmsorgstilbudEnkeltDag(dato = LocalDate.parse("2020-01-01"), tid = Duration.ofHours(7))
+                        )
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbud, der både enkeltDager og fasteDager er satt`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = "/soknad",
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbud.fasteDager og omsorgstilbud.enkeltDager",
+                      "reason": "Både 'fasteDager' og 'enkeltDager' kan ikke være satt samtidig.",
+                      "invalid_value": "enkeltDager = [OmsorgstilbudEnkeltDag(dato=2020-01-01, tid=PT7H)], fasteDager = OmsorgstilbudFasteDager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbud = Omsorgstilbud(
+                        vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER,
+                        enkeltDager = listOf(
+                            OmsorgstilbudEnkeltDag(dato = LocalDate.parse("2020-01-01"), tid = Duration.ofHours(7))
+                        ),
+                        fasteDager = OmsorgstilbudFasteDager(mandag = Duration.ofHours(7))
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
         )
     }
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.helse.barn.Barn
 import java.net.URL
-import java.time.Duration
 import java.time.LocalDate
 import java.util.*
 
@@ -29,7 +28,8 @@ data class Søknad(
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val tilsynsordning: Tilsynsordning?,
+    val tilsynsordning: Tilsynsordning? = null, // TODO: 10/05/2021 utgår
+    val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
@@ -75,46 +75,6 @@ data class Medlemskap(
 data class UtenlandsoppholdIPerioden(
     val skalOppholdeSegIUtlandetIPerioden: Boolean? = null,
     val opphold: List<Utenlandsopphold> = listOf()
-)
-
-enum class TilsynsordningSvar {
-    ja,
-    nei,
-    vetIkke
-}
-
-enum class TilsynsordningVetIkkeSvar {
-    erSporadisk,
-    erIkkeLagetEnPlan,
-    annet
-}
-
-data class TilsynsordningJa(
-    val mandag: Duration?,
-    val tirsdag: Duration?,
-    val onsdag: Duration?,
-    val torsdag: Duration?,
-    val fredag: Duration?,
-    val tilleggsinformasjon: String? = null
-) {
-    override fun toString(): String {
-        return "TilsynsordningJa(mandag=${mandag}, tirsdag=${tirsdag}, onsdag=${onsdag}, torsdag=${torsdag}, fredag=${fredag})"
-    }
-}
-
-data class TilsynsordningVetIkke(
-    val svar: TilsynsordningVetIkkeSvar,
-    val annet: String? = null
-) {
-    override fun toString(): String {
-        return "TilsynsordningVetIkke(svar=${svar})"
-    }
-}
-
-data class Tilsynsordning(
-    val svar: TilsynsordningSvar,
-    val ja: TilsynsordningJa? = null,
-    val vetIkke: TilsynsordningVetIkke? = null
 )
 
 data class Nattevåk(

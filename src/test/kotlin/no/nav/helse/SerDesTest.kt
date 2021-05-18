@@ -2,7 +2,40 @@ package no.nav.helse
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.ArbeidsgiverDetaljer
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Beredskap
+import no.nav.helse.soknad.Bosted
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.KomplettSøknad
+import no.nav.helse.soknad.Land
+import no.nav.helse.soknad.Medlemskap
+import no.nav.helse.soknad.Nattevåk
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.OmsorgstilbudFasteDager
+import no.nav.helse.soknad.OrganisasjonDetaljer
+import no.nav.helse.soknad.Periode
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SkalJobbe
+import no.nav.helse.soknad.Språk
+import no.nav.helse.soknad.Søknad
+import no.nav.helse.soknad.Tilsynsordning
+import no.nav.helse.soknad.TilsynsordningJa
+import no.nav.helse.soknad.TilsynsordningSvar
+import no.nav.helse.soknad.TilsynsordningVetIkke
+import no.nav.helse.soknad.TilsynsordningVetIkkeSvar
+import no.nav.helse.soknad.Utenlandsopphold
+import no.nav.helse.soknad.UtenlandsoppholdIPerioden
+import no.nav.helse.soknad.VarigEndring
+import no.nav.helse.soknad.VetOmsorgstilbud
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.Årsak
 import no.nav.helse.vedlegg.Vedlegg
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -386,17 +419,17 @@ internal class SerDesTest {
                 "harNattevåk": true,
                 "tilleggsinformasjon": "Har nattevåk"
               },
-              "tilsynsordning": {
-                "svar": "ja",
-                "ja": {
+              "tilsynsordning": null,
+              "omsorgstilbud": {
+                "fasteDager": {
                   "mandag": "PT1H",
                   "tirsdag": "PT1H",
                   "onsdag": "PT1H",
                   "torsdag": "PT1H",
-                  "fredag": "PT1H",
-                  "tilleggsinformasjon": "Blabla"
+                  "fredag": "PT1H"
                 },
-                "vetIkke" : null
+                "vetOmsorgstilbud": "VET_ALLE_TIMER",
+                "enkeltDager": null
               },
               "barnRelasjon" : "ANNET",
               "barnRelasjonBeskrivelse" : "Gudfar til barnet",
@@ -599,20 +632,17 @@ internal class SerDesTest {
                 "harNattevåk": true,
                 "tilleggsinformasjon": "Har nattevåk"
               },
-              "tilsynsordning": {
-                "svar": "ja",
-                "ja": {
+              "tilsynsordning": null,
+              "omsorgstilbud": {
+                "fasteDager": {
                   "mandag": "PT1H",
                   "tirsdag": "PT1H",
                   "onsdag": "PT1H",
                   "torsdag": "PT1H",
-                  "fredag": "PT1H",
-                  "tilleggsinformasjon": "Blabla"
+                  "fredag": "PT1H"
                 },
-                "vetIkke": {
-                  "svar": "annet",
-                  "annet": "Nei"
-                }
+                "vetOmsorgstilbud": "VET_ALLE_TIMER",
+                "enkeltDager": null
               },
               "barnRelasjon" : null,
               "barnRelasjonBeskrivelse" : null,
@@ -694,20 +724,15 @@ internal class SerDesTest {
                 skalJobbeProsent = 0.0
             ),
             skalPassePåBarnetIHelePerioden = true,
-            tilsynsordning = Tilsynsordning(
-                svar = TilsynsordningSvar.ja,
-                ja = TilsynsordningJa(
+            omsorgstilbud = Omsorgstilbud(
+                fasteDager = OmsorgstilbudFasteDager(
                     mandag = Duration.ofHours(1),
                     tirsdag = Duration.ofHours(1),
                     onsdag = Duration.ofHours(1),
                     torsdag = Duration.ofHours(1),
-                    fredag = Duration.ofHours(1),
-                    tilleggsinformasjon = "Blabla"
+                    fredag = Duration.ofHours(1)
                 ),
-                vetIkke = TilsynsordningVetIkke(
-                    svar = TilsynsordningVetIkkeSvar.annet,
-                    annet = "Nei"
-                )
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
             ),
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,
