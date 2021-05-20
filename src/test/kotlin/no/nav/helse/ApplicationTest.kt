@@ -1346,7 +1346,7 @@ class ApplicationTest {
                   "type": "entity",
                   "name": "java.lang.IllegalArgumentException",
                   "reason": "Til og med dato før fra og med dato: 1990-09-29>1990-09-28",
-                  "invalid_value": "K9-format feilkode: nullIllegalArgumentException"
+                  "invalid_value": "K9-format feilkode: IllegalArgumentException"
                 }
               ]
             }

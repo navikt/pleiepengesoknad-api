@@ -37,6 +37,7 @@ class K9FormatTest {
             """
             {
               "søknadId" : "$søknadId",
+              "journalposter": [],
               "versjon" : "1.0.0",
               "mottattDato" : "2020-01-02T03:04:05.000Z",
               "søker" : {
@@ -134,8 +135,22 @@ class K9FormatTest {
                       }
                     }
                   } ],
-                  "frilanserArbeidstidInfo" : null,
-                  "selvstendigNæringsdrivendeArbeidstidInfo" : null
+                  "frilanserArbeidstidInfo" : {
+                    "perioder": {
+                      "2021-01-04/2021-01-08": {
+                        "faktiskArbeidTimerPerDag": "PT0S",
+                        "jobberNormaltTimerPerDag": "PT40H"
+                      }
+                    }
+                  },
+                  "selvstendigNæringsdrivendeArbeidstidInfo" : {
+                    "perioder": {
+                      "2021-01-04/2021-01-08": {
+                        "faktiskArbeidTimerPerDag": "PT40H",
+                        "jobberNormaltTimerPerDag": "PT40H"
+                      }
+                    }
+                  }
                 },
                 "uttak" : {
                   "perioder" : {
