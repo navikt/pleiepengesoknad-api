@@ -146,7 +146,7 @@ class K9FormatTest {
                   "selvstendigNæringsdrivendeArbeidstidInfo" : {
                     "perioder": {
                       "2021-01-04/2021-01-08": {
-                        "faktiskArbeidTimerPerDag": "PT40H",
+                        "faktiskArbeidTimerPerDag": "PT0S",
                         "jobberNormaltTimerPerDag": "PT40H"
                       }
                     }
