@@ -21,7 +21,7 @@ internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
 fun Arbeidsforhold.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo = ArbeidstidInfo().apply {
     medPerioder(
         mutableMapOf(
-            Periode(periode.fraOgMed, periode.tilOgMed) to ArbeidstidPeriodeInfo()
+            periode to ArbeidstidPeriodeInfo()
                 .medJobberNormaltTimerPerDag(jobberNormaltTimer.tilDuration())
                 .medFaktiskArbeidTimerPerDag(skalJobbeTimer.tilDuration())
         )
