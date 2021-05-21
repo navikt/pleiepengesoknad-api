@@ -36,7 +36,9 @@ internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser()
 
 internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
     periode: Periode
-): List<Arbeidstaker> {
+): List<Arbeidstaker>? {
+    if (organisasjoner.isEmpty()) return null
+
     return organisasjoner.map { organisasjon ->
         Arbeidstaker(
             null, //K9 format vil ikke ha både fnr og org nummer
