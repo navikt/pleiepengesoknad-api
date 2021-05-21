@@ -139,7 +139,7 @@ class K9FormatTest {
                     "perioder": {
                       "2021-01-04/2021-01-08": {
                         "faktiskArbeidTimerPerDag": "PT0S",
-                        "jobberNormaltTimerPerDag": "PT40H"
+                        "jobberNormaltTimerPerDag": "PT8H"
                       }
                     }
                   },
@@ -147,7 +147,7 @@ class K9FormatTest {
                     "perioder": {
                       "2021-01-04/2021-01-08": {
                         "faktiskArbeidTimerPerDag": "PT0S",
-                        "jobberNormaltTimerPerDag": "PT40H"
+                        "jobberNormaltTimerPerDag": "PT8H"
                       }
                     }
                   }

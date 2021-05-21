@@ -1,6 +1,7 @@
 package no.nav.helse.k9format
 
 import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.OrganisasjonDetaljer
 import no.nav.helse.soknad.Søknad
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstid
@@ -19,11 +20,29 @@ internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
 }
 
 fun Arbeidsforhold.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo = ArbeidstidInfo().apply {
+    val faktiskTimerPerUke = jobberNormaltTimer.tilFaktiskTimerPerUke(skalJobbeProsent)
+    val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
+    val faktiskArbeidstimerPerDag = faktiskTimerPerUke.tilTimerPerDag().tilDuration()
+
     medPerioder(
         mutableMapOf(
             periode to ArbeidstidPeriodeInfo()
-                .medJobberNormaltTimerPerDag(jobberNormaltTimer.tilDuration())
-                .medFaktiskArbeidTimerPerDag(skalJobbeTimer.tilDuration())
+                .medJobberNormaltTimerPerDag(normalTimerPerDag)
+                .medFaktiskArbeidTimerPerDag(faktiskArbeidstimerPerDag)
+        )
+    )
+}
+
+fun OrganisasjonDetaljer.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo = ArbeidstidInfo().apply {
+    val faktiskTimerPerUke = jobberNormaltTimer.tilFaktiskTimerPerUke(skalJobbeProsent)
+    val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
+    val faktiskArbeidstimerPerDag = faktiskTimerPerUke.tilTimerPerDag().tilDuration()
+
+    medPerioder(
+        mutableMapOf(
+            periode to ArbeidstidPeriodeInfo()
+                .medJobberNormaltTimerPerDag(normalTimerPerDag)
+                .medFaktiskArbeidTimerPerDag(faktiskArbeidstimerPerDag)
         )
     )
 }
