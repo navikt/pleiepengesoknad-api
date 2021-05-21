@@ -568,7 +568,6 @@ class ApplicationTest {
                     skalJobbe = SkalJobbe.NEI,
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    skalJobbeTimer = 0.0,
                     skalJobbeProsent = 0.0
                 )
             )
@@ -632,7 +631,6 @@ class ApplicationTest {
                     skalJobbe = SkalJobbe.NEI,
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    skalJobbeTimer = 0.0,
                     skalJobbeProsent = 0.0
                 )
             )
@@ -801,7 +799,6 @@ class ApplicationTest {
                     skalJobbe = SkalJobbe.NEI,
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    skalJobbeTimer = 0.0,
                     skalJobbeProsent = 0.0
                 )
             )
@@ -844,7 +841,6 @@ class ApplicationTest {
                         skalJobbe = SkalJobbe.NEI,
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 40.0,
-                        skalJobbeTimer = 0.0,
                         skalJobbeProsent = 0.0
                     )
                 )

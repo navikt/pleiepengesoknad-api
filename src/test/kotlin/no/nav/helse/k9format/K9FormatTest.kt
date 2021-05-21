@@ -366,7 +366,6 @@ class K9FormatTest {
             skalJobbe = SkalJobbe.REDUSERT,
             arbeidsform = Arbeidsform.FAST,
             jobberNormaltTimer = 40.0,
-            skalJobbeTimer = 20.0,
             skalJobbeProsent = 50.0
         ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
@@ -393,7 +392,6 @@ class K9FormatTest {
             skalJobbe = SkalJobbe.NEI,
             arbeidsform = Arbeidsform.FAST,
             jobberNormaltTimer = 40.0,
-            skalJobbeTimer = 0.0,
             skalJobbeProsent = 0.0
         ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
@@ -420,7 +418,6 @@ class K9FormatTest {
             skalJobbe = SkalJobbe.JA,
             arbeidsform = Arbeidsform.FAST,
             jobberNormaltTimer = 40.0,
-            skalJobbeTimer = 0.0,
             skalJobbeProsent = 100.0
         ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
