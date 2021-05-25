@@ -210,7 +210,7 @@ class K9FormatTest {
                 fredag = Duration.ofHours(5)
             ),
             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9TilsynsordningFasteDager(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
 
@@ -251,7 +251,7 @@ class K9FormatTest {
                 fredag = Duration.ofHours(5)
             ),
             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9TilsynsordningFasteDager(Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
 
@@ -290,7 +290,7 @@ class K9FormatTest {
                 fredag = Duration.ofHours(5)
             ),
             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9TilsynsordningFasteDager(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
 
@@ -350,7 +350,7 @@ class K9FormatTest {
                 fredag = Duration.ofHours(10)
             ),
             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9TilsynsordningFasteDager(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
 
