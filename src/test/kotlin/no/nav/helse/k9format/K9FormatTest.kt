@@ -319,6 +319,27 @@ class K9FormatTest {
     }
 
     @Test
+    fun `gitt søknadsperiode man-fre, uten tilsyn, forvent 1 periode med 0 timer`() {
+        val k9Tilsynsordning = tilK9Tilsynsordning0Timer(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+
+        assertEquals(1, k9Tilsynsordning.perioder.size)
+
+        JSONAssert.assertEquals(
+            //language=json
+            """
+            {
+              "perioder" : {
+                "2021-01-04/2021-01-08" : {
+                  "etablertTilsynTimerPerDag" : "PT0S"
+                }
+              },
+              "perioderSomSkalSlettes": {}
+            }
+        """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
+        )
+    }
+
+    @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
         val k9Tilsynsordning = Omsorgstilbud(
             fasteDager = OmsorgstilbudFasteDager(

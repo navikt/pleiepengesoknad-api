@@ -52,9 +52,11 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     beredskap?.let { if (it.beredskap) psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
     nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
     omsorgstilbud?.let {
-        if (it.fasteDager != null) psb.medTilsynsordning(omsorgstilbud.tilK9TilsynsordningFasteDager(søknadsperiode))
-        if (it.enkeltDager != null) psb.medTilsynsordning(omsorgstilbud.tilK9TilsynsordningEnkeltDager())
-    }
+        if (it.fasteDager == null && it.enkeltDager == null) psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
+        if (it.fasteDager != null) psb.medTilsynsordning(it.tilK9TilsynsordningFasteDager(søknadsperiode))
+        if (it.enkeltDager != null) psb.medTilsynsordning(it.tilK9TilsynsordningEnkeltDager())
+    } ?: psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
+
     ferieuttakIPerioden?.let {
         if (it.ferieuttak.isNotEmpty() && it.skalTaUtFerieIPerioden) {
             psb.medLovbestemtFerie(ferieuttakIPerioden.tilK9LovbestemtFerie())
@@ -129,6 +131,16 @@ fun Omsorgstilbud.tilK9TilsynsordningFasteDager(periode: Periode) = K9Tilsynsord
             )
         }
     }
+}
+
+
+fun tilK9Tilsynsordning0Timer(periode: Periode) = K9Tilsynsordning().apply {
+    leggeTilPeriode(
+        periode,
+        TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
+            Duration.ZERO
+        )
+    )
 }
 
 fun Omsorgstilbud.tilK9TilsynsordningEnkeltDager() = K9Tilsynsordning().apply {
