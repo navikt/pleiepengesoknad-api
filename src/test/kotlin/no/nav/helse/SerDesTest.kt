@@ -321,7 +321,6 @@ internal class SerDesTest {
                   "skalJobbe": "NEI",
                   "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
-                  "skalJobbeTimer": 0.0,
                   "skalJobbeProsent": 0.0
               },
               "utenlandsoppholdIPerioden": {
@@ -411,7 +410,6 @@ internal class SerDesTest {
                       "skalJobbe": "NEI",
                       "arbeidsform": "FAST",
                       "jobberNormaltTimer": 40.0,
-                      "skalJobbeTimer": 0.0,
                       "skalJobbeProsent": 0.0
                   }
               },
@@ -534,7 +532,6 @@ internal class SerDesTest {
                   "skalJobbe": "NEI",
                   "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
-                  "skalJobbeTimer": 0.0,
                   "skalJobbeProsent": 0.0
               },
               "utenlandsoppholdIPerioden": {
@@ -624,7 +621,6 @@ internal class SerDesTest {
                       "skalJobbe": "NEI",
                       "arbeidsform": "FAST",
                       "jobberNormaltTimer": 40.0,
-                      "skalJobbeTimer": 0.0,
                       "skalJobbeProsent": 0.0
                   }
               },
@@ -720,7 +716,6 @@ internal class SerDesTest {
                 skalJobbe = SkalJobbe.NEI,
                 arbeidsform = Arbeidsform.FAST,
                 jobberNormaltTimer = 40.0,
-                skalJobbeTimer = 0.0,
                 skalJobbeProsent = 0.0
             ),
             skalPassePåBarnetIHelePerioden = true,
@@ -837,7 +832,6 @@ internal class SerDesTest {
                     skalJobbe = SkalJobbe.NEI,
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    skalJobbeTimer = 0.0,
                     skalJobbeProsent = 0.0
                 )
             ),

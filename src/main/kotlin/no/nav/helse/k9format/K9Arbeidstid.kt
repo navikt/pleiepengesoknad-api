@@ -1,43 +1,48 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.OrganisasjonDetaljer
 import no.nav.helse.soknad.Søknad
-import no.nav.helse.soknad.Virksomhet
 import no.nav.k9.søknad.felles.type.Periode
-import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstid
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 
-internal fun Søknad.byggK9Arbeidstid(): Arbeidstid {
-    val frilanserArbeidstidInfo = null //frilans?.tilK9ArbeidstidInfo(Periode(fraOgMed, tilOgMed)) //TODO 08.02.2021 - Når vi har nok info
-    val selvstendigNæringsdrivendeArbeidstidInfo = null //selvstendigVirksomheter.tilK9ArbeidstidInfo() //TODO 08.02.2021 - Når vi har nok info
-    val arbeidstakerList: List<Arbeidstaker> = arbeidsgivere.tilK9Arbeidstaker(Periode(fraOgMed, tilOgMed))
+internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
+    arbeidsgivere.tilK9Arbeidstaker(Periode(fraOgMed, tilOgMed))
+        ?.let { medArbeidstaker(it) }
 
-    return Arbeidstid()
-        .medArbeidstaker(arbeidstakerList)
+    frilans?.arbeidsforhold?.tilK9ArbeidstidInfo(Periode(fraOgMed, tilOgMed))
+        ?.let { medFrilanserArbeidstid(it) }
+
+    selvstendigArbeidsforhold?.tilK9ArbeidstidInfo(Periode(fraOgMed, tilOgMed))
+        ?.let { medSelvstendigNæringsdrivendeArbeidstidInfo(it) }
 }
 
-fun Frilans.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo {
-    val perioder = mutableMapOf<Periode, ArbeidstidPeriodeInfo>()
+fun Arbeidsforhold.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo = ArbeidstidInfo().apply {
+    val faktiskTimerPerUke = jobberNormaltTimer.tilFaktiskTimerPerUke(skalJobbeProsent)
+    val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
+    val faktiskArbeidstimerPerDag = faktiskTimerPerUke.tilTimerPerDag().tilDuration()
 
-    perioder[periode] = ArbeidstidPeriodeInfo(
-        null, //TODO Mangler denne verdien i brukerdialog
-        null //TODO Mangler denne verdien i brukerdialog
+    medPerioder(
+        mutableMapOf(
+            periode to ArbeidstidPeriodeInfo()
+                .medJobberNormaltTimerPerDag(normalTimerPerDag)
+                .medFaktiskArbeidTimerPerDag(faktiskArbeidstimerPerDag)
+        )
     )
-
-    return ArbeidstidInfo(perioder)
 }
 
-fun List<Virksomhet>.tilK9ArbeidstidInfo(): ArbeidstidInfo? {
-    if (isEmpty()) return null
-    val perioder = mutableMapOf<Periode, ArbeidstidPeriodeInfo>()
+fun OrganisasjonDetaljer.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo = ArbeidstidInfo().apply {
+    val faktiskTimerPerUke = jobberNormaltTimer.tilFaktiskTimerPerUke(skalJobbeProsent)
+    val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
+    val faktiskArbeidstimerPerDag = faktiskTimerPerUke.tilTimerPerDag().tilDuration()
 
-    forEach { virksomhet ->
-        //TODO Er dette riktig å bruke periode fra virksomheten eller periode for søknadsperioden
-        perioder[Periode(virksomhet.fraOgMed, virksomhet.tilOgMed)] =
-            ArbeidstidPeriodeInfo(null, null) //TODO Mangler denne verdien i brukerdialog
-    }
-
-    return ArbeidstidInfo(perioder)
+    medPerioder(
+        mutableMapOf(
+            periode to ArbeidstidPeriodeInfo()
+                .medJobberNormaltTimerPerDag(normalTimerPerDag)
+                .medFaktiskArbeidTimerPerDag(faktiskArbeidstimerPerDag)
+        )
+    )
 }

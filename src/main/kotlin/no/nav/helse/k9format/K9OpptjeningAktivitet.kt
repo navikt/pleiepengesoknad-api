@@ -3,7 +3,6 @@ package no.nav.helse.k9format
 import no.nav.helse.soknad.ArbeidsgiverDetaljer
 import no.nav.helse.soknad.Frilans
 import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.OrganisasjonDetaljer
 import no.nav.helse.soknad.Søknad
 import no.nav.helse.soknad.Virksomhet
 import no.nav.k9.søknad.felles.opptjening.Frilanser
@@ -14,8 +13,6 @@ import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.VirksomhetType
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
-import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
-import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.Duration
 import java.time.LocalDate
 
@@ -36,7 +33,9 @@ internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser()
 
 internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
     periode: Periode
-): List<Arbeidstaker> {
+): List<Arbeidstaker>? {
+    if (organisasjoner.isEmpty()) return null
+
     return organisasjoner.map { organisasjon ->
         Arbeidstaker(
             null, //K9 format vil ikke ha både fnr og org nummer
@@ -106,16 +105,4 @@ internal fun List<Næringstyper>.tilK9VirksomhetType(): List<VirksomhetType> = m
         Næringstyper.DAGMAMMA -> VirksomhetType.DAGMAMMA
         Næringstyper.ANNEN -> VirksomhetType.ANNEN
     }
-}
-
-fun OrganisasjonDetaljer.tilK9ArbeidstidInfo(periode: Periode): ArbeidstidInfo {
-    val perioder = mutableMapOf<Periode, ArbeidstidPeriodeInfo>()
-
-    val faktiskTimerPerUke = jobberNormaltTimer.tilFaktiskTimerPerUke(skalJobbeProsent)
-    val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
-    val faktiskArbeidstimerPerDag = faktiskTimerPerUke.tilTimerPerDag().tilDuration()
-
-    perioder[periode] = ArbeidstidPeriodeInfo(normalTimerPerDag, faktiskArbeidstimerPerDag)
-
-    return ArbeidstidInfo(perioder)
 }

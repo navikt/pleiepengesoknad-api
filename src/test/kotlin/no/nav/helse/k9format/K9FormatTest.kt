@@ -2,8 +2,11 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Arbeidsform
 import no.nav.helse.soknad.Omsorgstilbud
 import no.nav.helse.soknad.OmsorgstilbudFasteDager
+import no.nav.helse.soknad.SkalJobbe
 import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
@@ -37,6 +40,7 @@ class K9FormatTest {
             """
             {
               "søknadId" : "$søknadId",
+              "journalposter": [],
               "versjon" : "1.0.0",
               "mottattDato" : "2020-01-02T03:04:05.000Z",
               "søker" : {
@@ -134,8 +138,22 @@ class K9FormatTest {
                       }
                     }
                   } ],
-                  "frilanserArbeidstidInfo" : null,
-                  "selvstendigNæringsdrivendeArbeidstidInfo" : null
+                  "frilanserArbeidstidInfo" : {
+                    "perioder": {
+                      "2021-01-04/2021-01-08": {
+                        "faktiskArbeidTimerPerDag": "PT0S",
+                        "jobberNormaltTimerPerDag": "PT8H"
+                      }
+                    }
+                  },
+                  "selvstendigNæringsdrivendeArbeidstidInfo" : {
+                    "perioder": {
+                      "2021-01-04/2021-01-08": {
+                        "faktiskArbeidTimerPerDag": "PT0S",
+                        "jobberNormaltTimerPerDag": "PT8H"
+                      }
+                    }
+                  }
                 },
                 "uttak" : {
                   "perioder" : {
@@ -339,6 +357,84 @@ class K9FormatTest {
               "perioderSomSkalSlettes": {}
             }
         """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
+        )
+    }
+
+    @Test
+    fun `gitt arbeidsforhold med 50% av en 40t arbeidsuke, forvent 4t per dag`() {
+        val arbeidstidInfo = Arbeidsforhold(
+            skalJobbe = SkalJobbe.REDUSERT,
+            arbeidsform = Arbeidsform.FAST,
+            jobberNormaltTimer = 40.0,
+            skalJobbeProsent = 50.0
+        ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+
+        assertEquals(1, arbeidstidInfo.perioder.size)
+
+        JSONAssert.assertEquals(
+            //language=json
+            """
+            {
+              "perioder" : {
+                "2021-01-04/2021-01-08" : {
+                  "faktiskArbeidTimerPerDag": "PT4H",
+                  "jobberNormaltTimerPerDag": "PT8H"
+                }
+              }
+            }
+        """.trimIndent(), JsonUtils.toString(arbeidstidInfo), true
+        )
+    }
+
+    @Test
+    fun `gitt arbeidsforhold med 0% av en 40t arbeidsuke, forvent 0t per dag`() {
+        val arbeidstidInfo = Arbeidsforhold(
+            skalJobbe = SkalJobbe.NEI,
+            arbeidsform = Arbeidsform.FAST,
+            jobberNormaltTimer = 40.0,
+            skalJobbeProsent = 0.0
+        ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+
+        assertEquals(1, arbeidstidInfo.perioder.size)
+
+        JSONAssert.assertEquals(
+            //language=json
+            """
+            {
+              "perioder" : {
+                "2021-01-04/2021-01-08" : {
+                  "faktiskArbeidTimerPerDag": "PT0S",
+                  "jobberNormaltTimerPerDag": "PT8H"
+                }
+              }
+            }
+        """.trimIndent(), JsonUtils.toString(arbeidstidInfo), true
+        )
+    }
+
+    @Test
+    fun `gitt arbeidsforhold med 100% av en 40t arbeidsuke, forvent 8t per dag`() {
+        val arbeidstidInfo = Arbeidsforhold(
+            skalJobbe = SkalJobbe.JA,
+            arbeidsform = Arbeidsform.FAST,
+            jobberNormaltTimer = 40.0,
+            skalJobbeProsent = 100.0
+        ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+
+        assertEquals(1, arbeidstidInfo.perioder.size)
+
+        JSONAssert.assertEquals(
+            //language=json
+            """
+            {
+              "perioder" : {
+                "2021-01-04/2021-01-08" : {
+                  "faktiskArbeidTimerPerDag": "PT8H",
+                  "jobberNormaltTimerPerDag": "PT8H"
+                }
+              }
+            }
+        """.trimIndent(), JsonUtils.toString(arbeidstidInfo), true
         )
     }
 }
