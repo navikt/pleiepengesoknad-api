@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
-private const val ANTALL_VIRKEDAGER_8_UKER = 40
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
     title = "attachments-too-large",
     status = 413,
@@ -150,23 +149,6 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
                     parameterType = ParameterType.ENTITY,
                     reason = "Ikke gyldig vedlegg URL.",
                     invalidValue = url
-                )
-            )
-        }
-    }
-
-    // Booleans (For å forsikre at de er satt og ikke blir default false)
-
-    //Validerer at brukeren bekrefter dersom perioden er over 8 uker (40 virkedager)
-    if (bekrefterPeriodeOver8Uker != null) {
-        val antallVirkedagerIPerioden = antallVirkedagerIEnPeriode(fraOgMed, tilOgMed)
-
-        if (antallVirkedagerIPerioden > ANTALL_VIRKEDAGER_8_UKER && !bekrefterPeriodeOver8Uker) {
-            violations.add(
-                Violation(
-                    parameterName = "bekrefterPeriodeOver8Uker",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true"
                 )
             )
         }

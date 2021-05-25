@@ -1351,42 +1351,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har ikke godkjent det, skal feile`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = "/soknad",
-            expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "bekrefterPeriodeOver8Uker",
-                      "reason": "Hvis perioden er over 8 uker(40 virkedager) må bekrefterPeriodeOver8Uker være true",
-                        "invalid_value": null
-                    }
-                  ]
-                }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
-                vedleggUrl1 = jpegUrl,
-                fraOgMed = "2020-01-01",
-                tilOgMed = "2020-02-27",
-                bekrefterPeriodeOver8Uker = false
-            )
-        )
-    }
-
-    @Test
     fun `Sende søknad med omsorgstilbud, der søker vet alle timer, men både fasteDager og enkeltDager er null`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
 

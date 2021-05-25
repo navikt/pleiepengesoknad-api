@@ -59,7 +59,7 @@ class K9FormatTest {
                   "harBekreftetOpplysninger" : true,
                   "samtidigHjemme" : true,
                   "harMedsøker" : true,
-                  "bekrefterPeriodeOver8Uker" : true
+                  "bekrefterPeriodeOver8Uker" : null
                 },
                 "barn" : {
                   "norskIdentitetsnummer" : "03028104560",

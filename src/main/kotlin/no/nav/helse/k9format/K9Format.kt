@@ -78,7 +78,7 @@ fun Søknad.byggK9DataBruktTilUtledning(): DataBruktTilUtledning = DataBruktTilU
     harBekreftetOpplysninger,
     samtidigHjemme,
     harMedsøker,
-    bekrefterPeriodeOver8Uker
+    null
 )
 
 fun Søknad.byggK9Omsorg() = Omsorg()

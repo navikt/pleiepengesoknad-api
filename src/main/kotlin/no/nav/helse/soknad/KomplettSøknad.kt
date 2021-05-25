@@ -17,7 +17,6 @@ data class KomplettSøknad(
     val arbeidsgivere: ArbeidsgiverDetaljer,
     val vedlegg: List<Vedlegg> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     val medlemskap: Medlemskap,
-    val bekrefterPeriodeOver8Uker: Boolean? = null,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
     val harMedsøker: Boolean? = null,

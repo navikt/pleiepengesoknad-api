@@ -489,7 +489,6 @@ class SøknadUtils {
             vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
             fraOgMed = LocalDate.parse("2020-01-01"),
             tilOgMed = LocalDate.parse("2020-01-20"),
-            bekrefterPeriodeOver8Uker = true,
             nattevåk = no.nav.helse.soknad.Nattevåk(
                 harNattevåk = true,
                 tilleggsinformasjon = "Har nattevåk"
