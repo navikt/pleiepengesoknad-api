@@ -55,7 +55,6 @@ class SøknadService(
             vedlegg = vedlegg,
             arbeidsgivere = søknad.arbeidsgivere,
             medlemskap = søknad.medlemskap,
-            bekrefterPeriodeOver8Uker = søknad.bekrefterPeriodeOver8Uker,
             ferieuttakIPerioden = søknad.ferieuttakIPerioden,
             utenlandsoppholdIPerioden = søknad.utenlandsoppholdIPerioden,
             harMedsøker = søknad.harMedsøker!!,

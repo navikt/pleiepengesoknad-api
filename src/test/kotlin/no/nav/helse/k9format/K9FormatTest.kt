@@ -59,7 +59,7 @@ class K9FormatTest {
                   "harBekreftetOpplysninger" : true,
                   "samtidigHjemme" : true,
                   "harMedsøker" : true,
-                  "bekrefterPeriodeOver8Uker" : true
+                  "bekrefterPeriodeOver8Uker" : null
                 },
                 "barn" : {
                   "norskIdentitetsnummer" : "03028104560",
@@ -210,7 +210,7 @@ class K9FormatTest {
                 fredag = Duration.ofHours(5)
             ),
             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9TilsynsordningFasteDager(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
 
@@ -251,7 +251,7 @@ class K9FormatTest {
                 fredag = Duration.ofHours(5)
             ),
             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9TilsynsordningFasteDager(Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
 
@@ -290,7 +290,7 @@ class K9FormatTest {
                 fredag = Duration.ofHours(5)
             ),
             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9TilsynsordningFasteDager(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
 
@@ -319,6 +319,27 @@ class K9FormatTest {
     }
 
     @Test
+    fun `gitt søknadsperiode man-fre, uten tilsyn, forvent 1 periode med 0 timer`() {
+        val k9Tilsynsordning = tilK9Tilsynsordning0Timer(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+
+        assertEquals(1, k9Tilsynsordning.perioder.size)
+
+        JSONAssert.assertEquals(
+            //language=json
+            """
+            {
+              "perioder" : {
+                "2021-01-04/2021-01-08" : {
+                  "etablertTilsynTimerPerDag" : "PT0S"
+                }
+              },
+              "perioderSomSkalSlettes": {}
+            }
+        """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
+        )
+    }
+
+    @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
         val k9Tilsynsordning = Omsorgstilbud(
             fasteDager = OmsorgstilbudFasteDager(
@@ -329,7 +350,7 @@ class K9FormatTest {
                 fredag = Duration.ofHours(10)
             ),
             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9TilsynsordningFasteDager(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
 

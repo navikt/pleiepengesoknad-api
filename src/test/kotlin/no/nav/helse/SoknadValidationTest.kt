@@ -2,7 +2,20 @@ package no.nav.helse
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.k9format.tilK9Format
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.ArbeidsgiverDetaljer
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.BarnRelasjon
+import no.nav.helse.soknad.Bosted
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.Medlemskap
+import no.nav.helse.soknad.OrganisasjonDetaljer
+import no.nav.helse.soknad.SkalJobbe
+import no.nav.helse.soknad.Språk
+import no.nav.helse.soknad.Søknad
+import no.nav.helse.soknad.UtenlandsoppholdIPerioden
+import no.nav.helse.soknad.validate
 import java.net.URL
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -61,14 +74,6 @@ class SoknadValidationTest {
     @Test
     fun `Søknad hvor perioden er 40 virkedager, skal ikke feile`(){
         val søknad = soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-26"))
-        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
-
-        søknad.validate(k9Format)
-    }
-
-    @Test(expected = Throwblem::class)
-    fun `Søknad hvor perioden er 41 virkedager hvor det ikke er bekreftet, skal feile`(){
-        val søknad = soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-27"))
         val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
 
         søknad.validate(k9Format)
@@ -134,7 +139,6 @@ class SoknadValidationTest {
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
         fraOgMed = fraOgMed,
         tilOgMed = tilOgMed,
-        bekrefterPeriodeOver8Uker = bekrefterPeriodeOver8Uker,
         medlemskap = Medlemskap(
             harBoddIUtlandetSiste12Mnd = false,
             skalBoIUtlandetNeste12Mnd = true

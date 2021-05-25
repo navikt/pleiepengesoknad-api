@@ -21,7 +21,6 @@ data class Søknad(
     @JsonFormat(pattern = "yyyy-MM-dd")
     val tilOgMed: LocalDate,
     val medlemskap: Medlemskap,
-    val bekrefterPeriodeOver8Uker: Boolean? = null,// TODO: Fjern optional når prodsatt.
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
     val harMedsøker: Boolean? = null,

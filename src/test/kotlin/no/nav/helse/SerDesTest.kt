@@ -95,7 +95,6 @@ internal class SerDesTest {
             vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now().plusDays(10),
-            bekrefterPeriodeOver8Uker = true,
             nattevåk = Nattevåk(
                 harNattevåk = true,
                 tilleggsinformasjon = "Har nattevåk"
@@ -397,7 +396,6 @@ internal class SerDesTest {
               "skalBekrefteOmsorg": true,
               "skalPassePåBarnetIHelePerioden": true,
               "beskrivelseOmsorgsrollen": "En kort beskrivelse",
-              "bekrefterPeriodeOver8Uker": true,
               "beredskap": {
                 "beredskap": true,
                 "tilleggsinformasjon": "Ikke beredskap"
@@ -608,7 +606,6 @@ internal class SerDesTest {
               "skalBekrefteOmsorg": true,
               "skalPassePåBarnetIHelePerioden": true,
               "beskrivelseOmsorgsrollen": "En kort beskrivelse",
-              "bekrefterPeriodeOver8Uker": true,
               "beredskap": {
                 "beredskap": true,
                 "tilleggsinformasjon": "Ikke beredskap"
@@ -683,7 +680,6 @@ internal class SerDesTest {
             ),
             fraOgMed = LocalDate.parse("2020-01-01"),
             tilOgMed = LocalDate.parse("2020-02-01"),
-            bekrefterPeriodeOver8Uker = true,
             nattevåk = Nattevåk(
                 harNattevåk = true,
                 tilleggsinformasjon = "Har nattevåk"
