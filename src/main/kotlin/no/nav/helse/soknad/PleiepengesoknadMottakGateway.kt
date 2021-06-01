@@ -24,7 +24,7 @@ import java.net.URI
 class PleiepengesoknadMottakGateway(
     baseUrl : URI,
     private val accessTokenClient: AccessTokenClient,
-    private val sendeSoknadTilProsesseringScopes : Set<String>,
+    private val pleiepengesoknadMottakClientId : Set<String>,
     private val apiGatewayApiKey: ApiGatewayApiKey
 ) : HealthCheck {
 
@@ -42,7 +42,7 @@ class PleiepengesoknadMottakGateway(
 
     override suspend fun check(): Result {
         return try {
-            accessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes)
+            accessTokenClient.getAccessToken(pleiepengesoknadMottakClientId)
             Healthy("PleiepengesoknadMottakGateway", "Henting av access token for å legge søknad til prosessering OK.")
         } catch (cause: Throwable) {
             logger.error("Feil ved henting av access token for å legge søknad til prosessering", cause)
@@ -54,7 +54,7 @@ class PleiepengesoknadMottakGateway(
         søknad : KomplettSøknad,
         callId: CallId
     ) {
-        val authorizationHeader = cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
+        val authorizationHeader = cachedAccessTokenClient.getAccessToken(pleiepengesoknadMottakClientId).asAuthoriationHeader()
 
         val body = objectMapper.writeValueAsBytes(søknad)
         val contentStream = { ByteArrayInputStream(body) }

@@ -36,6 +36,7 @@ import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.Årsak
+import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -475,7 +476,10 @@ internal class SerDesTest {
                 {
                 "content": "VGVzdA==",
                 "contentType": "image/png",
-                "title": "Vedlegg"
+                "title": "Vedlegg",
+                "eier": {
+                    "eiers_fødselsnummer": "26104500284"
+                  }
                 }
               ],
               "medlemskap": {
@@ -675,7 +679,8 @@ internal class SerDesTest {
                 Vedlegg(
                     content = "Test".toByteArray(),
                     contentType = "image/png",
-                    title = "Vedlegg"
+                    title = "Vedlegg",
+                    eier = DokumentEier("26104500284")
                 )
             ),
             fraOgMed = LocalDate.parse("2020-01-01"),

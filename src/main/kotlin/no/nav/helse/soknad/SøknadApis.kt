@@ -13,6 +13,7 @@ import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
+import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
@@ -92,7 +93,8 @@ fun Route.soknadApis(
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
             vedleggUrls = søknad.vedlegg,
-            callId = callId
+            callId = callId,
+            eier = DokumentEier(søker.fødselsnummer)
         )
         vedlegg.validerVedlegg(søknad.vedlegg)
 

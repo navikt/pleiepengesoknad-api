@@ -3,6 +3,7 @@ package no.nav.helse.soknad
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.soker.Søker
+import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
@@ -32,7 +33,8 @@ class SøknadService(
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
             vedleggUrls = søknad.vedlegg,
-            callId = callId
+            callId = callId,
+            eier = DokumentEier(søker.fødselsnummer)
         )
 
         logger.trace("Vedlegg hentet. Validerer vedleggene.")
@@ -82,14 +84,6 @@ class SøknadService(
             callId = callId
         )
 
-        logger.trace("Søknad lagt til prosessering. Sletter vedlegg.")
-
-        vedleggService.slettVedlegg(
-            vedleggUrls = søknad.vedlegg,
-            callId = callId,
-            idToken = idToken
-        )
-
-        logger.trace("Vedlegg slettet.")
+        logger.trace("Søknad sendt til mottak.")
     }
 }

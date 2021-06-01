@@ -43,7 +43,9 @@ data class Configuration(val config: ApplicationConfig) {
 
     internal fun getK9OppslagUrl() = URI(config.getRequiredString("nav.gateways.k9_oppslag_url", secret = false))
 
-    internal fun getK9DokumentUrl() = URI(config.getRequiredString("nav.gateways.k9_dokument_url", secret = false))
+    internal fun getK9MellomlagringUrl() = URI(config.getRequiredString("nav.gateways.k9_mellomlagring_url", secret = false))
+
+    internal fun getK9MellomlagringScopes() = getScopesFor("k9-mellomlagring-scope")
 
     internal fun getPleiepengesoknadMottakBaseUrl() =
         URI(config.getRequiredString("nav.gateways.pleiepengesoknad_mottak_base_url", secret = false))
@@ -56,7 +58,7 @@ data class Configuration(val config: ApplicationConfig) {
     private fun getScopesFor(operation: String) =
         config.getRequiredList("nav.auth.scopes.$operation", secret = false, builder = { it }).toSet()
 
-    internal fun getSendSoknadTilProsesseringScopes() = getScopesFor("sende-soknad-til-prosessering")
+    internal fun getPleiepengesoknadMottakClientId() = getScopesFor("pleiepengesoknad-mottak-client-id")
     internal fun getRedisPort() = config.getRequiredString("nav.redis.port", secret = false).toInt()
     internal fun getRedisHost() = config.getRequiredString("nav.redis.host", secret = false)
 

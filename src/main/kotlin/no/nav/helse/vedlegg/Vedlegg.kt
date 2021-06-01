@@ -6,8 +6,8 @@ import java.net.URL
 data class Vedlegg(
     val content: ByteArray,
     val contentType: String,
-    val title: String
-
+    val title: String,
+    val eier: DokumentEier
 ) {
     companion object {
 
@@ -54,6 +54,7 @@ data class Vedlegg(
         if (!content.contentEquals(other.content)) return false
         if (contentType != other.contentType) return false
         if (title != other.title) return false
+        if (eier != other.eier) return false
 
         return true
     }
