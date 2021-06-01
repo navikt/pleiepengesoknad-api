@@ -46,7 +46,7 @@ spec:
         - application: {{app}}-redis
         - application: k9-mellomlagring
       external:
-      {{ #each externalHosts as |host|}}
+      {{#each externalHosts as |host|}}
           - host: {{host }}
       {{/each}}
   env:
