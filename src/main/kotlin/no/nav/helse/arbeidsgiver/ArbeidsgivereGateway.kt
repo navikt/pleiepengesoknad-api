@@ -22,9 +22,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class ArbeidsgivereGateway(
-    baseUrl: URI,
-    apiGatewayApiKey: ApiGatewayApiKey
-) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+    baseUrl: URI
+) : K9OppslagGateway(baseUrl) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.ArbeidsgivereGateway")

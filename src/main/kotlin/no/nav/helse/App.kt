@@ -128,24 +128,10 @@ fun Application.pleiepengesoknadapi() {
             apiGatewayApiKey = apiGatewayApiKey
         )
 
-        val søkerGateway = SøkerGateway(
-            baseUrl = configuration.getK9OppslagUrl(),
-            apiGatewayApiKey = apiGatewayApiKey
-        )
-
-        val barnGateway = BarnGateway(
-            baseUrl = configuration.getK9OppslagUrl(),
-            apiGatewayApiKey = apiGatewayApiKey
-        )
-
-        val arbeidsgivereGateway = ArbeidsgivereGateway(
-            baseUrl = configuration.getK9OppslagUrl(),
-            apiGatewayApiKey = apiGatewayApiKey
-        )
-
-        val søkerService = SøkerService(
-            søkerGateway = søkerGateway
-        )
+        val søkerGateway = SøkerGateway(baseUrl = configuration.getK9OppslagUrl())
+        val barnGateway = BarnGateway(baseUrl = configuration.getK9OppslagUrl())
+        val arbeidsgivereGateway = ArbeidsgivereGateway(baseUrl = configuration.getK9OppslagUrl())
+        val søkerService = SøkerService(søkerGateway = søkerGateway)
 
         val barnService = BarnService(
             barnGateway = barnGateway,

@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.HttpHeaders
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 
-internal const val k9OppslagPath = "/helse-reverse-proxy/k9-selvbetjening-oppslag-mock"
+internal const val k9OppslagPath = "/k9-selvbetjening-oppslag-mock"
 private const val pleiepengesoknadMottakPath = "/helse-reverse-proxy/pleiepengesoknad-mottak-mock"
 private const val k9MellomlagringPath = "/k9-mellomlagring-mock"
 
@@ -23,7 +23,6 @@ internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration
 internal fun WireMockServer.stubK9OppslagSoker() : WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
-            .withHeader("x-nav-apiKey", AnythingPattern())
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .withQueryParam("a", equalTo("aktør_id"))
             .withQueryParam("a", equalTo("fornavn"))
@@ -43,7 +42,6 @@ internal fun WireMockServer.stubK9OppslagSoker() : WireMockServer {
 internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false) : WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
-            .withHeader("x-nav-apiKey", AnythingPattern())
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .withQueryParam("a", equalTo("barn[].aktør_id"))
             .withQueryParam("a", equalTo("barn[].fornavn"))
@@ -63,7 +61,6 @@ internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false) : Wi
 internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = false) : WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
-            .withHeader("x-nav-apiKey", AnythingPattern())
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
@@ -107,7 +104,7 @@ private fun WireMockServer.stubHealthEndpointThroughZones(
 
 internal fun WireMockServer.stubK9MellomlagringHealth() = stubHealthEndpoint("$k9MellomlagringPath/health")
 internal fun WireMockServer.stubPleiepengesoknadMottakHealth() = stubHealthEndpointThroughZones("$pleiepengesoknadMottakPath/health")
-internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpointThroughZones("$k9OppslagPath/health")
+internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpoint("$k9OppslagPath/health")
 
 internal fun WireMockServer.stubLeggSoknadTilProsessering(path: String) : WireMockServer{
     WireMock.stubFor(

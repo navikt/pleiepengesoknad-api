@@ -22,9 +22,8 @@ import java.time.Duration
 import java.time.LocalDate
 
 class BarnGateway(
-    baseUrl: URI,
-    apiGatewayApiKey: ApiGatewayApiKey
-) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+    baseUrl: URI
+) : K9OppslagGateway(baseUrl) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.BarnGateway")
