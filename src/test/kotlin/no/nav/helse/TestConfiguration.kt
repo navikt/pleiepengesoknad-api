@@ -29,7 +29,6 @@ object TestConfiguration {
             Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
             Pair("nav.gateways.k9_mellomlagring_url", "$k9MellomlagringUrl"),
             Pair("nav.cors.addresses", corsAdresses),
-            Pair("nav.authorization.api_gateway.api_key", "verysecret")
         )
 
         // Clients

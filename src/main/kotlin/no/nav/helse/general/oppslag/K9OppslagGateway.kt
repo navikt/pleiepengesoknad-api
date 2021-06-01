@@ -4,7 +4,6 @@ import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.HttpHeaders
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.IdToken
 import java.net.URI
 

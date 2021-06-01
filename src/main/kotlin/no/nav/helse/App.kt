@@ -67,7 +67,6 @@ fun Application.pleiepengesoknadapi() {
     System.setProperty("dusseldorf.ktor.serializeProblemDetailsWithContentNegotiation", "true")
 
     val configuration = Configuration(environment.config)
-    val apiGatewayApiKey = configuration.getApiGatewayApiKey()
     val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients())
 
     install(ContentNegotiation) {
@@ -124,8 +123,7 @@ fun Application.pleiepengesoknadapi() {
         val pleiepengesoknadMottakGateway = PleiepengesoknadMottakGateway(
             baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
             accessTokenClient = accessTokenClientResolver.accessTokenClient(),
-            pleiepengesoknadMottakClientId = configuration.getPleiepengesoknadMottakClientId(),
-            apiGatewayApiKey = apiGatewayApiKey
+            pleiepengesoknadMottakClientId = configuration.getPleiepengesoknadMottakClientId()
         )
 
         val søkerGateway = SøkerGateway(baseUrl = configuration.getK9OppslagUrl())
@@ -191,7 +189,7 @@ fun Application.pleiepengesoknadapi() {
                 pleiepengesoknadMottakGateway,
                 HttpRequestHealthCheck(mapOf(
                     Url.buildURL(baseUrl = configuration.getK9MellomlagringUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
-                    Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
+                    Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
                 ))
             )
         )

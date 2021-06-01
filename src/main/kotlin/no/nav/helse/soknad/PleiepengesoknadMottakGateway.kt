@@ -14,7 +14,6 @@ import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.pleiepengesøknadMottakKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,8 +23,7 @@ import java.net.URI
 class PleiepengesoknadMottakGateway(
     baseUrl : URI,
     private val accessTokenClient: AccessTokenClient,
-    private val pleiepengesoknadMottakClientId : Set<String>,
-    private val apiGatewayApiKey: ApiGatewayApiKey
+    private val pleiepengesoknadMottakClientId : Set<String>
 ) : HealthCheck {
 
     private companion object {
@@ -67,8 +65,7 @@ class PleiepengesoknadMottakGateway(
             .header(
                 HttpHeaders.ContentType to "application/json",
                 HttpHeaders.XCorrelationId to callId.value,
-                HttpHeaders.Authorization to authorizationHeader,
-                apiGatewayApiKey.headerKey to apiGatewayApiKey.value
+                HttpHeaders.Authorization to authorizationHeader
             )
 
         val (request, _, result) = Operation.monitored(
