@@ -86,6 +86,7 @@ internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNær
 
     varigEndring?.let {
         infoBuilder
+            .bruttoInntekt(it.inntektEtterEndring.toBigDecimal())
             .erVarigEndring(true)
             .endringDato(it.dato)
             .endringBegrunnelse(it.forklaring)
