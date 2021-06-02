@@ -23,8 +23,8 @@ import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubK9Dokument
-import no.nav.helse.wiremock.stubK9DokumentHealth
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
 import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
 import no.nav.helse.wiremock.stubK9OppslagBarn
 import no.nav.helse.wiremock.stubK9OppslagSoker
@@ -66,14 +66,14 @@ class ApplicationTest {
             .withLoginServiceSupport()
             .pleiepengesoknadApiConfig()
             .build()
-            .stubK9DokumentHealth()
+            .stubK9MellomlagringHealth()
             .stubPleiepengesoknadMottakHealth()
             .stubOppslagHealth()
             .stubLeggSoknadTilProsessering("v1/soknad")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
-            .stubK9Dokument()
+            .stubK9Mellomlagring()
 
         val redisServer: RedisServer = RedisServer
             .newRedisServer().started()

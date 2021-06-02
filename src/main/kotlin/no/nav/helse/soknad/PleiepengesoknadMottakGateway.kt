@@ -14,7 +14,6 @@ import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.pleiepengesøknadMottakKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -24,8 +23,7 @@ import java.net.URI
 class PleiepengesoknadMottakGateway(
     baseUrl : URI,
     private val accessTokenClient: AccessTokenClient,
-    private val sendeSoknadTilProsesseringScopes : Set<String>,
-    private val apiGatewayApiKey: ApiGatewayApiKey
+    private val pleiepengesoknadMottakClientId : Set<String>
 ) : HealthCheck {
 
     private companion object {
@@ -42,7 +40,7 @@ class PleiepengesoknadMottakGateway(
 
     override suspend fun check(): Result {
         return try {
-            accessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes)
+            accessTokenClient.getAccessToken(pleiepengesoknadMottakClientId)
             Healthy("PleiepengesoknadMottakGateway", "Henting av access token for å legge søknad til prosessering OK.")
         } catch (cause: Throwable) {
             logger.error("Feil ved henting av access token for å legge søknad til prosessering", cause)
@@ -54,7 +52,7 @@ class PleiepengesoknadMottakGateway(
         søknad : KomplettSøknad,
         callId: CallId
     ) {
-        val authorizationHeader = cachedAccessTokenClient.getAccessToken(sendeSoknadTilProsesseringScopes).asAuthoriationHeader()
+        val authorizationHeader = cachedAccessTokenClient.getAccessToken(pleiepengesoknadMottakClientId).asAuthoriationHeader()
 
         val body = objectMapper.writeValueAsBytes(søknad)
         val contentStream = { ByteArrayInputStream(body) }
@@ -67,8 +65,7 @@ class PleiepengesoknadMottakGateway(
             .header(
                 HttpHeaders.ContentType to "application/json",
                 HttpHeaders.XCorrelationId to callId.value,
-                HttpHeaders.Authorization to authorizationHeader,
-                apiGatewayApiKey.headerKey to apiGatewayApiKey.value
+                HttpHeaders.Authorization to authorizationHeader
             )
 
         val (request, _, result) = Operation.monitored(

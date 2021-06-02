@@ -8,7 +8,6 @@ import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.ApiGatewayApiKey
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
 import no.nav.helse.k9SelvbetjeningOppslagKonfigurert
@@ -18,10 +17,9 @@ import java.net.URI
 import java.time.Duration
 import java.time.LocalDate
 
-class SøkerGateway (
+class SøkerGateway(
     baseUrl: URI,
-    apiGatewayApiKey: ApiGatewayApiKey
-) : K9OppslagGateway(baseUrl, apiGatewayApiKey) {
+) : K9OppslagGateway(baseUrl) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
@@ -32,8 +30,8 @@ class SøkerGateway (
 
     suspend fun hentSoker(
         idToken: IdToken,
-        callId : CallId
-    ) : SokerOppslagRespons {
+        callId: CallId
+    ): SokerOppslagRespons {
         val sokerUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
@@ -56,9 +54,13 @@ class SøkerGateway (
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<SokerOppslagRespons>(success)},
+                { success -> objectMapper.readValue<SokerOppslagRespons>(success) },
                 { error ->
-                    logger.error("Error response = '${error.response.body().asString("text/plain")}' fra '${request.url}'")
+                    logger.error(
+                        "Error response = '${
+                            error.response.body().asString("text/plain")
+                        }' fra '${request.url}'"
+                    )
                     logger.error(error.toString())
                     throw IllegalStateException("Feil ved henting av søkers personinformasjon")
                 }
@@ -66,6 +68,7 @@ class SøkerGateway (
         }
         return oppslagRespons
     }
+
     data class SokerOppslagRespons(
         val aktør_id: String,
         val fornavn: String,

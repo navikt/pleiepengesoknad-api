@@ -49,7 +49,7 @@ import no.nav.helse.soker.søkerApis
 import no.nav.helse.soknad.PleiepengesoknadMottakGateway
 import no.nav.helse.soknad.SøknadService
 import no.nav.helse.soknad.soknadApis
-import no.nav.helse.vedlegg.K9DokumentGateway
+import no.nav.helse.vedlegg.K9MellomlagringGateway
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.helse.vedlegg.vedleggApis
 import java.time.Duration
@@ -67,7 +67,6 @@ fun Application.pleiepengesoknadapi() {
     System.setProperty("dusseldorf.ktor.serializeProblemDetailsWithContentNegotiation", "true")
 
     val configuration = Configuration(environment.config)
-    val apiGatewayApiKey = configuration.getApiGatewayApiKey()
     val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients())
 
     install(ContentNegotiation) {
@@ -113,38 +112,24 @@ fun Application.pleiepengesoknadapi() {
     install(Locations)
 
     install(Routing) {
-
-        val vedleggService = VedleggService(
-            k9DokumentGateway = K9DokumentGateway(
-                baseUrl = configuration.getK9DokumentUrl()
-            )
+        val k9MellomlagringGateway = K9MellomlagringGateway(
+            baseUrl = configuration.getK9MellomlagringUrl(),
+            accessTokenClient = accessTokenClientResolver.accessTokenClient(),
+            k9MellomlagringScope = configuration.getK9MellomlagringScopes()
         )
+
+        val vedleggService = VedleggService(k9MellomlagringGateway = k9MellomlagringGateway)
 
         val pleiepengesoknadMottakGateway = PleiepengesoknadMottakGateway(
             baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
-            accessTokenClient = accessTokenClientResolver.pleiepengesoknadMottak(),
-            sendeSoknadTilProsesseringScopes = configuration.getSendSoknadTilProsesseringScopes(),
-            apiGatewayApiKey = apiGatewayApiKey
+            accessTokenClient = accessTokenClientResolver.accessTokenClient(),
+            pleiepengesoknadMottakClientId = configuration.getPleiepengesoknadMottakClientId()
         )
 
-        val søkerGateway = SøkerGateway(
-            baseUrl = configuration.getK9OppslagUrl(),
-            apiGatewayApiKey = apiGatewayApiKey
-        )
-
-        val barnGateway = BarnGateway(
-            baseUrl = configuration.getK9OppslagUrl(),
-            apiGatewayApiKey = apiGatewayApiKey
-        )
-
-        val arbeidsgivereGateway = ArbeidsgivereGateway(
-            baseUrl = configuration.getK9OppslagUrl(),
-            apiGatewayApiKey = apiGatewayApiKey
-        )
-
-        val søkerService = SøkerService(
-            søkerGateway = søkerGateway
-        )
+        val søkerGateway = SøkerGateway(baseUrl = configuration.getK9OppslagUrl())
+        val barnGateway = BarnGateway(baseUrl = configuration.getK9OppslagUrl())
+        val arbeidsgivereGateway = ArbeidsgivereGateway(baseUrl = configuration.getK9OppslagUrl())
+        val søkerService = SøkerService(søkerGateway = søkerGateway)
 
         val barnService = BarnService(
             barnGateway = barnGateway,
@@ -203,8 +188,8 @@ fun Application.pleiepengesoknadapi() {
             healthChecks = setOf(
                 pleiepengesoknadMottakGateway,
                 HttpRequestHealthCheck(mapOf(
-                    Url.buildURL(baseUrl = configuration.getK9DokumentUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
-                    Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK, httpHeaders = mapOf(apiGatewayApiKey.headerKey to apiGatewayApiKey.value))
+                    Url.buildURL(baseUrl = configuration.getK9MellomlagringUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
+                    Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
                 ))
             )
         )
@@ -255,7 +240,7 @@ fun ObjectMapper.pleiepengesøknadMottakKonfigurert(): ObjectMapper {
     return pleiepengesøknadKonfigurert().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
 }
 
- fun ObjectMapper.k9DokumentKonfigurert(): ObjectMapper {
+ fun ObjectMapper.k9MellomlagringGatewayKonfigurert(): ObjectMapper {
      return jacksonObjectMapper().dusseldorfConfigured().apply {
          configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
          propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
