@@ -561,7 +561,8 @@ class ApplicationTest {
                         regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
                             telefon = "84554"
-                        )
+                        ),
+                        harFlereAktiveVirksomheter = true
                     )
                 ),
                 selvstendigArbeidsForhold = Arbeidsforhold(

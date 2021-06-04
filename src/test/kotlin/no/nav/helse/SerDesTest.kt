@@ -121,7 +121,8 @@ internal class SerDesTest {
                         "Kjell Regnskap",
                         "123456789"
                     ),
-                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
+                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
+                    harFlereAktiveVirksomheter = true
                 )
             ),
             skalPassePåBarnetIHelePerioden = true,
@@ -314,7 +315,8 @@ internal class SerDesTest {
                     },
                     "yrkesaktivSisteTreFerdigliknedeÅrene": {
                         "oppstartsdato": "2018-01-01"
-                        }
+                     },
+                     "harFlereAktiveVirksomheter" : true
                 }
               ],
               "selvstendigArbeidsforhold": {
@@ -527,7 +529,8 @@ internal class SerDesTest {
                     },
                     "yrkesaktivSisteTreFerdigliknedeÅrene": {
                         "oppstartsdato": "2018-01-01"
-                        }
+                     },
+                     "harFlereAktiveVirksomheter" : true
                 }
               ],
               "selvstendigArbeidsforhold": {
@@ -710,7 +713,8 @@ internal class SerDesTest {
                         "Kjell Regnskap",
                         "123456789"
                     ),
-                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
+                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
+                    harFlereAktiveVirksomheter = true
                 )
             ),
             selvstendigArbeidsforhold = Arbeidsforhold(
