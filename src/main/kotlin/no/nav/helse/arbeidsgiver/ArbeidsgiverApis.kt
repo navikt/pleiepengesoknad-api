@@ -4,13 +4,13 @@ import io.ktor.application.call
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
+import no.nav.helse.ARBEIDSGIVER_URL
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
-import no.nav.helse.soknad.FraOgMedTilOgMedValidator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -22,7 +22,7 @@ fun Route.arbeidsgiverApis(
     idTokenProvider: IdTokenProvider
 ) {
 
-    get("/arbeidsgiver") {
+    get(ARBEIDSGIVER_URL) {
         val violations = FraOgMedTilOgMedValidatorArbeidsgiver.validate(
             fraOgMed = call.request.queryParameters[fraOgMedQueryName],
             tilOgMed = call.request.queryParameters[tilOgMedQueryName],

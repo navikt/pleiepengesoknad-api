@@ -11,7 +11,6 @@ import io.ktor.auth.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.jackson.*
-import io.ktor.locations.*
 import io.ktor.metrics.micrometer.*
 import io.ktor.routing.*
 import io.ktor.util.*
@@ -56,9 +55,6 @@ import java.time.Duration
 
 fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
 
-
-@KtorExperimentalAPI
-@KtorExperimentalLocationsAPI
 fun Application.pleiepengesoknadapi() {
     val appId = environment.config.id()
     logProxyProperties()
@@ -108,8 +104,6 @@ fun Application.pleiepengesoknadapi() {
         JacksonStatusPages()
         IdTokenStatusPages()
     }
-
-    install(Locations)
 
     install(Routing) {
         val k9MellomlagringGateway = K9MellomlagringGateway(
