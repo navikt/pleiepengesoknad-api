@@ -6,31 +6,11 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import io.ktor.util.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.Arbeidsform
-import no.nav.helse.soknad.Land
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
-import no.nav.helse.soknad.OmsorgstilbudFasteDager
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SkalJobbe
-import no.nav.helse.soknad.VetOmsorgstilbud
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubK9Mellomlagring
-import no.nav.helse.wiremock.stubK9MellomlagringHealth
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
-import no.nav.helse.wiremock.stubK9OppslagBarn
-import no.nav.helse.wiremock.stubK9OppslagSoker
-import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
-import no.nav.helse.wiremock.stubOppslagHealth
-import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
+import no.nav.helse.soknad.*
+import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -728,9 +708,6 @@ class ApplicationTest {
                       "skalJobbeTimer": 0.0,
                       "skalJobbeProsent": 0.0
                   },
-                  "tilsynsordning": {
-                    "svar": "nei"
-                  },
                   "harVærtEllerErVernepliktig" : true
                 }
             """.trimIndent()
@@ -1143,9 +1120,6 @@ class ApplicationTest {
                   "harMedsøker": false,
                   "harBekreftetOpplysninger": true,
                   "harForståttRettigheterOgPlikter": true,
-                  "tilsynsordning": {
-                    "svar": "nei"
-                  },
                 "utenlandsoppholdIPerioden" : 
                     {
                       "skalOppholdeSegIUtlandetIPerioden": true,
@@ -1536,64 +1510,6 @@ class ApplicationTest {
                     vedlegg = listOf()
                 )
                 .somJson()
-        )
-    }
-
-    @Test
-    fun `Sende søknad hvor perioden er over 8 uker(40 virkedager) og man har godkjent det, skal ikke feile`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
-                vedleggUrl1 = jpegUrl,
-                fraOgMed = "2020-01-01",
-                tilOgMed = "2020-02-27",
-                bekrefterPeriodeOver8Uker = true
-            )
-        )
-    }
-
-    @Test
-    fun `Sende søknad hvor perioden er 8 uker(40 virkedager), skal ikke feile`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
-                vedleggUrl1 = jpegUrl,
-                fraOgMed = "2020-01-01",
-                tilOgMed = "2020-02-26"
-            )
-        )
-    }
-
-    @Test
-    fun `Sende søknad hvor perioden er under 8 uker(40 virkedager), skal ikke feile`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
-                vedleggUrl1 = jpegUrl,
-                fraOgMed = "2020-01-01",
-                tilOgMed = "2020-02-25"
-            )
         )
     }
 

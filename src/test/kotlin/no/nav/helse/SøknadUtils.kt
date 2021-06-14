@@ -13,20 +13,11 @@ import no.nav.k9.søknad.felles.personopplysninger.Barn
 import no.nav.k9.søknad.felles.personopplysninger.Bosteder
 import no.nav.k9.søknad.felles.personopplysninger.Søker
 import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold
-import no.nav.k9.søknad.felles.type.Landkode
-import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
-import no.nav.k9.søknad.felles.type.Organisasjonsnummer
+import no.nav.k9.søknad.felles.type.*
 import no.nav.k9.søknad.felles.type.Periode
-import no.nav.k9.søknad.felles.type.SøknadId
-import no.nav.k9.søknad.felles.type.VirksomhetType
+import no.nav.k9.søknad.ytelse.psb.v1.*
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap
-import no.nav.k9.søknad.ytelse.psb.v1.DataBruktTilUtledning
-import no.nav.k9.søknad.ytelse.psb.v1.LovbestemtFerie
 import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk
-import no.nav.k9.søknad.ytelse.psb.v1.Omsorg
-import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
-import no.nav.k9.søknad.ytelse.psb.v1.Uttak
-import no.nav.k9.søknad.ytelse.psb.v1.UttakPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstid
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
@@ -251,56 +242,6 @@ class SøknadUtils {
             """.trimIndent()
         }
 
-        fun bodyUtenIdPaaBarn(
-            vedleggUrl1: String,
-            vedleggUrl2: String
-        ): String {
-            //language=JSON
-            return """
-                {
-                    "barn": {},
-                    "fraOgMed": "2018-10-10",
-                    "tilOgMed": "2019-10-10",
-                    "arbeidsgivere": {
-                        "organisasjoner": [
-                            {
-                                "organisasjonsnummer": "917755736",
-                                "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skalJobbe": "nei",
-                                "arbeidsform": "FAST"
-                            }
-                        ]
-                    },
-                    "vedlegg": [
-                        "$vedleggUrl1",
-                        "$vedleggUrl2"
-                    ],
-                    "medlemskap" : {
-                        "harBoddIUtlandetSiste12Mnd" : false,
-                        "skalBoIUtlandetNeste12Mnd" : true
-                    },
-                    "utenlandsoppholdIPerioden": {
-                        "skalOppholdeSegIUtlandetIPerioden": false,
-                        "opphold": []
-                    },
-                    "harMedsøker": true,
-                    "dagerPerUkeBorteFraJobb": 5.0,
-                    "harBekreftetOpplysninger": true,
-                    "harForståttRettigheterOgPlikter": true,
-                    "ferieuttakIPerioden": {
-                        "skalTaUtFerieIPeriode": true,
-                        "ferieuttak": [
-                          {
-                            "fraOgMed": "2020-01-05",
-                            "tilOgMed": "2020-01-07"
-                          }
-                        ]
-                      },
-                    "harVærtEllerErVernepliktig" : true
-                  }
-                """.trimIndent()
-        }
-
         fun bodyMedJusterbarOrganisasjon(
             fodselsnummer: String,
             fraOgMed: String? = "2018-10-10",
@@ -374,85 +315,6 @@ class SøknadUtils {
                         "tilOgMed": "2020-01-07"
                       }
                     ]
-                  },
-                  "skalBekrefteOmsorg": true,
-                  "skalPassePaBarnetIHelePerioden": true,
-                  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
-                  "harVærtEllerErVernepliktig" : true
-                }
-                """.trimIndent()
-        }
-
-        fun bodyMedJusterbarTilOgFraOgBekrefterPeriodeOver8Uker(
-            fraOgMed: String? = "2018-10-10",
-            tilOgMed: String? = "2019-10-10",
-            bekrefterPeriodeOver8Uker: Boolean = true,
-            vedleggUrl1: String
-        ): String {
-            //language=JSON
-            return """
-                {
-                    "barn": {
-                      "fødselsnummer" : "02119970078"
-                    },
-                    "fraOgMed": "$fraOgMed",
-                    "tilOgMed": "$tilOgMed",
-                    "arbeidsgivere": {
-                        "organisasjoner": [
-                            {
-                                 "organisasjonsnummer": "917755736",
-                                  "navn": "Bjeffefirmaet ÆÆÅ",
-                                  "skalJobbe": "nei",
-                                  "arbeidsform": "FAST"
-                            }
-                        ]
-                    },
-                    "vedlegg": [
-                        "$vedleggUrl1",
-                        "$vedleggUrl1"
-                    ],
-                    "medlemskap" : {
-                        "harBoddIUtlandetSiste12Mnd" : false,
-                        "skalBoIUtlandetNeste12Mnd" : true
-                    },
-                        "utenlandsoppholdIPerioden": {
-                            "skalOppholdeSegIUtlandetIPerioden": true,
-                            "opphold": [
-                                {
-                                    "fraOgMed": "2019-10-10",
-                                    "tilOgMed": "2019-11-10",
-                                    "landkode": "SE",
-                                    "landnavn": "Sverige"
-                                },
-                                {
-                                    "landnavn": "USA",
-                                    "landkode": "US",
-                                    "fraOgMed": "2020-01-08",
-                                    "tilOgMed": "2020-01-09",
-                                    "erUtenforEos": true,
-                                    "erBarnetInnlagt": true,
-                                    "perioderBarnetErInnlagt" : [
-                                      {
-                                        "fraOgMed" : "2020-01-01",
-                                        "tilOgMed": "2020-01-02"
-                                      }
-                                    ],
-                                    "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
-                                }
-                            ]
-                        },
-                    "harMedsøker": true,
-                    "bekrefterPeriodeOver8Uker": "$bekrefterPeriodeOver8Uker",
-                    "harBekreftetOpplysninger": true,
-                    "harForståttRettigheterOgPlikter": true,
-                    "ferieuttakIPerioden": {
-                      "skalTaUtFerieIPeriode": true,
-                      "ferieuttak": [
-                        {
-                          "fraOgMed": "2020-01-05",
-                          "tilOgMed": "2020-01-07"
-                        }
-                      ]
                   },
                   "skalBekrefteOmsorg": true,
                   "skalPassePaBarnetIHelePerioden": true,

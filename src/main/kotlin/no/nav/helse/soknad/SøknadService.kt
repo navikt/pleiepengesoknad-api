@@ -63,7 +63,6 @@ class SøknadService(
             samtidigHjemme = søknad.samtidigHjemme,
             harBekreftetOpplysninger = søknad.harBekreftetOpplysninger,
             harForståttRettigheterOgPlikter = søknad.harForståttRettigheterOgPlikter,
-            tilsynsordning = søknad.tilsynsordning,
             omsorgstilbud = søknad.omsorgstilbud,
             nattevåk = søknad.nattevåk,
             beredskap = søknad.beredskap,

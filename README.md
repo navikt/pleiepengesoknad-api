@@ -197,7 +197,6 @@ POST @ /soknad -> 202 Response
   "skalBekrefteOmsorg": true,
   "skalPassePåBarnetIHelePerioden": true,
   "beskrivelseOmsorgsrollen": "En kort beskrivelse",
-  "bekrefterPeriodeOver8Uker": true,
   "beredskap": {
     "beredskap": true,
     "tilleggsinformasjon": "Ikke beredskap"
