@@ -19,7 +19,8 @@ data class Virksomhet(
     val registrertIUtlandet: Land? = null,
     val yrkesaktivSisteTreFerdigliknedeÅrene: YrkesaktivSisteTreFerdigliknedeÅrene? = null,
     val varigEndring: VarigEndring? = null,
-    val regnskapsfører: Regnskapsfører? = null
+    val regnskapsfører: Regnskapsfører? = null,
+    val harFlereAktiveVirksomheter: Boolean? = null
 )
 
 data class YrkesaktivSisteTreFerdigliknedeÅrene(
@@ -91,6 +92,19 @@ internal fun Virksomhet.validate(index: Int): MutableSet<Violation>{
             }
         }
     }
+/*
+    //TODO 04/06/2021 - Skru på validering når feltet er prodsatt i frontend.
+    if(harFlereAktiveVirksomheter == null){
+        violations.add(
+            Violation(
+                parameterName = "${felt}.harFlereAktiveVirksomheter",
+                parameterType = ParameterType.ENTITY,
+                reason = "harFlereAktiveVirksomheter må være satt til true eller false, ikke null",
+                invalidValue = harFlereAktiveVirksomheter
+            )
+        )
+    }
+*/
 
     return violations
 }

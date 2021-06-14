@@ -514,7 +514,8 @@ class SøknadUtils {
                         "Kjell Regnskap",
                         "123456789"
                     ),
-                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01"))
+                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
+                    harFlereAktiveVirksomheter = true
                 )
             ),
             selvstendigArbeidsforhold = Arbeidsforhold(
