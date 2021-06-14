@@ -45,7 +45,7 @@ fun Route.mellomlagringApis(
             }
         }
 
-        delete(MELLOMLAGRING_URL) {
+        delete {
             val idToken = idTokenProvider.getIdToken(call)
             mellomlagringService.deleteMellomlagring(idToken.getSubject()!!)
             call.respond(HttpStatusCode.Accepted)
