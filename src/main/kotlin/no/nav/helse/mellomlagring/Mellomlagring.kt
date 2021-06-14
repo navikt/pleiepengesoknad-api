@@ -27,7 +27,7 @@ fun Route.mellomlagringApis(
             call.respond(HttpStatusCode.NoContent)
         }
 
-        get(MELLOMLAGRING_URL) {
+        get {
             val idToken = idTokenProvider.getIdToken(call)
             val mellomlagring = mellomlagringService.getMellomlagring(idToken.getSubject()!!)
             if (mellomlagring != null) {
