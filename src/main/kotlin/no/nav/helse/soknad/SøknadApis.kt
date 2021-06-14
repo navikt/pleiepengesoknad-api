@@ -2,10 +2,11 @@ package no.nav.helse.soknad
 
 import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.locations.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import no.nav.helse.SØKNAD_URL
+import no.nav.helse.VALIDERING_URL
 import no.nav.helse.barn.BarnService
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
@@ -23,7 +24,6 @@ import java.time.ZonedDateTime
 
 private val logger: Logger = LoggerFactory.getLogger("nav.soknadApis")
 
-@KtorExperimentalLocationsAPI
 fun Route.soknadApis(
     søknadService: SøknadService,
     idTokenProvider: IdTokenProvider,
@@ -32,10 +32,7 @@ fun Route.soknadApis(
     vedleggService: VedleggService
 ) {
 
-    @Location("/soknad")
-    class sendSoknad
-
-    post { _ : sendSoknad ->
+    post(SØKNAD_URL) {
         val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
         val idToken = idTokenProvider.getIdToken(call)
         val callId = call.getCallId()
@@ -72,10 +69,8 @@ fun Route.soknadApis(
         call.respond(HttpStatusCode.Accepted)
     }
 
-    @Location("/soknad/valider")
-    class validerSoknad
 
-    post { _: validerSoknad ->
+    post(VALIDERING_URL) {
         val søknad = call.receive<Søknad>()
         logger.trace("Validerer søknad...")
         val mottatt = ZonedDateTime.now(ZoneOffset.UTC)

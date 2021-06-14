@@ -11,7 +11,6 @@ import io.ktor.http.content.MultiPartData
 import io.ktor.http.content.PartData
 import io.ktor.http.content.readAllParts
 import io.ktor.http.content.streamProvider
-import io.ktor.locations.*
 import io.ktor.request.ApplicationRequest
 import io.ktor.request.contentType
 import io.ktor.request.receiveMultipart
@@ -25,53 +24,20 @@ import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import io.ktor.routing.*
+import no.nav.helse.VEDLEGG_MED_ID_URL
+import no.nav.helse.VEDLEGG_URL
 
 private val logger: Logger = LoggerFactory.getLogger("nav.vedleggApis")
 private const val MAX_VEDLEGG_SIZE = 8 * 1024 * 1024
-private val supportedContentTypes = listOf("application/pdf", "image/jpeg", "image/png")
 
-private val hasToBeMultupartTypeProblemDetails = DefaultProblemDetails(
-    title = "multipart-form-required",
-    status = 400,
-    detail = "Requesten må være en 'multipart/form-data' request hvor en 'part' er en fil, har 'name=vedlegg' og har Content-Type header satt."
-)
-private val vedleggNotFoundProblemDetails = DefaultProblemDetails(
-    title = "attachment-not-found",
-    status = 404,
-    detail = "Inget vedlegg funnet med etterspurt ID."
-)
-private val vedleggNotAttachedProblemDetails = DefaultProblemDetails(
-    title = "attachment-not-attached",
-    status = 400,
-    detail = "Fant ingen 'part' som er en fil, har 'name=vedlegg' og har Content-Type header satt."
-)
-private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
-    title = "attachment-too-large",
-    status = 413,
-    detail = "vedlegget var over maks tillatt størrelse på 8MB."
-)
-private val vedleggContentTypeNotSupportedProblemDetails = DefaultProblemDetails(
-    title = "attachment-content-type-not-supported",
-    status = 400,
-    detail = "Vedleggets type må være en av $supportedContentTypes"
-)
-private val feilVedSlettingAvVedlegg = DefaultProblemDetails(title = "feil-ved-sletting", status = 500, detail = "Feil ved sletting av vedlegg")
-private val fantIkkeSubjectPaaToken = DefaultProblemDetails(title = "fant-ikke-subject", status = 413, detail = "Fant ikke subject på idToken")
-
-@KtorExperimentalLocationsAPI
 fun Route.vedleggApis(
     vedleggService: VedleggService,
     idTokenProvider: IdTokenProvider
 ) {
 
-    @Location("/vedlegg")
-    class NyttVedleg
-
-    @Location("/vedlegg/{vedleggId}")
-    data class EksisterendeVedlegg(val vedleggId: String)
-
-    get<EksisterendeVedlegg> { eksisterendeVedlegg ->
-        val vedleggId = VedleggId(eksisterendeVedlegg.vedleggId)
+    get(VEDLEGG_MED_ID_URL) {
+        val vedleggId = VedleggId(call.parameters["vedleggId"]!!)
         logger.info("Henter vedlegg")
         logger.info("$vedleggId")
         var eier = idTokenProvider.getIdToken(call).getSubject()
@@ -95,8 +61,8 @@ fun Route.vedleggApis(
         }
     }
 
-    delete<EksisterendeVedlegg> { eksisterendeVedlegg ->
-        val vedleggId = VedleggId(eksisterendeVedlegg.vedleggId)
+    delete(VEDLEGG_MED_ID_URL) {
+        val vedleggId = VedleggId(call.parameters["vedleggId"]!!)
         var eier = idTokenProvider.getIdToken(call).getSubject()
         if (eier == null) call.respond(HttpStatusCode.Forbidden) else {
             val resultat = vedleggService.slettVedlegg(
@@ -113,7 +79,7 @@ fun Route.vedleggApis(
         }
     }
 
-    post<NyttVedleg> { _ ->
+    post(VEDLEGG_URL) {
         logger.info("Lagrer vedlegg")
         if (!call.request.isFormMultipart()) {
             call.respondProblemDetails(hasToBeMultupartTypeProblemDetails)

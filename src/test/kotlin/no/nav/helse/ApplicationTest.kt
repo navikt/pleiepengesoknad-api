@@ -53,7 +53,6 @@ private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 private val gyldigFodselsnummerA = "02119970078"
 private val ikkeMyndigDato = "2050-12-12"
 
-@KtorExperimentalAPI
 class ApplicationTest {
 
     private companion object {
@@ -137,7 +136,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -159,7 +158,7 @@ class ApplicationTest {
         wireMockServer.stubK9OppslagArbeidsgivere(simulerFeil = true)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -175,7 +174,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere uten cookie satt`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
             leggTilCookie = false
@@ -186,7 +185,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med for lav ID level`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.Forbidden,
             expectedResponse = null,
             cookie = getAuthCookie(fnr = gyldigFodselsnummerA, level = 3)
@@ -197,7 +196,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med ugyldig format på ID-Token`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
             cookie = Cookie(listOf("localhost-idtoken=ikkeJwt", "Path=/", "Domain=localhost"))
@@ -208,7 +207,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med en utloept cookie`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
             cookie = getAuthCookie(gyldigFodselsnummerA, expiry = -(oneMinuteInMillis))
@@ -219,7 +218,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med ugyldig format paa til og fra`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=heisann&til_og_med=hadet",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=heisann&til_og_med=hadet",
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse = """
                 {
@@ -248,7 +247,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere uten til og fra satt`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver",
+            path = "$ARBEIDSGIVER_URL",
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse = """
                 {
@@ -277,7 +276,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere hvor fra_og_med er etter til_og_med`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/arbeidsgiver?fra_og_med=2020-01-10&til_og_med=2020-01-01",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2020-01-10&til_og_med=2020-01-01",
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse = """
             {
@@ -310,7 +309,7 @@ class ApplicationTest {
 
         val respons = requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/barn",
+            path = BARN_URL,
             expectedCode = HttpStatusCode.OK,
             //language=json
             expectedResponse = """
@@ -347,7 +346,7 @@ class ApplicationTest {
     fun `Henting av barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/barn",
+            path = BARN_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -376,7 +375,7 @@ class ApplicationTest {
     fun `Har ingen registrerte barn`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/barn",
+            path = BARN_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -392,7 +391,7 @@ class ApplicationTest {
         wireMockServer.stubK9OppslagBarn(simulerFeil = true)
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/barn",
+            path = BARN_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
@@ -418,23 +417,23 @@ class ApplicationTest {
         "fødselsdato": "$fødselsdato",
         "myndig": $myndig
     }
-""".trimIndent()
+    """.trimIndent()
 
     @Test
     fun `Hente soeker`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/soker",
+            path = SØKER_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(fnr)
         )
     }
 
     @Test
-    fun `Hente soeker som ikke er myndig`() {
+    fun `Hente søker som ikke er myndig`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "/soker",
+            path = SØKER_URL,
             expectedCode = HttpStatusCode.OK,
             expectedResponse = expectedGetSokerJson(
                 fødselsnummer = ikkeMyndigFnr,
@@ -453,7 +452,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -473,7 +472,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -493,7 +492,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
                 {
                     "type": "/problem-details/unauthorized",
@@ -522,7 +521,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -541,7 +540,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -582,7 +581,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             //language=json
             expectedResponse = """
                 {
@@ -645,7 +644,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -745,7 +744,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             //language=json
             expectedResponse = """
             {
@@ -813,7 +812,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             //language=json
             expectedResponse = """
             {
@@ -855,7 +854,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             //language=json
             expectedResponse = """
             {
@@ -905,7 +904,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
             {
               "type": "/problem-details/invalid-request-parameters",
@@ -951,7 +950,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
             {
               "type": "/problem-details/invalid-request-parameters",
@@ -997,7 +996,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
             {
               "type": "/problem-details/invalid-request-parameters",
@@ -1043,7 +1042,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
             {
               "type": "/problem-details/invalid-request-parameters",
@@ -1089,7 +1088,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -1183,7 +1182,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
             {
                 "type": "/problem-details/invalid-request-parameters",
@@ -1214,7 +1213,7 @@ class ApplicationTest {
         val forlangtNavn = SøknadUtils.forLangtNavn()
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedCode = HttpStatusCode.BadRequest,
             requestEntity =
             //language=JSON
@@ -1357,7 +1356,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -1392,7 +1391,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -1427,7 +1426,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -1465,7 +1464,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -1505,7 +1504,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = """
                 {
                   "type": "/problem-details/invalid-request-parameters",
@@ -1547,7 +1546,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -1567,7 +1566,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
@@ -1586,7 +1585,7 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = "/soknad",
+            path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
