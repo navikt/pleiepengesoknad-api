@@ -1,16 +1,10 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
-import no.nav.helse.dusseldorf.ktor.core.ParameterType
-import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
-import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
 private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
@@ -108,14 +102,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     violations.addAll(arbeidsgivere.organisasjoner.validate())
     violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter, selvstendigArbeidsforhold))
 
-    // TODO: 10/05/2021 utgår
-    tilsynsordning?.apply {
-        violations.addAll(this.validate())
-    }
-
-    omsorgstilbud?.apply {
-        violations.addAll(this.validate())
-    }
+    omsorgstilbud?.apply { violations.addAll(this.validate()) }
 
     violations.addAll(validerBarnRelasjon())
 
@@ -435,86 +422,6 @@ fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
     }
 }
 
-internal fun Tilsynsordning.validate(): MutableSet<Violation> {
-    val violations = mutableSetOf<Violation>()
-
-    if (svar != TilsynsordningSvar.ja && ja != null) {
-        violations.add(
-            Violation(
-                parameterName = "tilsynsordning.ja",
-                parameterType = ParameterType.ENTITY,
-                reason = "Skal kun settes om svar er 'ja'",
-                invalidValue = ja.toString()
-            )
-        )
-    }
-
-    if (svar != TilsynsordningSvar.vetIkke && vetIkke != null) {
-        violations.add(
-            Violation(
-                parameterName = "tilsynsordning.vetIkke",
-                parameterType = ParameterType.ENTITY,
-                reason = "Skal kun settes om svar er 'vetIkke'",
-                invalidValue = vetIkke.toString()
-            )
-        )
-    }
-
-    ja?.apply {
-        tilleggsinformasjon?.apply {
-            if (length > MAX_FRITEKST_TEGN) {
-                violations.add(
-                    Violation(
-                        parameterName = "tilsynsordning.ja.tilleggsinformasjon",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
-                        invalidValue = length
-                    )
-                )
-            }
-        }
-    }
-
-    vetIkke?.apply {
-        if (svar != TilsynsordningVetIkkeSvar.annet && annet != null) {
-            violations.add(
-                Violation(
-                    parameterName = "tilsynsordning.vetIkke.annet",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Skal kun settes om svar er 'annet''",
-                    invalidValue = svar
-                )
-            )
-        }
-
-        if (svar == TilsynsordningVetIkkeSvar.annet && annet.isNullOrBlank()) {
-            violations.add(
-                Violation(
-                    parameterName = "tilsynsordning.vetIkke.annet",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Må settes når svar er 'annet",
-                    invalidValue = svar
-                )
-            )
-        }
-
-        annet?.apply {
-            if (length > MAX_FRITEKST_TEGN) {
-                violations.add(
-                    Violation(
-                        parameterName = "tilsynsordning.vetIkke.annet",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Kan maks være $MAX_FRITEKST_TEGN tegn, var $length.",
-                        invalidValue = length
-                    )
-                )
-            }
-        }
-    }
-
-    return violations
-}
-
 private fun Søknad.validerBarnRelasjon(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
@@ -530,18 +437,6 @@ private fun Søknad.validerBarnRelasjon(): MutableSet<Violation> {
     }
 
     return violations
-}
-
-internal fun antallVirkedagerIEnPeriode(fraOgMed: LocalDate, tilOgMed: LocalDate): Int {
-    var antallDagerIPerioden = fraOgMed.until(tilOgMed, ChronoUnit.DAYS)
-    var dagSomSkalSjekkes: LocalDate = fraOgMed;
-
-    while (!dagSomSkalSjekkes.isAfter(tilOgMed)) {
-        if (dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SATURDAY || dagSomSkalSjekkes.dayOfWeek == DayOfWeek.SUNDAY) antallDagerIPerioden--
-        dagSomSkalSjekkes = dagSomSkalSjekkes.plusDays(1)
-    }
-
-    return antallDagerIPerioden.toInt()
 }
 
 internal fun nullSjekk(verdi: Boolean?, navn: String): MutableSet<Violation> {

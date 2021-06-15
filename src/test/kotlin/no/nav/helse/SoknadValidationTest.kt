@@ -2,20 +2,7 @@ package no.nav.helse
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.k9format.tilK9Format
-import no.nav.helse.soknad.Arbeidsform
-import no.nav.helse.soknad.ArbeidsgiverDetaljer
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.BarnRelasjon
-import no.nav.helse.soknad.Bosted
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.Frilans
-import no.nav.helse.soknad.Medlemskap
-import no.nav.helse.soknad.OrganisasjonDetaljer
-import no.nav.helse.soknad.SkalJobbe
-import no.nav.helse.soknad.Språk
-import no.nav.helse.soknad.Søknad
-import no.nav.helse.soknad.UtenlandsoppholdIPerioden
-import no.nav.helse.soknad.validate
+import no.nav.helse.soknad.*
 import java.net.URL
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -71,26 +58,6 @@ class SoknadValidationTest {
         søknad.validate(k9Format)
     }
 
-    @Test
-    fun `Søknad hvor perioden er 40 virkedager, skal ikke feile`(){
-        val søknad = soknadMedFrilans(fraOgMed = LocalDate.parse("2020-01-01"), tilOgMed = LocalDate.parse("2020-02-26"))
-        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
-
-        søknad.validate(k9Format)
-    }
-
-    @Test
-    fun `Søknad hvor perioden er 41 virkedager hvor det er bekreftet, skal ikke feile`(){
-        val søknad = soknadMedFrilans(
-            bekrefterPeriodeOver8Uker = true,
-            fraOgMed = LocalDate.parse("2020-01-01"),
-            tilOgMed = LocalDate.parse("2020-02-27")
-        )
-        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
-
-        søknad.validate(k9Format)
-    }
-
     @Test(expected = Throwblem::class)
     fun `Skal feile dersom barnRelasjon er ANNET men barnRelasjonBeskrivelse er tom`() {
         val søknad = soknad(
@@ -114,7 +81,6 @@ class SoknadValidationTest {
     }
 
     private fun soknadMedFrilans(
-        bekrefterPeriodeOver8Uker: Boolean = false,
         fraOgMed: LocalDate = LocalDate.now(),
         tilOgMed: LocalDate = LocalDate.now()
     ) = Søknad(
@@ -148,7 +114,6 @@ class SoknadValidationTest {
 
         harBekreftetOpplysninger = true,
         harForståttRettigheterOgPlikter = true,
-        tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
         frilans = Frilans(
@@ -206,7 +171,6 @@ class SoknadValidationTest {
         samtidigHjemme = samtidigHjemme,
         harBekreftetOpplysninger = true,
         harForståttRettigheterOgPlikter = true,
-        tilsynsordning = null,
         utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
         ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
         barnRelasjon = null,
