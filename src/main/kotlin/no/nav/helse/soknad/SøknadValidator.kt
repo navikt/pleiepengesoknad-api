@@ -216,7 +216,6 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
         }
     }
 
-    violations.addAll(nullSjekk(harVærtEllerErVernepliktig, "harVærtEllerErVernepliktig"))
     violations.addAll(validerK9Format(k9FormatSøknad))
 
     if (violations.isNotEmpty()) {

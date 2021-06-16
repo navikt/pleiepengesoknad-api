@@ -38,7 +38,7 @@ data class Søknad(
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
-    val harVærtEllerErVernepliktig: Boolean? = null //Default null for å unngå default false ved feil deserialisering
+    val harVærtEllerErVernepliktig: Boolean? = null
 ) {
 
     fun oppdaterBarnMedFnr(listeOverBarn: List<Barn>) {

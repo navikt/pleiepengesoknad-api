@@ -72,57 +72,6 @@ class SoknadValidationTest {
         søknad.validate(k9Format)
     }
 
-    @Test(expected = Throwblem::class)
-    fun `Skal feile dersom "harVærtEllerErVernepliktig" blir satt til null`(){
-        val søknad = soknad(skalJobbe = SkalJobbe.NEI).copy(harVærtEllerErVernepliktig = null)
-        val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
-
-        søknad.validate(k9Format)
-    }
-
-    private fun soknadMedFrilans(
-        fraOgMed: LocalDate = LocalDate.now(),
-        tilOgMed: LocalDate = LocalDate.now()
-    ) = Søknad(
-        newVersion = null,
-        språk = Språk.nb,
-        barn = BarnDetaljer(
-            aktørId = null,
-            fødselsnummer = "02119970078",
-            fødselsdato = LocalDate.now(),
-            navn = null
-        ),
-        arbeidsgivere = ArbeidsgiverDetaljer(listOf(
-            OrganisasjonDetaljer(
-                navn = "Org",
-                organisasjonsnummer = "917755736",
-                skalJobbeProsent = 10.0,
-                jobberNormaltTimer = 10.0,
-                skalJobbe = SkalJobbe.REDUSERT,
-                arbeidsform = Arbeidsform.TURNUS
-            )
-        )),
-        vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
-        fraOgMed = fraOgMed,
-        tilOgMed = tilOgMed,
-        medlemskap = Medlemskap(
-            harBoddIUtlandetSiste12Mnd = false,
-            skalBoIUtlandetNeste12Mnd = true
-        ),
-        harMedsøker = true,
-        samtidigHjemme = true,
-
-        harBekreftetOpplysninger = true,
-        harForståttRettigheterOgPlikter = true,
-        utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
-        ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf()),
-        frilans = Frilans(
-            jobberFortsattSomFrilans = true,
-            startdato = LocalDate.now().minusDays(1)
-        ),
-        harVærtEllerErVernepliktig = true
-        )
-
     private fun soknad(
         harMedsoker: Boolean = true,
         samtidigHjemme: Boolean? = false,
