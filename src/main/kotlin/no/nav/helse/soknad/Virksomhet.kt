@@ -1,7 +1,6 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import java.time.LocalDate
@@ -92,8 +91,7 @@ internal fun Virksomhet.validate(index: Int): MutableSet<Violation>{
             }
         }
     }
-/*
-    //TODO 04/06/2021 - Skru på validering når feltet er prodsatt i frontend.
+
     if(harFlereAktiveVirksomheter == null){
         violations.add(
             Violation(
@@ -104,21 +102,16 @@ internal fun Virksomhet.validate(index: Int): MutableSet<Violation>{
             )
         )
     }
-*/
 
     return violations
 }
 
 internal fun Virksomhet.harGyldigPeriode(): Boolean {
-
     if (tilOgMed == null) return true // er pågående
     return fraOgMed <= tilOgMed
 }
 
-private fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean {
-    return !organisasjonsnummer.isNullOrBlank()
-}
-
+private fun Virksomhet.erRegistrertINorgeGyldigSatt(): Boolean = !organisasjonsnummer.isNullOrBlank()
 private fun Virksomhet.erRegistrertIUtlLandetGyldigSatt(): Boolean = registrertIUtlandet !== null
 private fun Virksomhet.erVirksomhetIUtlandet(): Boolean = !registrertINorge
 private fun Virksomhet.erVirksomhetINorge() = registrertINorge && registrertIUtlandet == null
