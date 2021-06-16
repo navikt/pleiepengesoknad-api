@@ -604,7 +604,8 @@ class ApplicationTest {
                         regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
                             telefon = "84554"
-                        )
+                        ),
+                        harFlereAktiveVirksomheter = true
                     )
                 ),
                 selvstendigArbeidsForhold = Arbeidsforhold(
@@ -698,7 +699,8 @@ class ApplicationTest {
                       "regnskapsfører": {
                         "navn": "Kjell Bjarne",
                         "telefon": "88788"
-                      }
+                      },
+                      "harFlereAktiveVirksomheter" : true
                     }
                   ],
                   "selvstendigArbeidsforhold": {
@@ -759,7 +761,8 @@ class ApplicationTest {
                         næringsinntekt = 1212,
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = false,
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                        harFlereAktiveVirksomheter = true
                     ), Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
@@ -769,7 +772,8 @@ class ApplicationTest {
                         navnPåVirksomheten = "BariBar",
                         registrertINorge = true,
                         organisasjonsnummer = "10110",
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
+                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                        harFlereAktiveVirksomheter = true
                     )
                 ),
                 selvstendigArbeidsForhold = Arbeidsforhold(
@@ -865,7 +869,8 @@ class ApplicationTest {
                             navnPåVirksomheten = "TullOgTøys",
                             registrertINorge = false,
                             registrertIUtlandet = Land("DEU", "Tyskeland"),
-                            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now())
+                            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                            harFlereAktiveVirksomheter = true
                         )
                     ),
                     selvstendigArbeidsforhold = null

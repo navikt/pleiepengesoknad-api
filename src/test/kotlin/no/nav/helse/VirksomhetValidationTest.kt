@@ -3,7 +3,6 @@ package no.nav.helse
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.*
 import java.time.LocalDate
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -113,7 +112,7 @@ class VirksomhetTest {
         virksomhet.validate(0).assertIngenFeil()
     }
 
-    @Test @Ignore // TODO: 04/06/2021 - Skru på når feltet er prodsatt
+    @Test
     fun `Hvis harFlereAktiveVirksomheter er null skal validering gi feil`(){
         val virksomhet = gyldigVirksomhet.copy(
             harFlereAktiveVirksomheter = null
