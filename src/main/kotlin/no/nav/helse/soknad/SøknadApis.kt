@@ -7,15 +7,20 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.SØKNAD_URL
 import no.nav.helse.VALIDERING_URL
+import no.nav.helse.VALIDER_VEDLEGG
 import no.nav.helse.barn.BarnService
+import no.nav.helse.general.CallId
+import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
+import no.nav.helse.somJson
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
+import no.nav.helse.vedlegg.VedleggId
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -34,8 +39,7 @@ fun Route.soknadApis(
 
     post(SØKNAD_URL) {
         val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
-        val idToken = idTokenProvider.getIdToken(call)
-        val callId = call.getCallId()
+        val(idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
 
         logger.trace("Mottatt ny søknad. Mapper søknad.")
         val søknad = call.receive<Søknad>()
@@ -74,8 +78,7 @@ fun Route.soknadApis(
         val søknad = call.receive<Søknad>()
         logger.trace("Validerer søknad...")
         val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
-        val idToken = idTokenProvider.getIdToken(call)
-        val callId = call.getCallId()
+        val(idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
 
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
 
@@ -96,4 +99,32 @@ fun Route.soknadApis(
         logger.trace("Validering Ok.")
         call.respond(HttpStatusCode.Accepted)
     }
+
+    post(VALIDER_VEDLEGG) {
+        val(idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
+        val vedleggListe = call.receive<VedleggListe>()
+        logger.info("Validerer om ${vedleggListe.vedleggId.size} finnes")
+        val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
+
+        val listeOverManglendeVedlegg = mutableListOf<String>()
+        vedleggListe.vedleggId.forEach{ vedleggId: String ->
+            val resultat = vedleggService.hentVedlegg(
+                VedleggId(vedleggId),
+                idToken,
+                callId,
+                DokumentEier(søker.fødselsnummer)
+            )
+            if(resultat == null) listeOverManglendeVedlegg.add(vedleggId)
+        }
+
+        if(listeOverManglendeVedlegg.size > 0) logger.info("Fant ikke ${listeOverManglendeVedlegg.size} vedlegg")
+        call.respond(VedleggListe(listeOverManglendeVedlegg).somJson())
+    }
 }
+
+private fun ApplicationCall.hentIdTokenOgCallId(idTokenProvider: IdTokenProvider): Pair<IdToken, CallId> =
+    Pair(idTokenProvider.getIdToken(this), getCallId())
+
+data class VedleggListe (
+    val vedleggId: List<String>
+)

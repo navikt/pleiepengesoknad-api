@@ -445,6 +445,63 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Validerer vedlegg hvor et ikke finnes`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val vedlegg1 = engine.jpegUrl(cookie)
+        val vedlegg2 = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = VALIDER_VEDLEGG,
+            expectedResponse = """
+                {
+                  "vedleggId": [
+                    "https://detteVedleggetFinnesIkke"
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.OK,
+            cookie = cookie,
+            requestEntity = """
+                {
+                  "vedleggId": [
+                    "https://detteVedleggetFinnesIkke",
+                    "$vedlegg1",
+                    "$vedlegg2"
+                  ]
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `Validerer vedlegg hvor alle finnes`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val vedlegg1 = engine.jpegUrl(cookie)
+        val vedlegg2 = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = VALIDER_VEDLEGG,
+            expectedResponse = """
+                {
+                  "vedleggId": []
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.OK,
+            cookie = cookie,
+            requestEntity = """
+                {
+                  "vedleggId": [    
+                    "$vedlegg1",
+                    "$vedlegg2"
+                  ]
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun `Sende soknad uten grad`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
