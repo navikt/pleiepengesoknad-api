@@ -7,7 +7,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.SØKNAD_URL
 import no.nav.helse.VALIDERING_URL
-import no.nav.helse.VALIDER_VEDLEGG
 import no.nav.helse.barn.BarnService
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
@@ -17,14 +16,11 @@ import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
-import no.nav.helse.somJson
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
-import no.nav.helse.vedlegg.vedleggIdFromUrl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URL
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
@@ -100,34 +96,6 @@ fun Route.soknadApis(
         logger.trace("Validering Ok.")
         call.respond(HttpStatusCode.Accepted)
     }
-
-    post(VALIDER_VEDLEGG) {
-        val(idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
-        val vedleggListe = call.receive<VedleggListe>()
-        logger.info("Validerer om ${vedleggListe.vedleggId.size} finnes")
-        logger.info("Liste: ${vedleggListe.somJson()}")
-        val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
-
-        val listeOverManglendeVedlegg = mutableListOf<String>()
-        vedleggListe.vedleggId.forEach{ vedleggId: String ->
-            val resultat = vedleggService.hentVedlegg(
-                vedleggIdFromUrl(URL(vedleggId)),
-                idToken,
-                callId,
-                DokumentEier(søker.fødselsnummer)
-            )
-            if(resultat == null) listeOverManglendeVedlegg.add(vedleggId)
-        }
-
-        if(listeOverManglendeVedlegg.size > 0) logger.info("Fant ikke ${listeOverManglendeVedlegg.size} vedlegg")
-        logger.info("Fant ikke: ${listeOverManglendeVedlegg.somJson()}")
-        call.respond(VedleggListe(listeOverManglendeVedlegg).somJson())
-    }
 }
 
-private fun ApplicationCall.hentIdTokenOgCallId(idTokenProvider: IdTokenProvider): Pair<IdToken, CallId> =
-    Pair(idTokenProvider.getIdToken(this), getCallId())
-
-data class VedleggListe (
-    val vedleggId: List<String>
-)
+fun ApplicationCall.hentIdTokenOgCallId(idTokenProvider: IdTokenProvider): Pair<IdToken, CallId> = Pair(idTokenProvider.getIdToken(this), getCallId())

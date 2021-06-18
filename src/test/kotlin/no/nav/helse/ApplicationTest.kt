@@ -452,10 +452,10 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = VALIDER_VEDLEGG,
+            path = VALIDER_VEDLEGG_URL,
             expectedResponse = """
                 {
-                  "vedleggId": [
+                  "vedleggUrl": [
                     "http://localhost:80/vedlegg/finnes-ikke"
                   ]
                 }
@@ -464,7 +464,7 @@ class ApplicationTest {
             cookie = cookie,
             requestEntity = """
                 {
-                  "vedleggId": [
+                  "vedleggUrl": [
                     "http://localhost:80/vedlegg/finnes-ikke",
                     "$vedlegg1",
                     "$vedlegg2"
@@ -482,17 +482,17 @@ class ApplicationTest {
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
-            path = VALIDER_VEDLEGG,
+            path = VALIDER_VEDLEGG_URL,
             expectedResponse = """
                 {
-                  "vedleggId": []
+                  "vedleggUrl": []
                 }
             """.trimIndent(),
             expectedCode = HttpStatusCode.OK,
             cookie = cookie,
             requestEntity = """
                 {
-                  "vedleggId": [    
+                  "vedleggUrl": [    
                     "$vedlegg1",
                     "$vedlegg2"
                   ]
@@ -846,7 +846,6 @@ class ApplicationTest {
     @Test
     fun `Gitt innsendt søknad har tom virksomhets liste med selvstendigArbeidsforhold satt, forvent feil`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
