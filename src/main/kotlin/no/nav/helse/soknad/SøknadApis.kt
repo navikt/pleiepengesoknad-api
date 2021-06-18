@@ -104,6 +104,7 @@ fun Route.soknadApis(
         val(idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
         val vedleggListe = call.receive<VedleggListe>()
         logger.info("Validerer om ${vedleggListe.vedleggId.size} finnes")
+        logger.info("Liste: ${vedleggListe.somJson()}")
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
 
         val listeOverManglendeVedlegg = mutableListOf<String>()
@@ -118,6 +119,7 @@ fun Route.soknadApis(
         }
 
         if(listeOverManglendeVedlegg.size > 0) logger.info("Fant ikke ${listeOverManglendeVedlegg.size} vedlegg")
+        logger.info("Fant ikke: ${listeOverManglendeVedlegg.somJson()}")
         call.respond(VedleggListe(listeOverManglendeVedlegg).somJson())
     }
 }
