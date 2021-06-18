@@ -8,6 +8,8 @@ import io.ktor.routing.*
 import no.nav.helse.SØKNAD_URL
 import no.nav.helse.VALIDERING_URL
 import no.nav.helse.barn.BarnService
+import no.nav.helse.general.CallId
+import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import no.nav.helse.k9format.tilK9Format
@@ -34,8 +36,7 @@ fun Route.soknadApis(
 
     post(SØKNAD_URL) {
         val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
-        val idToken = idTokenProvider.getIdToken(call)
-        val callId = call.getCallId()
+        val(idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
 
         logger.trace("Mottatt ny søknad. Mapper søknad.")
         val søknad = call.receive<Søknad>()
@@ -74,8 +75,7 @@ fun Route.soknadApis(
         val søknad = call.receive<Søknad>()
         logger.trace("Validerer søknad...")
         val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
-        val idToken = idTokenProvider.getIdToken(call)
-        val callId = call.getCallId()
+        val(idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
 
         val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
 
@@ -97,3 +97,5 @@ fun Route.soknadApis(
         call.respond(HttpStatusCode.Accepted)
     }
 }
+
+fun ApplicationCall.hentIdTokenOgCallId(idTokenProvider: IdTokenProvider): Pair<IdToken, CallId> = Pair(idTokenProvider.getIdToken(this), getCallId())

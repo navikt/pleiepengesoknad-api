@@ -13,7 +13,6 @@ import io.ktor.http.*
 import io.ktor.jackson.*
 import io.ktor.metrics.micrometer.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.helse.arbeidsgiver.ArbeidsgivereGateway
 import no.nav.helse.arbeidsgiver.ArbeidsgivereService
@@ -163,7 +162,8 @@ fun Application.pleiepengesoknadapi() {
 
             vedleggApis(
                 vedleggService = vedleggService,
-                idTokenProvider = idTokenProvider
+                idTokenProvider = idTokenProvider,
+                søkerService = søkerService
             )
 
             soknadApis(

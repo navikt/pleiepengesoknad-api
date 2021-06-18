@@ -445,6 +445,63 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Validerer vedlegg hvor et ikke finnes`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val vedlegg1 = engine.jpegUrl(cookie)
+        val vedlegg2 = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = VALIDER_VEDLEGG_URL,
+            expectedResponse = """
+                {
+                  "vedleggUrl": [
+                    "http://localhost:80/vedlegg/finnes-ikke"
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.OK,
+            cookie = cookie,
+            requestEntity = """
+                {
+                  "vedleggUrl": [
+                    "http://localhost:80/vedlegg/finnes-ikke",
+                    "$vedlegg1",
+                    "$vedlegg2"
+                  ]
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `Validerer vedlegg hvor alle finnes`(){
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val vedlegg1 = engine.jpegUrl(cookie)
+        val vedlegg2 = engine.pdUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = VALIDER_VEDLEGG_URL,
+            expectedResponse = """
+                {
+                  "vedleggUrl": []
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.OK,
+            cookie = cookie,
+            requestEntity = """
+                {
+                  "vedleggUrl": [    
+                    "$vedlegg1",
+                    "$vedlegg2"
+                  ]
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun `Sende soknad uten grad`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
@@ -789,7 +846,6 @@ class ApplicationTest {
     @Test
     fun `Gitt innsendt søknad har tom virksomhets liste med selvstendigArbeidsforhold satt, forvent feil`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,

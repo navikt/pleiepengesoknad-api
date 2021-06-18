@@ -1,40 +1,34 @@
 package no.nav.helse.vedlegg
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.features.origin
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLBuilder
-import io.ktor.http.content.MultiPartData
-import io.ktor.http.content.PartData
-import io.ktor.http.content.readAllParts
-import io.ktor.http.content.streamProvider
-import io.ktor.request.ApplicationRequest
-import io.ktor.request.contentType
-import io.ktor.request.receiveMultipart
-import io.ktor.response.header
-import io.ktor.response.respond
-import io.ktor.response.respondBytes
-import io.ktor.routing.Route
-import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
+import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.http.*
+import io.ktor.http.content.*
+import io.ktor.request.*
+import io.ktor.response.*
+import io.ktor.routing.*
+import no.nav.helse.VALIDER_VEDLEGG_URL
+import no.nav.helse.VEDLEGG_MED_ID_URL
+import no.nav.helse.VEDLEGG_URL
 import no.nav.helse.dusseldorf.ktor.core.respondProblemDetails
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
+import no.nav.helse.soker.Søker
+import no.nav.helse.soker.SøkerService
+import no.nav.helse.soknad.hentIdTokenOgCallId
+import no.nav.helse.somJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import io.ktor.routing.*
-import no.nav.helse.VEDLEGG_MED_ID_URL
-import no.nav.helse.VEDLEGG_URL
+import java.net.URL
 
 private val logger: Logger = LoggerFactory.getLogger("nav.vedleggApis")
 private const val MAX_VEDLEGG_SIZE = 8 * 1024 * 1024
 
 fun Route.vedleggApis(
     vedleggService: VedleggService,
-    idTokenProvider: IdTokenProvider
-) {
+    idTokenProvider: IdTokenProvider,
+    søkerService: SøkerService,
+    ) {
 
     get(VEDLEGG_MED_ID_URL) {
         val vedleggId = VedleggId(call.parameters["vedleggId"]!!)
@@ -114,8 +108,29 @@ fun Route.vedleggApis(
             }
         }
     }
-}
 
+    post(VALIDER_VEDLEGG_URL) {
+        val vedleggListe = call.receive<VedleggListe>()
+        logger.info("Validerer at ${vedleggListe.vedleggUrl.size} vedlegg finnes")
+
+        val(idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
+        val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
+
+        val vedleggSomIkkeFinnes = mutableListOf<URL>()
+        vedleggListe.vedleggUrl.forEach{ vedleggUrl: URL ->
+            val resultat = vedleggService.hentVedlegg(
+                vedleggIdFromUrl(vedleggUrl),
+                idToken,
+                callId,
+                DokumentEier(søker.fødselsnummer)
+            )
+            if(resultat == null) vedleggSomIkkeFinnes.add(vedleggUrl)
+        }
+
+        if(vedleggSomIkkeFinnes.size > 0) logger.info("Fant ikke ${vedleggSomIkkeFinnes.size} vedlegg")
+        call.respond(VedleggListe(vedleggSomIkkeFinnes).somJson())
+    }
+}
 
 private suspend fun MultiPartData.getVedlegg(eier: DokumentEier): Vedlegg? {
     for (partData in readAllParts()) {
@@ -137,7 +152,6 @@ private suspend fun MultiPartData.getVedlegg(eier: DokumentEier): Vedlegg? {
     }
     return null
 }
-
 
 private fun Vedlegg.isSupportedContentType(): Boolean = supportedContentTypes.contains(contentType.toLowerCase())
 

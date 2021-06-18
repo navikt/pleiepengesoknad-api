@@ -6,8 +6,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.net.URL
 
 class VedleggService(
@@ -78,7 +76,8 @@ class VedleggService(
         )
     }
 
-    private fun vedleggIdFromUrl(url: URL) : VedleggId {
-        return VedleggId(url.path.substringAfterLast("/"))
-    }
+}
+
+fun vedleggIdFromUrl(url: URL) : VedleggId {
+    return VedleggId(url.path.substringAfterLast("/"))
 }
