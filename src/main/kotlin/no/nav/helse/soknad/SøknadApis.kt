@@ -20,10 +20,11 @@ import no.nav.helse.soker.validate
 import no.nav.helse.somJson
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
-import no.nav.helse.vedlegg.VedleggId
 import no.nav.helse.vedlegg.VedleggService
+import no.nav.helse.vedlegg.vedleggIdFromUrl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.net.URL
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
@@ -110,7 +111,7 @@ fun Route.soknadApis(
         val listeOverManglendeVedlegg = mutableListOf<String>()
         vedleggListe.vedleggId.forEach{ vedleggId: String ->
             val resultat = vedleggService.hentVedlegg(
-                VedleggId(vedleggId),
+                vedleggIdFromUrl(URL(vedleggId)),
                 idToken,
                 callId,
                 DokumentEier(søker.fødselsnummer)

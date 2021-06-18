@@ -456,7 +456,7 @@ class ApplicationTest {
             expectedResponse = """
                 {
                   "vedleggId": [
-                    "https://detteVedleggetFinnesIkke"
+                    "http://localhost:80/vedlegg/finnes-ikke"
                   ]
                 }
             """.trimIndent(),
@@ -465,7 +465,7 @@ class ApplicationTest {
             requestEntity = """
                 {
                   "vedleggId": [
-                    "https://detteVedleggetFinnesIkke",
+                    "http://localhost:80/vedlegg/finnes-ikke",
                     "$vedlegg1",
                     "$vedlegg2"
                   ]
