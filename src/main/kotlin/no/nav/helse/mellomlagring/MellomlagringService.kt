@@ -1,12 +1,11 @@
 package no.nav.helse.mellomlagring
 
-import io.ktor.util.*
 import no.nav.helse.redis.RedisStore
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 
-class MellomlagringService @KtorExperimentalAPI constructor(
+class MellomlagringService constructor(
     private val redisStore: RedisStore,
     private val passphrase: String
 ) {

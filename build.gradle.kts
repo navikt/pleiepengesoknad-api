@@ -9,7 +9,7 @@ val mainClass = "no.nav.helse.AppKt"
 val fuelVersion = "2.3.1"
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.20"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -37,7 +37,7 @@ dependencies {
     implementation ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
     implementation ( "no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
     implementation ("io.lettuce:lettuce-core:5.3.5.RELEASE")
-    implementation("com.github.fppt:jedis-mock:0.1.20")
+    implementation("com.github.fppt:jedis-mock:0.17.0")
 
     // Test
     testImplementation ( "no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
@@ -46,7 +46,7 @@ dependencies {
     }
 
     testImplementation ("org.skyscreamer:jsonassert:1.5.0")
-    testImplementation("org.awaitility:awaitility-kotlin:4.0.3")
+    testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
 
 }
 
@@ -98,5 +98,5 @@ tasks.withType<ShadowJar> {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "7.0.2"
+    gradleVersion = "7.1"
 }
