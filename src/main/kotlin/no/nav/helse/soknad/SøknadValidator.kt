@@ -96,7 +96,7 @@ class FraOgMedTilOgMedValidator {
     }
 }
 
-internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
+internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad, skalValidereHarBekreftetOpplysninger: Boolean = true) {
     val violations = barn.validate()
 
     violations.addAll(arbeidsgivere.organisasjoner.validate())
@@ -160,7 +160,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
     violations.addAll(nullSjekk(harMedsøker, "harMedsøker"))
 
-    if (!harBekreftetOpplysninger) {
+    if (skalValidereHarBekreftetOpplysninger && !harBekreftetOpplysninger) {
         violations.add(
             Violation(
                 parameterName = "harBekreftetOpplysninger",

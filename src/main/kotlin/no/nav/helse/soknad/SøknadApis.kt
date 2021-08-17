@@ -83,7 +83,7 @@ fun Route.soknadApis(
         søknad.oppdaterBarnMedFnr(listeOverBarnMedFnr)
 
         val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
-        søknad.validate(k9FormatSøknad)
+        søknad.validate(k9FormatSøknad, false)
 
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,
