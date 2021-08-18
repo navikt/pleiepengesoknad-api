@@ -1,6 +1,11 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.ParameterType
+import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.helse.utils.erLikEllerEtterDagensDato
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import java.time.LocalDate
@@ -103,6 +108,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter, selvstendigArbeidsforhold))
 
     omsorgstilbud?.apply { violations.addAll(this.validate()) }
+    omsorgstilbudV2?.apply { violations.addAll(this.validate()) }
 
     violations.addAll(validerBarnRelasjon())
 
@@ -380,8 +386,9 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
     return violations
 }
 
+// TODO: 18/08/2021 Utgår. Blir erstattet med OmsorgstilbudV2.validate().
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
-    when(val vet = vetOmsorgstilbud) {
+    when (val vet = vetOmsorgstilbud) {
         VetOmsorgstilbud.VET_IKKE -> {
             if (fasteDager != null || (enkeltDager != null && enkeltDager.isNotEmpty())) {
                 add(
@@ -416,6 +423,52 @@ fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
                         invalidValue = "enkeltDager = $enkeltDager, fasteDager = $fasteDager"
                     )
                 )
+            }
+        }
+    }
+}
+
+fun OmsorgstilbudV2.validate() = mutableSetOf<Violation>().apply {
+
+    if (historisk != null && historisk.enkeltDager.isNotEmpty()) {
+        if (historisk.enkeltDager.any() { it.dato.erLikEllerEtterDagensDato() }) {
+            add(
+                Violation(
+                    parameterName = "omsorgstilbudV2.historisk.enkeltDager",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
+                    invalidValue = "enkeltDager = ${historisk.enkeltDager}"
+                )
+            )
+        }
+    }
+
+    if (planlagt != null) {
+        when (val vet = planlagt.vetOmsorgstilbud) {
+            VetOmsorgstilbud.VET_IKKE -> {
+                if (planlagt.ukedager != null || (planlagt.enkeltDager != null && planlagt.enkeltDager.isNotEmpty())) {
+                    add(
+                        Violation(
+                            parameterName = "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Dersom vetOmsorgstilbud er '$vet', så kan verken 'ukedager' eller 'enkeltDager' være satt.",
+                            invalidValue = "enkeltDager = ${planlagt.enkeltDager}, ukedager = ${planlagt.ukedager}"
+                        )
+                    )
+                }
+            }
+
+            else -> {
+                if (planlagt.ukedager == null && planlagt.enkeltDager.isNullOrEmpty()) {
+                    add(
+                        Violation(
+                            parameterName = "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
+                            parameterType = ParameterType.ENTITY,
+                            reason = "Dersom vetOmsorgstilbud er '$vet', så må enten 'ukedager' eller 'enkeltDager' være satt.",
+                            invalidValue = "enkeltDager = ${planlagt.enkeltDager}, ukedager = ${planlagt.ukedager}"
+                        )
+                    )
+                }
             }
         }
     }

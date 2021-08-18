@@ -4,8 +4,23 @@ import java.time.Duration
 import java.time.LocalDate
 
 data class Omsorgstilbud(
-    val fasteDager: OmsorgstilbudFasteDager? = null,
+    val fasteDager: OmsorgstilbudUkedager? = null,
     val enkeltDager: List<OmsorgstilbudEnkeltDag>? = null,
+    val vetOmsorgstilbud: VetOmsorgstilbud
+)
+
+data class OmsorgstilbudV2(
+    val historisk: HistoriskOmsorgstilbud? = null,
+    val planlagt: PlanlagtOmsorgstilbud? = null
+)
+
+data class HistoriskOmsorgstilbud(
+    val enkeltDager: List<OmsorgstilbudEnkeltDag>
+)
+
+data class PlanlagtOmsorgstilbud(
+    val enkeltDager: List<OmsorgstilbudEnkeltDag>? = null,
+    val ukedager: OmsorgstilbudUkedager? = null,
     val vetOmsorgstilbud: VetOmsorgstilbud
 )
 
@@ -20,7 +35,7 @@ data class OmsorgstilbudEnkeltDag(
     val tid: Duration
 )
 
-data class OmsorgstilbudFasteDager(
+data class OmsorgstilbudUkedager(
     val mandag: Duration? = null,
     val tirsdag: Duration? = null,
     val onsdag: Duration? = null,

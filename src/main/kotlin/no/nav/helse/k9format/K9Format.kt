@@ -51,9 +51,13 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     barnRelasjon?.let { psb.medOmsorg(byggK9Omsorg()) }
     beredskap?.let { if (it.beredskap) psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
     nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
-    omsorgstilbud?.let {
-        psb.medTilsynsordning(it.tilK9Tilsynsordning(søknadsperiode))
-    } ?: psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
+
+    when {
+        // TODO: 18/08/2021 Utgår. Blir erstattet med omsorgstilbudV2.
+        omsorgstilbud != null -> psb.medTilsynsordning(omsorgstilbud.tilK9Tilsynsordning(søknadsperiode))
+        omsorgstilbudV2 != null -> omsorgstilbudV2.tilK9Tilsynsordning(søknadsperiode)
+        else -> psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
+    }
 
     ferieuttakIPerioden?.let {
         if (it.ferieuttak.isNotEmpty() && it.skalTaUtFerieIPerioden) {
@@ -118,6 +122,7 @@ fun tilK9Tilsynsordning0Timer(periode: Periode) = K9Tilsynsordning().apply {
     )
 }
 
+// TODO: 18/08/2021 Utgår. Blir erstattet med no.nav.helse.k9format.K9FormatKt.OmsorgstilbudV2,tilK9Tilsynsordning()
 fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode): K9Tilsynsordning = K9Tilsynsordning().apply {
     when {
         !enkeltDager.isNullOrEmpty() -> enkeltDager.map {
@@ -148,6 +153,41 @@ fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode): K9Tilsynsordning = K9Ti
                 }
             }
         else -> tilK9Tilsynsordning0Timer(periode)
+    }
+}
+
+fun OmsorgstilbudV2.tilK9Tilsynsordning(periode: Periode): K9Tilsynsordning = K9Tilsynsordning().apply {
+
+    if (historisk == null && planlagt == null) return tilK9Tilsynsordning0Timer(periode)
+
+    historisk?.enkeltDager?.map {
+        leggeTilPeriode(
+            Periode(it.dato, it.dato),
+            TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
+                Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it.tid)
+            )
+        )
+    }
+
+    planlagt?.ukedager?.apply {
+        LocalDate.now().datesUntil(periode.tilOgMed.plusDays(1)).toList()
+            .map { dato: LocalDate ->
+                when (dato.dayOfWeek) {
+                    DayOfWeek.MONDAY -> mandag
+                    DayOfWeek.TUESDAY -> tirsdag
+                    DayOfWeek.WEDNESDAY -> onsdag
+                    DayOfWeek.THURSDAY -> torsdag
+                    DayOfWeek.FRIDAY -> fredag
+                    else -> null
+                }?.let { tilsynLengde: Duration ->
+                    leggeTilPeriode(
+                        Periode(dato, dato),
+                        TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
+                            Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(tilsynLengde)
+                        )
+                    )
+                }
+            }
     }
 }
 

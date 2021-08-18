@@ -11,11 +11,14 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
 import no.nav.helse.soknad.Arbeidsforhold
 import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
 import no.nav.helse.soknad.Land
 import no.nav.helse.soknad.Næringstyper
 import no.nav.helse.soknad.Omsorgstilbud
 import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
-import no.nav.helse.soknad.OmsorgstilbudFasteDager
+import no.nav.helse.soknad.OmsorgstilbudUkedager
+import no.nav.helse.soknad.OmsorgstilbudV2
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
 import no.nav.helse.soknad.Regnskapsfører
 import no.nav.helse.soknad.SkalJobbe
 import no.nav.helse.soknad.VetOmsorgstilbud
@@ -1404,6 +1407,7 @@ class ApplicationTest {
         )
     }
 
+    // TODO: 18/08/2021 Utgår etter at omsorgstilbud fjernes.
     @Test
     fun `Sende søknad med omsorgstilbud, der søker vet alle timer, men både fasteDager og enkeltDager er null`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -1439,6 +1443,47 @@ class ApplicationTest {
         )
     }
 
+    // TODO: 18/08/2021 Utgår etter at omsorgstilbud fjernes.
+    @Test
+    fun `Sende søknad med omsorgstilbudV2, der søker vet alle planlagte timer, men både ukedager og enkeltDager er null`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = SØKNAD_URL,
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
+                      "reason": "Dersom vetOmsorgstilbud er 'VET_ALLE_TIMER', så må enten 'ukedager' eller 'enkeltDager' være satt.",
+                      "invalid_value": "enkeltDager = null, ukedager = null"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbudV2 = OmsorgstilbudV2(
+                        planlagt = PlanlagtOmsorgstilbud(
+                            vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+                        )
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    // TODO: 18/08/2021 Utgår etter at omsorgstilbud fjernes.
     @Test
     fun `Sende søknad med omsorgstilbud, der søker vet noen timer, men både fasteDager og enkeltDager null`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -1493,7 +1538,7 @@ class ApplicationTest {
                       "type": "entity",
                       "name": "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
                       "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'fasteDager' eller 'enkeltDager' være satt.",
-                      "invalid_value": "enkeltDager = null, fasteDager = OmsorgstilbudFasteDager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
+                      "invalid_value": "enkeltDager = null, fasteDager = OmsorgstilbudUkedager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
                     }
                   ]
                 }
@@ -1504,7 +1549,7 @@ class ApplicationTest {
                 .defaultSøknad(UUID.randomUUID().toString()).copy(
                     omsorgstilbud = Omsorgstilbud(
                         vetOmsorgstilbud = VetOmsorgstilbud.VET_IKKE,
-                        fasteDager = OmsorgstilbudFasteDager(mandag = Duration.ofHours(7))
+                        fasteDager = OmsorgstilbudUkedager(mandag = Duration.ofHours(7))
                     ),
                     vedlegg = listOf()
                 )
@@ -1512,6 +1557,47 @@ class ApplicationTest {
         )
     }
 
+    @Test
+    fun `Sende søknad med omsorgstilbudV2, der søker ikke vet de planlagte timene, men ukedager er satt`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = SØKNAD_URL,
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
+                      "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'ukedager' eller 'enkeltDager' være satt.",
+                      "invalid_value": "enkeltDager = null, ukedager = OmsorgstilbudUkedager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbudV2 = OmsorgstilbudV2(
+                        planlagt = PlanlagtOmsorgstilbud(
+                            vetOmsorgstilbud = VetOmsorgstilbud.VET_IKKE,
+                            ukedager = OmsorgstilbudUkedager(mandag = Duration.ofHours(7))
+                        )
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    // TODO: 18/08/2021 Utgår etter at omsorgstilbud fjernes.
     @Test
     fun `Sende søknad med omsorgstilbud, der søker ikke vet timene, men enkeltDager er satt`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -1552,6 +1638,7 @@ class ApplicationTest {
         )
     }
 
+    // TODO: 18/08/2021 Utgår etter at omsorgstilbud fjernes.
     @Test
     fun `Sende søknad med omsorgstilbud, der både enkeltDager og fasteDager er satt`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -1571,7 +1658,7 @@ class ApplicationTest {
                       "type": "entity",
                       "name": "omsorgstilbud.fasteDager og omsorgstilbud.enkeltDager",
                       "reason": "Både 'fasteDager' og 'enkeltDager' kan ikke være satt samtidig.",
-                      "invalid_value": "enkeltDager = [OmsorgstilbudEnkeltDag(dato=2020-01-01, tid=PT7H)], fasteDager = OmsorgstilbudFasteDager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
+                      "invalid_value": "enkeltDager = [OmsorgstilbudEnkeltDag(dato=2020-01-01, tid=PT7H)], fasteDager = OmsorgstilbudUkedager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
                     }
                   ]
                 }
@@ -1585,7 +1672,48 @@ class ApplicationTest {
                         enkeltDager = listOf(
                             OmsorgstilbudEnkeltDag(dato = LocalDate.parse("2020-01-01"), tid = Duration.ofHours(7))
                         ),
-                        fasteDager = OmsorgstilbudFasteDager(mandag = Duration.ofHours(7))
+                        fasteDager = OmsorgstilbudUkedager(mandag = Duration.ofHours(7))
+                    ),
+                    vedlegg = listOf()
+                )
+                .somJson()
+        )
+    }
+
+    @Test
+    fun `Sende søknad med omsorgstilbudV2, der historiske omsorgstilbud inneholder datoer lik eller etter dagens dato`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = SØKNAD_URL,
+            expectedResponse = """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "omsorgstilbudV2.historisk.enkeltDager",
+                      "reason": "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
+                      "invalid_value": "enkeltDager = [OmsorgstilbudEnkeltDag(dato=${LocalDate.now()}, tid=PT7H)]"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            expectedCode = HttpStatusCode.BadRequest,
+            cookie = cookie,
+            requestEntity = SøknadUtils
+                .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    omsorgstilbudV2 = OmsorgstilbudV2(
+                        historisk = HistoriskOmsorgstilbud(
+                            enkeltDager = listOf(
+                                OmsorgstilbudEnkeltDag(dato = LocalDate.now(), tid = Duration.ofHours(7))
+                            ),
+                        )
                     ),
                     vedlegg = listOf()
                 )
