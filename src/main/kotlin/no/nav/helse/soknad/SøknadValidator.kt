@@ -430,14 +430,14 @@ fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
 
 fun OmsorgstilbudV2.validate() = mutableSetOf<Violation>().apply {
 
-    if (historisk != null && historisk.enkeltDager.isNotEmpty()) {
-        if (historisk.enkeltDager.any() { it.dato.erLikEllerEtterDagensDato() }) {
+    if (historisk != null && historisk.enkeltdager.isNotEmpty()) {
+        if (historisk.enkeltdager.any() { it.dato.erLikEllerEtterDagensDato() }) {
             add(
                 Violation(
-                    parameterName = "omsorgstilbudV2.historisk.enkeltDager",
+                    parameterName = "omsorgstilbudV2.historisk.enkeltdager",
                     parameterType = ParameterType.ENTITY,
                     reason = "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
-                    invalidValue = "enkeltDager = ${historisk.enkeltDager}"
+                    invalidValue = "enkeltdager = ${historisk.enkeltdager}"
                 )
             )
         }
@@ -446,26 +446,26 @@ fun OmsorgstilbudV2.validate() = mutableSetOf<Violation>().apply {
     if (planlagt != null) {
         when (val vet = planlagt.vetOmsorgstilbud) {
             VetOmsorgstilbud.VET_IKKE -> {
-                if (planlagt.ukedager != null || (planlagt.enkeltDager != null && planlagt.enkeltDager.isNotEmpty())) {
+                if (planlagt.ukedager != null || (planlagt.enkeltdager != null && planlagt.enkeltdager.isNotEmpty())) {
                     add(
                         Violation(
-                            parameterName = "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
+                            parameterName = "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltdager",
                             parameterType = ParameterType.ENTITY,
-                            reason = "Dersom vetOmsorgstilbud er '$vet', så kan verken 'ukedager' eller 'enkeltDager' være satt.",
-                            invalidValue = "enkeltDager = ${planlagt.enkeltDager}, ukedager = ${planlagt.ukedager}"
+                            reason = "Dersom vetOmsorgstilbud er '$vet', så kan verken 'ukedager' eller 'enkeltdager' være satt.",
+                            invalidValue = "enkeltdager = ${planlagt.enkeltdager}, ukedager = ${planlagt.ukedager}"
                         )
                     )
                 }
             }
 
             else -> {
-                if (planlagt.ukedager == null && planlagt.enkeltDager.isNullOrEmpty()) {
+                if (planlagt.ukedager == null && planlagt.enkeltdager.isNullOrEmpty()) {
                     add(
                         Violation(
                             parameterName = "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
                             parameterType = ParameterType.ENTITY,
                             reason = "Dersom vetOmsorgstilbud er '$vet', så må enten 'ukedager' eller 'enkeltDager' være satt.",
-                            invalidValue = "enkeltDager = ${planlagt.enkeltDager}, ukedager = ${planlagt.ukedager}"
+                            invalidValue = "enkeltDager = ${planlagt.enkeltdager}, ukedager = ${planlagt.ukedager}"
                         )
                     )
                 }

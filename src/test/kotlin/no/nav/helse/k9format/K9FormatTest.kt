@@ -469,7 +469,7 @@ class K9FormatTest {
     fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager, forvent riktig mapping`() {
         val tilsynsordning = OmsorgstilbudV2(
             historisk = HistoriskOmsorgstilbud(
-                enkeltDager = listOf(OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
+                enkeltdager = listOf(OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
             ),
             planlagt = PlanlagtOmsorgstilbud(
                 ukedager = OmsorgstilbudUkedager(
@@ -481,16 +481,16 @@ class K9FormatTest {
                 ),
                 vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
             )
-        ).tilK9Tilsynsordning(Periode(LocalDate.now(), LocalDate.now().plusDays(10)))
+        ).tilK9Tilsynsordning(Periode(LocalDate.now(), LocalDate.now().plusDays(7)))
 
-        assertEquals(9, tilsynsordning.perioder.size)
+        assertEquals(7, tilsynsordning.perioder.size)
     }
 
     @Test
     fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager der historisk har dato lik eller etter dagens dato, forvent at den blir eksludert`() {
         val tilsynsordning = OmsorgstilbudV2(
             historisk = HistoriskOmsorgstilbud(
-                enkeltDager = listOf(
+                enkeltdager = listOf(
                     OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(1), Duration.ofHours(7)),
                     OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(2), Duration.ofHours(7)),
                     OmsorgstilbudEnkeltDag(LocalDate.now(), Duration.ofHours(7))
@@ -508,6 +508,6 @@ class K9FormatTest {
             )
         ).tilK9Tilsynsordning(Periode(LocalDate.now(), LocalDate.now().plusDays(10)))
 
-        assertEquals(10, tilsynsordning.perioder.size)
+        assertEquals(9, tilsynsordning.perioder.size)
     }
 }

@@ -160,7 +160,7 @@ fun OmsorgstilbudV2.tilK9Tilsynsordning(periode: Periode): K9Tilsynsordning = K9
 
     if (historisk == null && planlagt == null) return tilK9Tilsynsordning0Timer(periode)
 
-    historisk?.enkeltDager?.map {
+    historisk?.enkeltdager?.map {
         leggeTilPeriode(
             Periode(it.dato, it.dato),
             TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(

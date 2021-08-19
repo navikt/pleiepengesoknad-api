@@ -1443,9 +1443,8 @@ class ApplicationTest {
         )
     }
 
-    // TODO: 18/08/2021 Utgår etter at omsorgstilbud fjernes.
     @Test
-    fun `Sende søknad med omsorgstilbudV2, der søker vet alle planlagte timer, men både ukedager og enkeltDager er null`() {
+    fun `Sende søknad med omsorgstilbudV2, der søker vet alle planlagte timer, men både ukedager og enkeltdager er null`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
 
         requestAndAssert(
@@ -1461,9 +1460,9 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
-                      "reason": "Dersom vetOmsorgstilbud er 'VET_ALLE_TIMER', så må enten 'ukedager' eller 'enkeltDager' være satt.",
-                      "invalid_value": "enkeltDager = null, ukedager = null"
+                      "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltdager",
+                      "reason": "Dersom vetOmsorgstilbud er 'VET_ALLE_TIMER', så må enten 'ukedager' eller 'enkeltdager' være satt.",
+                      "invalid_value": "enkeltdager = null, ukedager = null"
                     }
                   ]
                 }
@@ -1574,9 +1573,9 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
-                      "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'ukedager' eller 'enkeltDager' være satt.",
-                      "invalid_value": "enkeltDager = null, ukedager = OmsorgstilbudUkedager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
+                      "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltdager",
+                      "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'ukedager' eller 'enkeltdager' være satt.",
+                      "invalid_value": "enkeltdager = null, ukedager = OmsorgstilbudUkedager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
                     }
                   ]
                 }
@@ -1697,9 +1696,9 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "omsorgstilbudV2.historisk.enkeltDager",
+                      "name": "omsorgstilbudV2.historisk.enkeltdager",
                       "reason": "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
-                      "invalid_value": "enkeltDager = [OmsorgstilbudEnkeltDag(dato=${LocalDate.now()}, tid=PT7H)]"
+                      "invalid_value": "enkeltdager = [OmsorgstilbudEnkeltDag(dato=${LocalDate.now()}, tid=PT7H)]"
                     }
                   ]
                 }
@@ -1710,7 +1709,7 @@ class ApplicationTest {
                 .defaultSøknad(UUID.randomUUID().toString()).copy(
                     omsorgstilbudV2 = OmsorgstilbudV2(
                         historisk = HistoriskOmsorgstilbud(
-                            enkeltDager = listOf(
+                            enkeltdager = listOf(
                                 OmsorgstilbudEnkeltDag(dato = LocalDate.now(), tid = Duration.ofHours(7))
                             ),
                         )
