@@ -462,10 +462,10 @@ fun OmsorgstilbudV2.validate() = mutableSetOf<Violation>().apply {
                 if (planlagt.ukedager == null && planlagt.enkeltdager.isNullOrEmpty()) {
                     add(
                         Violation(
-                            parameterName = "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltDager",
+                            parameterName = "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltdager",
                             parameterType = ParameterType.ENTITY,
-                            reason = "Dersom vetOmsorgstilbud er '$vet', så må enten 'ukedager' eller 'enkeltDager' være satt.",
-                            invalidValue = "enkeltDager = ${planlagt.enkeltdager}, ukedager = ${planlagt.ukedager}"
+                            reason = "Dersom vetOmsorgstilbud er '$vet', så må enten 'ukedager' eller 'enkeltdager' være satt.",
+                            invalidValue = "enkeltdager = ${planlagt.enkeltdager}, ukedager = ${planlagt.ukedager}"
                         )
                     )
                 }
