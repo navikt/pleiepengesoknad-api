@@ -21,7 +21,8 @@ data class HistoriskOmsorgstilbud(
 data class PlanlagtOmsorgstilbud(
     val enkeltdager: List<OmsorgstilbudEnkeltDag>? = null,
     val ukedager: OmsorgstilbudUkedager? = null,
-    val vetOmsorgstilbud: VetOmsorgstilbud
+    val vetOmsorgstilbud: VetOmsorgstilbud,
+    val erLiktHverDag: Boolean? = null
 )
 
 enum class VetOmsorgstilbud {
