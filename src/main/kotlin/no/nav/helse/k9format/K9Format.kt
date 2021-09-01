@@ -129,7 +129,8 @@ fun OmsorgstilbudV2.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate 
     }
 
     planlagt?.ukedager?.apply {
-        dagensDato.datesUntil(periode.tilOgMed.plusDays(1)).toList()
+        val periodeStart = if(dagensDato.isBefore(periode.fraOgMed)) periode.fraOgMed else dagensDato
+        periodeStart.datesUntil(periode.tilOgMed.plusDays(1)).toList()
             .map { dato: LocalDate ->
                 when (dato.dayOfWeek) {
                     DayOfWeek.MONDAY -> mandag
