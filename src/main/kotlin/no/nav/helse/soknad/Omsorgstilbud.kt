@@ -21,7 +21,6 @@ data class PlanlagtOmsorgstilbud(
 
 enum class VetOmsorgstilbud {
     VET_ALLE_TIMER,
-    VET_NOEN_TIMER,
     VET_IKKE
 }
 

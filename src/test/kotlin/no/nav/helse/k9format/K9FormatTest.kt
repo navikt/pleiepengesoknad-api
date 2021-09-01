@@ -28,7 +28,7 @@ class K9FormatTest {
             omsorgstilbudV2 = OmsorgstilbudV2(
                 historisk = null,
                 planlagt = PlanlagtOmsorgstilbud(
-                    vetOmsorgstilbud = VetOmsorgstilbud.VET_NOEN_TIMER,
+                    vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER,
                     ukedager = null,
                     enkeltdager = listOf(
                         OmsorgstilbudEnkeltDag(
