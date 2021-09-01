@@ -3,12 +3,6 @@ package no.nav.helse.soknad
 import java.time.Duration
 import java.time.LocalDate
 
-data class Omsorgstilbud(
-    val fasteDager: OmsorgstilbudUkedager? = null,
-    val enkeltDager: List<OmsorgstilbudEnkeltDag>? = null,
-    val vetOmsorgstilbud: VetOmsorgstilbud
-)
-
 data class OmsorgstilbudV2(
     val historisk: HistoriskOmsorgstilbud? = null,
     val planlagt: PlanlagtOmsorgstilbud? = null

@@ -2,41 +2,12 @@ package no.nav.helse
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.Arbeidsform
-import no.nav.helse.soknad.ArbeidsgiverDetaljer
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.Beredskap
-import no.nav.helse.soknad.Bosted
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.Frilans
-import no.nav.helse.soknad.KomplettSøknad
-import no.nav.helse.soknad.Land
-import no.nav.helse.soknad.Medlemskap
-import no.nav.helse.soknad.Nattevåk
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.OmsorgstilbudUkedager
-import no.nav.helse.soknad.OrganisasjonDetaljer
-import no.nav.helse.soknad.Periode
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SkalJobbe
-import no.nav.helse.soknad.Språk
-import no.nav.helse.soknad.Søknad
-import no.nav.helse.soknad.Utenlandsopphold
-import no.nav.helse.soknad.UtenlandsoppholdIPerioden
-import no.nav.helse.soknad.VarigEndring
-import no.nav.helse.soknad.VetOmsorgstilbud
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.soknad.Årsak
+import no.nav.helse.soknad.*
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.net.URL
-import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -702,16 +673,6 @@ internal class SerDesTest {
                 skalJobbeProsent = 0.0
             ),
             skalPassePåBarnetIHelePerioden = true,
-            omsorgstilbud = Omsorgstilbud(
-                fasteDager = OmsorgstilbudUkedager(
-                    mandag = Duration.ofHours(1),
-                    tirsdag = Duration.ofHours(1),
-                    onsdag = Duration.ofHours(1),
-                    torsdag = Duration.ofHours(1),
-                    fredag = Duration.ofHours(1)
-                ),
-                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-            ),
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,
                 skalBoIUtlandetNeste12Mnd = true,

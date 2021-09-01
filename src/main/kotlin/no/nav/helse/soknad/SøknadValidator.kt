@@ -1,10 +1,6 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
-import no.nav.helse.dusseldorf.ktor.core.ParameterType
-import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
-import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.utils.erLikEllerEtterDagensDato
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
@@ -107,7 +103,6 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     violations.addAll(arbeidsgivere.organisasjoner.validate())
     violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter, selvstendigArbeidsforhold))
 
-    omsorgstilbud?.apply { violations.addAll(this.validate()) }
     omsorgstilbudV2?.apply { violations.addAll(this.validate()) }
 
     violations.addAll(validerBarnRelasjon())
@@ -384,48 +379,6 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
         }
     }
     return violations
-}
-
-// TODO: 18/08/2021 Utgår. Blir erstattet med OmsorgstilbudV2.validate().
-fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
-    when (val vet = vetOmsorgstilbud) {
-        VetOmsorgstilbud.VET_IKKE -> {
-            if (fasteDager != null || (enkeltDager != null && enkeltDager.isNotEmpty())) {
-                add(
-                    Violation(
-                        parameterName = "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Dersom vetOmsorgstilbud er '$vet', så kan verken 'fasteDager' eller 'enkeltDager' være satt.",
-                        invalidValue = "enkeltDager = $enkeltDager, fasteDager = $fasteDager"
-                    )
-                )
-            }
-        }
-
-        else -> {
-            if (fasteDager == null && enkeltDager.isNullOrEmpty()) {
-                add(
-                    Violation(
-                        parameterName = "omsorgstilbud.fasteDager eller omsorgstilbud.enkeltDager",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Dersom vetOmsorgstilbud er '$vet', så må enten 'fasteDager' eller 'enkeltDager' være satt.",
-                        invalidValue = "enkeltDager = $enkeltDager, fasteDager = $fasteDager"
-                    )
-                )
-            }
-
-            if (fasteDager != null && (enkeltDager != null && enkeltDager.isNotEmpty())) {
-                add(
-                    Violation(
-                        parameterName = "omsorgstilbud.fasteDager og omsorgstilbud.enkeltDager",
-                        parameterType = ParameterType.ENTITY,
-                        reason = "Både 'fasteDager' og 'enkeltDager' kan ikke være satt samtidig.",
-                        invalidValue = "enkeltDager = $enkeltDager, fasteDager = $fasteDager"
-                    )
-                )
-            }
-        }
-    }
 }
 
 fun OmsorgstilbudV2.validate() = mutableSetOf<Violation>().apply {

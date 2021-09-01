@@ -3,16 +3,6 @@ package no.nav.helse.k9format
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.Arbeidsform
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
-import no.nav.helse.soknad.OmsorgstilbudUkedager
-import no.nav.helse.soknad.OmsorgstilbudV2
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
-import no.nav.helse.soknad.SkalJobbe
-import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -30,9 +20,24 @@ class K9FormatTest {
     fun `Full PP søknad blir til riktig K9Format`() {
         val mottatt = ZonedDateTime.of(2020, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC"))
         val søknadId = UUID.randomUUID().toString()
+        val fraOgMed = LocalDate.now().minusDays(3)
+        val tilOgMed = LocalDate.now().plusDays(10)
         val søknad = SøknadUtils.defaultSøknad(søknadId).copy(
-            fraOgMed = LocalDate.parse("2021-01-04"),
-            tilOgMed = LocalDate.parse("2021-01-08")
+            fraOgMed = fraOgMed,
+            tilOgMed = tilOgMed,
+            omsorgstilbudV2 = OmsorgstilbudV2(
+                historisk = null,
+                planlagt = PlanlagtOmsorgstilbud(
+                    vetOmsorgstilbud = VetOmsorgstilbud.VET_NOEN_TIMER,
+                    ukedager = null,
+                    enkeltdager = listOf(
+                        OmsorgstilbudEnkeltDag(
+                            fraOgMed.plusDays(1),
+                            Duration.ofHours(5)
+                        )
+                    )
+                )
+            )
         )
         val søker = Søker(
             aktørId = "12345",
@@ -55,7 +60,7 @@ class K9FormatTest {
               "ytelse" : {
                 "type" : "PLEIEPENGER_SYKT_BARN",
                 "søknadsperiode" : [
-                  "2021-01-04/2021-01-08"
+                  "$fraOgMed/$tilOgMed"
                 ],
                 "endringsperiode": [],
                 "infoFraPunsj": null,
@@ -97,7 +102,7 @@ class K9FormatTest {
                 "beredskap" : {
                   "perioderSomSkalSlettes": {},
                   "perioder" : {
-                    "2021-01-04/2021-01-08" : {
+                    "$fraOgMed/$tilOgMed" : {
                       "tilleggsinformasjon" : "Ikke beredskap"
                     }
                   }
@@ -105,38 +110,26 @@ class K9FormatTest {
                 "nattevåk" : {
                   "perioderSomSkalSlettes": {},
                   "perioder" : {
-                    "2021-01-04/2021-01-08" : {
+                    "$fraOgMed/$tilOgMed" : {
                       "tilleggsinformasjon" : "Har nattevåk"
                     }
                   }
                 },
-                "tilsynsordning" : {
-                  "perioder" : {
-                    "2021-01-04/2021-01-04" : {
-                  "etablertTilsynTimerPerDag" : "PT1H"
-                },
-                "2021-01-05/2021-01-05" : {
-                  "etablertTilsynTimerPerDag" : "PT1H"
-                },
-                "2021-01-06/2021-01-06" : {
-                  "etablertTilsynTimerPerDag" : "PT1H"
-                },
-                "2021-01-07/2021-01-07" : {
-                  "etablertTilsynTimerPerDag" : "PT1H"
-                },
-                "2021-01-08/2021-01-08" : {
-                  "etablertTilsynTimerPerDag" : "PT1H"
-                }
-                  },
-                  "perioderSomSkalSlettes": {}
-                },
+                    "tilsynsordning": {
+                      "perioder": {
+                        "${fraOgMed.plusDays(1)}/${fraOgMed.plusDays(1)}": {
+                          "etablertTilsynTimerPerDag": "PT5H"
+                        }
+                      },
+                      "perioderSomSkalSlettes": {}
+                    },
                 "arbeidstid" : {
                   "arbeidstakerList" : [ {
                     "norskIdentitetsnummer" : null,
                     "organisasjonsnummer" : "917755736",
                     "arbeidstidInfo" : {
                       "perioder" : {
-                        "2021-01-04/2021-01-08" : {
+                        "$fraOgMed/$tilOgMed" : {
                           "jobberNormaltTimerPerDag" : "PT8H",
                           "faktiskArbeidTimerPerDag" : "PT3H12M"
                         }
@@ -145,7 +138,7 @@ class K9FormatTest {
                   } ],
                   "frilanserArbeidstidInfo" : {
                     "perioder": {
-                      "2021-01-04/2021-01-08": {
+                      "$fraOgMed/$tilOgMed": {
                         "faktiskArbeidTimerPerDag": "PT0S",
                         "jobberNormaltTimerPerDag": "PT8H"
                       }
@@ -153,7 +146,7 @@ class K9FormatTest {
                   },
                   "selvstendigNæringsdrivendeArbeidstidInfo" : {
                     "perioder": {
-                      "2021-01-04/2021-01-08": {
+                      "$fraOgMed/$tilOgMed": {
                         "faktiskArbeidTimerPerDag": "PT0S",
                         "jobberNormaltTimerPerDag": "PT8H"
                       }
@@ -162,7 +155,7 @@ class K9FormatTest {
                 },
                 "uttak" : {
                   "perioder" : {
-                    "2021-01-04/2021-01-08" : {
+                    "$fraOgMed/$tilOgMed" : {
                       "timerPleieAvBarnetPerDag" : "PT7H30M"
                     }
                   },
@@ -191,7 +184,7 @@ class K9FormatTest {
                 },
                 "utenlandsopphold" : {
                   "perioder" : {
-                    "2021-01-04/2021-01-08" : {
+                    "$fraOgMed/$tilOgMed" : {
                       "land" : "SE",
                       "årsak" : null
                     }
@@ -206,16 +199,18 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
-        val k9Tilsynsordning = Omsorgstilbud(
-            fasteDager = OmsorgstilbudUkedager(
-                mandag = Duration.ofHours(5),
-                tirsdag = Duration.ofHours(5),
-                onsdag = Duration.ofHours(5),
-                torsdag = Duration.ofHours(5),
-                fredag = Duration.ofHours(5)
-            ),
-            vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        val k9Tilsynsordning = OmsorgstilbudV2(
+            planlagt = PlanlagtOmsorgstilbud(
+                ukedager = OmsorgstilbudUkedager(
+                    mandag = Duration.ofHours(5),
+                    tirsdag = Duration.ofHours(5),
+                    onsdag = Duration.ofHours(5),
+                    torsdag = Duration.ofHours(5),
+                    fredag = Duration.ofHours(5)
+                ),
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+            )
+        ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
 
@@ -248,16 +243,18 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
-        val k9Tilsynsordning = Omsorgstilbud(
-            fasteDager = OmsorgstilbudUkedager(
-                mandag = Duration.ofHours(5),
-                tirsdag = Duration.ofHours(5),
-                onsdag = Duration.ofHours(5),
-                torsdag = Duration.ofHours(5),
-                fredag = Duration.ofHours(5)
-            ),
-            vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
+        val k9Tilsynsordning = OmsorgstilbudV2(
+            planlagt = PlanlagtOmsorgstilbud(
+                ukedager = OmsorgstilbudUkedager(
+                    mandag = Duration.ofHours(5),
+                    tirsdag = Duration.ofHours(5),
+                    onsdag = Duration.ofHours(5),
+                    torsdag = Duration.ofHours(5),
+                    fredag = Duration.ofHours(5)
+                ),
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+            )
+        ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-06"), periode = Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
 
@@ -287,16 +284,18 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
-        val k9Tilsynsordning = Omsorgstilbud(
-            fasteDager = OmsorgstilbudUkedager(
-                mandag = Duration.ofHours(5),
-                tirsdag = Duration.ofHours(5),
-                onsdag = Duration.ofHours(5),
-                null,
-                fredag = Duration.ofHours(5)
-            ),
-            vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        val k9Tilsynsordning = OmsorgstilbudV2(
+            planlagt = PlanlagtOmsorgstilbud(
+                ukedager = OmsorgstilbudUkedager(
+                    mandag = Duration.ofHours(5),
+                    tirsdag = Duration.ofHours(5),
+                    onsdag = Duration.ofHours(5),
+                    torsdag = null,
+                    fredag = Duration.ofHours(5)
+                ),
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+            )
+        ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
 
@@ -348,16 +347,18 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
-        val k9Tilsynsordning = Omsorgstilbud(
-            fasteDager = OmsorgstilbudUkedager(
-                mandag = Duration.ofHours(10),
-                tirsdag = Duration.ofHours(10),
-                onsdag = Duration.ofHours(10),
-                torsdag = Duration.ofHours(10),
-                fredag = Duration.ofHours(10)
-            ),
-            vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        val k9Tilsynsordning = OmsorgstilbudV2(
+            planlagt = PlanlagtOmsorgstilbud(
+                ukedager = OmsorgstilbudUkedager(
+                    mandag = Duration.ofHours(10),
+                    tirsdag = Duration.ofHours(10),
+                    onsdag = Duration.ofHours(10),
+                    torsdag = Duration.ofHours(10),
+                    fredag = Duration.ofHours(10)
+                ),
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+            )
+        ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
 

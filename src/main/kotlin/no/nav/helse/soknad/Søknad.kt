@@ -27,7 +27,6 @@ data class Søknad(
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val omsorgstilbud: Omsorgstilbud? = null, // TODO: 18/08/2021 Blir erstattet med omsorgstilbudV2 etter prodsetting .
     val omsorgstilbudV2: OmsorgstilbudV2? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
