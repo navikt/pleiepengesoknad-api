@@ -23,7 +23,8 @@ data class KomplettSøknad(
     val samtidigHjemme: Boolean?,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val omsorgstilbud: Omsorgstilbud? = null,
+    val omsorgstilbud: Omsorgstilbud? = null, // TODO: 18/08/2021 Blir erstattet med omsorgstilbudV2 etter prodsetting .
+    val omsorgstilbudV2: OmsorgstilbudV2? = null,
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
     val frilans: Frilans? = null,

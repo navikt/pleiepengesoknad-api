@@ -4,19 +4,23 @@ import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.Arbeidsforhold
 import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
 import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.OmsorgstilbudFasteDager
+import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
+import no.nav.helse.soknad.OmsorgstilbudUkedager
+import no.nav.helse.soknad.OmsorgstilbudV2
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
 import no.nav.helse.soknad.SkalJobbe
 import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
-import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class K9FormatTest {
@@ -202,7 +206,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            fasteDager = OmsorgstilbudFasteDager(
+            fasteDager = OmsorgstilbudUkedager(
                 mandag = Duration.ofHours(5),
                 tirsdag = Duration.ofHours(5),
                 onsdag = Duration.ofHours(5),
@@ -237,13 +241,14 @@ class K9FormatTest {
               },
               "perioderSomSkalSlettes": {}
             }
-        """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true)
+        """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
+        )
     }
 
     @Test
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            fasteDager = OmsorgstilbudFasteDager(
+            fasteDager = OmsorgstilbudUkedager(
                 mandag = Duration.ofHours(5),
                 tirsdag = Duration.ofHours(5),
                 onsdag = Duration.ofHours(5),
@@ -282,7 +287,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            fasteDager = OmsorgstilbudFasteDager(
+            fasteDager = OmsorgstilbudUkedager(
                 mandag = Duration.ofHours(5),
                 tirsdag = Duration.ofHours(5),
                 onsdag = Duration.ofHours(5),
@@ -320,7 +325,8 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, uten tilsyn, forvent 1 periode med 0 timer`() {
-        val k9Tilsynsordning = tilK9Tilsynsordning0Timer(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        val k9Tilsynsordning =
+            tilK9Tilsynsordning0Timer(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
         assertEquals(1, k9Tilsynsordning.perioder.size)
 
@@ -342,7 +348,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            fasteDager = OmsorgstilbudFasteDager(
+            fasteDager = OmsorgstilbudUkedager(
                 mandag = Duration.ofHours(10),
                 tirsdag = Duration.ofHours(10),
                 onsdag = Duration.ofHours(10),
@@ -457,5 +463,51 @@ class K9FormatTest {
             }
         """.trimIndent(), JsonUtils.toString(arbeidstidInfo), true
         )
+    }
+
+    @Test
+    fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager, forvent riktig mapping`() {
+        val tilsynsordning = OmsorgstilbudV2(
+            historisk = HistoriskOmsorgstilbud(
+                enkeltdager = listOf(OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
+            ),
+            planlagt = PlanlagtOmsorgstilbud(
+                ukedager = OmsorgstilbudUkedager(
+                    mandag = Duration.ofHours(1),
+                    tirsdag = Duration.ofHours(1),
+                    onsdag = Duration.ofHours(1),
+                    torsdag = Duration.ofHours(1),
+                    fredag = Duration.ofHours(1)
+                ),
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+            )
+        ).tilK9Tilsynsordning(Periode(LocalDate.now(), LocalDate.now().plusDays(7)))
+
+        assertEquals(7, tilsynsordning.perioder.size)
+    }
+
+    @Test
+    fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager der historisk har dato lik eller etter dagens dato, forvent at den blir eksludert`() {
+        val tilsynsordning = OmsorgstilbudV2(
+            historisk = HistoriskOmsorgstilbud(
+                enkeltdager = listOf(
+                    OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(1), Duration.ofHours(7)),
+                    OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(2), Duration.ofHours(7)),
+                    OmsorgstilbudEnkeltDag(LocalDate.now(), Duration.ofHours(7))
+                )
+            ),
+            planlagt = PlanlagtOmsorgstilbud(
+                ukedager = OmsorgstilbudUkedager(
+                    mandag = Duration.ofHours(1),
+                    tirsdag = Duration.ofHours(1),
+                    onsdag = Duration.ofHours(1),
+                    torsdag = Duration.ofHours(1),
+                    fredag = Duration.ofHours(1)
+                ),
+                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+            )
+        ).tilK9Tilsynsordning(Periode(LocalDate.now(), LocalDate.now().plusDays(10)))
+
+        assertEquals(9, tilsynsordning.perioder.size)
     }
 }

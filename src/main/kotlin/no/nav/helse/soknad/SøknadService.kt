@@ -64,6 +64,7 @@ class SøknadService(
             harBekreftetOpplysninger = søknad.harBekreftetOpplysninger,
             harForståttRettigheterOgPlikter = søknad.harForståttRettigheterOgPlikter,
             omsorgstilbud = søknad.omsorgstilbud,
+            omsorgstilbudV2 = søknad.omsorgstilbudV2,
             nattevåk = søknad.nattevåk,
             beredskap = søknad.beredskap,
             frilans = søknad.frilans,
