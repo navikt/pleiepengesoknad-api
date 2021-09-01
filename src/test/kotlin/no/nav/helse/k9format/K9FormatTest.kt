@@ -3,6 +3,16 @@ package no.nav.helse.k9format
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
+import no.nav.helse.soknad.OmsorgstilbudUkedager
+import no.nav.helse.soknad.OmsorgstilbudV2
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
+import no.nav.helse.soknad.SkalJobbe
+import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
