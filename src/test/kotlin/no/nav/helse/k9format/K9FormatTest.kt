@@ -2,7 +2,15 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
+import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
+import no.nav.helse.soknad.OmsorgstilbudUkedager
+import no.nav.helse.soknad.OmsorgstilbudV2
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
+import no.nav.helse.soknad.SkalJobbe
+import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -488,14 +496,14 @@ class K9FormatTest {
         assertEquals(7, tilsynsordning.perioder.size)
     }
 
-    @Test // TODO: 01/09/2021 Burde undersøkes om denne fungerer
+    @Test
     fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager der historisk har dato lik eller etter dagens dato, forvent at den blir eksludert`() {
         val tilsynsordning = OmsorgstilbudV2(
             historisk = HistoriskOmsorgstilbud(
                 enkeltdager = listOf(
-                    OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(1), Duration.ofHours(7)),
-                    OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(2), Duration.ofHours(7)),
-                    OmsorgstilbudEnkeltDag(LocalDate.now(), Duration.ofHours(7))
+                    OmsorgstilbudEnkeltDag(LocalDate.parse("2021-09-01"), Duration.ofHours(7)),
+                    OmsorgstilbudEnkeltDag(LocalDate.parse("2021-09-02"), Duration.ofHours(7)),
+                    OmsorgstilbudEnkeltDag(LocalDate.parse("2021-09-03"), Duration.ofHours(7))
                 )
             ),
             planlagt = PlanlagtOmsorgstilbud(
@@ -508,8 +516,8 @@ class K9FormatTest {
                 ),
                 vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
             )
-        ).tilK9Tilsynsordning(Periode(LocalDate.now(), LocalDate.now().plusDays(10)))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")))
 
-        assertEquals(10, tilsynsordning.perioder.size)
+        assertEquals(9, tilsynsordning.perioder.size)
     }
 }
