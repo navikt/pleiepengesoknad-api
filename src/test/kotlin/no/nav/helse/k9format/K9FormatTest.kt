@@ -516,7 +516,7 @@ class K9FormatTest {
                 ),
                 vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
             )
-        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")), LocalDate.parse("2021-09-03"))
 
         assertEquals(9, tilsynsordning.perioder.size)
     }
