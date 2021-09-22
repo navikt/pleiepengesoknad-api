@@ -17,9 +17,20 @@ data class OrganisasjonDetaljer(
     val skalJobbeProsent: Double,
     val vetIkkeEkstrainfo: String? = null,
     val arbeidsform: Arbeidsform,
+    val erAnsatt: Boolean? = null,
+    val historisk: ArbeidIPeriode? = null,
+    val planlagt: ArbeidIPeriode? = null
 )
 
-enum class Arbeidsform{
+data class ArbeidIPeriode(
+    val jobber: Boolean,
+    val jobberRedustert: Boolean,
+    val erLiktHverUke: Boolean,
+    val enkeltdager: List<Enkeltdag>? = null,
+    val fasteDager: PlanUkedager? = null
+)
+
+enum class Arbeidsform {
     FAST,
     TURNUS,
     VARIERENDE

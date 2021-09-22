@@ -1,6 +1,5 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.ArbeidsgiverDetaljer
 import no.nav.helse.soknad.Frilans
 import no.nav.helse.soknad.Næringstyper
 import no.nav.helse.soknad.Søknad
@@ -12,7 +11,6 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.VirksomhetType
-import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import java.time.Duration
 import java.time.LocalDate
 
@@ -31,19 +29,7 @@ internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser()
     .medSluttDato(sluttdato)
     .medJobberFortsattSomFrilans(jobberFortsattSomFrilans)
 
-internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
-    periode: Periode
-): List<Arbeidstaker>? {
-    if (organisasjoner.isEmpty()) return null
 
-    return organisasjoner.map { organisasjon ->
-        Arbeidstaker(
-            null, //K9 format vil ikke ha både fnr og org nummer
-            Organisasjonsnummer.of(organisasjon.organisasjonsnummer),
-            organisasjon.tilK9ArbeidstidInfo(periode)
-        )
-    }
-}
 
 fun List<Virksomhet>.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> = map { virksomhet ->
     SelvstendigNæringsdrivende(

@@ -2,15 +2,7 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.Arbeidsform
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
-import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
-import no.nav.helse.soknad.OmsorgstilbudUkedager
-import no.nav.helse.soknad.OmsorgstilbudV2
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
-import no.nav.helse.soknad.SkalJobbe
-import no.nav.helse.soknad.VetOmsorgstilbud
+import no.nav.helse.soknad.*
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -39,7 +31,7 @@ class K9FormatTest {
                     vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER,
                     ukedager = null,
                     enkeltdager = listOf(
-                        OmsorgstilbudEnkeltDag(
+                        Enkeltdag(
                             fraOgMed.plusDays(1),
                             Duration.ofHours(5)
                         )
@@ -209,7 +201,7 @@ class K9FormatTest {
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
         val k9Tilsynsordning = OmsorgstilbudV2(
             planlagt = PlanlagtOmsorgstilbud(
-                ukedager = OmsorgstilbudUkedager(
+                ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
                     tirsdag = Duration.ofHours(5),
                     onsdag = Duration.ofHours(5),
@@ -253,7 +245,7 @@ class K9FormatTest {
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
         val k9Tilsynsordning = OmsorgstilbudV2(
             planlagt = PlanlagtOmsorgstilbud(
-                ukedager = OmsorgstilbudUkedager(
+                ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
                     tirsdag = Duration.ofHours(5),
                     onsdag = Duration.ofHours(5),
@@ -294,7 +286,7 @@ class K9FormatTest {
     fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
         val k9Tilsynsordning = OmsorgstilbudV2(
             planlagt = PlanlagtOmsorgstilbud(
-                ukedager = OmsorgstilbudUkedager(
+                ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
                     tirsdag = Duration.ofHours(5),
                     onsdag = Duration.ofHours(5),
@@ -357,7 +349,7 @@ class K9FormatTest {
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
         val k9Tilsynsordning = OmsorgstilbudV2(
             planlagt = PlanlagtOmsorgstilbud(
-                ukedager = OmsorgstilbudUkedager(
+                ukedager = PlanUkedager(
                     mandag = Duration.ofHours(10),
                     tirsdag = Duration.ofHours(10),
                     onsdag = Duration.ofHours(10),
@@ -479,10 +471,10 @@ class K9FormatTest {
     fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager, forvent riktig mapping`() {
         val tilsynsordning = OmsorgstilbudV2(
             historisk = HistoriskOmsorgstilbud(
-                enkeltdager = listOf(OmsorgstilbudEnkeltDag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
+                enkeltdager = listOf(Enkeltdag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
             ),
             planlagt = PlanlagtOmsorgstilbud(
-                ukedager = OmsorgstilbudUkedager(
+                ukedager = PlanUkedager(
                     mandag = Duration.ofHours(1),
                     tirsdag = Duration.ofHours(1),
                     onsdag = Duration.ofHours(1),
@@ -501,13 +493,13 @@ class K9FormatTest {
         val tilsynsordning = OmsorgstilbudV2(
             historisk = HistoriskOmsorgstilbud(
                 enkeltdager = listOf(
-                    OmsorgstilbudEnkeltDag(LocalDate.parse("2021-09-01"), Duration.ofHours(7)),
-                    OmsorgstilbudEnkeltDag(LocalDate.parse("2021-09-02"), Duration.ofHours(7)),
-                    OmsorgstilbudEnkeltDag(LocalDate.parse("2021-09-03"), Duration.ofHours(7))
+                    Enkeltdag(LocalDate.parse("2021-09-01"), Duration.ofHours(7)),
+                    Enkeltdag(LocalDate.parse("2021-09-02"), Duration.ofHours(7)),
+                    Enkeltdag(LocalDate.parse("2021-09-03"), Duration.ofHours(7))
                 )
             ),
             planlagt = PlanlagtOmsorgstilbud(
-                ukedager = OmsorgstilbudUkedager(
+                ukedager = PlanUkedager(
                     mandag = Duration.ofHours(1),
                     tirsdag = Duration.ofHours(1),
                     onsdag = Duration.ofHours(1),
@@ -516,7 +508,7 @@ class K9FormatTest {
                 ),
                 vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
             )
-        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")))
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")), LocalDate.parse("2021-09-03"))
 
         assertEquals(9, tilsynsordning.perioder.size)
     }

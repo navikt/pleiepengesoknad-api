@@ -969,7 +969,10 @@ class ApplicationTest {
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 99.0,
                       "vetIkkeEkstrainfo": null,
-                      "arbeidsform": "FAST"
+                      "arbeidsform": "FAST",
+                      "erAnsatt": null,
+                      "historisk": null,
+                      "planlagt": null
                     }
                   ]
                 }
@@ -1015,7 +1018,10 @@ class ApplicationTest {
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 100.0,
                       "vetIkkeEkstrainfo": null,
-                      "arbeidsform": "FAST"
+                      "arbeidsform": "FAST",
+                      "erAnsatt": null,
+                      "historisk": null,
+                      "planlagt": null
                     }
                   ]
                 }
@@ -1061,7 +1067,10 @@ class ApplicationTest {
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
                       "vetIkkeEkstrainfo": null,
-                      "arbeidsform": "FAST"
+                      "arbeidsform": "FAST",
+                      "erAnsatt": null,
+                      "historisk": null,
+                      "planlagt": null
                     }
                   ]
                 }
@@ -1107,7 +1116,10 @@ class ApplicationTest {
                       "jobberNormaltTimer": 0.0,
                       "skalJobbeProsent": 10.0,
                       "vetIkkeEkstrainfo": null,
-                      "arbeidsform": "FAST"
+                      "arbeidsform": "FAST",
+                      "erAnsatt": null,
+                      "historisk": null,
+                      "planlagt": null
                     }
                   ]
                 }
@@ -1449,7 +1461,7 @@ class ApplicationTest {
                       "type": "entity",
                       "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltdager",
                       "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'ukedager' eller 'enkeltdager' være satt.",
-                      "invalid_value": "enkeltdager = null, ukedager = OmsorgstilbudUkedager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
+                      "invalid_value": "enkeltdager = null, ukedager = PlanUkedager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
                     }
                   ]
                 }
@@ -1464,7 +1476,7 @@ class ApplicationTest {
                     omsorgstilbudV2 = OmsorgstilbudV2(
                         planlagt = PlanlagtOmsorgstilbud(
                             vetOmsorgstilbud = VetOmsorgstilbud.VET_IKKE,
-                            ukedager = OmsorgstilbudUkedager(mandag = Duration.ofHours(7))
+                            ukedager = PlanUkedager(mandag = Duration.ofHours(7))
                         )
                     ),
                     vedlegg = listOf()
@@ -1492,7 +1504,7 @@ class ApplicationTest {
                       "type": "entity",
                       "name": "omsorgstilbudV2.historisk.enkeltdager",
                       "reason": "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
-                      "invalid_value": "enkeltdager = [OmsorgstilbudEnkeltDag(dato=${LocalDate.now()}, tid=PT7H)]"
+                      "invalid_value": "enkeltdager = [Enkeltdag(dato=${LocalDate.now()}, tid=PT7H)]"
                     }
                   ]
                 }
@@ -1506,7 +1518,7 @@ class ApplicationTest {
                     omsorgstilbudV2 = OmsorgstilbudV2(
                         historisk = HistoriskOmsorgstilbud(
                             enkeltdager = listOf(
-                                OmsorgstilbudEnkeltDag(dato = LocalDate.now(), tid = Duration.ofHours(7))
+                                Enkeltdag(dato = LocalDate.now(), tid = Duration.ofHours(7))
                             ),
                         )
                     ),
