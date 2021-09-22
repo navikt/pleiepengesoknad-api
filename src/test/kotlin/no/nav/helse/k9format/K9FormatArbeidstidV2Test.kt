@@ -351,7 +351,6 @@ class K9FormatArbeidstidV2Test {
         """.trimIndent()
 
         val json = JSONObject(k9Format.somJson()).getJSONObject("ytelse").getJSONObject("arbeidstid").getJSONArray("arbeidstakerList").getJSONObject(0).getJSONObject("arbeidstidInfo")
-        println(json)
         JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
     }
 }
