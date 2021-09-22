@@ -111,21 +111,25 @@ fun ArbeidIPeriode.beregnPlanlagtK9ArbeidstidInfo(normalTimerPerDag: Duration, s
     when(jobber){
         true -> when(jobberRedustert){
             true -> {
-                if(enkeltdager != null) {
-                    fraOgMedPlanlagt.ukedagerTilOgMed(tilOgMedPlanlagt).forEach { dato ->
-                        val enkeltdag = enkeltdager.find { it.dato == dato } ?: Enkeltdag(dato, NULL_ARBEIDSTIMER)
-                        arbeidstidInfo.leggeTilPeriode(
-                            Periode(enkeltdag.dato, enkeltdag.dato),
-                            ArbeidstidPeriodeInfo()
-                                .medFaktiskArbeidTimerPerDag(enkeltdag.tid)
-                                .medJobberNormaltTimerPerDag(normalTimerPerDag)
-                        )
+                when {
+                    enkeltdager != null -> {
+                        fraOgMedPlanlagt.ukedagerTilOgMed(tilOgMedPlanlagt).forEach { dato ->
+                            val enkeltdag = enkeltdager.find { it.dato == dato } ?: Enkeltdag(dato, NULL_ARBEIDSTIMER)
+                            arbeidstidInfo.leggeTilPeriode(
+                                Periode(enkeltdag.dato, enkeltdag.dato),
+                                ArbeidstidPeriodeInfo()
+                                    .medFaktiskArbeidTimerPerDag(enkeltdag.tid)
+                                    .medJobberNormaltTimerPerDag(normalTimerPerDag)
+                            )
+                        }
                     }
-                } else if (fasteDager != null) {
-                    fasteDager.tilArbeidtidPeriodePlan(søknadsperiode, dagensDato, normalTimerPerDag).forEach {
-                        arbeidstidInfo.leggeTilPeriode(it.first, it.second)
+                    fasteDager != null -> {
+                        fasteDager.tilArbeidtidPeriodePlan(søknadsperiode, dagensDato, normalTimerPerDag).forEach {
+                            arbeidstidInfo.leggeTilPeriode(it.first, it.second)
+                        }
                     }
-                } else TODO() // TODO: 22/09/2021 BURDE ALDRI KOMME HIT. KASTE FEIL?
+                    else -> TODO() // TODO: 22/09/2021 BURDE ALDRI KOMME HIT. KASTE FEIL?
+                }
             }
             false -> TODO() //Jobber men ikke redusert. Jobber altså 100% i hele historisk periode.
         }
