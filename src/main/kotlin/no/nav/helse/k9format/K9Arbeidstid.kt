@@ -76,31 +76,6 @@ fun OrganisasjonDetaljer.tilK9ArbeidstidInfoV2(søknadsperiode: Periode, dagensD
 
     if(this.planlagt != null) this.planlagt.beregnPlanlagtK9ArbeidstidInfo(normalTimerPerDag,søknadsperiode,arbeidstidInfo, dagensDato)
 
-    /*
-    this.planlagt?.also { arbeidIPeriodePlanlagt ->
-        val fraOgMedPlanlagt = if(søknadsperiode.fraOgMed.isAfter(dagensDato)) søknadsperiode.fraOgMed else dagensDato
-        val tilOgMedPlanlagt = søknadsperiode.tilOgMed
-
-        arbeidIPeriodePlanlagt.enkeltdager?.also { listeOverEnkeltdager ->
-            fraOgMedPlanlagt.ukedagerTilOgMed(tilOgMedPlanlagt).forEach { dato ->
-                val enkeltdag = listeOverEnkeltdager.find { it.dato == dato } ?: Enkeltdag(dato, NULL_ARBEIDSTIMER)
-                arbeidstidInfo.leggeTilPeriode(
-                    Periode(enkeltdag.dato, enkeltdag.dato),
-                    ArbeidstidPeriodeInfo()
-                        .medJobberNormaltTimerPerDag(normalTimerPerDag)
-                        .medFaktiskArbeidTimerPerDag(enkeltdag.tid)
-                )
-            }
-        }
-
-        arbeidIPeriodePlanlagt.fasteDager?.let { planUkedager ->
-            planUkedager.tilArbeidtidPeriodePlan(periode = søknadsperiode, normalTimerPerDag = normalTimerPerDag).forEach {
-                arbeidstidInfo.leggeTilPeriode(it.first, it.second)
-            }
-        }
-    }
-     */
-
     return arbeidstidInfo
 }
 
@@ -196,7 +171,7 @@ fun PlanUkedager.tilArbeidtidPeriodePlan(
                 DayOfWeek.WEDNESDAY -> this.onsdag
                 DayOfWeek.THURSDAY -> this.torsdag
                 DayOfWeek.FRIDAY -> this.fredag
-                else -> Duration.ZERO
+                else -> Duration.ZERO // TODO: 22/09/2021 Gir mening, men sjekk opp om det er riktig.
             }
             Pair(
                 Periode(dato, dato),
