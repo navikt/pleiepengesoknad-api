@@ -617,4 +617,121 @@ class K9FormatArbeidstidTest {
         println(arbeidsforholdJson)
         JSONAssert.assertEquals(JSONObject(forventetJson), JSONObject(arbeidsforholdJson), true)
     }
+
+    @Test
+    fun `Kombinasjon av selvstending, ansatt og frilans -- Forventer to perioder per ytelse med full arbeid`(){
+        val arbeidIPeriodenUtenOppgittTid = ArbeidIPeriode(
+            jobberIPerioden = JobberIPeriodeSvar.JA,
+            jobberSomVanlig = true,
+            enkeltdager = null,
+            fasteDager = null
+        )
+
+        val arbeidsforhold = Arbeidsforhold(
+            jobberNormaltTimer = 37.5,
+            arbeidsform = Arbeidsform.FAST,
+            erAktivtArbeidsforhold = true,
+            planlagt = arbeidIPeriodenUtenOppgittTid,
+            historisk = arbeidIPeriodenUtenOppgittTid
+        )
+
+        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+            navn = "Org",
+            organisasjonsnummer = "917755736",
+            arbeidsforhold = arbeidsforhold
+        )
+
+        val frilans = Frilans(
+            startdato = LocalDate.parse("2019-01-01"),
+            jobberFortsattSomFrilans = true,
+            arbeidsforhold = arbeidsforhold
+        )
+
+        val selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+            virksomhet = Virksomhet(
+                næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
+                fiskerErPåBladB = false,
+                fraOgMed = LocalDate.parse("2019-01-01"),
+                navnPåVirksomheten = "TullOgTøys",
+                registrertINorge = true,
+                organisasjonsnummer = "101010",
+                yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                regnskapsfører = Regnskapsfører(
+                    navn = "Kjell",
+                    telefon = "84554"
+                ),
+                harFlereAktiveVirksomheter = true
+            ),
+            arbeidsforhold = arbeidsforhold
+        )
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.parse("2021-01-04"), //5 dager
+            tilOgMed = LocalDate.parse("2021-01-08"),
+            ansatt = listOf(arbeidsforholdAnsatt),
+            omsorgstilbudV2 = null,
+            utenlandsoppholdIPerioden = null,
+            ferieuttakIPerioden = null,
+            frilans = frilans,
+            selvstendigNæringsdrivende = selvstendigNæringsdrivende,
+        )
+
+        val k9Format = søknad.tilK9Format(
+            ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
+            SøknadUtils.søker,
+            LocalDate.parse("2021-01-06")
+        )
+        søknad.validate(k9Format)
+
+        val json = JSONObject(k9Format.somJson()).getJSONObject("ytelse").getJSONObject("arbeidstid")
+
+        val forventetJson = """
+            {
+              "frilanserArbeidstidInfo": {
+                "perioder": {
+                  "2021-01-06/2021-01-08": {
+                    "faktiskArbeidTimerPerDag": "PT7H30M",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-04/2021-01-05": {
+                    "faktiskArbeidTimerPerDag": "PT7H30M",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  }
+                }
+              },
+              "arbeidstakerList": [
+                {
+                  "arbeidstidInfo": {
+                    "perioder": {
+                      "2021-01-06/2021-01-08": {
+                        "faktiskArbeidTimerPerDag": "PT7H30M",
+                        "jobberNormaltTimerPerDag": "PT7H30M"
+                      },
+                      "2021-01-04/2021-01-05": {
+                        "faktiskArbeidTimerPerDag": "PT7H30M",
+                        "jobberNormaltTimerPerDag": "PT7H30M"
+                      }
+                    }
+                  },
+                  "organisasjonsnummer": "917755736",
+                  "norskIdentitetsnummer": null
+                }
+              ],
+              "selvstendigNæringsdrivendeArbeidstidInfo": {
+                "perioder": {
+                  "2021-01-06/2021-01-08": {
+                    "faktiskArbeidTimerPerDag": "PT7H30M",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-04/2021-01-05": {
+                    "faktiskArbeidTimerPerDag": "PT7H30M",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  }
+                }
+              }
+            }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
+    }
 }
