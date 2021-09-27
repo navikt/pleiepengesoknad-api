@@ -25,6 +25,14 @@ class K9FormatTest {
         val søknad = SøknadUtils.defaultSøknad(søknadId).copy(
             fraOgMed = fraOgMed,
             tilOgMed = tilOgMed,
+            ferieuttakIPerioden = FerieuttakIPerioden(
+                skalTaUtFerieIPerioden = true, ferieuttak = listOf(
+                    Ferieuttak(
+                        fraOgMed = fraOgMed,
+                        tilOgMed = fraOgMed.plusDays(1)
+                    )
+                )
+            ),
             omsorgstilbudV2 = OmsorgstilbudV2(
                 historisk = null,
                 planlagt = PlanlagtOmsorgstilbud(
@@ -148,7 +156,7 @@ class K9FormatTest {
                 },
                 "lovbestemtFerie": {
                   "perioder": {
-                    "2020-01-05/2020-01-07": {}
+                    "$fraOgMed/${fraOgMed.plusDays(1)}": {}
                   },
                   "perioderSomSkalSlettes": {}
                 },

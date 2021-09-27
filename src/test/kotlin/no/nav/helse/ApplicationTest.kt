@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.skyscreamer.jsonassert.JSONAssert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
 import java.util.*
@@ -428,7 +429,6 @@ class ApplicationTest {
     fun `Sende soknad`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -436,11 +436,18 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = pdfUrl
-            )
+            requestEntity = SøknadUtils.defaultSøknad().copy(
+                fraOgMed = LocalDate.now().minusDays(3),
+                tilOgMed = LocalDate.now().plusDays(4),
+                ferieuttakIPerioden = FerieuttakIPerioden(
+                    skalTaUtFerieIPerioden = true,
+                    ferieuttak = listOf(Ferieuttak(
+                        fraOgMed = LocalDate.now(),
+                        tilOgMed = LocalDate.now().plusDays(2),
+                    ))
+                ),
+                vedlegg = listOf(URL(jpegUrl)),
+            ).somJson()
         )
     }
 
@@ -502,30 +509,9 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad uten grad`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = pdfUrl
-            )
-        )
-    }
-
-    @Test
     fun `Sende soknad ikke myndig`() {
         val cookie = getAuthCookie(ikkeMyndigFnr)
         val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -541,20 +527,17 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.Forbidden,
             cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = pdfUrl
-            )
+            requestEntity = SøknadUtils.defaultSøknad().copy(
+                vedlegg = listOf(URL(jpegUrl)),
+            ).somJson()
 
         )
     }
 
-    @Test //Denne testen fanger ikke opp om barnets navn blir satt eller ikke. Må undersøke loggen.
+    @Test
     fun `Sende soknad med AktørID som ID på barnet`() {
         val cookie = getAuthCookie("26104500284")
         val jpegUrl = engine.jpegUrl(cookie)
-        val pdfUrl = engine.pdUrl(cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -562,11 +545,17 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedAktoerIdPaaBarn(
-                aktørId = "1000000000001",
-                vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = pdfUrl
-            )
+            requestEntity = SøknadUtils.defaultSøknad().copy(
+                selvstendigNæringsdrivende = null,
+                omsorgstilbudV2 = null,
+                vedlegg = listOf(URL(jpegUrl)),
+                barn = BarnDetaljer(
+                    fødselsdato = LocalDate.parse("2018-01-01"),
+                    navn = "Barn Barnesen",
+                    aktørId = "1000000000001",
+                    fødselsnummer = null
+                )
+            ).somJson()
         )
     }
 
@@ -581,9 +570,13 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
-                vedleggUrl1 = jpegUrl,
-                virksomheter = listOf(
+            requestEntity = SøknadUtils.defaultSøknad().copy(
+                omsorgstilbudV2 = null,
+                ferieuttakIPerioden = null,
+                fraOgMed = LocalDate.now().minusDays(3),
+                tilOgMed = LocalDate.now().plusDays(4),
+                vedlegg = listOf(URL(jpegUrl)),
+                selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                     Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
@@ -599,16 +592,26 @@ class ApplicationTest {
                             telefon = "84554"
                         ),
                         harFlereAktiveVirksomheter = true
+                    ),
+                    arbeidsforhold = Arbeidsforhold(
+                        arbeidsform = Arbeidsform.FAST,
+                        jobberNormaltTimer = 37.5,
+                        erAktivtArbeidsforhold = true,
+                        historisk = ArbeidIPeriode(
+                            jobberIPerioden = JobberIPeriodeSvar.JA,
+                            jobberSomVanlig = true,
+                            enkeltdager = null,
+                            fasteDager = null
+                        ),
+                        planlagt = ArbeidIPeriode(
+                            jobberIPerioden = JobberIPeriodeSvar.JA,
+                            jobberSomVanlig = true,
+                            enkeltdager = null,
+                            fasteDager = null
+                        )
                     )
-                ),
-                selvstendigArbeidsForhold = Arbeidsforhold(
-                    arbeidsform = Arbeidsform.FAST,
-                    jobberNormaltTimer = 40.0,
-                    erAktivtArbeidsforhold = null,
-                    historisk = null,
-                    planlagt = null
                 )
-            )
+            ).somJson()
         )
     }
 
@@ -805,11 +808,18 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedFodselsnummerPaaBarn(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl,
-                vedleggUrl2 = finnesIkkeUrl
-            )
+            requestEntity = SøknadUtils.defaultSøknad().copy(
+                fraOgMed = LocalDate.now().minusDays(3),
+                tilOgMed = LocalDate.now().plusDays(4),
+                ferieuttakIPerioden = FerieuttakIPerioden(
+                    skalTaUtFerieIPerioden = true,
+                    ferieuttak = listOf(Ferieuttak(
+                        fraOgMed = LocalDate.now(),
+                        tilOgMed = LocalDate.now().plusDays(2),
+                    ))
+                ),
+                vedlegg = listOf(URL(jpegUrl), URL(finnesIkkeUrl)),
+            ).somJson()
         )
     }
 
