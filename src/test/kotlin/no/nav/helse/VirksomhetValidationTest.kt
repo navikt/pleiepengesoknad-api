@@ -28,7 +28,7 @@ class VirksomhetTest {
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now().minusDays(1),
         )
-        virksomhet.validate(0).assertFeilPaa(listOf("virksomhet.tilogmed og virksomhet.fraogmed"))
+        virksomhet.validate().assertFeilPaa(listOf("virksomhet.tilogmed og virksomhet.fraogmed"))
     }
 
     @Test
@@ -37,7 +37,7 @@ class VirksomhetTest {
             fraOgMed = LocalDate.now().minusDays(1),
             tilOgMed = LocalDate.now()
         )
-        virksomhet.validate(0).assertIngenFeil()
+        virksomhet.validate().assertIngenFeil()
     }
 
     @Test
@@ -46,7 +46,7 @@ class VirksomhetTest {
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now(),
         )
-        virksomhet.validate(0).assertIngenFeil()
+        virksomhet.validate().assertIngenFeil()
     }
 
     @Test
@@ -55,7 +55,7 @@ class VirksomhetTest {
             registrertINorge = true,
             organisasjonsnummer = "101010",
         )
-        virksomhet.validate(0).assertIngenFeil()
+        virksomhet.validate().assertIngenFeil()
     }
 
     @Test
@@ -64,7 +64,7 @@ class VirksomhetTest {
             organisasjonsnummer = null,
             registrertINorge = true,
         )
-        virksomhet.validate(0).assertFeilPaa(listOf("selvstendigVirksomheter[0].organisasjonsnummer"))
+        virksomhet.validate().assertFeilPaa(listOf("selvstendingNæringsdrivende.virksomhet.organisasjonsnummer"))
     }
 
     @Test
@@ -76,7 +76,7 @@ class VirksomhetTest {
                 landnavn = "Tyskland"
             )
         )
-        virksomhet.validate(0).assertIngenFeil()
+        virksomhet.validate().assertIngenFeil()
     }
 
     @Test
@@ -85,7 +85,7 @@ class VirksomhetTest {
             registrertINorge = false,
             registrertIUtlandet = null
         )
-        virksomhet.validate(0).assertFeilPaa(listOf("selvstendigVirksomheter[0].registrertIUtlandet"))
+        virksomhet.validate().assertFeilPaa(listOf("selvstendingNæringsdrivende.virksomhet.registrertIUtlandet"))
     }
 
     @Test
@@ -97,7 +97,7 @@ class VirksomhetTest {
                 landkode = "NO"
             )
         )
-        virksomhet.validate(0).assertFeilPaa(listOf("selvstendigVirksomheter[0].registrertIUtlandet.landkode"))
+        virksomhet.validate().assertFeilPaa(listOf("selvstendingNæringsdrivende.virksomhet.registrertIUtlandet.landkode"))
     }
 
     @Test
@@ -109,7 +109,7 @@ class VirksomhetTest {
                 landkode = "DEU"
             )
         )
-        virksomhet.validate(0).assertIngenFeil()
+        virksomhet.validate().assertIngenFeil()
     }
 
     @Test
@@ -117,7 +117,7 @@ class VirksomhetTest {
         val virksomhet = gyldigVirksomhet.copy(
             harFlereAktiveVirksomheter = null
         )
-        virksomhet.validate(0).assertFeilPaa(listOf("selvstendigVirksomheter[0].harFlereAktiveVirksomheter"))
+        virksomhet.validate().assertFeilPaa(listOf("selvstendingNæringsdrivende.virksomhet.harFlereAktiveVirksomheter"))
     }
 
     private fun MutableSet<Violation>.assertIngenFeil() = assertTrue(isEmpty())

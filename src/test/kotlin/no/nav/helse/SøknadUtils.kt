@@ -25,6 +25,8 @@ class SøknadUtils {
             fødselsnummer = "26104500284"
         )
 
+        // TODO: 27/09/2021 - Kan bli kvitt alle disse "body med *" ved å heller bruke default søknad og copy med endringer.
+
         fun bodyMedFodselsnummerPaaBarn(
             fodselsnummer: String,
             fraOgMed: String? = "2018-10-10",
@@ -220,88 +222,6 @@ class SøknadUtils {
             """.trimIndent()
         }
 
-        fun bodyMedJusterbarOrganisasjon(
-            fodselsnummer: String,
-            fraOgMed: String? = "2018-10-10",
-            tilOgMed: String? = "2019-10-10",
-            vedleggUrl1: String,
-            skalJobbe: String,
-            skalJobbeProsent: Double
-        ): String {
-            //language=JSON
-            return """
-                {
-                    "barn": {
-                        "fødselsnummer": "$fodselsnummer",
-                        "navn": "Barn Barnesen"
-                    },
-                    "fraOgMed": "$fraOgMed",
-                    "tilOgMed": "$tilOgMed",
-                    "arbeidsgivere": {
-                        "organisasjoner": [
-                            {
-                                "organisasjonsnummer": "917755736",
-                                "navn": "Bjeffefirmaet ÆÆÅ",
-                                "skalJobbeProsent": $skalJobbeProsent,
-                                "skalJobbe": "$skalJobbe",
-                                "arbeidsform": "FAST"
-                            }
-                        ]
-                    },
-                    "vedlegg": [
-                        "$vedleggUrl1",
-                        "$vedleggUrl1"
-                    ],
-                    "medlemskap" : {
-                        "harBoddIUtlandetSiste12Mnd" : false,
-                        "skalBoIUtlandetNeste12Mnd" : true
-                    },
-                        "utenlandsoppholdIPerioden": {
-                            "skalOppholdeSegIUtlandetIPerioden": true,
-                            "opphold": [
-                                {
-                                    "fraOgMed": "2019-10-10",
-                                    "tilOgMed": "2019-11-10",
-                                    "landkode": "SE",
-                                    "landnavn": "Sverige"
-                                },
-                                {
-                                    "landnavn": "USA",
-                                    "landkode": "US",
-                                    "fraOgMed": "2020-01-08",
-                                    "tilOgMed": "2020-01-09",
-                                    "erUtenforEos": true,
-                                    "erBarnetInnlagt": true,
-                                    "perioderBarnetErInnlagt" : [
-                                      {
-                                        "fraOgMed" : "2020-01-01",
-                                        "tilOgMed": "2020-01-02"
-                                      }
-                                    ],
-                                    "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
-                                }
-                            ]
-                        },
-                    "harMedsøker": true,
-                    "harBekreftetOpplysninger": true,
-                    "harForståttRettigheterOgPlikter": true,
-                  "ferieuttakIPerioden": {
-                    "skalTaUtFerieIPeriode": true,
-                    "ferieuttak": [
-                      {
-                        "fraOgMed": "2020-01-05",
-                        "tilOgMed": "2020-01-07"
-                      }
-                    ]
-                  },
-                  "skalBekrefteOmsorg": true,
-                  "skalPassePaBarnetIHelePerioden": true,
-                  "beskrivelseOmsorgsrollen": "En kort beskrivelse",
-                  "harVærtEllerErVernepliktig" : true
-                }
-                """.trimIndent()
-        }
-
         fun defaultSøknad(søknadId: String = UUID.randomUUID().toString()) = Søknad(
             newVersion = null,
             søknadId = søknadId,
@@ -314,15 +234,26 @@ class SøknadUtils {
             ),
             barnRelasjon = BarnRelasjon.ANNET,
             barnRelasjonBeskrivelse = "Gudfar til barnet",
-            arbeidsgivere = ArbeidsgiverDetaljer(
-                listOf(
-                    OrganisasjonDetaljer(
-                        navn = "Org",
-                        organisasjonsnummer = "917755736",
-                        skalJobbeProsent = 40.0,
+            ansatt = listOf(
+                ArbeidsforholdAnsatt(
+                    navn = "Org",
+                    organisasjonsnummer = "917755736",
+                    arbeidsforhold = Arbeidsforhold(
+                        arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 40.0,
-                        skalJobbe = SkalJobbe.REDUSERT,
-                        arbeidsform = Arbeidsform.FAST
+                        erAktivtArbeidsforhold = null,
+                        historisk = ArbeidIPeriode(
+                            jobberIPerioden = JobberIPeriodeSvar.JA,
+                            jobberSomVanlig = true,
+                            enkeltdager = null,
+                            fasteDager = null
+                        ),
+                        planlagt = ArbeidIPeriode(
+                            jobberIPerioden = JobberIPeriodeSvar.JA,
+                            jobberSomVanlig = true,
+                            enkeltdager = null,
+                            fasteDager = null
+                        )
                     )
                 )
             ),
@@ -333,8 +264,8 @@ class SøknadUtils {
                 harNattevåk = true,
                 tilleggsinformasjon = "Har nattevåk"
             ),
-            selvstendigVirksomheter = listOf(
-                Virksomhet(
+            selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                virksomhet = Virksomhet(
                     næringstyper = listOf(Næringstyper.ANNEN),
                     fiskerErPåBladB = false,
                     fraOgMed = LocalDate.parse("2020-01-01"),
@@ -356,13 +287,24 @@ class SøknadUtils {
                     ),
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
                     harFlereAktiveVirksomheter = true
+                ),
+                arbeidsforhold = Arbeidsforhold(
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    erAktivtArbeidsforhold = true,
+                    historisk = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        jobberSomVanlig = true,
+                        enkeltdager = null,
+                        fasteDager = null
+                    ),
+                    planlagt = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        jobberSomVanlig = true,
+                        enkeltdager = null,
+                        fasteDager = null
+                    )
                 )
-            ),
-            selvstendigArbeidsforhold = Arbeidsforhold(
-                skalJobbe = SkalJobbe.NEI,
-                arbeidsform = Arbeidsform.FAST,
-                jobberNormaltTimer = 40.0,
-                skalJobbeProsent = 0.0
             ),
             skalPassePåBarnetIHelePerioden = true,
             omsorgstilbudV2 = OmsorgstilbudV2(
@@ -477,10 +419,21 @@ class SøknadUtils {
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
-                    skalJobbe = SkalJobbe.NEI,
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    skalJobbeProsent = 0.0
+                    erAktivtArbeidsforhold = null,
+                    historisk = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        jobberSomVanlig = true,
+                        enkeltdager = null,
+                        fasteDager = null
+                    ),
+                    planlagt = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        jobberSomVanlig = true,
+                        enkeltdager = null,
+                        fasteDager = null
+                    )
                 )
             ),
             harVærtEllerErVernepliktig = true

@@ -5,6 +5,11 @@ import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import java.time.LocalDate
 
+data class SelvstendigNæringsdrivende(
+    val virksomhet: Virksomhet,
+    val arbeidsforhold: Arbeidsforhold?
+)
+
 data class Virksomhet(
     val næringstyper: List<Næringstyper> = listOf(),
     val fiskerErPåBladB: Boolean,
@@ -46,9 +51,9 @@ data class Regnskapsfører(
 )
 
 
-internal fun Virksomhet.validate(index: Int): MutableSet<Violation>{
+internal fun Virksomhet.validate(): MutableSet<Violation>{
     val violations = mutableSetOf<Violation>()
-    val felt = "selvstendigVirksomheter[$index]"
+    val felt = "selvstendingNæringsdrivende.virksomhet"
 
     if(!harGyldigPeriode()){
         violations.add(

@@ -14,7 +14,7 @@ data class Søknad(
     val søknadId: String = UUID.randomUUID().toString(),
     val språk: Språk? = null,
     val barn: BarnDetaljer,
-    val arbeidsgivere: ArbeidsgiverDetaljer,
+    val ansatt: List<ArbeidsforholdAnsatt>? = null,
     val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
@@ -31,8 +31,7 @@ data class Søknad(
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
-    val selvstendigVirksomheter: List<Virksomhet> = listOf(),
-    val selvstendigArbeidsforhold: Arbeidsforhold? = null,
+    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende? = null,
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
@@ -164,10 +163,11 @@ enum class Årsak {
 }
 
 data class Arbeidsforhold(
-    val skalJobbe:SkalJobbe,
     val arbeidsform: Arbeidsform,
     val jobberNormaltTimer: Double,
-    val skalJobbeProsent: Double
+    val erAktivtArbeidsforhold: Boolean? = null,
+    val historisk: ArbeidIPeriode? = null,
+    val planlagt: ArbeidIPeriode? = null
 )
 
 enum class SkalJobbe {

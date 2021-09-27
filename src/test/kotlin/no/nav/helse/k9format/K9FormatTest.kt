@@ -20,8 +20,8 @@ class K9FormatTest {
     fun `Full PP søknad blir til riktig K9Format`() {
         val mottatt = ZonedDateTime.of(2020, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC"))
         val søknadId = UUID.randomUUID().toString()
-        val fraOgMed = LocalDate.now().minusDays(3)
-        val tilOgMed = LocalDate.now().plusDays(10)
+        val fraOgMed = LocalDate.parse("2021-01-01")
+        val tilOgMed = LocalDate.parse("2021-01-10")
         val søknad = SøknadUtils.defaultSøknad(søknadId).copy(
             fraOgMed = fraOgMed,
             tilOgMed = tilOgMed,
@@ -44,157 +44,177 @@ class K9FormatTest {
             fødselsdato = LocalDate.parse("2000-01-01"),
             fødselsnummer = "123456789"
         )
-        val k9Format = søknad.tilK9Format(mottatt, søker)
-        val forventetK9FormatJson =
+        val k9Format = søknad.tilK9Format(mottatt, søker, dagensDato = LocalDate.parse("2021-01-05"))
+
+        val forventetK9FormatJsonV2 =
             //language=json
             """
             {
-              "søknadId" : "$søknadId",
-              "journalposter": [],
-              "versjon" : "1.0.0",
-              "mottattDato" : "2020-01-02T03:04:05.000Z",
-              "søker" : {
-                "norskIdentitetsnummer" : "123456789"
+              "søknadId": "$søknadId",
+              "versjon": "1.0.0",
+              "mottattDato": "2020-01-02T03:04:05.000Z",
+              "søker": {
+                "norskIdentitetsnummer": "123456789"
               },
-              "språk" : "nb",
-              "ytelse" : {
-                "type" : "PLEIEPENGER_SYKT_BARN",
-                "søknadsperiode" : [
-                  "$fraOgMed/$tilOgMed"
+              "ytelse": {
+                "type": "PLEIEPENGER_SYKT_BARN",
+                "barn": {
+                  "norskIdentitetsnummer": "03028104560",
+                  "fødselsdato": "2018-01-01"
+                },
+                "søknadsperiode": [
+                  "2021-01-01/2021-01-10"
                 ],
                 "endringsperiode": [],
-                "infoFraPunsj": null,
-                "dataBruktTilUtledning" : {
-                  "harForståttRettigheterOgPlikter" : true,
-                  "harBekreftetOpplysninger" : true,
-                  "samtidigHjemme" : true,
-                  "harMedsøker" : true,
-                  "bekrefterPeriodeOver8Uker" : null
-                },
-                "barn" : {
-                  "norskIdentitetsnummer" : "03028104560",
-                  "fødselsdato" : "2018-01-01"
-                },
-                "opptjeningAktivitet" : {
-                  "selvstendigNæringsdrivende" : [ {
-                    "perioder" : {
-                      "2020-01-01/.." : {
-                        "virksomhetstyper" : [ "ANNEN" ],
-                        "regnskapsførerNavn" : "Kjell Regnskap",
-                        "regnskapsførerTlf" : "123456789",
-                        "erVarigEndring" : true,
-                        "endringDato" : "2020-01-01",
-                        "endringBegrunnelse" : "Korona",
-                        "bruttoInntekt" : 9999,
-                        "erNyoppstartet" : true,
-                        "registrertIUtlandet" : true,
-                        "landkode" : "DEU"
-                      }
-                    },
-                    "virksomhetNavn" : "TullOgTøys"
-                  } ],
-                  "frilanser" : {
-                    "startdato" : "2018-01-01",
-                    "sluttdato": null,
-                    "jobberFortsattSomFrilans" : true
-                  }
-                },
-                "beredskap" : {
-                  "perioderSomSkalSlettes": {},
-                  "perioder" : {
-                    "$fraOgMed/$tilOgMed" : {
-                      "tilleggsinformasjon" : "Ikke beredskap"
-                    }
-                  }
-                },
-                "nattevåk" : {
-                  "perioderSomSkalSlettes": {},
-                  "perioder" : {
-                    "$fraOgMed/$tilOgMed" : {
-                      "tilleggsinformasjon" : "Har nattevåk"
-                    }
-                  }
-                },
-                    "tilsynsordning": {
+                "opptjeningAktivitet": {
+                  "selvstendigNæringsdrivende": [
+                    {
                       "perioder": {
-                        "${fraOgMed.plusDays(1)}/${fraOgMed.plusDays(1)}": {
-                          "etablertTilsynTimerPerDag": "PT5H"
+                        "2020-01-01/..": {
+                          "virksomhetstyper": [
+                            "ANNEN"
+                          ],
+                          "regnskapsførerNavn": "Kjell Regnskap",
+                          "regnskapsførerTlf": "123456789",
+                          "erVarigEndring": true,
+                          "endringDato": "2020-01-01",
+                          "endringBegrunnelse": "Korona",
+                          "bruttoInntekt": 9999,
+                          "erNyoppstartet": true,
+                          "registrertIUtlandet": true,
+                          "landkode": "DEU"
                         }
                       },
-                      "perioderSomSkalSlettes": {}
-                    },
-                "arbeidstid" : {
-                  "arbeidstakerList" : [ {
-                    "norskIdentitetsnummer" : null,
-                    "organisasjonsnummer" : "917755736",
-                    "arbeidstidInfo" : {
-                      "perioder" : {
-                        "$fraOgMed/$tilOgMed" : {
-                          "jobberNormaltTimerPerDag" : "PT8H",
-                          "faktiskArbeidTimerPerDag" : "PT3H12M"
-                        }
-                      }
+                      "virksomhetNavn": "TullOgTøys"
                     }
-                  } ],
-                  "frilanserArbeidstidInfo" : {
-                    "perioder": {
-                      "$fraOgMed/$tilOgMed": {
-                        "faktiskArbeidTimerPerDag": "PT0S",
-                        "jobberNormaltTimerPerDag": "PT8H"
-                      }
-                    }
-                  },
-                  "selvstendigNæringsdrivendeArbeidstidInfo" : {
-                    "perioder": {
-                      "$fraOgMed/$tilOgMed": {
-                        "faktiskArbeidTimerPerDag": "PT0S",
-                        "jobberNormaltTimerPerDag": "PT8H"
-                      }
-                    }
+                  ],
+                  "frilanser": {
+                    "startdato": "2018-01-01",
+                    "sluttdato": null,
+                    "jobberFortsattSomFrilans": true
                   }
                 },
-                "uttak" : {
-                  "perioder" : {
-                    "$fraOgMed/$tilOgMed" : {
-                      "timerPleieAvBarnetPerDag" : "PT7H30M"
+                "dataBruktTilUtledning": {
+                  "harForståttRettigheterOgPlikter": true,
+                  "harBekreftetOpplysninger": true,
+                  "samtidigHjemme": true,
+                  "harMedsøker": true,
+                  "bekrefterPeriodeOver8Uker": null
+                },
+                "infoFraPunsj": null,
+                "bosteder": {
+                  "perioder": {
+                    "2017-01-01/2017-01-10": {
+                      "land": "DEU"
+                    },
+                    "2018-01-01/2018-01-10": {
+                      "land": "DEU"
                     }
                   },
                   "perioderSomSkalSlettes": {}
                 },
-                "omsorg" : {
-                  "relasjonTilBarnet" : "ANNET",
-                  "beskrivelseAvOmsorgsrollen" : "Gudfar til barnet"
+                "utenlandsopphold": {
+                  "perioder": {
+                    "2021-01-01/2021-01-10": {
+                      "land": "SE",
+                      "årsak": null
+                    }
+                  },
+                  "perioderSomSkalSlettes": {}
                 },
-                "lovbestemtFerie" : {
+                "beredskap": {
+                  "perioder": {
+                    "2021-01-01/2021-01-10": {
+                      "tilleggsinformasjon": "Ikke beredskap"
+                    }
+                  },
+                  "perioderSomSkalSlettes": {}
+                },
+                "nattevåk": {
+                  "perioder": {
+                    "2021-01-01/2021-01-10": {
+                      "tilleggsinformasjon": "Har nattevåk"
+                    }
+                  },
+                  "perioderSomSkalSlettes": {}
+                },
+                "tilsynsordning": {
+                  "perioder": {
+                    "2021-01-02/2021-01-02": {
+                      "etablertTilsynTimerPerDag": "PT5H"
+                    }
+                  },
+                  "perioderSomSkalSlettes": {}
+                },
+                "lovbestemtFerie": {
                   "perioder": {
                     "2020-01-05/2020-01-07": {}
                   },
                   "perioderSomSkalSlettes": {}
                 },
-                "bosteder" : {
-                  "perioderSomSkalSlettes": {},
-                  "perioder" : {
-                    "2017-01-01/2017-01-10" : {
-                      "land" : "DEU"
-                    },
-                    "2018-01-01/2018-01-10" : {
-                      "land" : "DEU"
+                "arbeidstid": {
+                  "arbeidstakerList": [
+                    {
+                      "norskIdentitetsnummer": null,
+                      "organisasjonsnummer": "917755736",
+                      "arbeidstidInfo": {
+                        "perioder": {
+                          "2021-01-01/2021-01-04": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT8H"
+                          },
+                          "2021-01-05/2021-01-10": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT8H"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "frilanserArbeidstidInfo": {
+                    "perioder": {
+                      "2021-01-01/2021-01-04": {
+                        "jobberNormaltTimerPerDag": "PT8H",
+                        "faktiskArbeidTimerPerDag": "PT8H"
+                      },
+                      "2021-01-05/2021-01-10": {
+                        "jobberNormaltTimerPerDag": "PT8H",
+                        "faktiskArbeidTimerPerDag": "PT8H"
+                      }
+                    }
+                  },
+                  "selvstendigNæringsdrivendeArbeidstidInfo": {
+                    "perioder": {
+                      "2021-01-01/2021-01-04": {
+                        "jobberNormaltTimerPerDag": "PT8H",
+                        "faktiskArbeidTimerPerDag": "PT8H"
+                      },
+                      "2021-01-05/2021-01-10": {
+                        "jobberNormaltTimerPerDag": "PT8H",
+                        "faktiskArbeidTimerPerDag": "PT8H"
+                      }
                     }
                   }
                 },
-                "utenlandsopphold" : {
-                  "perioder" : {
-                    "$fraOgMed/$tilOgMed" : {
-                      "land" : "SE",
-                      "årsak" : null
+                "uttak": {
+                  "perioder": {
+                    "2021-01-01/2021-01-10": {
+                      "timerPleieAvBarnetPerDag": "PT7H30M"
                     }
                   },
                   "perioderSomSkalSlettes": {}
+                },
+                "omsorg": {
+                  "relasjonTilBarnet": "ANNET",
+                  "beskrivelseAvOmsorgsrollen": "Gudfar til barnet"
                 }
-              }
+              },
+              "språk": "nb",
+              "journalposter": []
             }
         """.trimIndent()
-        JSONAssert.assertEquals(forventetK9FormatJson, JsonUtils.toString(k9Format), true)
+
+        JSONAssert.assertEquals(forventetK9FormatJsonV2, JsonUtils.toString(k9Format), true)
     }
 
     @Test
@@ -386,84 +406,6 @@ class K9FormatTest {
               "perioderSomSkalSlettes": {}
             }
         """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
-        )
-    }
-
-    @Test
-    fun `gitt arbeidsforhold med 50% av en 40t arbeidsuke, forvent 4t per dag`() {
-        val arbeidstidInfo = Arbeidsforhold(
-            skalJobbe = SkalJobbe.REDUSERT,
-            arbeidsform = Arbeidsform.FAST,
-            jobberNormaltTimer = 40.0,
-            skalJobbeProsent = 50.0
-        ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
-
-        assertEquals(1, arbeidstidInfo.perioder.size)
-
-        JSONAssert.assertEquals(
-            //language=json
-            """
-            {
-              "perioder" : {
-                "2021-01-04/2021-01-08" : {
-                  "faktiskArbeidTimerPerDag": "PT4H",
-                  "jobberNormaltTimerPerDag": "PT8H"
-                }
-              }
-            }
-        """.trimIndent(), JsonUtils.toString(arbeidstidInfo), true
-        )
-    }
-
-    @Test
-    fun `gitt arbeidsforhold med 0% av en 40t arbeidsuke, forvent 0t per dag`() {
-        val arbeidstidInfo = Arbeidsforhold(
-            skalJobbe = SkalJobbe.NEI,
-            arbeidsform = Arbeidsform.FAST,
-            jobberNormaltTimer = 40.0,
-            skalJobbeProsent = 0.0
-        ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
-
-        assertEquals(1, arbeidstidInfo.perioder.size)
-
-        JSONAssert.assertEquals(
-            //language=json
-            """
-            {
-              "perioder" : {
-                "2021-01-04/2021-01-08" : {
-                  "faktiskArbeidTimerPerDag": "PT0S",
-                  "jobberNormaltTimerPerDag": "PT8H"
-                }
-              }
-            }
-        """.trimIndent(), JsonUtils.toString(arbeidstidInfo), true
-        )
-    }
-
-    @Test
-    fun `gitt arbeidsforhold med 100% av en 40t arbeidsuke, forvent 8t per dag`() {
-        val arbeidstidInfo = Arbeidsforhold(
-            skalJobbe = SkalJobbe.JA,
-            arbeidsform = Arbeidsform.FAST,
-            jobberNormaltTimer = 40.0,
-            skalJobbeProsent = 100.0
-        ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
-
-        assertEquals(1, arbeidstidInfo.perioder.size)
-
-        JSONAssert.assertEquals(
-            //language=json
-            """
-            {
-              "perioder" : {
-                "2021-01-04/2021-01-08" : {
-                  "faktiskArbeidTimerPerDag": "PT8H",
-                  "jobberNormaltTimerPerDag": "PT8H"
-                }
-              }
-            }
-        """.trimIndent(), JsonUtils.toString(arbeidstidInfo), true
         )
     }
 

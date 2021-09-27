@@ -20,7 +20,7 @@ fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 internal fun Søknad.byggK9OpptjeningAktivitet() = OpptjeningAktivitet(
     null, // arbeidstaker er ikke nødvendig i opptjeningAktivitet for psb.
-    selvstendigVirksomheter.tilK9SelvstendigNæringsdrivende(),
+    selvstendigNæringsdrivende?.tilK9SelvstendigNæringsdrivende(),
     frilans?.tilK9Frilanser()
 )
 
@@ -30,12 +30,19 @@ internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser()
     .medJobberFortsattSomFrilans(jobberFortsattSomFrilans)
 
 
+fun no.nav.helse.soknad.SelvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> {
 
-fun List<Virksomhet>.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> = map { virksomhet ->
-    SelvstendigNæringsdrivende(
-        mapOf(Periode(virksomhet.fraOgMed, virksomhet.tilOgMed) to virksomhet.tilK9SelvstendingNæringsdrivendeInfo()),
-        Organisasjonsnummer.of(virksomhet.organisasjonsnummer),
-        virksomhet.navnPåVirksomheten
+    return listOf(
+        SelvstendigNæringsdrivende(
+            mapOf(
+                Periode(
+                    virksomhet.fraOgMed,
+                    virksomhet.tilOgMed
+                ) to virksomhet.tilK9SelvstendingNæringsdrivendeInfo()
+            ),
+            Organisasjonsnummer.of(virksomhet.organisasjonsnummer),
+            virksomhet.navnPåVirksomheten
+        )
     )
 }
 

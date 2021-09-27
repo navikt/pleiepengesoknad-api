@@ -1,18 +1,15 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.dusseldorf.ktor.core.ParameterType
+import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.utils.erLikEllerEtterDagensDato
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-private const val MAX_VEDLEGG_SIZE = 24 * 1024 * 1024 // 3 vedlegg på 8 MB
-private val vedleggTooLargeProblemDetails = DefaultProblemDetails(
-    title = "attachments-too-large",
-    status = 413,
-    detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
-)
 private const val MAX_FRITEKST_TEGN = 1000
 
 class FraOgMedTilOgMedValidator {
@@ -100,9 +97,8 @@ class FraOgMedTilOgMedValidator {
 internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations = barn.validate()
 
-    violations.addAll(arbeidsgivere.organisasjoner.validate())
-    violations.addAll(validerSelvstendigVirksomheter(selvstendigVirksomheter, selvstendigArbeidsforhold))
-
+    ansatt?.let { violations.addAll(ansatt.validate()) }
+    selvstendigNæringsdrivende?.let { violations.addAll(selvstendigNæringsdrivende.virksomhet.validate()) }
     omsorgstilbudV2?.apply { violations.addAll(this.validate()) }
 
     violations.addAll(validerBarnRelasjon())
@@ -233,39 +229,6 @@ private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): Mutable
             invalidValue = "K9-format feilkode: ${it.feilkode}"
         )
     }.sortedBy { it.reason }.toMutableSet()
-
-private fun validerSelvstendigVirksomheter(
-    selvstendigVirksomheter: List<Virksomhet>, selvstendigArbeidsforhold: Arbeidsforhold?
-): MutableSet<Violation> = mutableSetOf<Violation>().apply {
-    if (selvstendigVirksomheter.isNotEmpty()) {
-        selvstendigVirksomheter.mapIndexed { index, virksomhet ->
-            addAll(virksomhet.validate(index))
-        }
-
-        if (selvstendigArbeidsforhold == null) {
-            add(
-                Violation(
-                    parameterName = "selvstendigArbeidsforhold",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "selvstendigArbeidsforhold kan ikke være null dersom selvstendigVirksomheter ikke er tom.",
-                    invalidValue = selvstendigArbeidsforhold
-                )
-            )
-        }
-
-    } else {
-        if (selvstendigArbeidsforhold != null) {
-            add(
-                Violation(
-                    parameterName = "selvstendigArbeidsforhold",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "selvstendigVirksomheter kan ikke være tom dersom selvstendigArbeidsforhold er satt.",
-                    invalidValue = selvstendigVirksomheter
-                )
-            )
-        }
-    }
-}
 
 private fun validerBosted(list: List<Bosted>): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()

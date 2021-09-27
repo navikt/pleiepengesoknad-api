@@ -602,10 +602,11 @@ class ApplicationTest {
                     )
                 ),
                 selvstendigArbeidsForhold = Arbeidsforhold(
-                    skalJobbe = SkalJobbe.NEI,
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    skalJobbeProsent = 0.0
+                    erAktivtArbeidsforhold = null,
+                    historisk = null,
+                    planlagt = null
                 )
             )
         )
@@ -630,7 +631,7 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "selvstendigVirksomheter[0].registrertIUtlandet",
+                      "name": "selvstendingNæringsdrivende.virksomhet.registrertIUtlandet",
                       "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                       "invalid_value": null
                     },
@@ -645,10 +646,12 @@ class ApplicationTest {
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
-                vedleggUrl1 = jpegUrl,
-                virksomheter = listOf(
-                    Virksomhet(
+            requestEntity = SøknadUtils.defaultSøknad().copy(
+                fraOgMed = LocalDate.now().minusDays(3),
+                tilOgMed = LocalDate.now().plusDays(3),
+                ferieuttakIPerioden = null,
+                selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                    virksomhet = Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.parse("2021-02-07"),
@@ -663,477 +666,26 @@ class ApplicationTest {
                             telefon = "84554"
                         ),
                         harFlereAktiveVirksomheter = true
-                    )
-                ),
-                selvstendigArbeidsForhold = Arbeidsforhold(
-                    skalJobbe = SkalJobbe.NEI,
-                    arbeidsform = Arbeidsform.FAST,
-                    jobberNormaltTimer = 40.0,
-                    skalJobbeProsent = 0.0
-                )
-            )
-        )
-    }
-
-    @Test
-    fun `Sende søknad som inneholder både frilansoppdrag og en selvstendig virksomhet som full json`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = null,
-            expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
-            requestEntity =
-            //language=json
-            """
-                {
-                  "new_version": true,
-                  "sprak": "nb",
-                  "barn": {
-                    "navn": null,
-                    "fødselsnummer": "03028104560",
-                    "aktørId": null,
-                    "fodselsdato": null
-                  },
-                  "arbeidsgivere": {
-                    "organisasjoner": [
-                      
-                    ]
-                  },
-                  "medlemskap": {
-                    "harBoddIUtlandetSiste12Mnd": false,
-                    "skalBoIUtlandetNeste12Mnd": false,
-                    "utenlandsoppholdSiste12Mnd": [
-                      
-                    ],
-                    "utenlandsoppholdNeste12Mnd": [
-                      
-                    ]
-                  },
-                  "fraOgMed": "2020-02-01",
-                  "tilOgMed": "2020-02-13",
-                  "vedlegg": [
-                    "                $jpegUrl                "
-                  ],
-                  "harMedsøker": false,
-                  "harBekreftetOpplysninger": true,
-                  "harForståttRettigheterOgPlikter": true,
-                  "frilans": {
-                    "startdato": "2019-12-06",
-                    "jobberFortsattSomFrilans": false,
-                    "arbeidsforhold": {
-                      "skalJobbe": "nei",
-                      "arbeidsform": "FAST",
-                      "jobberNormaltTimer": 40.0,
-                      "skalJobbeTimer": 0.0,
-                      "skalJobbeProsent": 0.0
-                    }
-                  },
-                  "selvstendigVirksomheter": [
-                    {
-                      "næringstyper": [
-                        "JORDBRUK_SKOGBRUK",
-                        "DAGMAMMA",
-                        "ANNEN"
-                      ],
-                      "navnPåVirksomheten": "Tull og tøys",
-                      "registrertINorge": true,
-                      "organisasjonsnummer": "85577454",
-                      "fraOgMed": "2020-02-01",
-                      "tilOgMed": "2020-02-13",
-                      "næringsinntekt": 9857755,
-                            "varigEndring": {
-                              "dato": "2020-01-03",
-                              "forklaring": "forklaring blablablabla",
-                              "inntektEtterEndring": "23423"
-                            },
-                      "yrkesaktivSisteTreFerdigliknedeÅrene": {
-                        "oppstartsdato": "2020-02-01"
-                      },
-                      "regnskapsfører": {
-                        "navn": "Kjell Bjarne",
-                        "telefon": "88788"
-                      },
-                      "harFlereAktiveVirksomheter" : true
-                    }
-                  ],
-                  "selvstendigArbeidsforhold": {
-                      "skalJobbe": "nei",
-                      "arbeidsform": "FAST",
-                      "jobberNormaltTimer": 40.0,
-                      "skalJobbeTimer": 0.0,
-                      "skalJobbeProsent": 0.0
-                  },
-                  "harVærtEllerErVernepliktig" : true
-                }
-            """.trimIndent()
-        )
-    }
-
-    @Test
-    fun `Sende søknad med selvstendig næringsvirksomet som har flere gyldige virksomheter, men med en feil`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            //language=json
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "selvstendigVirksomheter[0].registrertIUtlandet",
-                  "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "opptjeningAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
-                  "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
-                  "invalid_value": "K9-format feilkode: påkrevd"
-                }
-              ]
-            }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedSelvstendigVirksomheterSomListe(
-                vedleggUrl1 = jpegUrl,
-                virksomheter = listOf(
-                    Virksomhet(
-                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
-                        fiskerErPåBladB = false,
-                        fraOgMed = LocalDate.parse("2021-02-07"),
-                        tilOgMed = LocalDate.parse("2021-02-08"),
-                        næringsinntekt = 1212,
-                        navnPåVirksomheten = "TullOgTøys",
-                        registrertINorge = false,
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
-                        harFlereAktiveVirksomheter = true
-                    ), Virksomhet(
-                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
-                        fiskerErPåBladB = false,
-                        fraOgMed = LocalDate.now().minusDays(1),
-                        tilOgMed = LocalDate.now(),
-                        næringsinntekt = 1212,
-                        navnPåVirksomheten = "BariBar",
-                        registrertINorge = true,
-                        organisasjonsnummer = "10110",
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
-                        harFlereAktiveVirksomheter = true
-                    )
-                ),
-                selvstendigArbeidsForhold = Arbeidsforhold(
-                    skalJobbe = SkalJobbe.NEI,
-                    arbeidsform = Arbeidsform.FAST,
-                    jobberNormaltTimer = 40.0,
-                    skalJobbeProsent = 0.0
-                )
-            )
-        )
-    }
-
-    @Test
-    fun `Gitt innsendt søknad har tom virksomhets liste med selvstendigArbeidsforhold satt, forvent feil`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            //language=json
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "selvstendigArbeidsforhold",
-                  "reason": "selvstendigVirksomheter kan ikke være tom dersom selvstendigArbeidsforhold er satt.",
-                  "invalid_value": []
-                }
-              ]
-            }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils
-                .defaultSøknad(UUID.randomUUID().toString())
-                .copy(
-                    fraOgMed = LocalDate.now(),
-                    tilOgMed = LocalDate.now().plusDays(3),
-                    ferieuttakIPerioden = null,
-                    selvstendigVirksomheter = listOf(),
-                    selvstendigArbeidsforhold = Arbeidsforhold(
-                        skalJobbe = SkalJobbe.NEI,
+                    ),
+                    arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 40.0,
-                        skalJobbeProsent = 0.0
+                        erAktivtArbeidsforhold = null,
+                        historisk = ArbeidIPeriode(
+                            jobberIPerioden = JobberIPeriodeSvar.NEI,
+                            jobberSomVanlig = null,
+                            enkeltdager = listOf(),
+                            fasteDager = null
+                        ),
+                        planlagt = ArbeidIPeriode(
+                            jobberIPerioden = JobberIPeriodeSvar.NEI,
+                            jobberSomVanlig = null,
+                            enkeltdager = listOf(),
+                            fasteDager = null
+                        ),
                     )
                 )
-                .somJson()
-        )
-    }
-
-    @Test
-    fun `Gitt innsendt søknad har virksomhets liste med selvstendigArbeidsforhold som null, forvent feil`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            //language=json
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "selvstendigArbeidsforhold",
-                  "reason": "selvstendigArbeidsforhold kan ikke være null dersom selvstendigVirksomheter ikke er tom.",
-                  "invalid_value": null
-                }
-              ]
-            }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils
-                .defaultSøknad(UUID.randomUUID().toString())
-                .copy(
-                    fraOgMed = LocalDate.now(),
-                    tilOgMed = LocalDate.now().plusDays(3),
-                    ferieuttakIPerioden = null,
-                    selvstendigVirksomheter = listOf(
-                        Virksomhet(
-                            næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
-                            fiskerErPåBladB = false,
-                            fraOgMed = LocalDate.parse("2021-02-07"),
-                            tilOgMed = LocalDate.parse("2021-02-08"),
-                            næringsinntekt = 1212,
-                            navnPåVirksomheten = "TullOgTøys",
-                            registrertINorge = false,
-                            registrertIUtlandet = Land("DEU", "Tyskeland"),
-                            yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
-                            harFlereAktiveVirksomheter = true
-                        )
-                    ),
-                    selvstendigArbeidsforhold = null
-                )
-                .somJson()
-        )
-    }
-
-    @Test
-    fun `Sende soknad som har skalJobbe lik 'ja', men skalJobbeProsent ulik 100%, skal feile`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
-                  "reason": "skalJobbeProsent er ulik 100%. Dersom skalJobbe = 'ja', så må skalJobbeProsent være 100%",
-                  "invalid_value": [
-                    {
-                      "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "JA",
-                      "organisasjonsnummer": "917755736",
-                      "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 99.0,
-                      "vetIkkeEkstrainfo": null,
-                      "arbeidsform": "FAST",
-                      "erAnsatt": null,
-                      "historisk": null,
-                      "planlagt": null
-                    }
-                  ]
-                }
-              ]
-            }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl,
-                skalJobbe = "ja",
-                skalJobbeProsent = 99.0
-            )
-        )
-    }
-
-    @Test
-    fun `Sende soknad som har skalJobbe lik 'redusert', men skalJobbeProsent ikke ligger mellom 1% - 99,9%, skal feile`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
-                  "reason": "skalJobbeProsent ligger ikke mellom 1% og 99%. Dersom skalJobbe = 'redusert', så må skalJobbeProsent være mellom 1% og 99%",
-                  "invalid_value": [
-                    {
-                      "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "REDUSERT",
-                      "organisasjonsnummer": "917755736",
-                      "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 100.0,
-                      "vetIkkeEkstrainfo": null,
-                      "arbeidsform": "FAST",
-                      "erAnsatt": null,
-                      "historisk": null,
-                      "planlagt": null
-                    }
-                  ]
-                }
-              ]
-            }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl,
-                skalJobbe = "redusert",
-                skalJobbeProsent = 100.0
-            )
-        )
-    }
-
-    @Test
-    fun `Sende soknad som har skalJobbe lik 'nei', men skalJobbeProsent er ulik 0%, skal feile`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
-                  "reason": "skalJobbeProsent er ulik 0%. Dersom skalJobbe = 'nei', så må skalJobbeProsent være 0%",
-                  "invalid_value": [
-                    {
-                      "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "NEI",
-                      "organisasjonsnummer": "917755736",
-                      "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 10.0,
-                      "vetIkkeEkstrainfo": null,
-                      "arbeidsform": "FAST",
-                      "erAnsatt": null,
-                      "historisk": null,
-                      "planlagt": null
-                    }
-                  ]
-                }
-              ]
-            }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl,
-                skalJobbe = "nei",
-                skalJobbeProsent = 10.0
-            )
-        )
-    }
-
-    @Test
-    fun `Sende soknad som har skalJobbe lik 'vet_ikke', men skalJobbeProsent er ulik 0%, skal feile`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].skalJobbeProsent && arbeidsgivere.organisasjoner[0].skalJobbe",
-                  "reason": "skalJobbeProsent er ikke 0%. Dersom skalJobbe = 'vet ikke', så må skalJobbeProsent være 0%",
-                  "invalid_value": [
-                    {
-                      "navn": "Bjeffefirmaet ÆÆÅ",
-                      "skalJobbe": "VET_IKKE",
-                      "organisasjonsnummer": "917755736",
-                      "jobberNormaltTimer": 0.0,
-                      "skalJobbeProsent": 10.0,
-                      "vetIkkeEkstrainfo": null,
-                      "arbeidsform": "FAST",
-                      "erAnsatt": null,
-                      "historisk": null,
-                      "planlagt": null
-                    }
-                  ]
-                }
-              ]
-            }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils.bodyMedJusterbarOrganisasjon(
-                fodselsnummer = gyldigFodselsnummerA,
-                vedleggUrl1 = jpegUrl,
-                skalJobbe = "vetIkke",
-                skalJobbeProsent = 10.0
-            )
+            ).somJson()
         )
     }
 
@@ -1278,16 +830,19 @@ class ApplicationTest {
                     },
                     "fraOgMed": "1990-09-29",
                     "tilOgMed": "1990-09-28",
-                    "arbeidsgivere": {
-                        "organisasjoner": [
-                            {
-                                "organisasjonsnummer": "12",
-                                "navn": "$forlangtNavn",
-                                "skalJobbe": "NEI",
-                                "arbeidsform": "FAST"
-                            }
-                        ]
-                    },
+                    "ansatt" : [
+                      {
+                        "navn" : "$forlangtNavn",
+                        "organisasjonsnummer" : 12345,
+                        "arbeidsforhold" : {
+                            "arbeidsform": "FAST",
+                            "jobberNormaltTimer": 37.5,
+                            "erAktivtArbeidsforhold": true,
+                            "historisk": null,
+                            "planlagt": null
+                        }
+                      }  
+                    ],
                     "vedlegg": [
                         "http://localhost:8080/ikke-vedlegg/123",
                         null
@@ -1298,16 +853,16 @@ class ApplicationTest {
                         "opphold": []
                     },
                     "harForstattRettigheterOgPlikter": false,
-                  "ferieuttakIPerioden": {
-                    "skalTaUtFerieIPeriode": true,
-                    "ferieuttak": [
-                      {
-                        "fraOgMed": "2020-01-05",
-                        "tilOgMed": "2020-01-07"
-                      }
-                    ]
-                  },
-                  "harVærtEllerErVernepliktig" : true
+                    "ferieuttakIPerioden": {
+                        "skalTaUtFerieIPeriode": true,
+                        "ferieuttak": [
+                          {
+                            "fraOgMed": "2020-01-05",
+                            "tilOgMed": "2020-01-07"
+                          }
+                        ]
+                    },
+                    "harVærtEllerErVernepliktig" : true
                 }
                 """.trimIndent(),
             //language=json
@@ -1327,13 +882,13 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].organisasjonsnummer",
+                  "name": "ansatt.arbeidsforholdAnsatt[0].organisasjonsnummer",
                   "reason": "Ikke gyldig organisasjonsnummer.",
-                  "invalid_value": "12"
+                  "invalid_value": "12345"
                 },
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.organisasjoner[0].navn",
+                  "name": "ansatt.arbeidsforholdAnsatt[0].navn",
                   "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
                   "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
                 },
@@ -1431,6 +986,9 @@ class ApplicationTest {
             cookie = cookie,
             requestEntity = SøknadUtils
                 .defaultSøknad(UUID.randomUUID().toString()).copy(
+                    frilans = null,
+                    selvstendigNæringsdrivende = null,
+                    ansatt = null,
                     omsorgstilbudV2 = OmsorgstilbudV2(
                         planlagt = PlanlagtOmsorgstilbud(
                             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
@@ -1523,7 +1081,10 @@ class ApplicationTest {
                         )
                     ),
                     vedlegg = listOf(),
-                    ferieuttakIPerioden = null
+                    ferieuttakIPerioden = null,
+                    frilans = null,
+                    selvstendigNæringsdrivende = null,
+                    ansatt = null,
                 )
                 .somJson()
         )

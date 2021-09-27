@@ -14,7 +14,7 @@ data class KomplettSøknad(
     val tilOgMed: LocalDate,
     val søker: Søker,
     val barn: BarnDetaljer,
-    val arbeidsgivere: ArbeidsgiverDetaljer,
+    val ansatt: List<ArbeidsforholdAnsatt>?,
     val vedlegg: List<Vedlegg> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
@@ -27,8 +27,7 @@ data class KomplettSøknad(
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
     val frilans: Frilans? = null,
-    val selvstendigVirksomheter: List<Virksomhet> = listOf(),
-    val selvstendigArbeidsforhold: Arbeidsforhold? = null,
+    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende? = null,
     val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
     val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.

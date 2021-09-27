@@ -1,5 +1,6 @@
 package no.nav.helse.soknad
 
+import no.nav.helse.PleiepengesoknadMottakGateway
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.soker.Søker
@@ -55,7 +56,7 @@ class SøknadService(
                 navn = søknad.barn.navn
             ),
             vedlegg = vedlegg,
-            arbeidsgivere = søknad.arbeidsgivere,
+            ansatt = søknad.ansatt,
             medlemskap = søknad.medlemskap,
             ferieuttakIPerioden = søknad.ferieuttakIPerioden,
             utenlandsoppholdIPerioden = søknad.utenlandsoppholdIPerioden,
@@ -67,8 +68,7 @@ class SøknadService(
             nattevåk = søknad.nattevåk,
             beredskap = søknad.beredskap,
             frilans = søknad.frilans,
-            selvstendigVirksomheter = søknad.selvstendigVirksomheter,
-            selvstendigArbeidsforhold = søknad.selvstendigArbeidsforhold,
+            selvstendigNæringsdrivende = søknad.selvstendigNæringsdrivende,
             skalBekrefteOmsorg = søknad.skalBekrefteOmsorg,
             skalPassePåBarnetIHelePerioden = søknad.skalPassePåBarnetIHelePerioden,
             beskrivelseOmsorgsrollen = søknad.beskrivelseOmsorgsrollen,
