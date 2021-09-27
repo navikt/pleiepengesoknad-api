@@ -1,6 +1,5 @@
 package no.nav.helse.soknad
 
-import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.helse.barn.Barn
 import java.net.URL
@@ -169,10 +168,3 @@ data class Arbeidsforhold(
     val historisk: ArbeidIPeriode? = null,
     val planlagt: ArbeidIPeriode? = null
 )
-
-enum class SkalJobbe {
-    @JsonAlias("ja") JA,
-    @JsonAlias("nei") NEI,
-    @JsonAlias("redusert") REDUSERT,
-    @JsonAlias("vetIkke") VET_IKKE
-}
