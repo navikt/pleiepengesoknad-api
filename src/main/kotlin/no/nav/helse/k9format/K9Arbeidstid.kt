@@ -18,7 +18,7 @@ val NULL_ARBEIDSTIMER = Duration.ZERO
 internal fun Søknad.byggK9Arbeidstid(dagensDato: LocalDate): Arbeidstid = Arbeidstid().apply {
     val periode = Periode(fraOgMed, tilOgMed)
 
-    ansatt?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode, dagensDato)) }
+    arbeidsgivere?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode, dagensDato)) }
 
     frilans?.arbeidsforhold?.let { medFrilanserArbeidstid(it.tilK9ArbeidstidInfo(periode, dagensDato)) }
 
@@ -44,9 +44,9 @@ fun Arbeidsforhold.tilK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: Loc
     val arbeidstidInfo = ArbeidstidInfo().medPerioder(null)
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
 
-    historisk?.let { it.beregnHistoriskK9ArbeidstidInfo(normalTimerPerDag, søknadsperiode, arbeidstidInfo, dagensDato) }
+    historiskArbeid?.let { it.beregnHistoriskK9ArbeidstidInfo(normalTimerPerDag, søknadsperiode, arbeidstidInfo, dagensDato) }
 
-    planlagt?.let { it.beregnPlanlagtK9ArbeidstidInfo(normalTimerPerDag, søknadsperiode, arbeidstidInfo, dagensDato) }
+    planlagtArbeid?.let { it.beregnPlanlagtK9ArbeidstidInfo(normalTimerPerDag, søknadsperiode, arbeidstidInfo, dagensDato) }
 
     return arbeidstidInfo
 }

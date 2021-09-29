@@ -49,16 +49,17 @@ internal class SerDesTest {
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen"
             ),
-            ansatt = listOf(
+            arbeidsgivere = listOf(
                 ArbeidsforholdAnsatt(
                     navn = "Org",
                     organisasjonsnummer = "917755736",
+                    erAnsatt = true,
                     arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 30.0,
                         erAktivtArbeidsforhold = true,
-                        historisk = null,
-                        planlagt = null
+                        historiskArbeid = null,
+                        planlagtArbeid = null
                     )
                 )
             ),
@@ -97,11 +98,10 @@ internal class SerDesTest {
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     erAktivtArbeidsforhold = true,
-                    historisk = null,
-                    planlagt = null
+                    historiskArbeid = null,
+                    planlagtArbeid = null
                 )
             ),
-            skalPassePåBarnetIHelePerioden = true,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -115,21 +115,20 @@ internal class SerDesTest {
                 utenlandsoppholdSiste12Mnd = listOf(
                     Bosted(
                         fraOgMed = LocalDate.parse("2017-01-01"),
-                        tilOgMed =  LocalDate.parse("2017-01-10"),
+                        tilOgMed = LocalDate.parse("2017-01-10"),
                         landnavn = "Tyskland",
                         landkode = "DEU"
-                    ))
+                    )
+                )
             ),
             harMedsøker = true,
             beredskap = Beredskap(
                 beredskap = true,
                 tilleggsinformasjon = "Ikke beredskap"
             ),
-            beskrivelseOmsorgsrollen = "En kort beskrivelse",
             samtidigHjemme = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
-            skalBekrefteOmsorg = true,
             utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
                 Utenlandsopphold(
                     fraOgMed = LocalDate.parse("2019-10-10"),
@@ -627,16 +626,17 @@ internal class SerDesTest {
                 etternavn = "Nordmann",
                 fornavn = "Ola"
             ),
-            ansatt = listOf(
+            arbeidsgivere = listOf(
                 ArbeidsforholdAnsatt(
                     navn = "Org",
                     organisasjonsnummer = "917755736",
+                    erAnsatt = true,
                     arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 30.0,
                         erAktivtArbeidsforhold = true,
-                        historisk = null,
-                        planlagt = null
+                        historiskArbeid = null,
+                        planlagtArbeid = null
                     )
                 )
             ),
@@ -682,11 +682,10 @@ internal class SerDesTest {
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     erAktivtArbeidsforhold = true,
-                    historisk = null,
-                    planlagt = null
+                    historiskArbeid = null,
+                    planlagtArbeid = null
                 )
             ),
-            skalPassePåBarnetIHelePerioden = true,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -712,11 +711,9 @@ internal class SerDesTest {
                 beredskap = true,
                 tilleggsinformasjon = "Ikke beredskap"
             ),
-            beskrivelseOmsorgsrollen = "En kort beskrivelse",
             samtidigHjemme = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
-            skalBekrefteOmsorg = true,
             utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(
                 skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
                     Utenlandsopphold(
@@ -790,8 +787,8 @@ internal class SerDesTest {
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     erAktivtArbeidsforhold = true,
-                    historisk = null,
-                    planlagt = null
+                    historiskArbeid = null,
+                    planlagtArbeid = null
                 )
             ),
             harVærtEllerErVernepliktig = true,

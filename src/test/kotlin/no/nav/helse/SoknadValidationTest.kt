@@ -91,16 +91,17 @@ class SoknadValidationTest {
             fødselsdato = LocalDate.now(),
             navn = null
         ),
-        ansatt = listOf(
+        arbeidsgivere = listOf(
             ArbeidsforholdAnsatt(
                 navn = "Org",
                 organisasjonsnummer = "917755736",
+                erAnsatt = true,
                 arbeidsforhold = Arbeidsforhold(
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     erAktivtArbeidsforhold = null,
-                    historisk = null,
-                    planlagt = null
+                    historiskArbeid = null,
+                    planlagtArbeid = null
                 )
             )
         ),

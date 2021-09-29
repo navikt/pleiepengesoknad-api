@@ -13,7 +13,7 @@ data class Søknad(
     val søknadId: String = UUID.randomUUID().toString(),
     val språk: Språk? = null,
     val barn: BarnDetaljer,
-    val ansatt: List<ArbeidsforholdAnsatt>? = null,
+    val arbeidsgivere: List<ArbeidsforholdAnsatt>? = null,
     val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
@@ -26,14 +26,11 @@ data class Søknad(
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val omsorgstilbudV2: OmsorgstilbudV2? = null,
+    val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
     val selvstendigNæringsdrivende: SelvstendigNæringsdrivende? = null,
-    val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
     val harVærtEllerErVernepliktig: Boolean? = null
@@ -165,6 +162,6 @@ data class Arbeidsforhold( // TODO: 28/09/2021 - Burde lage validering felles fo
     val arbeidsform: Arbeidsform,
     val jobberNormaltTimer: Double,
     val erAktivtArbeidsforhold: Boolean? = null,
-    val historisk: ArbeidIPeriode? = null,
-    val planlagt: ArbeidIPeriode? = null
+    val historiskArbeid: ArbeidIPeriode? = null,
+    val planlagtArbeid: ArbeidIPeriode? = null
 )

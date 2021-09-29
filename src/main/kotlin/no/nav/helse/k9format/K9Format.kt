@@ -48,7 +48,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, dagensDato: Loca
     nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
 
     when {
-        omsorgstilbudV2 != null -> psb.medTilsynsordning(omsorgstilbudV2.tilK9Tilsynsordning(søknadsperiode, dagensDato))
+        omsorgstilbud != null -> psb.medTilsynsordning(omsorgstilbud.tilK9Tilsynsordning(søknadsperiode, dagensDato))
         else -> psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
     }
 
@@ -115,7 +115,7 @@ fun tilK9Tilsynsordning0Timer(periode: Periode) = K9Tilsynsordning().apply {
     )
 }
 
-fun OmsorgstilbudV2.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = LocalDate.now()): K9Tilsynsordning = K9Tilsynsordning().apply {
+fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = LocalDate.now()): K9Tilsynsordning = K9Tilsynsordning().apply {
 
     if (historisk == null && planlagt == null) return tilK9Tilsynsordning0Timer(periode)
 

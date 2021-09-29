@@ -34,23 +34,26 @@ class SøknadUtils {
             ),
             barnRelasjon = BarnRelasjon.ANNET,
             barnRelasjonBeskrivelse = "Gudfar til barnet",
-            ansatt = listOf(
+            arbeidsgivere = listOf(
                 ArbeidsforholdAnsatt(
                     navn = "Org",
                     organisasjonsnummer = "917755736",
+                    erAnsatt = true,
                     arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 40.0,
                         erAktivtArbeidsforhold = null,
-                        historisk = ArbeidIPeriode(
+                        historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             jobberSomVanlig = true,
+                            erLiktHverUke = true,
                             enkeltdager = null,
                             fasteDager = null
                         ),
-                        planlagt = ArbeidIPeriode(
+                        planlagtArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             jobberSomVanlig = true,
+                            erLiktHverUke = true,
                             enkeltdager = null,
                             fasteDager = null
                         )
@@ -92,22 +95,23 @@ class SøknadUtils {
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     erAktivtArbeidsforhold = true,
-                    historisk = ArbeidIPeriode(
+                    historiskArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         jobberSomVanlig = true,
+                        erLiktHverUke = true,
                         enkeltdager = null,
                         fasteDager = null
                     ),
-                    planlagt = ArbeidIPeriode(
+                    planlagtArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         jobberSomVanlig = true,
+                        erLiktHverUke = true,
                         enkeltdager = null,
                         fasteDager = null
                     )
                 )
             ),
-            skalPassePåBarnetIHelePerioden = true,
-            omsorgstilbudV2 = OmsorgstilbudV2(
+            omsorgstilbud = Omsorgstilbud(
                 planlagt = PlanlagtOmsorgstilbud(
                     ukedager = PlanUkedager(
                         mandag = Duration.ofHours(1),
@@ -144,11 +148,9 @@ class SøknadUtils {
                 beredskap = true,
                 tilleggsinformasjon = "Ikke beredskap"
             ),
-            beskrivelseOmsorgsrollen = "En kort beskrivelse",
             samtidigHjemme = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
-            skalBekrefteOmsorg = true,
             utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(
                 skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
                     Utenlandsopphold(
@@ -222,15 +224,17 @@ class SøknadUtils {
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     erAktivtArbeidsforhold = null,
-                    historisk = ArbeidIPeriode(
+                    historiskArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         jobberSomVanlig = true,
+                        erLiktHverUke = true,
                         enkeltdager = null,
                         fasteDager = null
                     ),
-                    planlagt = ArbeidIPeriode(
+                    planlagtArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         jobberSomVanlig = true,
+                        erLiktHverUke = true,
                         enkeltdager = null,
                         fasteDager = null
                     )

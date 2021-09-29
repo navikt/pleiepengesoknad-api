@@ -547,7 +547,7 @@ class ApplicationTest {
             cookie = cookie,
             requestEntity = SøknadUtils.defaultSøknad().copy(
                 selvstendigNæringsdrivende = null,
-                omsorgstilbudV2 = null,
+                omsorgstilbud = null,
                 vedlegg = listOf(URL(jpegUrl)),
                 barn = BarnDetaljer(
                     fødselsdato = LocalDate.parse("2018-01-01"),
@@ -571,7 +571,7 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
             requestEntity = SøknadUtils.defaultSøknad().copy(
-                omsorgstilbudV2 = null,
+                omsorgstilbud = null,
                 ferieuttakIPerioden = null,
                 fraOgMed = LocalDate.now().minusDays(3),
                 tilOgMed = LocalDate.now().plusDays(4),
@@ -597,15 +597,17 @@ class ApplicationTest {
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 37.5,
                         erAktivtArbeidsforhold = true,
-                        historisk = ArbeidIPeriode(
+                        historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             jobberSomVanlig = true,
+                            erLiktHverUke = false,
                             enkeltdager = null,
                             fasteDager = null
                         ),
-                        planlagt = ArbeidIPeriode(
+                        planlagtArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             jobberSomVanlig = true,
+                            erLiktHverUke = false,
                             enkeltdager = null,
                             fasteDager = null
                         )
@@ -674,15 +676,17 @@ class ApplicationTest {
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 40.0,
                         erAktivtArbeidsforhold = null,
-                        historisk = ArbeidIPeriode(
+                        historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.NEI,
                             jobberSomVanlig = null,
+                            erLiktHverUke = false,
                             enkeltdager = listOf(),
                             fasteDager = null
                         ),
-                        planlagt = ArbeidIPeriode(
+                        planlagtArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.NEI,
                             jobberSomVanlig = null,
+                            erLiktHverUke = false,
                             enkeltdager = listOf(),
                             fasteDager = null
                         ),
@@ -731,11 +735,6 @@ class ApplicationTest {
                     "aktørId": null,
                     "fodselsdato": null
                   },
-                  "arbeidsgivere": {
-                    "organisasjoner": [
-                      
-                    ]
-                  },
                   "medlemskap": {
                     "harBoddIUtlandetSiste12Mnd": false,
                     "skalBoIUtlandetNeste12Mnd": false,
@@ -754,7 +753,7 @@ class ApplicationTest {
                   "harMedsøker": false,
                   "harBekreftetOpplysninger": true,
                   "harForståttRettigheterOgPlikter": true,
-                "utenlandsoppholdIPerioden" : 
+                  "utenlandsoppholdIPerioden" : 
                     {
                       "skalOppholdeSegIUtlandetIPerioden": true,
                       "opphold": [
@@ -840,7 +839,7 @@ class ApplicationTest {
                     },
                     "fraOgMed": "1990-09-29",
                     "tilOgMed": "1990-09-28",
-                    "ansatt" : [
+                    "arbeidsgivere" : [
                       {
                         "navn" : "$forlangtNavn",
                         "organisasjonsnummer" : 12345,
@@ -892,13 +891,13 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "ansatt.arbeidsforholdAnsatt[0].organisasjonsnummer",
+                  "name": "arbeidsgivere.arbeidsforholdAnsatt[0].organisasjonsnummer",
                   "reason": "Ikke gyldig organisasjonsnummer.",
                   "invalid_value": "12345"
                 },
                 {
                   "type": "entity",
-                  "name": "ansatt.arbeidsforholdAnsatt[0].navn",
+                  "name": "arbeidsgivere.arbeidsforholdAnsatt[0].navn",
                   "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
                   "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
                 },
@@ -998,8 +997,8 @@ class ApplicationTest {
                 .defaultSøknad(UUID.randomUUID().toString()).copy(
                     frilans = null,
                     selvstendigNæringsdrivende = null,
-                    ansatt = null,
-                    omsorgstilbudV2 = OmsorgstilbudV2(
+                    arbeidsgivere = null,
+                    omsorgstilbud = Omsorgstilbud(
                         planlagt = PlanlagtOmsorgstilbud(
                             vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
                         )
@@ -1041,7 +1040,7 @@ class ApplicationTest {
                     fraOgMed = LocalDate.now().minusDays(5),
                     tilOgMed = LocalDate.now().plusDays(4),
                     ferieuttakIPerioden = null,
-                    omsorgstilbudV2 = OmsorgstilbudV2(
+                    omsorgstilbud = Omsorgstilbud(
                         planlagt = PlanlagtOmsorgstilbud(
                             vetOmsorgstilbud = VetOmsorgstilbud.VET_IKKE,
                             ukedager = PlanUkedager(mandag = Duration.ofHours(7))
@@ -1083,7 +1082,7 @@ class ApplicationTest {
                 .defaultSøknad(UUID.randomUUID().toString()).copy(
                     fraOgMed = LocalDate.now(),
                     tilOgMed = LocalDate.now().plusDays(1),
-                    omsorgstilbudV2 = OmsorgstilbudV2(
+                    omsorgstilbud = Omsorgstilbud(
                         historisk = HistoriskOmsorgstilbud(
                             enkeltdager = listOf(
                                 Enkeltdag(dato = LocalDate.now(), tid = Duration.ofHours(7))
@@ -1094,7 +1093,7 @@ class ApplicationTest {
                     ferieuttakIPerioden = null,
                     frilans = null,
                     selvstendigNæringsdrivende = null,
-                    ansatt = null,
+                    arbeidsgivere = null,
                 )
                 .somJson()
         )

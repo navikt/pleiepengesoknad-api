@@ -33,7 +33,7 @@ class K9FormatTest {
                     )
                 )
             ),
-            omsorgstilbudV2 = OmsorgstilbudV2(
+            omsorgstilbud = Omsorgstilbud(
                 historisk = null,
                 planlagt = PlanlagtOmsorgstilbud(
                     vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER,
@@ -227,7 +227,7 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
-        val k9Tilsynsordning = OmsorgstilbudV2(
+        val k9Tilsynsordning = Omsorgstilbud(
             planlagt = PlanlagtOmsorgstilbud(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
@@ -271,7 +271,7 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
-        val k9Tilsynsordning = OmsorgstilbudV2(
+        val k9Tilsynsordning = Omsorgstilbud(
             planlagt = PlanlagtOmsorgstilbud(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
@@ -312,7 +312,7 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
-        val k9Tilsynsordning = OmsorgstilbudV2(
+        val k9Tilsynsordning = Omsorgstilbud(
             planlagt = PlanlagtOmsorgstilbud(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
@@ -375,7 +375,7 @@ class K9FormatTest {
 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
-        val k9Tilsynsordning = OmsorgstilbudV2(
+        val k9Tilsynsordning = Omsorgstilbud(
             planlagt = PlanlagtOmsorgstilbud(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(10),
@@ -419,7 +419,7 @@ class K9FormatTest {
 
     @Test
     fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager, forvent riktig mapping`() {
-        val tilsynsordning = OmsorgstilbudV2(
+        val tilsynsordning = Omsorgstilbud(
             historisk = HistoriskOmsorgstilbud(
                 enkeltdager = listOf(Enkeltdag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
             ),
@@ -440,7 +440,7 @@ class K9FormatTest {
 
     @Test
     fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager der historisk har dato lik eller etter dagens dato, forvent at den blir eksludert`() {
-        val tilsynsordning = OmsorgstilbudV2(
+        val tilsynsordning = Omsorgstilbud(
             historisk = HistoriskOmsorgstilbud(
                 enkeltdager = listOf(
                     Enkeltdag(LocalDate.parse("2021-09-01"), Duration.ofHours(7)),

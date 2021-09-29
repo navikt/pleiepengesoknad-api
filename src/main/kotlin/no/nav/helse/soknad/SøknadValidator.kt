@@ -97,9 +97,9 @@ class FraOgMedTilOgMedValidator {
 internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations = barn.validate()
 
-    ansatt?.let { violations.addAll(ansatt.validate()) }
+    arbeidsgivere?.let { violations.addAll(arbeidsgivere.validate()) }
     selvstendigNæringsdrivende?.let { violations.addAll(selvstendigNæringsdrivende.virksomhet.validate()) }
-    omsorgstilbudV2?.apply { violations.addAll(this.validate()) }
+    omsorgstilbud?.apply { violations.addAll(this.validate()) }
 
     violations.addAll(validerBarnRelasjon())
 
@@ -344,7 +344,7 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
     return violations
 }
 
-fun OmsorgstilbudV2.validate() = mutableSetOf<Violation>().apply {
+fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
 
     if (historisk != null && historisk.enkeltdager.isNotEmpty()) {
         if (historisk.enkeltdager.any() { it.dato.erLikEllerEtterDagensDato() }) {

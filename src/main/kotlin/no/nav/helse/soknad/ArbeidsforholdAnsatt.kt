@@ -8,12 +8,14 @@ import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
 data class ArbeidsforholdAnsatt(
     val navn: String? = null,
     val organisasjonsnummer: String,
+    val erAnsatt: Boolean,
     val arbeidsforhold: Arbeidsforhold
 )
 
 data class ArbeidIPeriode(
     val jobberIPerioden: JobberIPeriodeSvar,
     val jobberSomVanlig: Boolean? = null,
+    val erLiktHverUke: Boolean,
     val enkeltdager: List<Enkeltdag>? = null,
     val fasteDager: PlanUkedager? = null
 )
@@ -37,7 +39,7 @@ internal fun List<ArbeidsforholdAnsatt>.validate(): MutableSet<Violation> {
         if (!arbeidsforholdAnsatt.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
             violations.add(
                 Violation(
-                    parameterName = "ansatt.arbeidsforholdAnsatt[$index].organisasjonsnummer",
+                    parameterName = "arbeidsgivere.arbeidsforholdAnsatt[$index].organisasjonsnummer",
                     parameterType = ParameterType.ENTITY,
                     reason = "Ikke gyldig organisasjonsnummer.",
                     invalidValue = arbeidsforholdAnsatt.organisasjonsnummer
@@ -48,7 +50,7 @@ internal fun List<ArbeidsforholdAnsatt>.validate(): MutableSet<Violation> {
         if (arbeidsforholdAnsatt.navn != null && arbeidsforholdAnsatt.navn.erBlankEllerLengreEnn(100)) {
             violations.add(
                 Violation(
-                    parameterName = "ansatt.arbeidsforholdAnsatt[$index].navn",
+                    parameterName = "arbeidsgivere.arbeidsforholdAnsatt[$index].navn",
                     parameterType = ParameterType.ENTITY,
                     reason = "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
                     invalidValue = arbeidsforholdAnsatt.navn
