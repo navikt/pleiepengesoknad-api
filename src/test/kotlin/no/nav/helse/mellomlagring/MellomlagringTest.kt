@@ -9,7 +9,11 @@ import org.awaitility.Durations.ONE_SECOND
 import org.junit.AfterClass
 import org.slf4j.LoggerFactory
 import java.util.*
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @KtorExperimentalAPI
 class MellomlagringTest {
@@ -33,7 +37,8 @@ class MellomlagringTest {
 
         val mellomlagringService = MellomlagringService(
             redisStore,
-            "VerySecretPass"
+            "VerySecretPass",
+            "1"
         )
 
         @AfterClass

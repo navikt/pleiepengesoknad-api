@@ -5,9 +5,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 
-class MellomlagringService constructor(
+class MellomlagringService(
     private val redisStore: RedisStore,
-    private val passphrase: String
+    private val passphrase: String,
+    private val søknadMellomlagretTidTimer: String
 ) {
     private companion object {
         private val log: Logger = LoggerFactory.getLogger(MellomlagringService::class.java)
@@ -27,7 +28,7 @@ class MellomlagringService constructor(
         fnr: String,
         midlertidigSøknad: String,
         expirationDate: Date = Calendar.getInstance().let {
-            it.add(Calendar.HOUR, 24)
+            it.add(Calendar.HOUR, søknadMellomlagretTidTimer.toInt())
             it.time
         }
     ) {

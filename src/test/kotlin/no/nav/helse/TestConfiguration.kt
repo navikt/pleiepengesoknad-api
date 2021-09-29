@@ -52,6 +52,8 @@ object TestConfiguration {
         map["nav.redis.port"] = "${redisServer.bindPort}"
         map["nav.storage.passphrase"] = "verySecret"
 
+        map["nav.mellomlagring.tid_timer"] = "1"
+
         return map.toMap()
     }
 }
