@@ -16,6 +16,7 @@ import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
+import no.nav.helse.somJson
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
@@ -52,6 +53,9 @@ fun Route.soknadApis(
 
         logger.info("Mapper om søknad til k9format.")
         val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
+
+        // TODO: 29/09/2021 OBS MÅ FJERNES FØR PRODSETTING
+        logger.info("SKAL IKKE VISES I PROD: K9Format: ${k9FormatSøknad.somJson()}")
 
         logger.info("Validerer søknad")
         søknad.validate(k9FormatSøknad)
