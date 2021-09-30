@@ -4,6 +4,7 @@ import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.helse.soknad.validering.valider
 import no.nav.helse.utils.erLikEllerEtterDagensDato
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
@@ -98,7 +99,14 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations = barn.validate()
 
     arbeidsgivere?.let { violations.addAll(arbeidsgivere.validate()) }
-    selvstendigNæringsdrivende?.let { violations.addAll(selvstendigNæringsdrivende.virksomhet.validate()) }
+
+    selvstendigNæringsdrivende?.let {
+        violations.addAll(selvstendigNæringsdrivende.virksomhet.validate())
+        if(it.arbeidsforhold != null) violations.addAll(it.arbeidsforhold.valider("selvstendigNæringsdrivende"))
+    }
+
+    frilans?.let { violations.addAll(it.valider()) }
+
     omsorgstilbud?.apply { violations.addAll(this.validate()) }
 
     violations.addAll(validerBarnRelasjon())

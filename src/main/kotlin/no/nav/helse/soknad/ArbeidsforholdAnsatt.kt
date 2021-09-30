@@ -3,6 +3,7 @@ package no.nav.helse.soknad
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
+import no.nav.helse.soknad.validering.valider
 
 
 data class ArbeidsforholdAnsatt(
@@ -36,6 +37,8 @@ internal fun List<ArbeidsforholdAnsatt>.validate(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     this.mapIndexed { index, arbeidsforholdAnsatt ->
+        violations.addAll(arbeidsforholdAnsatt.arbeidsforhold.valider("arbeidsgiver[$index]"))
+
         if (!arbeidsforholdAnsatt.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
             violations.add(
                 Violation(

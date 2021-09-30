@@ -677,17 +677,17 @@ class ApplicationTest {
                         jobberNormaltTimer = 40.0,
                         erAktivtArbeidsforhold = null,
                         historiskArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.NEI,
-                            jobberSomVanlig = null,
+                            jobberIPerioden = JobberIPeriodeSvar.JA,
+                            jobberSomVanlig = true,
                             erLiktHverUke = false,
-                            enkeltdager = listOf(),
+                            enkeltdager = null,
                             fasteDager = null
                         ),
                         planlagtArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.NEI,
                             jobberSomVanlig = null,
                             erLiktHverUke = false,
-                            enkeltdager = listOf(),
+                            enkeltdager = null,
                             fasteDager = null
                         ),
                     )
