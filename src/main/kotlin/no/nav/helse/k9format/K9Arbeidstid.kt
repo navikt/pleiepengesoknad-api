@@ -102,10 +102,20 @@ fun ArbeidIPeriode.beregnHistoriskK9ArbeidstidInfo(
             //Jobber som vanlig. Altså 100% i hele historisk periode.
             true -> arbeidstidInfo.leggTilPeriode(fraOgMedHistorisk, tilOgMedHistorisk, normalTimerPerDag, normalTimerPerDag)
 
-            //Jobber redusert -> Enkeltdager skal være satt. Hull fylles med 0 timer.
-            false -> fraOgMedHistorisk.ukedagerTilOgMed(tilOgMedHistorisk).forEach { dato ->
-                val faktiskTimerPerDag = enkeltdager?.find { it.dato == dato }?.tid ?: NULL_ARBEIDSTIMER
-                arbeidstidInfo.leggTilPeriode(dato, dato, normalTimerPerDag, faktiskTimerPerDag)
+            //Jobber redusert -> Enkeltdager eller fasteDager skal være satt. Hull fylles med 0 timer.
+            false -> {
+                fasteDager?.let {
+                    fasteDager.tilArbeidtidPeriodePlanHistorisk(søknadsperiode, dagensDato, normalTimerPerDag).forEach {
+                        arbeidstidInfo.leggeTilPeriode(it.first, it.second)
+                    }
+                }
+
+                enkeltdager?.let{
+                    fraOgMedHistorisk.ukedagerTilOgMed(tilOgMedHistorisk).forEach { dato ->
+                        val faktiskTimerPerDag = enkeltdager?.find { it.dato == dato }?.tid ?: NULL_ARBEIDSTIMER
+                        arbeidstidInfo.leggTilPeriode(dato, dato, normalTimerPerDag, faktiskTimerPerDag)
+                    }
+                }
             }
         }
         //Jobber ikke. Altså 0 timer arbeid i hele perioden.
@@ -136,6 +146,37 @@ fun PlanUkedager.tilArbeidtidPeriodePlan(
 
     val perioder: List<Pair<Periode, ArbeidstidPeriodeInfo>> =
         periodeStart.ukedagerTilOgMed(periode.tilOgMed).mapNotNull { dato ->
+            val faktiskArbeidstimer = when (dato.dayOfWeek) {
+                DayOfWeek.MONDAY -> this.mandag ?: NULL_ARBEIDSTIMER
+                DayOfWeek.TUESDAY -> this.tirsdag ?: NULL_ARBEIDSTIMER
+                DayOfWeek.WEDNESDAY -> this.onsdag ?: NULL_ARBEIDSTIMER
+                DayOfWeek.THURSDAY -> this.torsdag ?: NULL_ARBEIDSTIMER
+                DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
+                else -> null
+            }
+            Pair(
+                Periode(dato, dato),
+                ArbeidstidPeriodeInfo()
+                    .medJobberNormaltTimerPerDag(normalTimerPerDag)
+                    .medFaktiskArbeidTimerPerDag(faktiskArbeidstimer)
+            )
+        }
+
+    return perioder
+}
+
+fun PlanUkedager.tilArbeidtidPeriodePlanHistorisk(
+    periode: Periode,
+    dagensDato: LocalDate = LocalDate.now(),
+    normalTimerPerDag: Duration
+): List<Pair<Periode, ArbeidstidPeriodeInfo>> {
+    val gårdagensDato = dagensDato.minusDays(1)
+    val periodeStart = periode.fraOgMed
+
+    val periodeSlutt = if(gårdagensDato.isBefore(periode.tilOgMed)) gårdagensDato else periode.tilOgMed
+
+    val perioder: List<Pair<Periode, ArbeidstidPeriodeInfo>> =
+        periodeStart.ukedagerTilOgMed(periodeSlutt).mapNotNull { dato ->
             val faktiskArbeidstimer = when (dato.dayOfWeek) {
                 DayOfWeek.MONDAY -> this.mandag ?: NULL_ARBEIDSTIMER
                 DayOfWeek.TUESDAY -> this.tirsdag ?: NULL_ARBEIDSTIMER
