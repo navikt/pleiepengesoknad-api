@@ -62,7 +62,6 @@ internal fun List<ArbeidsforholdAnsatt>.validate(): MutableSet<Violation> {
         }
     }
 
-    // TODO: 27/09/2021 - Sjekk hva mer som må valideres
     return violations
 }
 

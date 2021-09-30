@@ -158,7 +158,7 @@ enum class Årsak {
     ANNET,
 }
 
-data class Arbeidsforhold( // TODO: 28/09/2021 - Burde lage validering felles for arbeidsforhold.
+data class Arbeidsforhold(
     val arbeidsform: Arbeidsform,
     val jobberNormaltTimer: Double,
     val erAktivtArbeidsforhold: Boolean? = null,
