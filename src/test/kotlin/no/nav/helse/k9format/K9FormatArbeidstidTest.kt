@@ -563,7 +563,7 @@ class K9FormatArbeidstidTest {
                 enkeltdager = null,
                 fasteDager = null
             )
-        ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-01"), LocalDate.parse("2021-01-10")), LocalDate.parse("2021-01-05")).somJson()
+        ).beregnK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-01"), LocalDate.parse("2021-01-10")), LocalDate.parse("2021-01-05")).somJson()
 
         //language=json
         val forventetJson = """
@@ -604,7 +604,7 @@ class K9FormatArbeidstidTest {
                 enkeltdager = null,
                 fasteDager = null
             )
-        ).tilK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-01"), LocalDate.parse("2021-01-10")), LocalDate.parse("2021-01-05")).somJson()
+        ).beregnK9ArbeidstidInfo(Periode(LocalDate.parse("2021-01-01"), LocalDate.parse("2021-01-10")), LocalDate.parse("2021-01-05")).somJson()
 
         //language=json
         val forventetJson = """

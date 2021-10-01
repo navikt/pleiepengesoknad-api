@@ -20,10 +20,10 @@ internal fun Søknad.byggK9Arbeidstid(dagensDato: LocalDate): Arbeidstid = Arbei
 
     arbeidsgivere?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode, dagensDato)) }
 
-    frilans?.arbeidsforhold?.let { medFrilanserArbeidstid(it.tilK9ArbeidstidInfo(periode, dagensDato)) }
+    frilans?.arbeidsforhold?.let { medFrilanserArbeidstid(it.beregnK9ArbeidstidInfo(periode, dagensDato)) }
 
     selvstendigNæringsdrivende?.arbeidsforhold?.let {
-        medSelvstendigNæringsdrivendeArbeidstidInfo(it.tilK9ArbeidstidInfo(periode, dagensDato))
+        medSelvstendigNæringsdrivendeArbeidstidInfo(it.beregnK9ArbeidstidInfo(periode, dagensDato))
     }
 }
 
@@ -35,92 +35,84 @@ fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
         Arbeidstaker(
             null, //K9 format vil ikke ha både fnr og org nummer
             Organisasjonsnummer.of(it.organisasjonsnummer),
-            it.arbeidsforhold.tilK9ArbeidstidInfo(periode, dagensDato)
+            it.arbeidsforhold.beregnK9ArbeidstidInfo(periode, dagensDato)
         )
     }
 }
 
-fun Arbeidsforhold.tilK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate): ArbeidstidInfo {
+fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate): ArbeidstidInfo {
     val arbeidstidInfo = ArbeidstidInfo().medPerioder(null)
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
+    val gårsdagensDato = dagensDato.minusDays(1)
 
-    historiskArbeid?.let { it.beregnHistoriskK9ArbeidstidInfo(normalTimerPerDag, søknadsperiode, arbeidstidInfo, dagensDato) }
+    historiskArbeid?.let {
+        val fraOgMedHistorisk = søknadsperiode.fraOgMed
+        val tilOgMedHistorisk = if (søknadsperiode.tilOgMed.isBefore(gårsdagensDato)) søknadsperiode.tilOgMed else gårsdagensDato
+        val fasteDagerFraOgMed = søknadsperiode.fraOgMed
+        val fasteDagerTilOgMed = if(gårsdagensDato.isBefore(søknadsperiode.tilOgMed)) gårsdagensDato else søknadsperiode.tilOgMed
 
-    planlagtArbeid?.let { it.beregnPlanlagtK9ArbeidstidInfo(normalTimerPerDag, søknadsperiode, arbeidstidInfo, dagensDato) }
+        it.beregnK9ArbeidstidInfo(
+            fraOgMed = fraOgMedHistorisk,
+            tilOgMed = tilOgMedHistorisk,
+            fasteDagerFraOgMed = fasteDagerFraOgMed,
+            fasteDagerTilOgMed = fasteDagerTilOgMed,
+            arbeidstidInfo = arbeidstidInfo,
+            normalTimerPerDag = normalTimerPerDag
+        )
+    }
 
+    planlagtArbeid?.let {
+        val fraOgMedPlanlagt = if (søknadsperiode.fraOgMed.isAfter(dagensDato)) søknadsperiode.fraOgMed else dagensDato
+        val tilOgMedPlanlagt = søknadsperiode.tilOgMed
+        val fasteDagerFraOgMed = if (dagensDato.isBefore(søknadsperiode.fraOgMed)) søknadsperiode.fraOgMed else dagensDato
+        val fasteDagerTilOgMed = søknadsperiode.tilOgMed
+        it.beregnK9ArbeidstidInfo(
+            fraOgMed = fraOgMedPlanlagt,
+            tilOgMed = tilOgMedPlanlagt,
+            fasteDagerFraOgMed = fasteDagerFraOgMed,
+            fasteDagerTilOgMed = fasteDagerTilOgMed,
+            arbeidstidInfo = arbeidstidInfo,
+            normalTimerPerDag = normalTimerPerDag
+        )
+    }
     return arbeidstidInfo
 }
 
-fun ArbeidIPeriode.beregnPlanlagtK9ArbeidstidInfo(
-    normalTimerPerDag: Duration,
-    søknadsperiode: Periode,
+fun ArbeidIPeriode.beregnK9ArbeidstidInfo(
+    fraOgMed: LocalDate,
+    tilOgMed: LocalDate,
+    fasteDagerFraOgMed: LocalDate,
+    fasteDagerTilOgMed: LocalDate,
     arbeidstidInfo: ArbeidstidInfo,
-    dagensDato: LocalDate
+    normalTimerPerDag: Duration
 ) {
-    val fraOgMedPlanlagt = if (søknadsperiode.fraOgMed.isAfter(dagensDato)) søknadsperiode.fraOgMed else dagensDato
-    val tilOgMedPlanlagt = søknadsperiode.tilOgMed
 
     when(jobberIPerioden) {
         JA -> when(jobberSomVanlig){
-            //Jobber som vanlig. Jobber altså 100% i hele historisk periode.
-            true -> arbeidstidInfo.leggTilPeriode(fraOgMedPlanlagt, tilOgMedPlanlagt, normalTimerPerDag, normalTimerPerDag)
+            //Jobber som vanlig. Jobber altså 100% i hele periodem.
+            true -> arbeidstidInfo.leggTilPeriode(fraOgMed, tilOgMed, normalTimerPerDag, normalTimerPerDag)
 
-            //Jobber redusert. Da skal enkeltdager eller fasteDager være sendt inn. Hull fylles med 0 timer.
+            //Jobber ikke som vanlig. Da skal enkeltdager eller fasteDager være sendt inn. Hull fylles med 0 timer.
             false -> {
                 enkeltdager?.let {
-                    fraOgMedPlanlagt.ukedagerTilOgMed(tilOgMedPlanlagt).forEach { dato ->
+                    fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { dato ->
                         val faktiskTimerPerDag = enkeltdager.find { it.dato == dato }?.tid ?: NULL_ARBEIDSTIMER
                         arbeidstidInfo.leggTilPeriode(dato, dato, normalTimerPerDag, faktiskTimerPerDag)
                     }
                 }
 
                 fasteDager?.let {
-                    fasteDager.tilArbeidtidPeriodePlan(søknadsperiode, dagensDato, normalTimerPerDag).forEach {
+                    fasteDager.tilK9ArbeidstidPeriodePlan(fasteDagerFraOgMed, fasteDagerTilOgMed, normalTimerPerDag).forEach {
                         arbeidstidInfo.leggeTilPeriode(it.first, it.second)
                     }
                 }
             }
         }
 
-        //Jobber ikke. Altså 0 timer per dag i hele planlagt perioden
-        VET_IKKE, NEI -> arbeidstidInfo.leggTilPeriode(fraOgMedPlanlagt, tilOgMedPlanlagt, normalTimerPerDag, NULL_ARBEIDSTIMER)
+        //Jobber ikke. Altså 0 timer per dag i hele perioden
+        VET_IKKE, NEI -> arbeidstidInfo.leggTilPeriode(fraOgMed, tilOgMed, normalTimerPerDag, NULL_ARBEIDSTIMER)
     }
-}
 
-fun ArbeidIPeriode.beregnHistoriskK9ArbeidstidInfo(
-    normalTimerPerDag: Duration,
-    søknadsperiode: Periode,
-    arbeidstidInfo: ArbeidstidInfo,
-    dagensDato: LocalDate
-) {
-    val gårsdagensdato = dagensDato.minusDays(1)
-    val fraOgMedHistorisk = søknadsperiode.fraOgMed
-    val tilOgMedHistorisk = if (søknadsperiode.tilOgMed.isBefore(gårsdagensdato)) søknadsperiode.tilOgMed else gårsdagensdato
-
-    when(jobberIPerioden){
-        JA -> when(jobberSomVanlig){
-            //Jobber som vanlig. Altså 100% i hele historisk periode.
-            true -> arbeidstidInfo.leggTilPeriode(fraOgMedHistorisk, tilOgMedHistorisk, normalTimerPerDag, normalTimerPerDag)
-
-            //Jobber redusert -> Enkeltdager eller fasteDager skal være satt. Hull fylles med 0 timer.
-            false -> {
-                fasteDager?.let {
-                    fasteDager.tilArbeidtidPeriodePlanHistorisk(søknadsperiode, dagensDato, normalTimerPerDag).forEach {
-                        arbeidstidInfo.leggeTilPeriode(it.first, it.second)
-                    }
-                }
-
-                enkeltdager?.let{
-                    fraOgMedHistorisk.ukedagerTilOgMed(tilOgMedHistorisk).forEach { dato ->
-                        val faktiskTimerPerDag = enkeltdager?.find { it.dato == dato }?.tid ?: NULL_ARBEIDSTIMER
-                        arbeidstidInfo.leggTilPeriode(dato, dato, normalTimerPerDag, faktiskTimerPerDag)
-                    }
-                }
-            }
-        }
-        //Jobber ikke. Altså 0 timer arbeid i hele perioden.
-        VET_IKKE, NEI -> arbeidstidInfo.leggTilPeriode(fraOgMedHistorisk, tilOgMedHistorisk, normalTimerPerDag, NULL_ARBEIDSTIMER)
-    }
 }
 
 fun ArbeidstidInfo.leggTilPeriode(
@@ -137,46 +129,14 @@ fun ArbeidstidInfo.leggTilPeriode(
     )
 }
 
-fun PlanUkedager.tilArbeidtidPeriodePlan(
-    periode: Periode,
-    dagensDato: LocalDate = LocalDate.now(),
+fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
+    periodeFraOgMed: LocalDate,
+    periodeTilOgMed: LocalDate,
     normalTimerPerDag: Duration
 ): List<Pair<Periode, ArbeidstidPeriodeInfo>> {
-    val periodeStart = if (dagensDato.isBefore(periode.fraOgMed)) periode.fraOgMed else dagensDato
 
     val perioder: List<Pair<Periode, ArbeidstidPeriodeInfo>> =
-        periodeStart.ukedagerTilOgMed(periode.tilOgMed).mapNotNull { dato ->
-            val faktiskArbeidstimer = when (dato.dayOfWeek) {
-                DayOfWeek.MONDAY -> this.mandag ?: NULL_ARBEIDSTIMER
-                DayOfWeek.TUESDAY -> this.tirsdag ?: NULL_ARBEIDSTIMER
-                DayOfWeek.WEDNESDAY -> this.onsdag ?: NULL_ARBEIDSTIMER
-                DayOfWeek.THURSDAY -> this.torsdag ?: NULL_ARBEIDSTIMER
-                DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
-                else -> null
-            }
-            Pair(
-                Periode(dato, dato),
-                ArbeidstidPeriodeInfo()
-                    .medJobberNormaltTimerPerDag(normalTimerPerDag)
-                    .medFaktiskArbeidTimerPerDag(faktiskArbeidstimer)
-            )
-        }
-
-    return perioder
-}
-
-fun PlanUkedager.tilArbeidtidPeriodePlanHistorisk(
-    periode: Periode,
-    dagensDato: LocalDate = LocalDate.now(),
-    normalTimerPerDag: Duration
-): List<Pair<Periode, ArbeidstidPeriodeInfo>> {
-    val gårdagensDato = dagensDato.minusDays(1)
-    val periodeStart = periode.fraOgMed
-
-    val periodeSlutt = if(gårdagensDato.isBefore(periode.tilOgMed)) gårdagensDato else periode.tilOgMed
-
-    val perioder: List<Pair<Periode, ArbeidstidPeriodeInfo>> =
-        periodeStart.ukedagerTilOgMed(periodeSlutt).mapNotNull { dato ->
+        periodeFraOgMed.ukedagerTilOgMed(periodeTilOgMed).mapNotNull { dato ->
             val faktiskArbeidstimer = when (dato.dayOfWeek) {
                 DayOfWeek.MONDAY -> this.mandag ?: NULL_ARBEIDSTIMER
                 DayOfWeek.TUESDAY -> this.tirsdag ?: NULL_ARBEIDSTIMER
