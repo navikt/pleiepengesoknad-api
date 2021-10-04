@@ -596,7 +596,6 @@ class ApplicationTest {
                     arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 37.5,
-                        erAktivtArbeidsforhold = true,
                         historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             jobberSomVanlig = true,
@@ -675,7 +674,6 @@ class ApplicationTest {
                     arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 40.0,
-                        erAktivtArbeidsforhold = null,
                         historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             jobberSomVanlig = true,
@@ -846,7 +844,6 @@ class ApplicationTest {
                         "arbeidsforhold" : {
                             "arbeidsform": "FAST",
                             "jobberNormaltTimer": 37.5,
-                            "erAktivtArbeidsforhold": true,
                             "historisk": null,
                             "planlagt": null
                         }

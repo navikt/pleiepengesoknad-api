@@ -12,7 +12,6 @@ class ArbeidsforholdValideringTest {
     val arbeidsforhold = Arbeidsforhold(
         arbeidsform = Arbeidsform.FAST,
         jobberNormaltTimer = 33.0,
-        erAktivtArbeidsforhold = true,
         historiskArbeid = null,
         planlagtArbeid = null
     )

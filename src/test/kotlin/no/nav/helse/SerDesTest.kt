@@ -57,7 +57,6 @@ internal class SerDesTest {
                     arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 30.0,
-                        erAktivtArbeidsforhold = true,
                         historiskArbeid = null,
                         planlagtArbeid = null
                     )
@@ -97,7 +96,6 @@ internal class SerDesTest {
                 arbeidsforhold = Arbeidsforhold(
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    erAktivtArbeidsforhold = true,
                     historiskArbeid = null,
                     planlagtArbeid = null
                 )
@@ -634,7 +632,6 @@ internal class SerDesTest {
                     arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 30.0,
-                        erAktivtArbeidsforhold = true,
                         historiskArbeid = null,
                         planlagtArbeid = null
                     )
@@ -681,7 +678,6 @@ internal class SerDesTest {
                 arbeidsforhold = Arbeidsforhold(
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    erAktivtArbeidsforhold = true,
                     historiskArbeid = null,
                     planlagtArbeid = null
                 )
@@ -786,7 +782,6 @@ internal class SerDesTest {
                 arbeidsforhold = Arbeidsforhold(
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    erAktivtArbeidsforhold = true,
                     historiskArbeid = null,
                     planlagtArbeid = null
                 )

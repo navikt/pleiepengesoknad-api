@@ -99,7 +99,6 @@ class SoknadValidationTest {
                 arbeidsforhold = Arbeidsforhold(
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    erAktivtArbeidsforhold = null,
                     historiskArbeid = null,
                     planlagtArbeid = null
                 )

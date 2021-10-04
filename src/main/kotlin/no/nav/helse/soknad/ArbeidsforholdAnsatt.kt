@@ -16,7 +16,7 @@ data class ArbeidsforholdAnsatt(
 data class ArbeidIPeriode(
     val jobberIPerioden: JobberIPeriodeSvar,
     val jobberSomVanlig: Boolean? = null,
-    val erLiktHverUke: Boolean,
+    val erLiktHverUke: Boolean? = null,
     val enkeltdager: List<Enkeltdag>? = null,
     val fasteDager: PlanUkedager? = null
 )

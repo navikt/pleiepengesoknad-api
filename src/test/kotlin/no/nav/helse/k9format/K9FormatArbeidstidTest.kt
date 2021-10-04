@@ -23,7 +23,6 @@ class K9FormatArbeidstidTest {
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
                 arbeidsform = Arbeidsform.FAST,
-                erAktivtArbeidsforhold = true,
                 planlagtArbeid = null,
                 historiskArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -95,8 +94,7 @@ class K9FormatArbeidstidTest {
                     erLiktHverUke = true,
                     enkeltdager = null,
                     fasteDager = null
-                ),
-                erAktivtArbeidsforhold = true
+                )
             )
         )
 
@@ -147,7 +145,7 @@ class K9FormatArbeidstidTest {
                     erLiktHverUke = true,
                     enkeltdager = null,
                     fasteDager = null
-                ), erAktivtArbeidsforhold = true
+                )
             )
         )
 
@@ -198,7 +196,7 @@ class K9FormatArbeidstidTest {
                     erLiktHverUke = false,
                     enkeltdager = null,
                     fasteDager = null
-                ), erAktivtArbeidsforhold = true
+                )
             )
         )
 
@@ -254,7 +252,7 @@ class K9FormatArbeidstidTest {
                         )
                     ),
                     fasteDager = null
-                ), erAktivtArbeidsforhold = true
+                )
             )
         )
 
@@ -316,7 +314,7 @@ class K9FormatArbeidstidTest {
                     erLiktHverUke = false,
                     enkeltdager = null,
                     fasteDager = null
-                ), erAktivtArbeidsforhold = true
+                )
             )
         )
 
@@ -377,7 +375,7 @@ class K9FormatArbeidstidTest {
                         torsdag = Duration.ofHours(5),
                         fredag = Duration.ofHours(6)
                     )
-                ), erAktivtArbeidsforhold = true
+                )
             )
         )
 
@@ -439,7 +437,7 @@ class K9FormatArbeidstidTest {
                     erLiktHverUke = false,
                     enkeltdager = null,
                     fasteDager = null
-                ), erAktivtArbeidsforhold = true
+                )
             )
         )
 
@@ -499,8 +497,7 @@ class K9FormatArbeidstidTest {
                     erLiktHverUke = true,
                     enkeltdager = null,
                     fasteDager = null
-                ),
-                erAktivtArbeidsforhold = true
+                )
             )
         )
 
@@ -548,7 +545,6 @@ class K9FormatArbeidstidTest {
         val arbeidsforholdJson = Arbeidsforhold(
             arbeidsform = Arbeidsform.FAST,
             jobberNormaltTimer = 37.5,
-            erAktivtArbeidsforhold = true,
             historiskArbeid = ArbeidIPeriode(
                 jobberIPerioden = JobberIPeriodeSvar.JA,
                 jobberSomVanlig = true,
@@ -589,7 +585,6 @@ class K9FormatArbeidstidTest {
         val arbeidsforholdJson = Arbeidsforhold(
             arbeidsform = Arbeidsform.FAST,
             jobberNormaltTimer = 37.5,
-            erAktivtArbeidsforhold = true,
             historiskArbeid = ArbeidIPeriode(
                 jobberIPerioden = JobberIPeriodeSvar.NEI,
                 jobberSomVanlig = false,
@@ -638,7 +633,6 @@ class K9FormatArbeidstidTest {
         val arbeidsforhold = Arbeidsforhold(
             jobberNormaltTimer = 37.5,
             arbeidsform = Arbeidsform.FAST,
-            erAktivtArbeidsforhold = true,
             planlagtArbeid = arbeidIPeriodenUtenOppgittTid,
             historiskArbeid = arbeidIPeriodenUtenOppgittTid
         )

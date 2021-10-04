@@ -42,7 +42,6 @@ class SøknadUtils {
                     arbeidsforhold = Arbeidsforhold(
                         arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 40.0,
-                        erAktivtArbeidsforhold = null,
                         historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             jobberSomVanlig = true,
@@ -94,7 +93,6 @@ class SøknadUtils {
                 arbeidsforhold = Arbeidsforhold(
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    erAktivtArbeidsforhold = true,
                     historiskArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         jobberSomVanlig = true,
@@ -223,7 +221,6 @@ class SøknadUtils {
                 arbeidsforhold = Arbeidsforhold(
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    erAktivtArbeidsforhold = null,
                     historiskArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         jobberSomVanlig = true,
