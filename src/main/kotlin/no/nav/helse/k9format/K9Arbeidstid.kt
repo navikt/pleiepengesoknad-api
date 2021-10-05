@@ -146,7 +146,7 @@ fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
                 DayOfWeek.WEDNESDAY -> this.onsdag ?: NULL_ARBEIDSTIMER
                 DayOfWeek.THURSDAY -> this.torsdag ?: NULL_ARBEIDSTIMER
                 DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
-                else -> null
+                else -> NULL_ARBEIDSTIMER
             }
             startDato?.let { if(dato.isBefore(it)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
             sluttdato?.let { if(dato.isAfter(it)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
