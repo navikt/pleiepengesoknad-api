@@ -452,6 +452,121 @@ class ApplicationTest {
     }
 
     @Test
+    fun `Sende soknadv2`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val jpegUrl = engine.jpegUrl(cookie)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = SØKNAD_URL,
+            expectedResponse = null,
+            expectedCode = HttpStatusCode.Accepted,
+            cookie = cookie,
+            requestEntity = """
+                {
+                  "språk": "nb",
+                  "harBekreftetOpplysninger": true,
+                  "harForståttRettigheterOgPlikter": true,
+                  "fraOgMed": "2021-09-01",
+                  "tilOgMed": "2021-10-29",
+                  "vedlegg": [],
+                  "harMedsøker": false,
+                  "ferieuttakIPerioden": {
+                    "skalTaUtFerieIPerioden": false,
+                    "ferieuttak": []
+                  },
+                  "barn": {
+                    "navn": "STOR TRANFLASKE",
+                    "fødselsnummer": "03028104560",
+                    "aktørId": "2275471407251",
+                    "fødselsdato": "2011-04-17",
+                    "sammeAdresse": null
+                  },
+                  "medlemskap": {
+                    "harBoddIUtlandetSiste12Mnd": false,
+                    "skalBoIUtlandetNeste12Mnd": false,
+                    "utenlandsoppholdSiste12Mnd": [],
+                    "utenlandsoppholdNeste12Mnd": []
+                  },
+                  "arbeidsgivere": [
+                    {
+                      "navn": "KLONELABBEN",
+                      "organisasjonsnummer": "907670201",
+                      "erAnsatt": true,
+                      "arbeidsforhold": {
+                        "_type": "ANSATT",
+                        "jobberNormaltTimer": 20,
+                        "arbeidsform": "FAST",
+                        "historiskArbeid": {
+                          "jobberIPerioden": "NEI"
+                        },
+                        "planlagtArbeid": {
+                          "jobberIPerioden": "NEI"
+                        }
+                      }
+                    },
+                    {
+                      "navn": "SNILL TORPEDO",
+                      "organisasjonsnummer": "967170232",
+                      "erAnsatt": true,
+                      "arbeidsforhold": {
+                        "_type": "ANSATT",
+                        "jobberNormaltTimer": 10,
+                        "arbeidsform": "TURNUS",
+                        "historiskArbeid": {
+                          "jobberIPerioden": "NEI"
+                        },
+                        "planlagtArbeid": {
+                          "jobberIPerioden": "NEI"
+                        }
+                      }
+                    }
+                  ],
+                  "_harHattInntektSomFrilanser": true,
+                  "frilans": {
+                    "startdato": "2021-05-04",
+                    "jobberFortsattSomFrilans": false,
+                    "arbeidsforhold": {
+                      "_type": "FRILANSER",
+                      "jobberNormaltTimer": 5,
+                      "arbeidsform": "TURNUS",
+                      "historiskArbeid": {
+                        "jobberIPerioden": "JA",
+                        "jobberSomVanlig": false,
+                        "erLiktHverUke": false,
+                        "enkeltdager": [
+                          {
+                            "dato": "2021-09-01",
+                            "tid": "PT1H0M"
+                          },
+                          {
+                            "dato": "2021-09-08",
+                            "tid": "PT1H0M"
+                          },
+                          {
+                            "dato": "2021-09-15",
+                            "tid": "PT1H0M"
+                          },
+                          {
+                            "dato": "2021-09-22",
+                            "tid": "PT1H0M"
+                          }
+                        ]
+                      }
+                    },
+                    "sluttdato": "2021-09-27"
+                  },
+                  "_harHattInntektSomSelvstendigNæringsdrivende": false,
+                  "utenlandsoppholdIPerioden": {
+                    "skalOppholdeSegIUtlandetIPerioden": false,
+                    "opphold": []
+                  }
+                }
+            """.trimIndent()
+        )
+    }
+
+    @Test
     fun `Validerer vedlegg hvor et ikke finnes`(){
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val vedlegg1 = engine.jpegUrl(cookie)
@@ -626,27 +741,21 @@ class ApplicationTest {
             path = SØKNAD_URL,
             //language=json
             expectedResponse = """
+            {
+              "type": "/problem-details/invalid-request-parameters",
+              "title": "invalid-request-parameters",
+              "status": 400,
+              "detail": "Requesten inneholder ugyldige paramtere.",
+              "instance": "about:blank",
+              "invalid_parameters": [
                 {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "selvstendingNæringsdrivende.virksomhet.registrertIUtlandet",
-                      "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
-                      "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "opptjeningAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
-                      "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
-                      "invalid_value": "K9-format feilkode: påkrevd"
-                    }
-                  ]
-                }   
+                  "type": "entity",
+                  "name": "selvstendingNæringsdrivende.virksomhet.registrertIUtlandet",
+                  "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
+                  "invalid_value": null
+                }
+              ]
+            }
             """.trimIndent(),
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
@@ -954,9 +1063,9 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "java.lang.IllegalArgumentException",
-                  "reason": "Til og med dato før fra og med dato: 1990-09-29>1990-09-28",
-                  "invalid_value": "K9-format feilkode: IllegalArgumentException"
+                  "name": "ytelse.søknadsperiode.perioder[0]",
+                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
+                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
                 }
               ]
             }

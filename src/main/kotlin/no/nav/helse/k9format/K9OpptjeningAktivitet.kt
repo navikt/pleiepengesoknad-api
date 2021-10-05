@@ -19,16 +19,15 @@ fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
 fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 internal fun Søknad.byggK9OpptjeningAktivitet() = OpptjeningAktivitet(
-    null, // arbeidstaker er ikke nødvendig i opptjeningAktivitet for psb.
     selvstendigNæringsdrivende?.tilK9SelvstendigNæringsdrivende(),
-    frilans?.tilK9Frilanser()
+    frilans?.tilK9Frilanser(),
+    null,
+    null
 )
 
 internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser()
     .medStartDato(startdato)
     .medSluttDato(sluttdato)
-    .medJobberFortsattSomFrilans(jobberFortsattSomFrilans)
-
 
 fun no.nav.helse.soknad.SelvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> {
 
@@ -84,6 +83,10 @@ internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNær
             .endringDato(it.dato)
             .endringBegrunnelse(it.forklaring)
     } ?: infoBuilder.erVarigEndring(false)
+
+    yrkesaktivSisteTreFerdigliknedeÅrene?.let {
+        infoBuilder.erNyIArbeidslivet(true)
+    }
 
     return infoBuilder.build()
 }

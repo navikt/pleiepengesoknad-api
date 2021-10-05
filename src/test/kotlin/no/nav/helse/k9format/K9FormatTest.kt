@@ -74,6 +74,7 @@ class K9FormatTest {
                   "2021-01-01/2021-01-10"
                 ],
                 "endringsperiode": [],
+                "trekkKravPerioder": [],
                 "opptjeningAktivitet": {
                   "selvstendigNæringsdrivende": [
                     {
@@ -98,8 +99,7 @@ class K9FormatTest {
                   ],
                   "frilanser": {
                     "startdato": "2018-01-01",
-                    "sluttdato": null,
-                    "jobberFortsattSomFrilans": true
+                    "sluttdato": null
                   }
                 },
                 "dataBruktTilUtledning": {
@@ -156,9 +156,10 @@ class K9FormatTest {
                 },
                 "lovbestemtFerie": {
                   "perioder": {
-                    "$fraOgMed/${fraOgMed.plusDays(1)}": {}
-                  },
-                  "perioderSomSkalSlettes": {}
+                    "$fraOgMed/${fraOgMed.plusDays(1)}": {
+                      "skalHaFerie": true
+                    }
+                  }
                 },
                 "arbeidstid": {
                   "arbeidstakerList": [

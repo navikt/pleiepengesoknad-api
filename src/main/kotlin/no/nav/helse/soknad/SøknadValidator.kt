@@ -7,7 +7,6 @@ import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.validering.valider
 import no.nav.helse.utils.erLikEllerEtterDagensDato
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
-import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnValidator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -228,8 +227,9 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     }
 }
 
-private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): MutableSet<Violation> =
-    PleiepengerSyktBarnValidator().valider(k9FormatSøknad.getYtelse<PleiepengerSyktBarn>()).map {
+private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): MutableSet<Violation> {
+
+    return PleiepengerSyktBarn().validator.valider(k9FormatSøknad.getYtelse<PleiepengerSyktBarn>()).map {
         Violation(
             parameterName = it.felt,
             parameterType = ParameterType.ENTITY,
@@ -237,6 +237,7 @@ private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): Mutable
             invalidValue = "K9-format feilkode: ${it.feilkode}"
         )
     }.sortedBy { it.reason }.toMutableSet()
+}
 
 private fun validerBosted(list: List<Bosted>): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
