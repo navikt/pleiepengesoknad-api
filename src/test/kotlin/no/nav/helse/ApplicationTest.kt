@@ -633,12 +633,6 @@ class ApplicationTest {
                       "name": "selvstendigVirksomheter[0].registrertIUtlandet",
                       "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                       "invalid_value": null
-                    },
-                    {
-                      "type": "entity",
-                      "name": "opptjeningAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
-                      "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
-                      "invalid_value": "K9-format feilkode: påkrevd"
                     }
                   ]
                 }   
@@ -795,12 +789,6 @@ class ApplicationTest {
                   "name": "selvstendigVirksomheter[0].registrertIUtlandet",
                   "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                   "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "opptjeningAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
-                  "reason": "[Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}]",
-                  "invalid_value": "K9-format feilkode: påkrevd"
                 }
               ]
             }
@@ -1379,11 +1367,11 @@ class ApplicationTest {
                   "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                   "invalid_value": false
                 },
-                {
+                    {
                   "type": "entity",
-                  "name": "java.lang.IllegalArgumentException",
-                  "reason": "Til og med dato før fra og med dato: 1990-09-29>1990-09-28",
-                  "invalid_value": "K9-format feilkode: IllegalArgumentException"
+                  "name": "ytelse.søknadsperiode.perioder[0]",
+                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
+                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
                 }
               ]
             }

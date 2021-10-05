@@ -1,10 +1,6 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.ArbeidsgiverDetaljer
-import no.nav.helse.soknad.Frilans
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Søknad
-import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.*
 import no.nav.k9.søknad.felles.opptjening.Frilanser
 import no.nav.k9.søknad.felles.opptjening.OpptjeningAktivitet
 import no.nav.k9.søknad.felles.opptjening.SelvstendigNæringsdrivende
@@ -21,15 +17,15 @@ fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
 fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 internal fun Søknad.byggK9OpptjeningAktivitet() = OpptjeningAktivitet(
-    null, // arbeidstaker er ikke nødvendig i opptjeningAktivitet for psb.
     selvstendigVirksomheter.tilK9SelvstendigNæringsdrivende(),
-    frilans?.tilK9Frilanser()
+    frilans?.tilK9Frilanser(),
+    null,
+    null
 )
 
 internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser()
     .medStartDato(startdato)
     .medSluttDato(sluttdato)
-    .medJobberFortsattSomFrilans(jobberFortsattSomFrilans)
 
 internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
     periode: Periode
@@ -91,6 +87,10 @@ internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNær
             .endringDato(it.dato)
             .endringBegrunnelse(it.forklaring)
     } ?: infoBuilder.erVarigEndring(false)
+
+    yrkesaktivSisteTreFerdigliknedeÅrene?.let {
+        infoBuilder.erNyIArbeidslivet(true)
+    }
 
     return infoBuilder.build()
 }
