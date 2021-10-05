@@ -20,7 +20,11 @@ internal fun Søknad.byggK9Arbeidstid(dagensDato: LocalDate): Arbeidstid = Arbei
 
     arbeidsgivere?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode, dagensDato)) }
 
-    frilans?.arbeidsforhold?.let { medFrilanserArbeidstid(it.beregnK9ArbeidstidInfo(periode, dagensDato)) }
+    frilans?.let { frilans ->
+        frilans.arbeidsforhold?.let {
+            medFrilanserArbeidstid(it.beregnK9ArbeidstidInfo(periode, dagensDato, frilans.startdato, frilans.sluttdato))
+        }
+    }
 
     selvstendigNæringsdrivende?.arbeidsforhold?.let {
         medSelvstendigNæringsdrivendeArbeidstidInfo(it.beregnK9ArbeidstidInfo(periode, dagensDato))
@@ -40,7 +44,7 @@ fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
     }
 }
 
-fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate): ArbeidstidInfo {
+fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startDato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {
     val arbeidstidInfo = ArbeidstidInfo().medPerioder(null)
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
     val gårsdagensDato = dagensDato.minusDays(1)
@@ -48,31 +52,28 @@ fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: 
     historiskArbeid?.let {
         val fraOgMedHistorisk = søknadsperiode.fraOgMed
         val tilOgMedHistorisk = if (søknadsperiode.tilOgMed.isBefore(gårsdagensDato)) søknadsperiode.tilOgMed else gårsdagensDato
-        val fasteDagerFraOgMed = søknadsperiode.fraOgMed
-        val fasteDagerTilOgMed = if(gårsdagensDato.isBefore(søknadsperiode.tilOgMed)) gårsdagensDato else søknadsperiode.tilOgMed
 
         it.beregnK9ArbeidstidInfo(
             fraOgMed = fraOgMedHistorisk,
             tilOgMed = tilOgMedHistorisk,
-            fasteDagerFraOgMed = fasteDagerFraOgMed,
-            fasteDagerTilOgMed = fasteDagerTilOgMed,
             arbeidstidInfo = arbeidstidInfo,
-            normalTimerPerDag = normalTimerPerDag
+            normalTimerPerDag = normalTimerPerDag,
+            startDato = startDato,
+            sluttdato = sluttdato
         )
     }
 
     planlagtArbeid?.let {
         val fraOgMedPlanlagt = if (søknadsperiode.fraOgMed.isAfter(dagensDato)) søknadsperiode.fraOgMed else dagensDato
         val tilOgMedPlanlagt = søknadsperiode.tilOgMed
-        val fasteDagerFraOgMed = if (dagensDato.isBefore(søknadsperiode.fraOgMed)) søknadsperiode.fraOgMed else dagensDato
-        val fasteDagerTilOgMed = søknadsperiode.tilOgMed
+
         it.beregnK9ArbeidstidInfo(
             fraOgMed = fraOgMedPlanlagt,
             tilOgMed = tilOgMedPlanlagt,
-            fasteDagerFraOgMed = fasteDagerFraOgMed,
-            fasteDagerTilOgMed = fasteDagerTilOgMed,
             arbeidstidInfo = arbeidstidInfo,
-            normalTimerPerDag = normalTimerPerDag
+            normalTimerPerDag = normalTimerPerDag,
+            startDato = startDato,
+            sluttdato = sluttdato
         )
     }
     return arbeidstidInfo
@@ -81,9 +82,9 @@ fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: 
 fun ArbeidIPeriode.beregnK9ArbeidstidInfo(
     fraOgMed: LocalDate,
     tilOgMed: LocalDate,
-    fasteDagerFraOgMed: LocalDate,
-    fasteDagerTilOgMed: LocalDate,
     arbeidstidInfo: ArbeidstidInfo,
+    startDato: LocalDate? = null,
+    sluttdato: LocalDate? = null,
     normalTimerPerDag: Duration
 ) {
 
@@ -102,7 +103,7 @@ fun ArbeidIPeriode.beregnK9ArbeidstidInfo(
                 }
 
                 fasteDager?.let {
-                    fasteDager.tilK9ArbeidstidPeriodePlan(fasteDagerFraOgMed, fasteDagerTilOgMed, normalTimerPerDag).forEach {
+                    fasteDager.tilK9ArbeidstidPeriodePlan(fraOgMed, tilOgMed, normalTimerPerDag, startDato, sluttdato).forEach {
                         arbeidstidInfo.leggeTilPeriode(it.first, it.second)
                     }
                 }
@@ -132,12 +133,14 @@ fun ArbeidstidInfo.leggTilPeriode(
 fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
     periodeFraOgMed: LocalDate,
     periodeTilOgMed: LocalDate,
-    normalTimerPerDag: Duration
+    normalTimerPerDag: Duration,
+    startDato: LocalDate? = null,
+    sluttdato: LocalDate? = null,
 ): List<Pair<Periode, ArbeidstidPeriodeInfo>> {
 
     val perioder: List<Pair<Periode, ArbeidstidPeriodeInfo>> =
-        periodeFraOgMed.ukedagerTilOgMed(periodeTilOgMed).mapNotNull { dato ->
-            val faktiskArbeidstimer = when (dato.dayOfWeek) {
+        periodeFraOgMed.ukedagerTilOgMed(periodeTilOgMed).map { dato ->
+            var faktiskArbeidstimer = when (dato.dayOfWeek) {
                 DayOfWeek.MONDAY -> this.mandag ?: NULL_ARBEIDSTIMER
                 DayOfWeek.TUESDAY -> this.tirsdag ?: NULL_ARBEIDSTIMER
                 DayOfWeek.WEDNESDAY -> this.onsdag ?: NULL_ARBEIDSTIMER
@@ -145,6 +148,8 @@ fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
                 DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
                 else -> null
             }
+            startDato?.let { if(dato.isBefore(it)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
+            sluttdato?.let { if(dato.isAfter(it)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
             Pair(
                 Periode(dato, dato),
                 ArbeidstidPeriodeInfo()

@@ -737,4 +737,108 @@ class K9FormatArbeidstidTest {
 
         JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
     }
+
+    @Test
+    fun `Frilans hvor start og sluttdato er innenfor søknadsperioden -- Forventer at alt utenfor blir fylt med 0 timer`(){
+        val arbeidIPeriode = ArbeidIPeriode(
+            jobberIPerioden = JobberIPeriodeSvar.JA,
+            jobberSomVanlig = false,
+            erLiktHverUke = true,
+            enkeltdager = null,
+            fasteDager = PlanUkedager(
+                mandag = Duration.ofHours(3),
+                tirsdag = Duration.ofHours(3),
+                onsdag = Duration.ofHours(3),
+                torsdag = Duration.ofHours(3),
+                fredag = Duration.ofHours(3),
+
+            )
+        )
+
+        val arbeidsforhold = Arbeidsforhold(
+            jobberNormaltTimer = 37.5,
+            arbeidsform = Arbeidsform.FAST,
+            planlagtArbeid = arbeidIPeriode,
+            historiskArbeid = arbeidIPeriode
+        )
+
+        val frilans = Frilans(
+            startdato = LocalDate.parse("2021-01-06"),
+            sluttdato = LocalDate.parse("2021-01-13"),
+            jobberFortsattSomFrilans = false,
+            arbeidsforhold = arbeidsforhold
+        )
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.parse("2021-01-04"),
+            tilOgMed = LocalDate.parse("2021-01-15"),
+            arbeidsgivere = null,
+            omsorgstilbud = null,
+            utenlandsoppholdIPerioden = null,
+            ferieuttakIPerioden = null,
+            selvstendigNæringsdrivende = null,
+            frilans = frilans
+        )
+
+        val k9Format = søknad.tilK9Format(
+            ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
+            SøknadUtils.søker,
+            LocalDate.parse("2021-01-11")
+        )
+        søknad.validate(k9Format)
+
+        val json = JSONObject(k9Format.somJson()).getJSONObject("ytelse").getJSONObject("arbeidstid")
+
+        val forventetJson = """
+            {
+              "frilanserArbeidstidInfo": {
+                "perioder": {
+                  "2021-01-04/2021-01-04": {
+                    "faktiskArbeidTimerPerDag": "PT0S",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-12/2021-01-12": {
+                    "faktiskArbeidTimerPerDag": "PT3H",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-11/2021-01-11": {
+                    "faktiskArbeidTimerPerDag": "PT3H",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-08/2021-01-08": {
+                    "faktiskArbeidTimerPerDag": "PT3H",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-07/2021-01-07": {
+                    "faktiskArbeidTimerPerDag": "PT3H",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-15/2021-01-15": {
+                    "faktiskArbeidTimerPerDag": "PT0S",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-06/2021-01-06": {
+                    "faktiskArbeidTimerPerDag": "PT3H",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-14/2021-01-14": {
+                    "faktiskArbeidTimerPerDag": "PT0S",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-05/2021-01-05": {
+                    "faktiskArbeidTimerPerDag": "PT0S",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  },
+                  "2021-01-13/2021-01-13": {
+                    "faktiskArbeidTimerPerDag": "PT3H",
+                    "jobberNormaltTimerPerDag": "PT7H30M"
+                  }
+                }
+              },
+              "arbeidstakerList": [],
+              "selvstendigNæringsdrivendeArbeidstidInfo": null
+            }
+        """.trimIndent()
+        JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
+    }
 }
