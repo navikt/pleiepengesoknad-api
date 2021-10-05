@@ -86,6 +86,7 @@ class K9FormatTest {
                           "regnskapsførerNavn": "Kjell Regnskap",
                           "regnskapsførerTlf": "123456789",
                           "erVarigEndring": true,
+                          "erNyIArbeidslivet" : true,
                           "endringDato": "2020-01-01",
                           "endringBegrunnelse": "Korona",
                           "bruttoInntekt": 9999,
@@ -223,6 +224,7 @@ class K9FormatTest {
             }
         """.trimIndent()
 
+        println(JsonUtils.toString(k9Format))
         JSONAssert.assertEquals(forventetK9FormatJsonV2, JsonUtils.toString(k9Format), true)
     }
 
