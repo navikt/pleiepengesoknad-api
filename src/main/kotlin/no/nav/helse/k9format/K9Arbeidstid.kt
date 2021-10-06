@@ -58,7 +58,7 @@ fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: 
             tilOgMed = tilOgMedHistorisk,
             arbeidstidInfo = arbeidstidInfo,
             normalTimerPerDag = normalTimerPerDag,
-            startDato = startDato,
+            startdato = startDato,
             sluttdato = sluttdato
         )
     }
@@ -72,7 +72,7 @@ fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: 
             tilOgMed = tilOgMedPlanlagt,
             arbeidstidInfo = arbeidstidInfo,
             normalTimerPerDag = normalTimerPerDag,
-            startDato = startDato,
+            startdato = startDato,
             sluttdato = sluttdato
         )
     }
@@ -83,7 +83,7 @@ fun ArbeidIPeriode.beregnK9ArbeidstidInfo(
     fraOgMed: LocalDate,
     tilOgMed: LocalDate,
     arbeidstidInfo: ArbeidstidInfo,
-    startDato: LocalDate? = null,
+    startdato: LocalDate? = null,
     sluttdato: LocalDate? = null,
     normalTimerPerDag: Duration
 ) {
@@ -103,7 +103,7 @@ fun ArbeidIPeriode.beregnK9ArbeidstidInfo(
                 }
 
                 fasteDager?.let {
-                    fasteDager.tilK9ArbeidstidPeriodePlan(fraOgMed, tilOgMed, normalTimerPerDag, startDato, sluttdato).forEach {
+                    fasteDager.tilK9ArbeidstidPeriodePlan(fraOgMed, tilOgMed, normalTimerPerDag, startdato, sluttdato).forEach {
                         arbeidstidInfo.leggeTilPeriode(it.first, it.second)
                     }
                 }
@@ -134,7 +134,7 @@ fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
     periodeFraOgMed: LocalDate,
     periodeTilOgMed: LocalDate,
     normalTimerPerDag: Duration,
-    startDato: LocalDate? = null,
+    startdato: LocalDate? = null,
     sluttdato: LocalDate? = null,
 ): List<Pair<Periode, ArbeidstidPeriodeInfo>> {
 
@@ -148,8 +148,8 @@ fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
                 DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
                 else -> NULL_ARBEIDSTIMER
             }
-            startDato?.let { if(dato.isBefore(it)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
-            sluttdato?.let { if(dato.isAfter(it)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
+            startdato?.let { if(dato.isBefore(startdato)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
+            sluttdato?.let { if(dato.isAfter(sluttdato)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
             Pair(
                 Periode(dato, dato),
                 ArbeidstidPeriodeInfo()
