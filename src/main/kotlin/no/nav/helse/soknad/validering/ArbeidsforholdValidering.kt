@@ -19,6 +19,17 @@ fun ArbeidIPeriode.valider(path: String): MutableSet<Violation> {
     val feil = mutableSetOf<Violation>()
 
     if(jobberIPerioden()){
+        if(jobberSomVanlig == null){
+            feil.add(
+                Violation(
+                    parameterName = "$path.jobberSomVanlig",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Dersom jobberIPerioden=JA kan ikke jobberSomVanlig være null",
+                    invalidValue = "jobberIPerioden=$jobberSomVanlig,jobberSomVanlig=$jobberSomVanlig"
+                )
+            )
+        }
+
         if(!jobberSomVanlig()){
             if(enkeltdager == null && fasteDager == null){
                 feil.add(
