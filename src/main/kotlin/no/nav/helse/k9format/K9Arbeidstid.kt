@@ -44,7 +44,7 @@ fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
     }
 }
 
-fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startDato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {
+fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startdato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {
     val arbeidstidInfo = ArbeidstidInfo().medPerioder(null)
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
     val gårsdagensDato = dagensDato.minusDays(1)
@@ -58,7 +58,7 @@ fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: 
             tilOgMed = tilOgMedHistorisk,
             arbeidstidInfo = arbeidstidInfo,
             normalTimerPerDag = normalTimerPerDag,
-            startdato = startDato,
+            startdato = startdato,
             sluttdato = sluttdato
         )
     }
@@ -72,7 +72,7 @@ fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: 
             tilOgMed = tilOgMedPlanlagt,
             arbeidstidInfo = arbeidstidInfo,
             normalTimerPerDag = normalTimerPerDag,
-            startdato = startDato,
+            startdato = startdato,
             sluttdato = sluttdato
         )
     }
