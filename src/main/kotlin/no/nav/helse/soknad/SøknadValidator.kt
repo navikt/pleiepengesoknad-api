@@ -99,9 +99,9 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
 
     arbeidsgivere?.let { violations.addAll(arbeidsgivere.validate()) }
 
-    selvstendigNæringsdrivende?.let {
+    selvstendigNæringsdrivende?.let { selvstendigNæringsdrivende ->
         violations.addAll(selvstendigNæringsdrivende.virksomhet.validate())
-        if(it.arbeidsforhold != null) violations.addAll(it.arbeidsforhold.valider("selvstendigNæringsdrivende"))
+        selvstendigNæringsdrivende.arbeidsforhold?.let { violations.addAll(it.valider("selvstendigNæringsdrivende")) }
     }
 
     frilans?.let { violations.addAll(it.valider()) }
