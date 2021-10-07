@@ -39,9 +39,20 @@ fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
         Arbeidstaker(
             null, //K9 format vil ikke ha både fnr og org nummer
             Organisasjonsnummer.of(it.organisasjonsnummer),
-            it.arbeidsforhold.beregnK9ArbeidstidInfo(periode, dagensDato)
+            it.arbeidsforhold?.beregnK9ArbeidstidInfo(periode, dagensDato) ?: GenererTomArbeidstidInfo(periode)
         )
     }
+}
+
+fun GenererTomArbeidstidInfo(periode: Periode): ArbeidstidInfo {
+    return ArbeidstidInfo().medPerioder(
+        mapOf(
+            Periode(periode.fraOgMed, periode.tilOgMed) to ArbeidstidPeriodeInfo(
+                NULL_ARBEIDSTIMER,
+                NULL_ARBEIDSTIMER
+            )
+        )
+    )
 }
 
 fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startdato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {

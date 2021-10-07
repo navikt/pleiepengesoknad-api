@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 data class SelvstendigNæringsdrivende(
     val virksomhet: Virksomhet,
-    val arbeidsforhold: Arbeidsforhold?
+    val arbeidsforhold: Arbeidsforhold? = null
 )
 
 data class Virksomhet(

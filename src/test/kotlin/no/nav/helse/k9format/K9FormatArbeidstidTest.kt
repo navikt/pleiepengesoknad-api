@@ -541,6 +541,49 @@ class K9FormatArbeidstidTest {
     }
 
     @Test
+    fun `arbeidsgivere- Sluttet før perioden, arbeidsforhold=null -- Forventer perode fylt med 0-0 timer`() {
+        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+            navn = "Org",
+            organisasjonsnummer = "917755736",
+            erAnsatt = false,
+            arbeidsforhold = null
+        )
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.parse("2021-01-04"),
+            tilOgMed = LocalDate.parse("2021-01-06"),
+            arbeidsgivere = listOf(arbeidsforholdAnsatt),
+            omsorgstilbud = null,
+            utenlandsoppholdIPerioden = null,
+            ferieuttakIPerioden = null,
+            frilans = null,
+            selvstendigNæringsdrivende = null
+        )
+
+        val k9Format = søknad.tilK9Format(
+            ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
+            SøknadUtils.søker,
+            LocalDate.parse("2021-01-05")
+        )
+        søknad.validate(k9Format)
+
+        val forventetJson = """
+            {
+              "perioder": {
+                "2021-01-04/2021-01-06": {
+                  "faktiskArbeidTimerPerDag": "PT0S",
+                  "jobberNormaltTimerPerDag": "PT0S"
+                }
+              }
+            }
+        """.trimIndent()
+
+        val json = JSONObject(k9Format.somJson()).getJSONObject("ytelse").getJSONObject("arbeidstid")
+            .getJSONArray("arbeidstakerList").getJSONObject(0).getJSONObject("arbeidstidInfo")
+        JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
+    }
+
+    @Test
     fun `Arbeidsforhold - Historisk og planlagt hvor jobberSomVanlig=true -- Forventer to perioder med fult arbeid`(){
         val arbeidsforholdJson = Arbeidsforhold(
             arbeidsform = Arbeidsform.FAST,

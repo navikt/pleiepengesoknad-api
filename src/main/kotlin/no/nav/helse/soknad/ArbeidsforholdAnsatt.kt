@@ -10,7 +10,7 @@ data class ArbeidsforholdAnsatt(
     val navn: String? = null,
     val organisasjonsnummer: String,
     val erAnsatt: Boolean,
-    val arbeidsforhold: Arbeidsforhold
+    val arbeidsforhold: Arbeidsforhold? = null
 )
 
 data class ArbeidIPeriode(
@@ -37,7 +37,9 @@ internal fun List<ArbeidsforholdAnsatt>.validate(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     this.mapIndexed { index, arbeidsforholdAnsatt ->
-        violations.addAll(arbeidsforholdAnsatt.arbeidsforhold.valider("arbeidsgiver[$index]"))
+        arbeidsforholdAnsatt.arbeidsforhold?.let {
+            violations.addAll(it.valider("arbeidsgiver[$index]"))
+        }
 
         if (!arbeidsforholdAnsatt.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
             violations.add(
