@@ -42,19 +42,15 @@ fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
     }
 }
 
-fun GenererArbeidstidInfoMed0Timer(periode: Periode): ArbeidstidInfo {
-    return ArbeidstidInfo().medPerioder(
+fun Arbeidsforhold?.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startdato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {
+    if(this == null) return ArbeidstidInfo().medPerioder(
         mapOf(
-            Periode(periode.fraOgMed, periode.tilOgMed) to ArbeidstidPeriodeInfo(
+            Periode(søknadsperiode.fraOgMed, søknadsperiode.tilOgMed) to ArbeidstidPeriodeInfo(
                 NULL_ARBEIDSTIMER,
                 NULL_ARBEIDSTIMER
             )
         )
     )
-}
-
-fun Arbeidsforhold?.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startdato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {
-    if(this == null) return GenererArbeidstidInfoMed0Timer(periode = søknadsperiode)
 
     val arbeidstidInfo = ArbeidstidInfo().medPerioder(null)
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
