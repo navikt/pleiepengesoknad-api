@@ -20,14 +20,12 @@ internal fun Søknad.byggK9Arbeidstid(dagensDato: LocalDate): Arbeidstid = Arbei
 
     arbeidsgivere?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode, dagensDato)) }
 
-    frilans?.let { frilans ->
-        frilans.arbeidsforhold?.let {
-            medFrilanserArbeidstid(it.beregnK9ArbeidstidInfo(periode, dagensDato, frilans.startdato, frilans.sluttdato))
-        }
+    frilans?.let {
+        medFrilanserArbeidstid(it.arbeidsforhold.beregnK9ArbeidstidInfo(periode, dagensDato, frilans.startdato, frilans.sluttdato))
     }
 
-    selvstendigNæringsdrivende?.arbeidsforhold?.let {
-        medSelvstendigNæringsdrivendeArbeidstidInfo(it.beregnK9ArbeidstidInfo(periode, dagensDato))
+    selvstendigNæringsdrivende?.let {
+        medSelvstendigNæringsdrivendeArbeidstidInfo(it.arbeidsforhold.beregnK9ArbeidstidInfo(periode, dagensDato))
     }
 }
 
@@ -39,12 +37,12 @@ fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
         Arbeidstaker(
             null, //K9 format vil ikke ha både fnr og org nummer
             Organisasjonsnummer.of(it.organisasjonsnummer),
-            it.arbeidsforhold?.beregnK9ArbeidstidInfo(periode, dagensDato) ?: GenererTomArbeidstidInfo(periode)
+            it.arbeidsforhold.beregnK9ArbeidstidInfo(periode, dagensDato)
         )
     }
 }
 
-fun GenererTomArbeidstidInfo(periode: Periode): ArbeidstidInfo {
+fun GenererArbeidstidInfoMed0Timer(periode: Periode): ArbeidstidInfo {
     return ArbeidstidInfo().medPerioder(
         mapOf(
             Periode(periode.fraOgMed, periode.tilOgMed) to ArbeidstidPeriodeInfo(
@@ -55,7 +53,9 @@ fun GenererTomArbeidstidInfo(periode: Periode): ArbeidstidInfo {
     )
 }
 
-fun Arbeidsforhold.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startdato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {
+fun Arbeidsforhold?.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startdato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {
+    if(this == null) return GenererArbeidstidInfoMed0Timer(periode = søknadsperiode)
+
     val arbeidstidInfo = ArbeidstidInfo().medPerioder(null)
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
     val gårsdagensDato = dagensDato.minusDays(1)

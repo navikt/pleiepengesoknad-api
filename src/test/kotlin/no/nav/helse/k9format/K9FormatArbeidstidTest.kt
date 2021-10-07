@@ -584,6 +584,103 @@ class K9FormatArbeidstidTest {
     }
 
     @Test
+    fun `frilans - arbeidsforhold=null -- Forventer perode fylt med 0-0 timer`() {
+        val frilans = Frilans(
+            startdato = LocalDate.parse("2020-01-01"),
+            sluttdato = LocalDate.parse("2021-01-01"),
+            jobberFortsattSomFrilans = false,
+            arbeidsforhold = null
+        )
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.parse("2021-01-02"),
+            tilOgMed = LocalDate.parse("2021-01-10"),
+            arbeidsgivere = null,
+            omsorgstilbud = null,
+            utenlandsoppholdIPerioden = null,
+            ferieuttakIPerioden = null,
+            frilans = frilans,
+            selvstendigNæringsdrivende = null
+        )
+
+        val k9Format = søknad.tilK9Format(
+            ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
+            SøknadUtils.søker,
+            LocalDate.parse("2021-01-05")
+        )
+        søknad.validate(k9Format)
+
+        val forventetJson = """
+            {
+              "perioder": {
+                "2021-01-02/2021-01-10": {
+                  "faktiskArbeidTimerPerDag": "PT0S",
+                  "jobberNormaltTimerPerDag": "PT0S"
+                }
+              }
+            }
+        """.trimIndent()
+
+        val json = JSONObject(k9Format.somJson()).getJSONObject("ytelse").getJSONObject("arbeidstid").getJSONObject("frilanserArbeidstidInfo")
+        JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
+    }
+
+    @Test
+    fun `selvstending næringsdrivende - arbeidsforhold=null -- Forventer perode fylt med 0-0 timer`() {
+        val selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+            virksomhet = Virksomhet(
+                næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
+                fiskerErPåBladB = false,
+                fraOgMed = LocalDate.parse("2021-02-07"),
+                tilOgMed = LocalDate.parse("2021-02-08"),
+                næringsinntekt = 1233123,
+                navnPåVirksomheten = "TullOgTøys",
+                registrertINorge = true,
+                organisasjonsnummer = "101010",
+                yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                regnskapsfører = Regnskapsfører(
+                    navn = "Kjell",
+                    telefon = "84554"
+                ),
+                harFlereAktiveVirksomheter = true
+            ),
+            arbeidsforhold = null
+        )
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.parse("2021-01-02"),
+            tilOgMed = LocalDate.parse("2021-01-10"),
+            arbeidsgivere = null,
+            omsorgstilbud = null,
+            utenlandsoppholdIPerioden = null,
+            ferieuttakIPerioden = null,
+            frilans = null,
+            selvstendigNæringsdrivende = selvstendigNæringsdrivende
+        )
+
+        val k9Format = søknad.tilK9Format(
+            ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
+            SøknadUtils.søker,
+            LocalDate.parse("2021-01-05")
+        )
+        søknad.validate(k9Format)
+
+        val forventetJson = """
+            {
+              "perioder": {
+                "2021-01-02/2021-01-10": {
+                  "faktiskArbeidTimerPerDag": "PT0S",
+                  "jobberNormaltTimerPerDag": "PT0S"
+                }
+              }
+            }
+        """.trimIndent()
+
+        val json = JSONObject(k9Format.somJson()).getJSONObject("ytelse").getJSONObject("arbeidstid").getJSONObject("selvstendigNæringsdrivendeArbeidstidInfo")
+        JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
+    }
+
+    @Test
     fun `Arbeidsforhold - Historisk og planlagt hvor jobberSomVanlig=true -- Forventer to perioder med fult arbeid`(){
         val arbeidsforholdJson = Arbeidsforhold(
             arbeidsform = Arbeidsform.FAST,
@@ -664,7 +761,7 @@ class K9FormatArbeidstidTest {
     }
 
     @Test
-    fun `Kombinasjon av selvstending, ansatt og frilans -- Forventer to perioder per ytelse med full arbeid`(){
+    fun `Kombinasjon av selvstending, ansatt og frilans -- Forventer to perioder per arbeid med full arbeid`(){
         val arbeidIPeriodenUtenOppgittTid = ArbeidIPeriode(
             jobberIPerioden = JobberIPeriodeSvar.JA,
             jobberSomVanlig = true,
@@ -772,6 +869,97 @@ class K9FormatArbeidstidTest {
                   "2021-01-04/2021-01-05": {
                     "faktiskArbeidTimerPerDag": "PT7H30M",
                     "jobberNormaltTimerPerDag": "PT7H30M"
+                  }
+                }
+              }
+            }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
+    }
+
+    @Test
+    fun `Kombinasjon av selvstending, ansatt og frilans med arbeidsforhold=null-- Forventer en periode per arbeid med 0-0 timer`(){
+        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+            navn = "Org",
+            organisasjonsnummer = "917755736",
+            erAnsatt = false,
+            arbeidsforhold = null
+        )
+
+        val frilans = Frilans(
+            startdato = LocalDate.parse("2019-01-01"),
+            jobberFortsattSomFrilans = true,
+            arbeidsforhold = null
+        )
+
+        val selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+            virksomhet = Virksomhet(
+                næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
+                fiskerErPåBladB = false,
+                fraOgMed = LocalDate.parse("2019-01-01"),
+                navnPåVirksomheten = "TullOgTøys",
+                registrertINorge = true,
+                organisasjonsnummer = "101010",
+                yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                regnskapsfører = Regnskapsfører(
+                    navn = "Kjell",
+                    telefon = "84554"
+                ),
+                harFlereAktiveVirksomheter = true
+            ),
+            arbeidsforhold = null
+        )
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.parse("2021-01-04"), //5 dager
+            tilOgMed = LocalDate.parse("2021-01-08"),
+            omsorgstilbud = null,
+            utenlandsoppholdIPerioden = null,
+            ferieuttakIPerioden = null,
+            arbeidsgivere = listOf(arbeidsforholdAnsatt),
+            frilans = frilans,
+            selvstendigNæringsdrivende = selvstendigNæringsdrivende,
+        )
+
+        val k9Format = søknad.tilK9Format(
+            ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
+            SøknadUtils.søker,
+            LocalDate.parse("2021-01-06")
+        )
+        søknad.validate(k9Format)
+
+        val json = JSONObject(k9Format.somJson()).getJSONObject("ytelse").getJSONObject("arbeidstid")
+        println(json)
+        val forventetJson = """
+            {
+              "frilanserArbeidstidInfo": {
+                "perioder": {
+                  "2021-01-04/2021-01-08": {
+                    "faktiskArbeidTimerPerDag": "PT0S",
+                    "jobberNormaltTimerPerDag": "PT0S"
+                  }
+                }
+              },
+              "arbeidstakerList": [
+                {
+                  "arbeidstidInfo": {
+                    "perioder": {
+                      "2021-01-04/2021-01-08": {
+                        "faktiskArbeidTimerPerDag": "PT0S",
+                        "jobberNormaltTimerPerDag": "PT0S"
+                      }
+                    }
+                  },
+                  "organisasjonsnummer": "917755736",
+                  "norskIdentitetsnummer": null
+                }
+              ],
+              "selvstendigNæringsdrivendeArbeidstidInfo": {
+                "perioder": {
+                  "2021-01-04/2021-01-08": {
+                    "faktiskArbeidTimerPerDag": "PT0S",
+                    "jobberNormaltTimerPerDag": "PT0S"
                   }
                 }
               }
