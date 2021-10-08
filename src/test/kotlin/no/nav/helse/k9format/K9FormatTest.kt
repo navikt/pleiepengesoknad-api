@@ -2,15 +2,7 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.Arbeidsform
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
-import no.nav.helse.soknad.OmsorgstilbudEnkeltDag
-import no.nav.helse.soknad.OmsorgstilbudUkedager
-import no.nav.helse.soknad.OmsorgstilbudV2
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
-import no.nav.helse.soknad.SkalJobbe
-import no.nav.helse.soknad.VetOmsorgstilbud
+import no.nav.helse.soknad.*
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -71,6 +63,7 @@ class K9FormatTest {
                   "$fraOgMed/$tilOgMed"
                 ],
                 "endringsperiode": [],
+                "trekkKravPerioder": [],
                 "infoFraPunsj": null,
                 "dataBruktTilUtledning" : {
                   "harForståttRettigheterOgPlikter" : true,
@@ -91,6 +84,7 @@ class K9FormatTest {
                         "regnskapsførerNavn" : "Kjell Regnskap",
                         "regnskapsførerTlf" : "123456789",
                         "erVarigEndring" : true,
+                        "erNyIArbeidslivet" : true,
                         "endringDato" : "2020-01-01",
                         "endringBegrunnelse" : "Korona",
                         "bruttoInntekt" : 9999,
@@ -103,8 +97,7 @@ class K9FormatTest {
                   } ],
                   "frilanser" : {
                     "startdato" : "2018-01-01",
-                    "sluttdato": null,
-                    "jobberFortsattSomFrilans" : true
+                    "sluttdato": null
                   }
                 },
                 "beredskap" : {
@@ -175,9 +168,10 @@ class K9FormatTest {
                 },
                 "lovbestemtFerie" : {
                   "perioder": {
-                    "2020-01-05/2020-01-07": {}
-                  },
-                  "perioderSomSkalSlettes": {}
+                    "2020-01-05/2020-01-07": {
+                      "skalHaFerie": true
+                    }
+                  }
                 },
                 "bosteder" : {
                   "perioderSomSkalSlettes": {},
