@@ -946,7 +946,7 @@ class ApplicationTest {
                   "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
                   "invalid_value": false
                 },
-                {
+                    {
                   "type": "entity",
                   "name": "ytelse.søknadsperiode.perioder[0]",
                   "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
