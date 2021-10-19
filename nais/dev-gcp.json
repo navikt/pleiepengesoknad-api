@@ -18,7 +18,7 @@
   ],
   "env": {
     "REDIS_HOST": "pleiepengesoknad-api-redis",
-    "CORS_ADDRESSES": "https://pleiepengesoknad-q.nav.no,https://www-q0.nav.no,https://pleiepengesoknad.dev.nav.no, https://sif-innsyn.dev.nav.no",
+    "CORS_ADDRESSES": "https://pleiepengesoknad.dev.nav.no, https://sif-innsyn.dev.nav.no, https://endringsmelding-pleiepenger.dev.nav.no",
     "LOGIN_SERVICE_V1_DISCOVERY_ENDPOINT": "https://login.microsoftonline.com/navtestb2c.onmicrosoft.com/discovery/v2.0/.well-known/openid-configuration?p=b2c_1a_idporten_ver1",
     "COOKIE_NAME": "selvbetjening-idtoken",
     "K9_OPPSLAG_REGISTER_URL": "https://k9-selvbetjening-oppslag.dev-fss-pub.nais.io",
