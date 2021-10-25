@@ -46,7 +46,7 @@ dependencies {
     }
 
     testImplementation ("org.skyscreamer:jsonassert:1.5.0")
-    testImplementation("org.awaitility:awaitility-kotlin:4.1.0")
+    testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
 }
