@@ -9,8 +9,33 @@ import io.ktor.server.testing.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
+import no.nav.helse.soknad.JobberIPeriodeSvar
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.VetOmsorgstilbud
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -441,10 +466,12 @@ class ApplicationTest {
                 tilOgMed = LocalDate.now().plusDays(4),
                 ferieuttakIPerioden = FerieuttakIPerioden(
                     skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(Ferieuttak(
-                        fraOgMed = LocalDate.now(),
-                        tilOgMed = LocalDate.now().plusDays(2),
-                    ))
+                    ferieuttak = listOf(
+                        Ferieuttak(
+                            fraOgMed = LocalDate.now(),
+                            tilOgMed = LocalDate.now().plusDays(2),
+                        )
+                    )
                 ),
                 vedlegg = listOf(URL(jpegUrl)),
             ).somJson()
@@ -452,7 +479,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Validerer vedlegg hvor et ikke finnes`(){
+    fun `Validerer vedlegg hvor et ikke finnes`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val vedlegg1 = engine.jpegUrl(cookie)
         val vedlegg2 = engine.pdUrl(cookie)
@@ -482,7 +509,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Validerer vedlegg hvor alle finnes`(){
+    fun `Validerer vedlegg hvor alle finnes`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val vedlegg1 = engine.jpegUrl(cookie)
         val vedlegg2 = engine.pdUrl(cookie)
@@ -804,10 +831,12 @@ class ApplicationTest {
                 tilOgMed = LocalDate.now().plusDays(4),
                 ferieuttakIPerioden = FerieuttakIPerioden(
                     skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(Ferieuttak(
-                        fraOgMed = LocalDate.now(),
-                        tilOgMed = LocalDate.now().plusDays(2),
-                    ))
+                    ferieuttak = listOf(
+                        Ferieuttak(
+                            fraOgMed = LocalDate.now(),
+                            tilOgMed = LocalDate.now().plusDays(2),
+                        )
+                    )
                 ),
                 vedlegg = listOf(URL(jpegUrl), URL(finnesIkkeUrl)),
             ).somJson()
@@ -1143,6 +1172,62 @@ class ApplicationTest {
             contentType = "image/png",
             fileName = "big_picture.png",
             expectedCode = HttpStatusCode.PayloadTooLarge
+        )
+    }
+
+    @Test
+    fun `endringsmelding - minimum krav`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = ENDRINGSMELDING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.Accepted,
+            expectedResponse = null,
+            requestEntity =
+            //language=json
+            """
+                {
+                  "søknadId": "234b38fb-aea7-445b-b0a5-c15127bb885d",
+                  "versjon": "1.0.0",
+                  "mottattDato": "2021-10-26T11:57:20.997Z",
+                  "søker": {
+                    "norskIdentitetsnummer": "$gyldigFodselsnummerA"
+                  },
+                  "ytelse": {
+                    "type": "PLEIEPENGER_SYKT_BARN",
+                    "søknadsperiode": ["2021-01-01/2021-01-01"],
+                    "endringsperiode": ["2021-01-01/2021-01-01"],
+                    "barn": {
+                      "norskIdentitetsnummer": "$ikkeMyndigFnr"
+                    },
+                    "arbeidstid": {
+                      "arbeidstakerList": [
+                        {
+                          "organisasjonsnummer": "917755736",
+                          "arbeidstidInfo": {
+                            "perioder": {
+                              "2021-01-01/2021-01-01": {
+                                "jobberNormaltTimerPerDag": "PT1H0M",
+                                "faktiskArbeidTimerPerDag": "PT0H"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "uttak": {
+                      "perioder": {
+                        "2021-01-01/2021-01-01": {
+                          "timerPleieAvBarnetPerDag": "PT7H30M"
+                        }
+                      },
+                      "perioderSomSkalSlettes": {}
+                    }
+                  }
+                }
+            """.trimIndent()
         )
     }
 
