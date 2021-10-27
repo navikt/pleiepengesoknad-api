@@ -6,6 +6,7 @@
   "tenant": "trygdeetaten.no",
   "minReplicas": "1",
   "maxReplicas": "2",
+  "kafka-pool": "nav-dev",
   "ingresses": [
     "https://pleiepengesoknad-api.dev.nav.no",
     "https://pleiepengesoknad-api-gcp.dev.nav.no"

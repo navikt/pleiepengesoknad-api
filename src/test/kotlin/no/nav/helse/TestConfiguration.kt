@@ -2,6 +2,7 @@ package no.nav.helse
 
 import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.WireMockServer
+import no.nav.common.KafkaEnvironment
 import no.nav.helse.dusseldorf.testsupport.jws.ClientCredentials
 import no.nav.helse.dusseldorf.testsupport.jws.LoginService
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2WellKnownUrl
@@ -14,6 +15,7 @@ object TestConfiguration {
 
     fun asMap(
         wireMockServer: WireMockServer? = null,
+        kafkaEnvironment: KafkaEnvironment? = null,
         port : Int = 8080,
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
         pleiepengesoknadMottakUrl : String? = wireMockServer?.getPleiepengesoknadMottakUrl(),
@@ -53,6 +55,11 @@ object TestConfiguration {
         map["nav.storage.passphrase"] = "verySecret"
 
         map["nav.mellomlagring.tid_timer"] = "1"
+
+        // Kafka
+        kafkaEnvironment?.let {
+            map["nav.kafka.bootstrap_servers"] = it.brokersURL
+        }
 
         return map.toMap()
     }

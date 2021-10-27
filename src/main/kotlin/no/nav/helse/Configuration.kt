@@ -7,8 +7,10 @@ import no.nav.helse.dusseldorf.ktor.auth.EnforceEqualsOrContains
 import no.nav.helse.dusseldorf.ktor.auth.issuers
 import no.nav.helse.dusseldorf.ktor.auth.withAdditionalClaimRules
 import no.nav.helse.dusseldorf.ktor.core.getOptionalList
+import no.nav.helse.dusseldorf.ktor.core.getOptionalString
 import no.nav.helse.dusseldorf.ktor.core.getRequiredList
 import no.nav.helse.dusseldorf.ktor.core.getRequiredString
+import no.nav.helse.kafka.KafkaConfig
 import java.net.URI
 import java.time.Duration
 
@@ -65,5 +67,26 @@ data class Configuration(val config: ApplicationConfig) {
             .expireAfterWrite(expiry)
             .maximumSize(maxSize)
             .build()
+    }
+
+    internal fun getKafkaConfig() = config.getRequiredString("nav.kafka.bootstrap_servers", secret = false).let { bootstrapServers ->
+        val trustStore =
+            config.getOptionalString("nav.kafka.truststore_path", secret = false)?.let { trustStorePath ->
+                config.getOptionalString("nav.kafka.credstore_password", secret = true)?.let { credstorePassword ->
+                    Pair(trustStorePath, credstorePassword)
+                }
+            }
+
+        val keyStore = config.getOptionalString("nav.kafka.keystore_path", secret = false)?.let { keystorePath ->
+            config.getOptionalString("nav.kafka.credstore_password", secret = true)?.let { credstorePassword ->
+                Pair(keystorePath, credstorePassword)
+            }
+        }
+
+        KafkaConfig(
+            bootstrapServers = bootstrapServers,
+            trustStore = trustStore,
+            keyStore = keyStore
+        )
     }
 }

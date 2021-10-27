@@ -41,9 +41,12 @@ import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
+import no.nav.helse.endringsmelding.EndringsmeldingService
+import no.nav.helse.endringsmelding.endringsmeldingApis
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.IdTokenStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
+import no.nav.helse.kafka.KafkaProducer
 import no.nav.helse.mellomlagring.MellomlagringService
 import no.nav.helse.mellomlagring.mellomlagringApis
 import no.nav.helse.redis.RedisConfig
@@ -58,7 +61,7 @@ import no.nav.helse.vedlegg.VedleggService
 import no.nav.helse.vedlegg.vedleggApis
 import java.time.Duration
 
-fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 fun Application.pleiepengesoknadapi() {
     val appId = environment.config.id()
@@ -97,7 +100,7 @@ fun Application.pleiepengesoknadapi() {
     install(Authentication) {
         multipleJwtIssuers(
             issuers = issuers,
-            extractHttpAuthHeader = {call ->
+            extractHttpAuthHeader = { call ->
                 idTokenProvider.getIdToken(call)
                     .somHttpAuthHeader()
             }
@@ -133,6 +136,10 @@ fun Application.pleiepengesoknadapi() {
         val barnService = BarnService(
             barnGateway = barnGateway,
             cache = configuration.cache()
+        )
+
+        val kafkaProducer = KafkaProducer(
+            kafkaConfig = configuration.getKafkaConfig()
         )
 
         authenticate(*issuers.allIssuers()) {
@@ -183,15 +190,32 @@ fun Application.pleiepengesoknadapi() {
                 søkerService = søkerService,
                 vedleggService = vedleggService
             )
+
+            endringsmeldingApis(
+                endringsmeldingService = EndringsmeldingService(
+                    kafkaProducer = kafkaProducer
+                ),
+                søkerService = søkerService,
+                idTokenProvider = idTokenProvider
+            )
         }
 
         val healthService = HealthService(
             healthChecks = setOf(
+                kafkaProducer,
                 pleiepengesoknadMottakGateway,
-                HttpRequestHealthCheck(mapOf(
-                    Url.buildURL(baseUrl = configuration.getK9MellomlagringUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
-                    Url.buildURL(baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(), pathParts = listOf("health")) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
-                ))
+                HttpRequestHealthCheck(
+                    mapOf(
+                        Url.buildURL(
+                            baseUrl = configuration.getK9MellomlagringUrl(),
+                            pathParts = listOf("health")
+                        ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
+                        Url.buildURL(
+                            baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
+                            pathParts = listOf("health")
+                        ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
+                    )
+                )
             )
         )
 
@@ -224,13 +248,16 @@ fun Application.pleiepengesoknadapi() {
         correlationIdAndRequestIdInMdc()
         logRequests()
         mdc("id_token_jti") { call ->
-            try { idTokenProvider.getIdToken(call).getId() }
-            catch (cause: Throwable) { null }
+            try {
+                idTokenProvider.getIdToken(call).getId()
+            } catch (cause: Throwable) {
+                null
+            }
         }
     }
 }
 
- fun ObjectMapper.pleiepengesøknadKonfigurert(): ObjectMapper {
+fun ObjectMapper.pleiepengesøknadKonfigurert(): ObjectMapper {
     return dusseldorfConfigured().apply {
         configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
     }
@@ -241,17 +268,17 @@ fun ObjectMapper.pleiepengesøknadMottakKonfigurert(): ObjectMapper {
     return pleiepengesøknadKonfigurert().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
 }
 
- fun ObjectMapper.k9MellomlagringGatewayKonfigurert(): ObjectMapper {
-     return jacksonObjectMapper().dusseldorfConfigured().apply {
-         configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
-     }
+fun ObjectMapper.k9MellomlagringGatewayKonfigurert(): ObjectMapper {
+    return jacksonObjectMapper().dusseldorfConfigured().apply {
+        configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+        propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
+    }
 }
 
- fun ObjectMapper.k9SelvbetjeningOppslagKonfigurert(): ObjectMapper {
-     return jacksonObjectMapper().dusseldorfConfigured().apply {
-         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-         registerModule(JavaTimeModule())
-         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
-     }
+fun ObjectMapper.k9SelvbetjeningOppslagKonfigurert(): ObjectMapper {
+    return jacksonObjectMapper().dusseldorfConfigured().apply {
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        registerModule(JavaTimeModule())
+        propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
+    }
 }

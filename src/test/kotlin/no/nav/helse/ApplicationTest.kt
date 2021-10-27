@@ -40,6 +40,7 @@ import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.skyscreamer.jsonassert.JSONAssert
+import org.skyscreamer.jsonassert.JSONCompareMode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -80,6 +81,9 @@ class ApplicationTest {
             .stubK9OppslagArbeidsgivere()
             .stubK9Mellomlagring()
 
+        private val kafkaEnvironment = KafkaWrapper.bootstrap()
+        private val kafkaKonsumer = kafkaEnvironment.testConsumer()
+
         val redisServer: RedisServer = RedisServer
             .newRedisServer().started()
 
@@ -89,6 +93,7 @@ class ApplicationTest {
             val testConfig = ConfigFactory.parseMap(
                 TestConfiguration.asMap(
                     wireMockServer = wireMockServer,
+                    kafkaEnvironment = kafkaEnvironment,
                     redisServer = redisServer
                 )
             )
@@ -1178,23 +1183,12 @@ class ApplicationTest {
     @Test
     fun `endringsmelding - minimum krav`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val søknadId = UUID.randomUUID().toString()
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = ENDRINGSMELDING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.Accepted,
-            expectedResponse = null,
-            requestEntity =
-            //language=json
-            """
+        //language=json
+        val endringsmelding = """
                 {
-                  "søknadId": "234b38fb-aea7-445b-b0a5-c15127bb885d",
-                  "versjon": "1.0.0",
-                  "mottattDato": "2021-10-26T11:57:20.997Z",
-                  "søker": {
-                    "norskIdentitetsnummer": "$gyldigFodselsnummerA"
-                  },
+                  "søknadId": "$søknadId",
                   "ytelse": {
                     "type": "PLEIEPENGER_SYKT_BARN",
                     "søknadsperiode": ["2021-01-01/2021-01-01"],
@@ -1228,6 +1222,160 @@ class ApplicationTest {
                   }
                 }
             """.trimIndent()
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = ENDRINGSMELDING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.Accepted,
+            expectedResponse = null,
+            requestEntity = endringsmelding
+        )
+
+        hentOgAsserEndringsmelding(
+            //language=json
+            """
+           {
+             "k9Format": {
+               "språk": "NORSK_BOKMÅL",
+               "søker": {
+                 "personIdent": {
+                   "verdi": "02119970078"
+                 }
+               },
+               "ytelse": {
+                 "endringsperiode": [
+                   {
+                     "fraOgMed": "2021-01-01",
+                     "iso8601": "2021-01-01/2021-01-01",
+                     "tilOgMed": "2021-01-01"
+                   }
+                 ],
+                 "søknadInfo": "Optional.empty",
+                 "validator": {},
+                 "nattevåk": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "søknadsperiode": {
+                   "fraOgMed": "2021-01-01",
+                   "iso8601": "2021-01-01/2021-01-01",
+                   "tilOgMed": "2021-01-01"
+                 },
+                 "type": "PLEIEPENGER_SYKT_BARN",
+                 "bosteder": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "lovbestemtFerie": {
+                   "perioder": {}
+                 },
+                 "berørtePersoner": [
+                   {
+                     "personIdent": {
+                       "verdi": "12125012345"
+                     }
+                   }
+                 ],
+                 "omsorg": {
+                   "beskrivelseAvOmsorgsrollen": "Optional.empty",
+                   "relasjonTilBarnet": "Optional.empty"
+                 },
+                 "utenlandsopphold": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "tilsynsordning": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "arbeidstid": {
+                   "frilanserArbeidstidInfo": "Optional.empty",
+                   "arbeidstakerList": [
+                     {
+                       "arbeidstidInfo": {
+                         "perioder": {
+                           "2021-01-01/2021-01-01": {
+                             "faktiskArbeidTimerPerDag": "PT0S",
+                             "jobberNormaltTimerPerDag": "PT1H"
+                           }
+                         }
+                       },
+                       "organisasjonsnummer": {
+                         "verdi": "917755736"
+                       }
+                     }
+                   ],
+                   "selvstendigNæringsdrivendeArbeidstidInfo": "Optional.empty"
+                 },
+                 "infoFraPunsj": "Optional.empty",
+                 "barn": {
+                   "personIdent": {
+                     "verdi": "12125012345"
+                   }
+                 },
+                 "beredskap": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "utledetEndringsperiode": [],
+                 "uttak": {
+                   "perioder": {
+                     "2021-01-01/2021-01-01": {
+                       "timerPleieAvBarnetPerDag": "PT7H30M"
+                     }
+                   },
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "pleietrengende": {
+                   "personIdent": {
+                     "verdi": "12125012345"
+                   }
+                 },
+                 "opptjeningAktivitet": {},
+                 "søknadsperiodeList": [
+                   {
+                     "fraOgMed": "2021-01-01",
+                     "iso8601": "2021-01-01/2021-01-01",
+                     "tilOgMed": "2021-01-01"
+                   }
+                 ],
+                 "trekkKravPerioder": []
+               },
+               "journalposter": [],
+               "begrunnelseForInnsending": {},
+               "versjon": {
+                 "verdi": "1.0.0"
+               },
+               "berørtePersoner": [
+                 {
+                   "personIdent": {
+                     "verdi": "12125012345"
+                   }
+                 }
+               ]
+             },
+             "søker": {
+               "mellomnavn": "HEISANN",
+               "etternavn": "MORSEN",
+               "aktørId": "12345",
+               "fødselsdato": "1999-11-02",
+               "fornavn": "MOR",
+               "fødselsnummer": "02119970078",
+               "myndig": true
+             }
+           }
+            """.trimIndent(),
+            JSONObject(endringsmelding)
+        )
+    }
+
+    private fun hentOgAsserEndringsmelding(forventenEndringsmelding: String, endringsmelding: JSONObject) {
+        val komplettEndringsmelding = kafkaKonsumer.hentEndringsmelding(endringsmelding.getString("søknadId"))
+
+        JSONAssert.assertEquals(
+            forventenEndringsmelding,
+            komplettEndringsmelding.data,
+            JSONCompareMode.LENIENT
         )
     }
 

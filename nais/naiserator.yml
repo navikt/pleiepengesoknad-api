@@ -38,6 +38,8 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
+  kafka:
+    pool: {{kafka-pool}}
   azure:
     application:
       enabled: true
