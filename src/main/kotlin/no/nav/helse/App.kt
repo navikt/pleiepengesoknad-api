@@ -51,7 +51,6 @@ import no.nav.helse.redis.RedisStore
 import no.nav.helse.soker.SøkerGateway
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.søkerApis
-import no.nav.helse.soknad.PleiepengesoknadMottakGateway
 import no.nav.helse.soknad.SøknadService
 import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.K9MellomlagringGateway

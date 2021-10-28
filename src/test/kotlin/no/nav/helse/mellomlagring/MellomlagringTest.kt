@@ -1,7 +1,6 @@
 package no.nav.helse.mellomlagring
 
 import com.github.fppt.jedismock.RedisServer
-import io.ktor.util.*
 import no.nav.helse.redis.RedisConfig
 import no.nav.helse.redis.RedisStore
 import org.awaitility.Awaitility
@@ -9,13 +8,8 @@ import org.awaitility.Durations.ONE_SECOND
 import org.junit.AfterClass
 import org.slf4j.LoggerFactory
 import java.util.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.*
 
-@KtorExperimentalAPI
 class MellomlagringTest {
 
     private companion object {
@@ -118,7 +112,7 @@ class MellomlagringTest {
 
         val mellomlagring = mellomlagringService.getMellomlagring("test")
         assertNotNull(redisStore.get("mellomlagring_test"))
-        assertNotEquals(mellomlagring, redisStore.get("test"))
+        assertNotEquals(mellomlagring, redisStore.get("mellomlagring_test"))
     }
 
 }

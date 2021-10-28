@@ -1,6 +1,9 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Søknad
+import no.nav.helse.soknad.Virksomhet
 import no.nav.k9.søknad.felles.opptjening.Frilanser
 import no.nav.k9.søknad.felles.opptjening.OpptjeningAktivitet
 import no.nav.k9.søknad.felles.opptjening.SelvstendigNæringsdrivende
@@ -8,7 +11,6 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.VirksomhetType
-import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import java.time.Duration
 import java.time.LocalDate
 
@@ -17,7 +19,7 @@ fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
 fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 internal fun Søknad.byggK9OpptjeningAktivitet() = OpptjeningAktivitet(
-    selvstendigVirksomheter.tilK9SelvstendigNæringsdrivende(),
+    selvstendigNæringsdrivende?.tilK9SelvstendigNæringsdrivende(),
     frilans?.tilK9Frilanser(),
     null,
     null
@@ -27,25 +29,19 @@ internal fun Frilans.tilK9Frilanser(): Frilanser = Frilanser()
     .medStartDato(startdato)
     .medSluttDato(sluttdato)
 
-internal fun ArbeidsgiverDetaljer.tilK9Arbeidstaker(
-    periode: Periode
-): List<Arbeidstaker>? {
-    if (organisasjoner.isEmpty()) return null
+fun no.nav.helse.soknad.SelvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> {
 
-    return organisasjoner.map { organisasjon ->
-        Arbeidstaker(
-            null, //K9 format vil ikke ha både fnr og org nummer
-            Organisasjonsnummer.of(organisasjon.organisasjonsnummer),
-            organisasjon.tilK9ArbeidstidInfo(periode)
+    return listOf(
+        SelvstendigNæringsdrivende(
+            mapOf(
+                Periode(
+                    virksomhet.fraOgMed,
+                    virksomhet.tilOgMed
+                ) to virksomhet.tilK9SelvstendingNæringsdrivendeInfo()
+            ),
+            Organisasjonsnummer.of(virksomhet.organisasjonsnummer),
+            virksomhet.navnPåVirksomheten
         )
-    }
-}
-
-fun List<Virksomhet>.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> = map { virksomhet ->
-    SelvstendigNæringsdrivende(
-        mapOf(Periode(virksomhet.fraOgMed, virksomhet.tilOgMed) to virksomhet.tilK9SelvstendingNæringsdrivendeInfo()),
-        Organisasjonsnummer.of(virksomhet.organisasjonsnummer),
-        virksomhet.navnPåVirksomheten
     )
 }
 

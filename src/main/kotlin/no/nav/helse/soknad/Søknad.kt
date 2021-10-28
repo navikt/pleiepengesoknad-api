@@ -1,6 +1,5 @@
 package no.nav.helse.soknad
 
-import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.helse.barn.Barn
 import java.net.URL
@@ -14,7 +13,7 @@ data class Søknad(
     val søknadId: String = UUID.randomUUID().toString(),
     val språk: Språk? = null,
     val barn: BarnDetaljer,
-    val arbeidsgivere: ArbeidsgiverDetaljer,
+    val arbeidsgivere: List<ArbeidsforholdAnsatt>? = null,
     val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
@@ -27,15 +26,11 @@ data class Søknad(
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val omsorgstilbudV2: OmsorgstilbudV2? = null,
+    val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans? = null,
-    val selvstendigVirksomheter: List<Virksomhet> = listOf(),
-    val selvstendigArbeidsforhold: Arbeidsforhold? = null,
-    val skalBekrefteOmsorg: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    val skalPassePåBarnetIHelePerioden: Boolean? = null, // TODO: Fjern optional når prodsatt.
-    val beskrivelseOmsorgsrollen: String? = null, // TODO: Fjern optional når prodsatt.
+    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende? = null,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
     val harVærtEllerErVernepliktig: Boolean? = null
@@ -164,15 +159,8 @@ enum class Årsak {
 }
 
 data class Arbeidsforhold(
-    val skalJobbe:SkalJobbe,
     val arbeidsform: Arbeidsform,
     val jobberNormaltTimer: Double,
-    val skalJobbeProsent: Double
+    val historiskArbeid: ArbeidIPeriode? = null,
+    val planlagtArbeid: ArbeidIPeriode? = null
 )
-
-enum class SkalJobbe {
-    @JsonAlias("ja") JA,
-    @JsonAlias("nei") NEI,
-    @JsonAlias("redusert") REDUSERT,
-    @JsonAlias("vetIkke") VET_IKKE
-}

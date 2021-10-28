@@ -49,16 +49,19 @@ internal class SerDesTest {
                 fødselsdato = LocalDate.parse("2018-01-01"),
                 navn = "Barn Barnesen"
             ),
-            arbeidsgivere = ArbeidsgiverDetaljer(listOf(
-                OrganisasjonDetaljer(
+            arbeidsgivere = listOf(
+                ArbeidsforholdAnsatt(
                     navn = "Org",
                     organisasjonsnummer = "917755736",
-                    skalJobbeProsent = 10.0,
-                    jobberNormaltTimer = 10.0,
-                    skalJobbe = SkalJobbe.REDUSERT,
-                    arbeidsform = Arbeidsform.FAST
+                    erAnsatt = true,
+                    arbeidsforhold = Arbeidsforhold(
+                        arbeidsform = Arbeidsform.FAST,
+                        jobberNormaltTimer = 30.0,
+                        historiskArbeid = null,
+                        planlagtArbeid = null
+                    )
                 )
-            )),
+            ),
             vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
             fraOgMed = LocalDate.now(),
             tilOgMed = LocalDate.now().plusDays(10),
@@ -66,8 +69,8 @@ internal class SerDesTest {
                 harNattevåk = true,
                 tilleggsinformasjon = "Har nattevåk"
             ),
-            selvstendigVirksomheter = listOf(
-                Virksomhet(
+            selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                virksomhet = Virksomhet(
                     næringstyper = listOf(Næringstyper.ANNEN),
                     fiskerErPåBladB = false,
                     fraOgMed = LocalDate.parse("2020-01-01"),
@@ -89,9 +92,14 @@ internal class SerDesTest {
                     ),
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
                     harFlereAktiveVirksomheter = true
+                ),
+                arbeidsforhold = Arbeidsforhold(
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    historiskArbeid = null,
+                    planlagtArbeid = null
                 )
             ),
-            skalPassePåBarnetIHelePerioden = true,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -105,21 +113,20 @@ internal class SerDesTest {
                 utenlandsoppholdSiste12Mnd = listOf(
                     Bosted(
                         fraOgMed = LocalDate.parse("2017-01-01"),
-                        tilOgMed =  LocalDate.parse("2017-01-10"),
+                        tilOgMed = LocalDate.parse("2017-01-10"),
                         landnavn = "Tyskland",
                         landkode = "DEU"
-                    ))
+                    )
+                )
             ),
             harMedsøker = true,
             beredskap = Beredskap(
                 beredskap = true,
                 tilleggsinformasjon = "Ikke beredskap"
             ),
-            beskrivelseOmsorgsrollen = "En kort beskrivelse",
             samtidigHjemme = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
-            skalBekrefteOmsorg = true,
             utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
                 Utenlandsopphold(
                     fraOgMed = LocalDate.parse("2019-10-10"),
@@ -617,16 +624,19 @@ internal class SerDesTest {
                 etternavn = "Nordmann",
                 fornavn = "Ola"
             ),
-            arbeidsgivere = ArbeidsgiverDetaljer(listOf(
-                OrganisasjonDetaljer(
+            arbeidsgivere = listOf(
+                ArbeidsforholdAnsatt(
                     navn = "Org",
                     organisasjonsnummer = "917755736",
-                    skalJobbeProsent = 10.0,
-                    jobberNormaltTimer = 10.0,
-                    skalJobbe = SkalJobbe.REDUSERT,
-                    arbeidsform = Arbeidsform.FAST
+                    erAnsatt = true,
+                    arbeidsforhold = Arbeidsforhold(
+                        arbeidsform = Arbeidsform.FAST,
+                        jobberNormaltTimer = 30.0,
+                        historiskArbeid = null,
+                        planlagtArbeid = null
+                    )
                 )
-            )),
+            ),
             vedlegg = listOf(
                 Vedlegg(
                     content = "Test".toByteArray(),
@@ -641,8 +651,8 @@ internal class SerDesTest {
                 harNattevåk = true,
                 tilleggsinformasjon = "Har nattevåk"
             ),
-            selvstendigVirksomheter = listOf(
-                Virksomhet(
+            selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                virksomhet = Virksomhet(
                     næringstyper = listOf(Næringstyper.ANNEN),
                     fiskerErPåBladB = false,
                     fraOgMed = LocalDate.parse("2020-01-01"),
@@ -664,15 +674,14 @@ internal class SerDesTest {
                     ),
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
                     harFlereAktiveVirksomheter = true
+                ),
+                arbeidsforhold = Arbeidsforhold(
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    historiskArbeid = null,
+                    planlagtArbeid = null
                 )
             ),
-            selvstendigArbeidsforhold = Arbeidsforhold(
-                skalJobbe = SkalJobbe.NEI,
-                arbeidsform = Arbeidsform.FAST,
-                jobberNormaltTimer = 40.0,
-                skalJobbeProsent = 0.0
-            ),
-            skalPassePåBarnetIHelePerioden = true,
             medlemskap = Medlemskap(
                 harBoddIUtlandetSiste12Mnd = true,
                 skalBoIUtlandetNeste12Mnd = true,
@@ -698,11 +707,9 @@ internal class SerDesTest {
                 beredskap = true,
                 tilleggsinformasjon = "Ikke beredskap"
             ),
-            beskrivelseOmsorgsrollen = "En kort beskrivelse",
             samtidigHjemme = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
-            skalBekrefteOmsorg = true,
             utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(
                 skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
                     Utenlandsopphold(
@@ -773,10 +780,10 @@ internal class SerDesTest {
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
-                    skalJobbe = SkalJobbe.NEI,
                     arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
-                    skalJobbeProsent = 0.0
+                    historiskArbeid = null,
+                    planlagtArbeid = null
                 )
             ),
             harVærtEllerErVernepliktig = true,

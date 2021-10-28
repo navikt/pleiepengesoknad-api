@@ -2,19 +2,7 @@ package no.nav.helse
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.k9format.tilK9Format
-import no.nav.helse.soknad.Arbeidsform
-import no.nav.helse.soknad.ArbeidsgiverDetaljer
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.BarnRelasjon
-import no.nav.helse.soknad.Bosted
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.Medlemskap
-import no.nav.helse.soknad.OrganisasjonDetaljer
-import no.nav.helse.soknad.SkalJobbe
-import no.nav.helse.soknad.Språk
-import no.nav.helse.soknad.Søknad
-import no.nav.helse.soknad.UtenlandsoppholdIPerioden
-import no.nav.helse.soknad.validate
+import no.nav.helse.soknad.*
 import org.junit.jupiter.api.Assertions
 import java.net.URL
 import java.time.LocalDate
@@ -27,7 +15,7 @@ class SoknadValidationTest {
     fun `Feiler på søknad dersom utenlandsopphold har til og fra dato som ikke kommer i rett rekkefølge`() {
         Assertions.assertThrows(Throwblem::class.java) {
             val søknad = soknad(
-                harMedsoker = false, skalJobbeProsent = 0.0, medlemskap =  Medlemskap(
+                harMedsoker = false, medlemskap =  Medlemskap(
                     harBoddIUtlandetSiste12Mnd = false,
                     skalBoIUtlandetNeste12Mnd = true,
                     utenlandsoppholdNeste12Mnd = listOf(
@@ -48,7 +36,7 @@ class SoknadValidationTest {
     fun `Feiler på søknad dersom utenlandsopphold mangler landkode`() {
         Assertions.assertThrows(Throwblem::class.java) {
             val søknad = soknad(
-                harMedsoker = false, skalJobbeProsent = 0.0, medlemskap = Medlemskap(
+                harMedsoker = false, medlemskap = Medlemskap(
                     harBoddIUtlandetSiste12Mnd = false,
                     skalBoIUtlandetNeste12Mnd = true,
                     utenlandsoppholdNeste12Mnd = listOf(
@@ -66,23 +54,10 @@ class SoknadValidationTest {
     }
 
     @Test
-    fun `Skal ikke feile ved opphold på en dag`() {
-        Assertions.assertDoesNotThrow {
-            val søknad = soknad(
-                harMedsoker = false, skalJobbeProsent = 0.0, skalJobbe = SkalJobbe.NEI
-            )
-            val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
-
-            søknad.validate(k9Format)
-        }
-    }
-
-    @Test
     fun `Skal feile dersom barnRelasjon er ANNET men barnRelasjonBeskrivelse er tom`() {
         Assertions.assertThrows(Throwblem::class.java) {
             val søknad = soknad(
-                harMedsoker = false,
-                skalJobbe = SkalJobbe.NEI
+                harMedsoker = false
             ).copy(
                 barnRelasjon = BarnRelasjon.ANNET,
                 barnRelasjonBeskrivelse = null
@@ -96,10 +71,6 @@ class SoknadValidationTest {
     private fun soknad(
         harMedsoker: Boolean = true,
         samtidigHjemme: Boolean? = false,
-        skalJobbeProsent: Double = 0.0,
-        vetIkkeEkstrainfo: String? = null,
-        jobberNormalTimer: Double = 0.0,
-        skalJobbe: SkalJobbe = SkalJobbe.JA,
         medlemskap: Medlemskap = Medlemskap(
             harBoddIUtlandetSiste12Mnd = false,
             skalBoIUtlandetNeste12Mnd = true,
@@ -120,16 +91,16 @@ class SoknadValidationTest {
             fødselsdato = LocalDate.now(),
             navn = null
         ),
-        arbeidsgivere = ArbeidsgiverDetaljer(
-            listOf(
-                OrganisasjonDetaljer(
-                    navn = "Org",
-                    organisasjonsnummer = "917755736",
-                    skalJobbeProsent = skalJobbeProsent,
-                    jobberNormaltTimer = jobberNormalTimer,
-                    vetIkkeEkstrainfo = vetIkkeEkstrainfo,
-                    skalJobbe = skalJobbe,
-                    arbeidsform = Arbeidsform.TURNUS
+        arbeidsgivere = listOf(
+            ArbeidsforholdAnsatt(
+                navn = "Org",
+                organisasjonsnummer = "917755736",
+                erAnsatt = true,
+                arbeidsforhold = Arbeidsforhold(
+                    arbeidsform = Arbeidsform.FAST,
+                    jobberNormaltTimer = 40.0,
+                    historiskArbeid = null,
+                    planlagtArbeid = null
                 )
             )
         ),

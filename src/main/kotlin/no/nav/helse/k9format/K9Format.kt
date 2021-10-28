@@ -32,13 +32,13 @@ import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.Tilsynsordning as K9Tilsynsordning
 const val DAGER_PER_UKE = 5
 private val k9FormatVersjon = Versjon.of("1.0.0")
 
-fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
+fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, dagensDato: LocalDate = LocalDate.now()): K9Søknad {
     val søknadsperiode = Periode(fraOgMed, tilOgMed)
     val psb = PleiepengerSyktBarn()
         .medSøknadsperiode(søknadsperiode)
         .medBarn(barn.tilK9Barn())
         .medOpptjeningAktivitet(byggK9OpptjeningAktivitet())
-        .medArbeidstid(byggK9Arbeidstid())
+        .medArbeidstid(byggK9Arbeidstid(dagensDato))
         .medUttak(byggK9Uttak(søknadsperiode))
         .medBosteder(medlemskap.tilK9Bosteder())
         .medSøknadInfo(byggK9DataBruktTilUtledning())
@@ -48,7 +48,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
 
     when {
-        omsorgstilbudV2 != null -> psb.medTilsynsordning(omsorgstilbudV2.tilK9Tilsynsordning(søknadsperiode))
+        omsorgstilbud != null -> psb.medTilsynsordning(omsorgstilbud.tilK9Tilsynsordning(søknadsperiode, dagensDato))
         else -> psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
     }
 
@@ -115,7 +115,7 @@ fun tilK9Tilsynsordning0Timer(periode: Periode) = K9Tilsynsordning().apply {
     )
 }
 
-fun OmsorgstilbudV2.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = LocalDate.now()): K9Tilsynsordning = K9Tilsynsordning().apply {
+fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = LocalDate.now()): K9Tilsynsordning = K9Tilsynsordning().apply {
 
     if (historisk == null && planlagt == null) return tilK9Tilsynsordning0Timer(periode)
 
