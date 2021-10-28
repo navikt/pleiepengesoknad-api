@@ -5,15 +5,9 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import no.nav.helse.ENDRINGSMELDING_URL
-import no.nav.helse.ENDRINGSMELDING_VALIDERING_URL
 import no.nav.helse.SOKNAD_VALIDERING_URL
 import no.nav.helse.SØKNAD_URL
 import no.nav.helse.barn.BarnService
-import no.nav.helse.dusseldorf.ktor.core.ParameterType
-import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
-import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.auth.IdTokenProvider
@@ -26,8 +20,6 @@ import no.nav.helse.somJson
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
-import no.nav.k9.søknad.felles.Feil
-import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
@@ -80,46 +72,6 @@ fun Route.soknadApis(
 
         logger.trace("Søknad registrert.")
         call.respond(HttpStatusCode.Accepted)
-    }
-
-    post(ENDRINGSMELDING_URL) {
-        val endringsMelding = call.receive<no.nav.k9.søknad.Søknad>()
-        val k9FormatValideringsFeil: MutableList<Feil> = PleiepengerSyktBarnSøknadValidator().valider(endringsMelding)
-        if (k9FormatValideringsFeil.isNotEmpty()) throw Throwblem(
-            problemDetails = ValidationProblemDetails(
-                violations = k9FormatValideringsFeil.map {
-                    Violation(
-                        parameterName = it.felt,
-                        parameterType = ParameterType.ENTITY,
-                        reason = it.feilmelding,
-                        invalidValue = "K9-format feilkode: ${it.feilkode}",
-                    )
-                }
-                    .sortedBy { it.reason }.toMutableSet()
-            )
-        )
-
-        call.respond(HttpStatusCode.Accepted)
-    }
-
-    post(ENDRINGSMELDING_VALIDERING_URL) {
-        val endringsMelding = call.receive<no.nav.k9.søknad.Søknad>()
-        val k9FormatValideringsFeil: MutableList<Feil> = PleiepengerSyktBarnSøknadValidator().valider(endringsMelding)
-        if (k9FormatValideringsFeil.isNotEmpty()) throw Throwblem(
-            problemDetails = ValidationProblemDetails(
-                violations = k9FormatValideringsFeil.map {
-                    Violation(
-                        parameterName = it.felt,
-                        parameterType = ParameterType.ENTITY,
-                        reason = it.feilmelding,
-                        invalidValue = "K9-format feilkode: ${it.feilkode}",
-                    )
-                }
-                    .sortedBy { it.reason }.toMutableSet()
-            )
-        )
-
-        call.respond(HttpStatusCode.OK)
     }
 
 
