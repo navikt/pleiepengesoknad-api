@@ -1196,9 +1196,6 @@ class ApplicationTest {
                   "harForståttRettigheterOgPlikter": true,
                   "ytelse": {
                     "type": "PLEIEPENGER_SYKT_BARN",
-                    "barn": {
-                      "norskIdentitetsnummer": "$ikkeMyndigFnr"
-                    },
                     "arbeidstid": {
                       "arbeidstakerList": [
                         {
@@ -1255,7 +1252,7 @@ class ApplicationTest {
                  "berørtePersoner": [
                    {
                      "personIdent": {
-                       "verdi": "12125012345"
+                       "verdi": "10987654321"
                      }
                    }
                  ],
@@ -1293,7 +1290,7 @@ class ApplicationTest {
                  "infoFraPunsj": "Optional.empty",
                  "barn": {
                    "personIdent": {
-                     "verdi": "12125012345"
+                     "verdi": "10987654321"
                    }
                  },
                  "beredskap": {
@@ -1306,7 +1303,7 @@ class ApplicationTest {
                  },
                  "pleietrengende": {
                    "personIdent": {
-                     "verdi": "12125012345"
+                     "verdi": "10987654321"
                    }
                  },
                  "opptjeningAktivitet": {},
@@ -1321,7 +1318,7 @@ class ApplicationTest {
                "berørtePersoner": [
                  {
                    "personIdent": {
-                     "verdi": "12125012345"
+                     "verdi": "10987654321"
                    }
                  }
                ]

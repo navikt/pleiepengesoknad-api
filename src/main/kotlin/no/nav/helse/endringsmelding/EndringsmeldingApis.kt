@@ -14,6 +14,7 @@ import no.nav.helse.soker.SøkerService
 import no.nav.helse.soknad.hentIdTokenOgCallId
 import no.nav.k9.søknad.Søknad
 import no.nav.k9.søknad.felles.Versjon
+import no.nav.k9.søknad.felles.personopplysninger.Barn
 import no.nav.k9.søknad.felles.personopplysninger.Søker
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.SøknadId
@@ -39,11 +40,14 @@ fun Route.endringsmeldingApis(
 
         logger.info("Mottar og validerer endringsmelding...")
         val søknadsopplysninger = innsynGateway.hentSøknadsopplysninger(idToken, callId)
+        val ytelse = søknadsopplysninger.getYtelse<PleiepengerSyktBarn>()
 
         val komplettEndringsmelding = call.receive<Endringsmelding>()
-            .tilKomplettEndringsmelding(søker)
-            .forsikreValidert(søknadsopplysninger.getYtelse<PleiepengerSyktBarn>().søknadsperiode)
+            .tilKomplettEndringsmelding(søker, ytelse.barn)
+            .forsikreValidert(ytelse.søknadsperiode)
         logger.info("Endringsmelding validert.")
+
+        val barn = komplettEndringsmelding.k9Format.getYtelse<PleiepengerSyktBarn>().barn
 
         endringsmeldingService.registrer(
             komplettEndringsmelding = komplettEndringsmelding,
@@ -59,7 +63,7 @@ fun Route.endringsmeldingApis(
         val søknadsopplysninger = innsynGateway.hentSøknadsopplysninger(idToken, callId)
 
         call.receive<Endringsmelding>()
-            .tilKomplettEndringsmelding(søker)
+            .tilKomplettEndringsmelding(søker, søknadsopplysninger.getYtelse<PleiepengerSyktBarn>().barn)
             .forsikreValidert(søknadsopplysninger.getYtelse<PleiepengerSyktBarn>().søknadsperiode)
 
         call.respond(HttpStatusCode.OK)
@@ -68,6 +72,7 @@ fun Route.endringsmeldingApis(
 
 private fun Endringsmelding.tilKomplettEndringsmelding(
     søker: no.nav.helse.soker.Søker,
+    barn: Barn,
 ) = KomplettEndringsmelding(
     søker = søker,
     harBekreftetOpplysninger = harBekreftetOpplysninger,
@@ -77,6 +82,6 @@ private fun Endringsmelding.tilKomplettEndringsmelding(
         Versjon("1.0.0"),
         ZonedDateTime.now(ZoneOffset.UTC),
         Søker(NorskIdentitetsnummer.of(søker.fødselsnummer)),
-        ytelse
+        ytelse.medBarn(barn)
     )
 )
