@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
+import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.mellomlagring.started
 import no.nav.helse.soknad.ArbeidIPeriode
 import no.nav.helse.soknad.Arbeidsforhold
@@ -36,6 +37,7 @@ import no.nav.helse.wiremock.stubK9OppslagSoker
 import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
 import no.nav.helse.wiremock.stubOppslagHealth
 import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
+import no.nav.helse.wiremock.stubSifInnsynApi
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -80,6 +82,7 @@ class ApplicationTest {
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
             .stubK9Mellomlagring()
+            .stubSifInnsynApi(søknad = defaultK9FormatPSB())
 
         private val kafkaEnvironment = KafkaWrapper.bootstrap()
         private val kafkaKonsumer = kafkaEnvironment.testConsumer()
@@ -1181,7 +1184,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `endringsmelding - minimum krav`() {
+    fun `endringsmelding - endringer innefor gyldighetsperiode`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val søknadId = UUID.randomUUID().toString()
 
@@ -1191,8 +1194,6 @@ class ApplicationTest {
                   "søknadId": "$søknadId",
                   "ytelse": {
                     "type": "PLEIEPENGER_SYKT_BARN",
-                    "søknadsperiode": ["2021-01-01/2021-01-01"],
-                    "endringsperiode": ["2021-01-01/2021-01-01"],
                     "barn": {
                       "norskIdentitetsnummer": "$ikkeMyndigFnr"
                     },
@@ -1210,14 +1211,6 @@ class ApplicationTest {
                           }
                         }
                       ]
-                    },
-                    "uttak": {
-                      "perioder": {
-                        "2021-01-01/2021-01-01": {
-                          "timerPleieAvBarnetPerDag": "PT7H30M"
-                        }
-                      },
-                      "perioderSomSkalSlettes": {}
                     }
                   }
                 }
@@ -1243,23 +1236,11 @@ class ApplicationTest {
                  }
                },
                "ytelse": {
-                 "endringsperiode": [
-                   {
-                     "fraOgMed": "2021-01-01",
-                     "iso8601": "2021-01-01/2021-01-01",
-                     "tilOgMed": "2021-01-01"
-                   }
-                 ],
                  "søknadInfo": "Optional.empty",
                  "validator": {},
                  "nattevåk": {
                    "perioder": {},
                    "perioderSomSkalSlettes": {}
-                 },
-                 "søknadsperiode": {
-                   "fraOgMed": "2021-01-01",
-                   "iso8601": "2021-01-01/2021-01-01",
-                   "tilOgMed": "2021-01-01"
                  },
                  "type": "PLEIEPENGER_SYKT_BARN",
                  "bosteder": {
@@ -1317,13 +1298,8 @@ class ApplicationTest {
                    "perioder": {},
                    "perioderSomSkalSlettes": {}
                  },
-                 "utledetEndringsperiode": [],
                  "uttak": {
-                   "perioder": {
-                     "2021-01-01/2021-01-01": {
-                       "timerPleieAvBarnetPerDag": "PT7H30M"
-                     }
-                   },
+                   "perioder": {},
                    "perioderSomSkalSlettes": {}
                  },
                  "pleietrengende": {
@@ -1332,13 +1308,7 @@ class ApplicationTest {
                    }
                  },
                  "opptjeningAktivitet": {},
-                 "søknadsperiodeList": [
-                   {
-                     "fraOgMed": "2021-01-01",
-                     "iso8601": "2021-01-01/2021-01-01",
-                     "tilOgMed": "2021-01-01"
-                   }
-                 ],
+                 "søknadsperiodeList": [],
                  "trekkKravPerioder": []
                },
                "journalposter": [],
@@ -1366,6 +1336,66 @@ class ApplicationTest {
            }
             """.trimIndent(),
             JSONObject(endringsmelding)
+        )
+    }
+
+    @Test
+    fun `endringsmelding - endringer utenfor gyldighetsperiode`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val søknadId = UUID.randomUUID().toString()
+
+        //language=json
+        val endringsmelding = """
+                {
+                  "søknadId": "$søknadId",
+                  "ytelse": {
+                    "type": "PLEIEPENGER_SYKT_BARN",
+                    "barn": {
+                      "norskIdentitetsnummer": "$ikkeMyndigFnr"
+                    },
+                    "arbeidstid": {
+                      "arbeidstakerList": [
+                        {
+                          "organisasjonsnummer": "917755736",
+                          "arbeidstidInfo": {
+                            "perioder": {
+                              "2021-01-07/2021-01-07": {
+                                "jobberNormaltTimerPerDag": "PT1H0M",
+                                "faktiskArbeidTimerPerDag": "PT0H"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+            """.trimIndent()
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = ENDRINGSMELDING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse =
+            //language=json
+            """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "ytelse.arbeidstid.arbeidstakerList[0].perioder",
+                      "reason": "Perioden er utenfor gyldig interval. Gyldig interva: ([[2021-01-01, 2021-01-01]]), Ugyldig periode: 2021-01-07/2021-01-07",
+                      "invalid_value": "K9-format feilkode: ugyldigPeriode"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            requestEntity = endringsmelding
         )
     }
 

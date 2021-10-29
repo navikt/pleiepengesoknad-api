@@ -46,6 +46,7 @@ import no.nav.helse.endringsmelding.endringsmeldingApis
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.IdTokenStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
+import no.nav.helse.innsyn.InnsynGateway
 import no.nav.helse.kafka.KafkaProducer
 import no.nav.helse.mellomlagring.MellomlagringService
 import no.nav.helse.mellomlagring.mellomlagringApis
@@ -196,6 +197,7 @@ fun Application.pleiepengesoknadapi() {
                     kafkaProducer = kafkaProducer
                 ),
                 søkerService = søkerService,
+                innsynGateway = InnsynGateway(baseUrl = configuration.getSifInnsynApiUrl()),
                 idTokenProvider = idTokenProvider
             )
         }

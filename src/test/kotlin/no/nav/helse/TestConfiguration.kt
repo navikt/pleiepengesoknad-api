@@ -10,6 +10,7 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.getLoginServiceV1WellKnownUr
 import no.nav.helse.wiremock.getK9MellomlagringUrl
 import no.nav.helse.wiremock.getK9OppslagUrl
 import no.nav.helse.wiremock.getPleiepengesoknadMottakUrl
+import no.nav.helse.wiremock.getSifInnsynApiUrl
 
 object TestConfiguration {
 
@@ -18,6 +19,7 @@ object TestConfiguration {
         kafkaEnvironment: KafkaEnvironment? = null,
         port : Int = 8080,
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
+        sifInnaynApiUrl: String? = wireMockServer?.getSifInnsynApiUrl(),
         pleiepengesoknadMottakUrl : String? = wireMockServer?.getPleiepengesoknadMottakUrl(),
         k9MellomlagringUrl : String? = wireMockServer?.getK9MellomlagringUrl(),
         corsAdresses : String = "http://localhost:8080",
@@ -28,6 +30,7 @@ object TestConfiguration {
             Pair("ktor.deployment.port", "$port"),
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
             Pair("nav.gateways.k9_oppslag_url", "$k9OppslagUrl"),
+            Pair("nav.gateways.sif_innsyn_api_url", "$sifInnaynApiUrl"),
             Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
             Pair("nav.gateways.k9_mellomlagring_url", "$k9MellomlagringUrl"),
             Pair("nav.cors.addresses", corsAdresses),
