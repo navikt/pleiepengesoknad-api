@@ -12,6 +12,29 @@ import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
 fun KomplettEndringsmelding.validerering(gyldigEndringsperiode: Periode) = mutableListOf<Violation>().apply {
     søker.validate()
 
+    if (!harBekreftetOpplysninger) {
+        add(
+            Violation(
+                parameterName = "harBekreftetOpplysninger",
+                parameterType = ParameterType.ENTITY,
+                reason = "Opplysningene må bekreftes for å sende inn endringsmelding",
+                invalidValue = false
+
+            )
+        )
+    }
+    if (!harForståttRettigheterOgPlikter) {
+        add(
+            Violation(
+                parameterName = "harForstattRettigheterOgPlikter",
+                parameterType = ParameterType.ENTITY,
+                reason = "Må ha forstått rettigheter og plikter for å sende inn endringsmelding",
+                invalidValue = false
+
+            )
+        )
+    }
+
     val k9FormatValideringsFeil: MutableList<Feil> =
         PleiepengerSyktBarnSøknadValidator().valider(k9Format, listOf(gyldigEndringsperiode))
 

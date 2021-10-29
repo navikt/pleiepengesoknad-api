@@ -1192,6 +1192,8 @@ class ApplicationTest {
         val endringsmelding = """
                 {
                   "søknadId": "$søknadId",
+                  "harBekreftetOpplysninger": true,
+                  "harForståttRettigheterOgPlikter": true,
                   "ytelse": {
                     "type": "PLEIEPENGER_SYKT_BARN",
                     "barn": {
@@ -1348,6 +1350,8 @@ class ApplicationTest {
         val endringsmelding = """
                 {
                   "søknadId": "$søknadId",
+                  "harBekreftetOpplysninger": true,
+                  "harForståttRettigheterOgPlikter": true,
                   "ytelse": {
                     "type": "PLEIEPENGER_SYKT_BARN",
                     "barn": {

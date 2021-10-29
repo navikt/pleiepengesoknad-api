@@ -20,6 +20,9 @@ import no.nav.k9.søknad.felles.type.SøknadId
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.util.*
 
 private val logger: Logger = LoggerFactory.getLogger("no.nav.helse.endringsmelding.EndringsmeldingApisKt")
 
@@ -63,12 +66,16 @@ fun Route.endringsmeldingApis(
     }
 }
 
-private fun Endringsmelding.tilKomplettEndringsmelding(søker: no.nav.helse.soker.Søker) = KomplettEndringsmelding(
+private fun Endringsmelding.tilKomplettEndringsmelding(
+    søker: no.nav.helse.soker.Søker,
+) = KomplettEndringsmelding(
     søker = søker,
+    harBekreftetOpplysninger = harBekreftetOpplysninger,
+    harForståttRettigheterOgPlikter = harForståttRettigheterOgPlikter,
     k9Format = Søknad(
-        SøknadId(søknadId.toString()),
-        Versjon(versjon),
-        mottattDato,
+        søknadId?.let { SøknadId(it.toString()) } ?: SøknadId(UUID.randomUUID().toString()),
+        Versjon("1.0.0"),
+        ZonedDateTime.now(ZoneOffset.UTC),
         Søker(NorskIdentitetsnummer.of(søker.fødselsnummer)),
         ytelse
     )
