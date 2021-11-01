@@ -39,7 +39,7 @@ fun Route.endringsmeldingApis(
         val søker = søkerService.getSoker(idToken, callId)
 
         logger.info("Mottar og validerer endringsmelding...")
-        val søknadsopplysninger = innsynGateway.hentSøknadsopplysninger(idToken, callId)
+        val søknadsopplysninger = innsynGateway.hentSøknadsopplysninger(idToken, callId).søknad
         val ytelse = søknadsopplysninger.getYtelse<PleiepengerSyktBarn>()
 
         val komplettEndringsmelding = call.receive<Endringsmelding>()
@@ -58,7 +58,7 @@ fun Route.endringsmeldingApis(
     post(ENDRINGSMELDING_VALIDERING_URL) {
         val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
         val søker = søkerService.getSoker(idToken, callId)
-        val søknadsopplysninger = innsynGateway.hentSøknadsopplysninger(idToken, callId)
+        val søknadsopplysninger = innsynGateway.hentSøknadsopplysninger(idToken, callId).søknad
 
         call.receive<Endringsmelding>()
             .tilKomplettEndringsmelding(søker, søknadsopplysninger.getYtelse<PleiepengerSyktBarn>().barn)

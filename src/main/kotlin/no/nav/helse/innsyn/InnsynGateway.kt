@@ -31,7 +31,7 @@ class InnsynGateway(
     suspend fun hentSøknadsopplysninger(
         idToken: IdToken,
         callId: CallId
-    ): Søknad {
+    ): K9SakInnsynSøknad {
         val innsynSakUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("innsyn", "sak")
@@ -51,7 +51,7 @@ class InnsynGateway(
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<Søknad>(success) },
+                { success -> objectMapper.readValue<K9SakInnsynSøknad>(success) },
                 { error ->
                     logger.error(
                         "Error response = '${
@@ -80,4 +80,9 @@ class InnsynGateway(
             )
     }
 }
+
+data class K9SakInnsynSøknad(
+    val søknad: Søknad
+)
+
 

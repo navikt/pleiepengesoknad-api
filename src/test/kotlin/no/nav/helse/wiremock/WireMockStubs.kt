@@ -123,7 +123,11 @@ internal fun WireMockServer.stubSifInnsynApi(søknad: Søknad): WireMockServer {
         WireMock.any(WireMock.urlMatching(".*$sifInnsynApiPath/innsyn/sak"))
             .willReturn(
                 WireMock.aResponse()
-                    .withBody(Søknad.SerDes.serialize(søknad))
+                    .withBody("""
+                        {
+                            "søknad": ${Søknad.SerDes.serialize(søknad)}
+                        }
+                    """.trimIndent())
             )
     )
     return this
