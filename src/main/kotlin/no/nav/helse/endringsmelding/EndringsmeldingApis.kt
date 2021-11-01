@@ -47,8 +47,6 @@ fun Route.endringsmeldingApis(
             .forsikreValidert(ytelse.søknadsperiode)
         logger.info("Endringsmelding validert.")
 
-        val barn = komplettEndringsmelding.k9Format.getYtelse<PleiepengerSyktBarn>().barn
-
         endringsmeldingService.registrer(
             komplettEndringsmelding = komplettEndringsmelding,
             metadata = call.getMetadata()
