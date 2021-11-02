@@ -12,6 +12,7 @@ import no.nav.helse.general.getMetadata
 import no.nav.helse.innsyn.InnsynGateway
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soknad.hentIdTokenOgCallId
+import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.Søknad
 import no.nav.k9.søknad.felles.Versjon
 import no.nav.k9.søknad.felles.personopplysninger.Barn
@@ -71,15 +72,24 @@ fun Route.endringsmeldingApis(
 private fun Endringsmelding.tilKomplettEndringsmelding(
     søker: no.nav.helse.soker.Søker,
     barn: Barn,
-) = KomplettEndringsmelding(
-    søker = søker,
-    harBekreftetOpplysninger = harBekreftetOpplysninger,
-    harForståttRettigheterOgPlikter = harForståttRettigheterOgPlikter,
-    k9Format = Søknad(
-        søknadId?.let { SøknadId(it.toString()) } ?: SøknadId(UUID.randomUUID().toString()),
-        Versjon("1.0.0"),
-        ZonedDateTime.now(ZoneOffset.UTC),
-        Søker(NorskIdentitetsnummer.of(søker.fødselsnummer)),
-        ytelse.medBarn(barn)
+): KomplettEndringsmelding {
+    val ytelse = ytelse.formaterMedK9Mapper()
+
+    return KomplettEndringsmelding(
+        søker = søker,
+        harBekreftetOpplysninger = harBekreftetOpplysninger,
+        harForståttRettigheterOgPlikter = harForståttRettigheterOgPlikter,
+        k9Format = Søknad(
+            søknadId?.let { SøknadId(it.toString()) } ?: SøknadId(UUID.randomUUID().toString()),
+            Versjon("1.0.0"),
+            ZonedDateTime.now(ZoneOffset.UTC),
+            Søker(NorskIdentitetsnummer.of(søker.fødselsnummer)),
+            ytelse.medBarn(barn)
+        )
     )
-)
+}
+
+private fun PleiepengerSyktBarn.formaterMedK9Mapper(): PleiepengerSyktBarn {
+    val k9FormatMapper = JsonUtils.getObjectMapper()
+    return k9FormatMapper.readValue(k9FormatMapper.writeValueAsBytes(this), PleiepengerSyktBarn::class.java)
+}
