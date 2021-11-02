@@ -1190,30 +1190,40 @@ class ApplicationTest {
 
         //language=json
         val endringsmelding = """
-                {
-                  "søknadId": "$søknadId",
-                  "harBekreftetOpplysninger": true,
-                  "harForståttRettigheterOgPlikter": true,
-                  "ytelse": {
-                    "type": "PLEIEPENGER_SYKT_BARN",
-                    "arbeidstid": {
-                      "arbeidstakerList": [
-                        {
-                          "organisasjonsnummer": "917755736",
-                          "arbeidstidInfo": {
-                            "perioder": {
-                              "2021-01-01/2021-01-01": {
-                                "jobberNormaltTimerPerDag": "PT1H0M",
-                                "faktiskArbeidTimerPerDag": "PT0H"
-                              }
-                            }
+            {
+             "søknadId": "$søknadId",
+              "harBekreftetOpplysninger": true,
+              "harForståttRettigheterOgPlikter": true,
+              "id": "123",
+              "språk": "nb",
+              "ytelse": {
+                "type": "PLEIEPENGER_SYKT_BARN",
+                "arbeidstid": {
+                  "arbeidstakerList": [
+                    {
+                      "organisasjonsnummer": "917755736",
+                      "arbeidstidInfo": {
+                        "perioder": {
+                          "2021-01-01/2021-01-01": {
+                            "jobberNormaltTimerPerDag": "PT1H0M",
+                            "faktiskArbeidTimerPerDag": "PT0H"
                           }
                         }
-                      ]
+                      }
+                    }
+                  ]
+                },
+                "tilsynsordning": {
+                  "perioder": {
+                    "2021-01-01/2021-01-01": {
+                      "etablertTilsynTimerPerDag": "PT2H0M"
                     }
                   }
                 }
-            """.trimIndent()
+              }
+            }
+        """.trimIndent()
+
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = ENDRINGSMELDING_URL,
@@ -1228,7 +1238,10 @@ class ApplicationTest {
             """
            {
              "k9Format": {
-               "språk": "NORSK_BOKMÅL",
+               "søknadId": {
+                 "id": "$søknadId"
+               },
+               "språk": "nb",
                "søker": {
                  "personIdent": {
                    "verdi": "02119970078"
@@ -1265,7 +1278,11 @@ class ApplicationTest {
                    "perioderSomSkalSlettes": {}
                  },
                  "tilsynsordning": {
-                   "perioder": {},
+                   "perioder": {
+                     "2021-01-01/2021-01-01": {
+                       "etablertTilsynTimerPerDag": "PT2H"
+                     }
+                   },
                    "perioderSomSkalSlettes": {}
                  },
                  "arbeidstid": {
@@ -1331,7 +1348,9 @@ class ApplicationTest {
                "fornavn": "MOR",
                "fødselsnummer": "02119970078",
                "myndig": true
-             }
+             },
+             "harBekreftetOpplysninger": true,
+             "harForståttRettigheterOgPlikter": true
            }
             """.trimIndent(),
             JSONObject(endringsmelding)

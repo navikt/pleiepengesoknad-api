@@ -12,7 +12,6 @@ import no.nav.helse.general.getMetadata
 import no.nav.helse.innsyn.InnsynGateway
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soknad.hentIdTokenOgCallId
-import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.Søknad
 import no.nav.k9.søknad.felles.Versjon
 import no.nav.k9.søknad.felles.personopplysninger.Barn
@@ -73,8 +72,6 @@ private fun Endringsmelding.tilKomplettEndringsmelding(
     søker: no.nav.helse.soker.Søker,
     barn: Barn,
 ): KomplettEndringsmelding {
-    val ytelse = ytelse.formaterMedK9Mapper()
-
     return KomplettEndringsmelding(
         søker = søker,
         harBekreftetOpplysninger = harBekreftetOpplysninger,
@@ -87,9 +84,4 @@ private fun Endringsmelding.tilKomplettEndringsmelding(
             ytelse.medBarn(barn)
         )
     )
-}
-
-private fun PleiepengerSyktBarn.formaterMedK9Mapper(): PleiepengerSyktBarn {
-    val k9FormatMapper = JsonUtils.getObjectMapper()
-    return k9FormatMapper.readValue(k9FormatMapper.writeValueAsBytes(this), PleiepengerSyktBarn::class.java)
 }
