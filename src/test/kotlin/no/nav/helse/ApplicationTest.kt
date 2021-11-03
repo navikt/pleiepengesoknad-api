@@ -1340,11 +1340,14 @@ class ApplicationTest {
     fun `endringsmelding - endringer utenfor gyldighetsperiode`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val søknadId = UUID.randomUUID().toString()
+        val mottattDato = ZonedDateTime.parse("2021-11-03T07:12:05.530Z")
 
         //language=json
         val endringsmelding = """
                 {
                   "søknadId": "$søknadId",
+                  "språk": "nb",
+                  "mottattDato": "$mottattDato",
                   "harBekreftetOpplysninger": true,
                   "harForståttRettigheterOgPlikter": true,
                   "ytelse": {
