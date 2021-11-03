@@ -17,12 +17,11 @@ import no.nav.k9.søknad.felles.Versjon
 import no.nav.k9.søknad.felles.personopplysninger.Barn
 import no.nav.k9.søknad.felles.personopplysninger.Søker
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
+import no.nav.k9.søknad.felles.type.Språk
 import no.nav.k9.søknad.felles.type.SøknadId
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.*
 
 private val logger: Logger = LoggerFactory.getLogger("no.nav.helse.endringsmelding.EndringsmeldingApisKt")
@@ -79,8 +78,9 @@ private fun Endringsmelding.tilKomplettEndringsmelding(
         k9Format = Søknad(
             søknadId?.let { SøknadId(it.toString()) } ?: SøknadId(UUID.randomUUID().toString()),
             Versjon("1.0.0"),
-            ZonedDateTime.now(ZoneOffset.UTC),
+            mottattDato,
             Søker(NorskIdentitetsnummer.of(søker.fødselsnummer)),
+            Språk.of(språk),
             ytelse.medBarn(barn)
         )
     )

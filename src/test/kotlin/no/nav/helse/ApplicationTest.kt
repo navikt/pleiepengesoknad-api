@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -1187,15 +1188,17 @@ class ApplicationTest {
     fun `endringsmelding - endringer innefor gyldighetsperiode`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val søknadId = UUID.randomUUID().toString()
+        val mottattDato = ZonedDateTime.parse("2021-11-03T07:12:05.530Z")
 
         //language=json
         val endringsmelding = """
             {
              "søknadId": "$søknadId",
-              "harBekreftetOpplysninger": true,
-              "harForståttRettigheterOgPlikter": true,
               "id": "123",
               "språk": "nb",
+              "mottattDato": "$mottattDato",
+              "harBekreftetOpplysninger": true,
+              "harForståttRettigheterOgPlikter": true,
               "ytelse": {
                 "type": "PLEIEPENGER_SYKT_BARN",
                 "arbeidstid": {
@@ -1237,109 +1240,6 @@ class ApplicationTest {
             //language=json
             """
            {
-             "k9Format": {
-               "søknadId": {
-                 "id": "$søknadId"
-               },
-               "språk": "nb",
-               "søker": {
-                 "personIdent": {
-                   "verdi": "02119970078"
-                 }
-               },
-               "ytelse": {
-                 "søknadInfo": "Optional.empty",
-                 "validator": {},
-                 "nattevåk": {
-                   "perioder": {},
-                   "perioderSomSkalSlettes": {}
-                 },
-                 "type": "PLEIEPENGER_SYKT_BARN",
-                 "bosteder": {
-                   "perioder": {},
-                   "perioderSomSkalSlettes": {}
-                 },
-                 "lovbestemtFerie": {
-                   "perioder": {}
-                 },
-                 "berørtePersoner": [
-                   {
-                     "personIdent": {
-                       "verdi": "10987654321"
-                     }
-                   }
-                 ],
-                 "omsorg": {
-                   "beskrivelseAvOmsorgsrollen": "Optional.empty",
-                   "relasjonTilBarnet": "Optional.empty"
-                 },
-                 "utenlandsopphold": {
-                   "perioder": {},
-                   "perioderSomSkalSlettes": {}
-                 },
-                 "tilsynsordning": {
-                   "perioder": {
-                     "2021-01-01/2021-01-01": {
-                       "etablertTilsynTimerPerDag": "PT2H"
-                     }
-                   },
-                   "perioderSomSkalSlettes": {}
-                 },
-                 "arbeidstid": {
-                   "frilanserArbeidstidInfo": "Optional.empty",
-                   "arbeidstakerList": [
-                     {
-                       "arbeidstidInfo": {
-                         "perioder": {
-                           "2021-01-01/2021-01-01": {
-                             "faktiskArbeidTimerPerDag": "PT0S",
-                             "jobberNormaltTimerPerDag": "PT1H"
-                           }
-                         }
-                       },
-                       "organisasjonsnummer": {
-                         "verdi": "917755736"
-                       }
-                     }
-                   ],
-                   "selvstendigNæringsdrivendeArbeidstidInfo": "Optional.empty"
-                 },
-                 "infoFraPunsj": "Optional.empty",
-                 "barn": {
-                   "personIdent": {
-                     "verdi": "10987654321"
-                   }
-                 },
-                 "beredskap": {
-                   "perioder": {},
-                   "perioderSomSkalSlettes": {}
-                 },
-                 "uttak": {
-                   "perioder": {},
-                   "perioderSomSkalSlettes": {}
-                 },
-                 "pleietrengende": {
-                   "personIdent": {
-                     "verdi": "10987654321"
-                   }
-                 },
-                 "opptjeningAktivitet": {},
-                 "søknadsperiodeList": [],
-                 "trekkKravPerioder": []
-               },
-               "journalposter": [],
-               "begrunnelseForInnsending": {},
-               "versjon": {
-                 "verdi": "1.0.0"
-               },
-               "berørtePersoner": [
-                 {
-                   "personIdent": {
-                     "verdi": "10987654321"
-                   }
-                 }
-               ]
-             },
              "søker": {
                "mellomnavn": "HEISANN",
                "etternavn": "MORSEN",
@@ -1350,7 +1250,86 @@ class ApplicationTest {
                "myndig": true
              },
              "harBekreftetOpplysninger": true,
-             "harForståttRettigheterOgPlikter": true
+             "harForståttRettigheterOgPlikter": true,
+             "k9Format": {
+               "søknadId": "$søknadId",
+               "versjon": "1.0.0",
+               "mottattDato": "$mottattDato",
+               "språk": "nb",
+               "søker": {
+                 "norskIdentitetsnummer": "02119970078"
+               },
+               "ytelse": {
+                 "type": "PLEIEPENGER_SYKT_BARN",
+                 "søknadsperiode": [],
+                 "endringsperiode": [],
+                 "trekkKravPerioder": [],
+                 "barn": {
+                   "norskIdentitetsnummer": "10987654321",
+                   "fødselsdato": null
+                 },
+                 "tilsynsordning": {
+                   "perioder": {
+                     "2021-01-01/2021-01-01": {
+                       "etablertTilsynTimerPerDag": "PT2H"
+                     }
+                   },
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "arbeidstid": {
+                   "frilanserArbeidstidInfo": null,
+                   "arbeidstakerList": [
+                     {
+                       "organisasjonsnummer": "917755736",
+                       "norskIdentitetsnummer": null,
+                       "arbeidstidInfo": {
+                         "perioder": {
+                           "2021-01-01/2021-01-01": {
+                             "faktiskArbeidTimerPerDag": "PT0S",
+                             "jobberNormaltTimerPerDag": "PT1H"
+                           }
+                         }
+                       }
+                     }
+                   ],
+                   "selvstendigNæringsdrivendeArbeidstidInfo": null
+                 },
+                 "bosteder": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "lovbestemtFerie": {
+                   "perioder": {}
+                 },
+                 "omsorg": {
+                   "beskrivelseAvOmsorgsrollen": null,
+                   "relasjonTilBarnet": null
+                 },
+                 "utenlandsopphold": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "nattevåk": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "infoFraPunsj": null,
+                 "dataBruktTilUtledning": null,
+                 "beredskap": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "uttak": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "opptjeningAktivitet": {}
+               },
+               "journalposter": [],
+               "begrunnelseForInnsending": {
+                 "tekst": null
+               }
+             }
            }
             """.trimIndent(),
             JSONObject(endringsmelding)
@@ -1425,7 +1404,7 @@ class ApplicationTest {
         JSONAssert.assertEquals(
             forventenEndringsmelding,
             komplettEndringsmelding.data,
-            JSONCompareMode.LENIENT
+            JSONCompareMode.STRICT
         )
     }
 
