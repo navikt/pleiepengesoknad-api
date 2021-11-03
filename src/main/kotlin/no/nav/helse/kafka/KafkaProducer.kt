@@ -5,6 +5,7 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.Result
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.endringsmelding.KomplettEndringsmelding
+import no.nav.helse.somJson
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.Serializer
@@ -37,7 +38,7 @@ class KafkaProducer(
                 komplettEndringsmelding.k9Format.søknadId.id,
                 TopicEntry(
                     metadata = metadata,
-                    data = JSONObject(komplettEndringsmelding)
+                    data = JSONObject(komplettEndringsmelding.somJson())
                 )
             )
         ).get()
