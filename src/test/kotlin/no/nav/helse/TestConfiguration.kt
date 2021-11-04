@@ -57,7 +57,8 @@ object TestConfiguration {
         map["nav.redis.port"] = "${redisServer.bindPort}"
         map["nav.storage.passphrase"] = "verySecret"
 
-        map["nav.mellomlagring.tid_timer"] = "1"
+        map["nav.mellomlagring.søknad_tid_timer"] = "1"
+        map["nav.mellomlagring.endringsmelding_tid_timer"] = "1"
 
         // Kafka
         kafkaEnvironment?.let {

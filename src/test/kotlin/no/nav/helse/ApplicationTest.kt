@@ -1401,6 +1401,58 @@ class ApplicationTest {
         )
     }
 
+    @Test
+    fun `gitt to mellomlagrede verdier på samme person, fovent at begge mellomlagres, og de de ikke overskriver hverandre`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        val mellomlagringSøknad = """
+                {
+                    "mellomlagring": "soknad"
+                }
+            """.trimIndent()
+
+
+        val mellomlagringEndringsmelding = """
+                {
+                    "mellomlagring": "endringsmelding"
+                }
+            """.trimIndent()
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = MELLOMLAGRING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.NoContent,
+            expectedResponse = null,
+            requestEntity = mellomlagringSøknad
+        )
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = ENDRINGSMELDING_MELLOMLAGRING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.NoContent,
+            expectedResponse = null,
+            requestEntity = mellomlagringEndringsmelding
+        )
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = MELLOMLAGRING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = mellomlagringSøknad
+        )
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = ENDRINGSMELDING_MELLOMLAGRING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = mellomlagringEndringsmelding
+        )
+    }
+
     private fun hentOgAsserEndringsmelding(forventenEndringsmelding: String, endringsmelding: JSONObject) {
         val komplettEndringsmelding = kafkaKonsumer.hentEndringsmelding(endringsmelding.getString("søknadId"))
 

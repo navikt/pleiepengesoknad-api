@@ -39,7 +39,8 @@ data class Configuration(val config: ApplicationConfig) {
         )
     }
 
-    internal fun getSoknadMellomlagringTidTimer() = config.getRequiredString("nav.mellomlagring.tid_timer", false)
+    internal fun getSoknadMellomlagringTidTimer() = config.getRequiredString("nav.mellomlagring.søknad_tid_timer", false)
+    internal fun getEndringsmeldingMellomlagringTidTimer() = config.getRequiredString("nav.mellomlagring.endringsmelding_tid_timer", false)
 
     internal fun getK9OppslagUrl() = URI(config.getRequiredString("nav.gateways.k9_oppslag_url", secret = false))
 

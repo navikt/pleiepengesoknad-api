@@ -164,6 +164,7 @@ fun Application.pleiepengesoknadapi() {
             mellomlagringApis(
                 mellomlagringService = MellomlagringService(
                     søknadMellomlagretTidTimer = configuration.getSoknadMellomlagringTidTimer(),
+                    endringsmeldingMellomlagretTidTimer = configuration.getEndringsmeldingMellomlagringTidTimer(),
                     redisStore = RedisStore(
                         redisClient = RedisConfig.redisClient(
                             redisHost = configuration.getRedisHost(),

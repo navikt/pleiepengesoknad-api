@@ -8,7 +8,11 @@ import org.awaitility.Durations.ONE_SECOND
 import org.junit.AfterClass
 import org.slf4j.LoggerFactory
 import java.util.*
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class MellomlagringTest {
 
@@ -32,6 +36,7 @@ class MellomlagringTest {
         val mellomlagringService = MellomlagringService(
             redisStore,
             "VerySecretPass",
+            "1",
             "1"
         )
 
@@ -44,46 +49,48 @@ class MellomlagringTest {
     }
 
     @Test
-    internal fun `mellomlagre verdier`() {
-        mellomlagringService.setMellomlagring("test", "test")
+    fun `mellomlagre verdier`() {
+        mellomlagringService.setMellomlagring(MellomlagringPrefix.SØKNAD, "test", "søknad")
+        val mellomlagring = mellomlagringService.getMellomlagring(MellomlagringPrefix.SØKNAD, "test")
+        assertEquals("søknad", mellomlagring)
 
-        val mellomlagring = mellomlagringService.getMellomlagring("test")
-
-        assertEquals("test", mellomlagring)
+        mellomlagringService.setMellomlagring(MellomlagringPrefix.ENDRINGSMELDING, "test", "endringsmelding")
+        val endringsmelding = mellomlagringService.getMellomlagring(MellomlagringPrefix.ENDRINGSMELDING, "test")
+        assertEquals("endringsmelding", endringsmelding)
     }
 
     @Test
-    internal fun `Oppdatering av mellomlagret verdi, skal ikke slette expiry`() {
+    fun `Oppdatering av mellomlagret verdi, skal ikke slette expiry`() {
         val key = "test"
         val expirationDate = Calendar.getInstance().let {
             it.add(Calendar.MINUTE, 1)
             it.time
         }
 
+        val mellomlagringPrefix = MellomlagringPrefix.SØKNAD
         mellomlagringService.setMellomlagring(
+            mellomlagringPrefix = mellomlagringPrefix,
             fnr = key,
-            midlertidigSøknad = "test",
+            verdi = "test",
             expirationDate = expirationDate
         )
-        val verdi = mellomlagringService.getMellomlagring(key)
+        val verdi = mellomlagringService.getMellomlagring(mellomlagringPrefix, key)
         assertEquals("test", verdi)
-        val ttl = mellomlagringService.getTTLInMs(key)
+        val ttl = mellomlagringService.getTTLInMs(mellomlagringPrefix, key)
         assertNotEquals(ttl, -2)
         assertNotEquals(ttl, -1)
 
         logger.info("PTTL=$ttl")
 
-        mellomlagringService.updateMellomlagring(key, "test2")
-        val oppdatertVerdi = mellomlagringService.getMellomlagring(key)
+        mellomlagringService.updateMellomlagring(MellomlagringPrefix.SØKNAD, key, "test2")
+        val oppdatertVerdi = mellomlagringService.getMellomlagring(MellomlagringPrefix.SØKNAD, key)
         assertEquals("test2", oppdatertVerdi)
         assertNotEquals(ttl, -2)
         assertNotEquals(ttl, -1)
-
-
     }
 
     @Test
-    internal fun `mellomlagret verdier skal være utgått etter 500 ms`() {
+    fun `mellomlagret verdier skal være utgått etter 500 ms`() {
         val fnr = "12345678910"
         val søknad = "test"
 
@@ -91,28 +98,32 @@ class MellomlagringTest {
             it.add(Calendar.MILLISECOND, 500)
             it.time
         }
-        mellomlagringService.setMellomlagring(fnr, søknad, expirationDate = expirationDate)
-        val forventetVerdi1 = mellomlagringService.getMellomlagring(fnr)
+        mellomlagringService.setMellomlagring(MellomlagringPrefix.SØKNAD, fnr, søknad, expirationDate = expirationDate)
+        val forventetVerdi1 = mellomlagringService.getMellomlagring(MellomlagringPrefix.SØKNAD, fnr)
         logger.info("Hentet mellomlagret verdi = {}", forventetVerdi1)
         assertEquals("test", forventetVerdi1)
-        assertNotEquals(mellomlagringService.getTTLInMs(fnr), -2)
-        assertNotEquals(mellomlagringService.getTTLInMs(fnr), -1)
+        assertNotEquals(mellomlagringService.getTTLInMs(MellomlagringPrefix.SØKNAD, fnr), -2)
+        assertNotEquals(mellomlagringService.getTTLInMs(MellomlagringPrefix.SØKNAD, fnr), -1)
 
         Awaitility.waitAtMost(ONE_SECOND).untilAsserted {
-            val forventetVerdi2 = mellomlagringService.getMellomlagring(fnr)
+            val forventetVerdi2 = mellomlagringService.getMellomlagring(MellomlagringPrefix.SØKNAD, fnr)
             logger.info("Hentet mellomlagret verdi = {}", forventetVerdi2)
             assertNull(forventetVerdi2)
         }
     }
 
     @Test
-    internal fun `verdier skal være krypterte`() {
+    fun `verdier skal være krypterte`() {
+        val fødselsnummer = "12345678910"
+        mellomlagringService.setMellomlagring(MellomlagringPrefix.SØKNAD, fødselsnummer, "søknad")
+        val mellomlagring = mellomlagringService.getMellomlagring(MellomlagringPrefix.SØKNAD, fødselsnummer)
+        assertNotNull(redisStore.get("mellomlagring_$fødselsnummer"))
+        assertNotEquals(mellomlagring, redisStore.get("mellomlagring_$fødselsnummer"))
 
-        mellomlagringService.setMellomlagring("test", "test")
-
-        val mellomlagring = mellomlagringService.getMellomlagring("test")
-        assertNotNull(redisStore.get("mellomlagring_test"))
-        assertNotEquals(mellomlagring, redisStore.get("mellomlagring_test"))
+        mellomlagringService.setMellomlagring(MellomlagringPrefix.ENDRINGSMELDING, fødselsnummer, "endringsmelding")
+        val endringsmelding = mellomlagringService.getMellomlagring(MellomlagringPrefix.ENDRINGSMELDING, fødselsnummer)
+        assertNotNull(redisStore.get("mellomlagring_endringsmelding_$fødselsnummer"))
+        assertNotEquals(endringsmelding, redisStore.get("mellomlagring_endringsmelding_$fødselsnummer"))
     }
 
 }
