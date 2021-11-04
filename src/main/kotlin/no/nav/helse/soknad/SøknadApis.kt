@@ -54,9 +54,6 @@ fun Route.soknadApis(
         logger.info("Mapper om søknad til k9format.")
         val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
 
-        // TODO: 29/09/2021 OBS MÅ FJERNES FØR PRODSETTING
-        logger.info("SKAL IKKE VISES I PROD: K9Format: ${k9FormatSøknad.somJson()}")
-
         logger.info("Validerer søknad")
         søknad.validate(k9FormatSøknad)
         logger.trace("Validering OK. Registrerer søknad.")
