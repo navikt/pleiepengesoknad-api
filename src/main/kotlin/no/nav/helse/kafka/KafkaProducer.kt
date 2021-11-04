@@ -18,7 +18,7 @@ class KafkaProducer(
     private val NAME = "EndringsmeldingProducer"
     private val ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC = TopicUse(
         name = Topics.MOTTATT_ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN,
-        valueSerializer = SøknadSerializer()
+        valueSerializer = EndringsmeldingSerializer()
     )
     private val logger = LoggerFactory.getLogger(KafkaProducer::class.java)
     private val producer = KafkaProducer(
@@ -65,7 +65,7 @@ class KafkaProducer(
     }
 }
 
-private class SøknadSerializer : Serializer<TopicEntry<JSONObject>> {
+private class EndringsmeldingSerializer : Serializer<TopicEntry<JSONObject>> {
     override fun serialize(topic: String, data: TopicEntry<JSONObject>): ByteArray {
         val metadata = JSONObject()
             .put("correlationId", data.metadata.correlationId)
