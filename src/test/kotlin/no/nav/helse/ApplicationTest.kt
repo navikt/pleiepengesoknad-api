@@ -959,7 +959,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med omsorgstilbud planlagt er satt hvor men både ukedager og enkeltdager er null`() {
+    fun `Sende søknad med omsorgstilbud planlagt er satt men både ukedager og enkeltdager er null`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
 
         requestAndAssert(
