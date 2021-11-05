@@ -6,18 +6,36 @@ import com.github.tomakehurst.wiremock.extension.ResponseTransformer
 import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
 import no.nav.helse.TestUtils
+import no.nav.helse.arbeidsgiver.orgQueryName
+import org.slf4j.LoggerFactory
 
 class ArbeidsgivereResponseTransformer : ResponseTransformer() {
+    private companion object {
+        private val logger = LoggerFactory.getLogger(ArbeidsgivereResponseTransformer::class.java)
+    }
+
     override fun transform(
-        request: Request?,
-        response: Response?,
+        request: Request,
+        response: Response,
         files: FileSource?,
         parameters: Parameters?
     ): Response {
+
+        val orgnummere = try {
+            val values = request.queryParameter(orgQueryName).values()
+            logger.info("Etterspurt organisasjonsnummer: {}", values)
+            values
+        } catch (ex: Exception) {
+            null
+        }
+
         return Response.Builder.like(response)
-            .body(getResponse(
-                ident = TestUtils.getIdentFromIdToken(request)
-            ))
+            .body(
+                getResponse(
+                    ident = TestUtils.getIdentFromIdToken(request),
+                    organisasjonsnummere = orgnummere
+                )
+            )
             .build()
     }
 
@@ -31,10 +49,12 @@ class ArbeidsgivereResponseTransformer : ResponseTransformer() {
 
 }
 
-private fun getResponse(ident: String): String {
-    when(ident) {
-        "02119970078" -> {
-        return """
+private fun getResponse(ident: String, organisasjonsnummere: List<String>?): String {
+    when {
+        organisasjonsnummere.isNullOrEmpty() -> when (ident) {
+            "02119970078" -> {
+                //language=json
+                return """
             {
                 "arbeidsgivere": {
                     "organisasjoner": [{
@@ -47,14 +67,54 @@ private fun getResponse(ident: String): String {
                 }
             }
         """.trimIndent()
-        } else -> {
-        return """
+            }
+            else -> {
+                //language=json
+                return """
                 {
                     "arbeidsgivere": {
                         "organisasjoner": []
                     }
                 }
             """.trimIndent()
-    }
+            }
+        }
+        else ->
+            //language=json
+            return """
+                {
+                    "arbeidsgivere": {
+                        "organisasjoner": ${organisasjonsnummere.map { org(it) }}
+                    }
+                }
+            """.trimIndent()
     }
 }
+
+private fun org(org: String) = when (org) {
+    //language=json
+    "977302390" -> """
+          {
+            "navn": "INMETA CONSULTING AS",
+            "organisasjonsnummer": "977302390"
+          }""".trimIndent()
+
+    //language=json
+    "984054564" -> """
+        {
+            "navn": "NAV, AVD WALDEMAR THRANES GATE",
+            "organisasjonsnummer": "984054564"
+        }
+    """.trimIndent()
+
+    //language=json
+    "995784637" -> """
+        {
+            "navn": null,
+            "organisasjonsnummer": "995784637"
+        }
+    """.trimIndent()
+
+    else -> ""
+}
+

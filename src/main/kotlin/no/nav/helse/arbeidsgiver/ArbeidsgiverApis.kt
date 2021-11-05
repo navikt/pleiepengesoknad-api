@@ -1,21 +1,24 @@
 package no.nav.helse.arbeidsgiver
 
-import io.ktor.application.call
-import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
+import io.ktor.application.*
+import io.ktor.response.*
+import io.ktor.routing.*
 import no.nav.helse.ARBEIDSGIVER_URL
+import no.nav.helse.ORGANISASJONER_URL
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
+import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 private const val fraOgMedQueryName = "fra_og_med"
 private const val tilOgMedQueryName = "til_og_med"
+const val orgQueryName = "org"
 
 fun Route.arbeidsgiverApis(
     arbeidsgivereService: ArbeidsgivereService,
@@ -40,6 +43,49 @@ fun Route.arbeidsgiverApis(
                     tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])
                 )
             )
+        }
+    }
+
+    get(ORGANISASJONER_URL) {
+        val org = ((call.request.queryParameters.getAll(orgQueryName)?.toSet()))
+        val violations = validate(org)
+
+        if (violations.isNotEmpty()) {
+            throw Throwblem(ValidationProblemDetails(violations))
+        } else {
+            call.respond(
+                arbeidsgivereService.hentArbeidsgivere(
+                    idToken = idTokenProvider.getIdToken(call),
+                    callId = call.getCallId(),
+                    organisasjoner = org!!.map { Organisasjonsnummer.of(it) }.toSet()
+                )
+            )
+        }
+    }
+}
+
+private fun validate(organisasjonsnummere: Set<String>?): Set<Violation> = mutableSetOf<Violation>().apply {
+    if (organisasjonsnummere.isNullOrEmpty()) {
+        add(
+            Violation(
+                parameterName = orgQueryName,
+                parameterType = ParameterType.QUERY,
+                reason = "Påkrevd query parameter '$orgQueryName' er ikke satt.",
+                invalidValue = organisasjonsnummere
+            )
+        )
+    } else {
+        organisasjonsnummere.forEachIndexed { index, it ->
+            if (!it.erGyldigOrganisasjonsnummer()) {
+                add(
+                    Violation(
+                        parameterName = "$orgQueryName[$index]",
+                        parameterType = ParameterType.QUERY,
+                        reason = "Query parameter $orgQueryName[$index] er av ugyldig format",
+                        invalidValue = it
+                    )
+                )
+            }
         }
     }
 }

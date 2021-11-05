@@ -15,4 +15,5 @@ const val VALIDER_VEDLEGG_URL = "/vedlegg/valider"
 const val BARN_URL = "/barn"
 const val SØKER_URL = "/soker"
 const val ARBEIDSGIVER_URL = "/arbeidsgiver"
+const val ORGANISASJONER_URL = "/organisasjoner"
 

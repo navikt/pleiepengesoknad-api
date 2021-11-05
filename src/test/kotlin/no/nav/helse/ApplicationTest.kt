@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import no.nav.helse.arbeidsgiver.orgQueryName
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.k9format.defaultK9FormatPSB
@@ -32,6 +33,7 @@ import no.nav.helse.wiremock.pleiepengesoknadApiConfig
 import no.nav.helse.wiremock.stubK9Mellomlagring
 import no.nav.helse.wiremock.stubK9MellomlagringHealth
 import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
 import no.nav.helse.wiremock.stubK9OppslagBarn
 import no.nav.helse.wiremock.stubK9OppslagSoker
 import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
@@ -82,6 +84,7 @@ class ApplicationTest {
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
+            .stubK9OppslagArbeidsgivereMedOrgNummer()
             .stubK9Mellomlagring()
             .stubSifInnsynApi(søknad = defaultK9FormatPSB())
 
@@ -163,6 +166,127 @@ class ApplicationTest {
                     "organisasjonsnummer": "984054564"
                 }]
             }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Hente arbeidsgivere med organisasjonsnummer`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL?$orgQueryName=977302390&$orgQueryName=984054564",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse =
+            //language=json
+            """
+            {
+                "organisasjoner": [
+                  {
+                    "navn": "INMETA CONSULTING AS",
+                    "organisasjonsnummer": "977302390"
+                  },
+                  {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564"
+                  }
+                ]
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Finner ingen arbeidsgivere når organisasjonsnummer ikke er funnet`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL?$orgQueryName=925568600",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse =
+            //language=json
+            """
+            {
+                "organisasjoner": []
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Finner arbeidsgiver uten navn`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL?$orgQueryName=995784637",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse =
+            //language=json
+            """
+            {
+                "organisasjoner": [
+                  {
+                    "navn": null,
+                    "organisasjonsnummer": "995784637"
+                  }
+                ]
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `gitt orgnummer er ugyldig, forvent valideringsfeil`() {
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL?$orgQueryName=977302390&$orgQueryName=ugyldig_orgnummer",
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse =
+            //language=json
+            """
+                {
+                    "type": "/problem-details/invalid-request-parameters",
+                    "title": "invalid-request-parameters",
+                    "status": 400,
+                    "detail": "Requesten inneholder ugyldige paramtere.",
+                    "instance": "about:blank",
+                    "invalid_parameters": [{
+                        "type": "query",
+                        "name": "$orgQueryName[1]",
+                        "reason": "Query parameter $orgQueryName[1] er av ugyldig format",
+                        "invalid_value": "ugyldig_orgnummer"
+                    }]
+                }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `gitt orgnummer mangler på query parameter, forvent valideringsfeil`() {
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL",
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse =
+            //language=json
+            """
+                {
+                    "type": "/problem-details/invalid-request-parameters",
+                    "title": "invalid-request-parameters",
+                    "status": 400,
+                    "detail": "Requesten inneholder ugyldige paramtere.",
+                    "instance": "about:blank",
+                    "invalid_parameters": [{
+                        "type": "query",
+                        "name": "$orgQueryName",
+                        "reason": "Påkrevd query parameter '$orgQueryName' er ikke satt.",
+                        "invalid_value": null
+                    }]
+                }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
         )

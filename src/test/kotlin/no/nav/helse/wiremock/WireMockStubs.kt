@@ -62,12 +62,29 @@ internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false): Wir
 
 internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = false): WireMockServer {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
+        WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/meg.*"))
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
             .withQueryParam("fom", AnythingPattern()) // vurder regex som validerer dato-format
             .withQueryParam("tom", AnythingPattern()) // vurder regex som validerer dato-format
+            .willReturn(
+                WireMock.aResponse()
+                    .withHeader("Content-Type", "application/json")
+                    .withStatus(if (simulerFeil) 500 else 200)
+                    .withTransformers("k9-oppslag-arbeidsgivere")
+            )
+    )
+    return this
+}
+
+internal fun WireMockServer.stubK9OppslagArbeidsgivereMedOrgNummer(simulerFeil: Boolean = false): WireMockServer {
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/arbeidsgivere.*"))
+            .withHeader(HttpHeaders.Authorization, AnythingPattern())
+            .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
+            .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
+            .withQueryParam("org", AnythingPattern()) // vurder regex som validerer dato-format
             .willReturn(
                 WireMock.aResponse()
                     .withHeader("Content-Type", "application/json")
