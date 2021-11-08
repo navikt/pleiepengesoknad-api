@@ -160,12 +160,12 @@ class ApplicationTest {
                 "organisasjoner": [{
                     "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
                     "organisasjonsnummer": "913548221",
-                    "ansattFom": null,
-                    "ansattTom": null
+                    "ansattFom": "2011-09-03",
+                    "ansattTom": "2012-06-30"
                 }, {
                     "navn": "NAV, AVD WALDEMAR THRANES GATE",
                     "organisasjonsnummer": "984054564",
-                    "ansattFom": null,
+                    "ansattFom": "2011-09-03",
                     "ansattTom": null
                 }]
             }

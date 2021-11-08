@@ -60,12 +60,12 @@ private fun getResponse(ident: String, organisasjonsnummere: List<String>?): Str
                     "organisasjoner": [{
                         "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
                         "organisasjonsnummer": "913548221",
-                        "ansattFom": "2011-09-03",
-                        "ansattTom": "2012-06-31"
+                        "ansatt_fom": "2011-09-03",
+                        "ansatt_tom": "2012-06-30"
                     }, {
                         "navn": "NAV, AVD WALDEMAR THRANES GATE",
                         "organisasjonsnummer": "984054564",
-                        "ansattFom": "2011-09-03"
+                        "ansatt_fom": "2011-09-03"
                     }]
                 }
             }
