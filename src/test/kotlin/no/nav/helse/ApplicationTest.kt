@@ -22,11 +22,9 @@ import no.nav.helse.soknad.HistoriskOmsorgstilbud
 import no.nav.helse.soknad.JobberIPeriodeSvar
 import no.nav.helse.soknad.Næringstyper
 import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.PlanlagtOmsorgstilbud
 import no.nav.helse.soknad.Regnskapsfører
 import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.wiremock.pleiepengesoknadApiConfig
