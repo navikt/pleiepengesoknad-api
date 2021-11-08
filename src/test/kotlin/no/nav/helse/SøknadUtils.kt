@@ -117,8 +117,7 @@ class SøknadUtils {
                         onsdag = Duration.ofHours(1),
                         torsdag = Duration.ofHours(1),
                         fredag = Duration.ofHours(1)
-                    ),
-                    vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+                    )
                 )
             ),
             medlemskap = Medlemskap(

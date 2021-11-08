@@ -43,7 +43,6 @@ class K9FormatTest {
             omsorgstilbud = Omsorgstilbud(
                 historisk = null,
                 planlagt = PlanlagtOmsorgstilbud(
-                    vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER,
                     ukedager = null,
                     enkeltdager = listOf(
                         Enkeltdag(
@@ -248,8 +247,7 @@ class K9FormatTest {
                     onsdag = Duration.ofHours(5),
                     torsdag = Duration.ofHours(5),
                     fredag = Duration.ofHours(5)
-                ),
-                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+                )
             )
         ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
@@ -292,8 +290,7 @@ class K9FormatTest {
                     onsdag = Duration.ofHours(5),
                     torsdag = Duration.ofHours(5),
                     fredag = Duration.ofHours(5)
-                ),
-                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+                )
             )
         ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-06"), periode = Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
 
@@ -333,8 +330,7 @@ class K9FormatTest {
                     onsdag = Duration.ofHours(5),
                     torsdag = null,
                     fredag = Duration.ofHours(5)
-                ),
-                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+                )
             )
         ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
@@ -396,8 +392,7 @@ class K9FormatTest {
                     onsdag = Duration.ofHours(10),
                     torsdag = Duration.ofHours(10),
                     fredag = Duration.ofHours(10)
-                ),
-                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+                )
             )
         ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
 
@@ -431,7 +426,7 @@ class K9FormatTest {
     }
 
     @Test
-    fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager, forvent riktig mapping`() {
+    fun `gitt omsorgstilbud med både historisk og planlagte omsorgsdager, forvent riktig mapping`() {
         val tilsynsordning = Omsorgstilbud(
             historisk = HistoriskOmsorgstilbud(
                 enkeltdager = listOf(Enkeltdag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
@@ -443,8 +438,7 @@ class K9FormatTest {
                     onsdag = Duration.ofHours(1),
                     torsdag = Duration.ofHours(1),
                     fredag = Duration.ofHours(1)
-                ),
-                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+                )
             )
         ).tilK9Tilsynsordning(Periode(LocalDate.now(), LocalDate.now().plusDays(7)))
 
@@ -452,7 +446,7 @@ class K9FormatTest {
     }
 
     @Test
-    fun `gitt omsorgstilbudV2 med både historisk og planlagte omsorgsdager der historisk har dato lik eller etter dagens dato, forvent at den blir eksludert`() {
+    fun `gitt omsorgstilbud med både historisk og planlagte omsorgsdager der historisk har dato lik eller etter dagens dato, forvent at den blir eksludert`() {
         val tilsynsordning = Omsorgstilbud(
             historisk = HistoriskOmsorgstilbud(
                 enkeltdager = listOf(
@@ -468,8 +462,7 @@ class K9FormatTest {
                     onsdag = Duration.ofHours(1),
                     torsdag = Duration.ofHours(1),
                     fredag = Duration.ofHours(1)
-                ),
-                vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
+                )
             )
         ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")), LocalDate.parse("2021-09-03"))
 

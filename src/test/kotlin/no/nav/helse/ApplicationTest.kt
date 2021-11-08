@@ -1132,7 +1132,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med omsorgstilbudV2, der søker vet alle planlagte timer, men både ukedager og enkeltdager er null`() {
+    fun `Sende søknad med omsorgstilbud planlagt er satt men både ukedager og enkeltdager er null`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
 
         requestAndAssert(
@@ -1148,8 +1148,8 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltdager",
-                      "reason": "Dersom vetOmsorgstilbud er 'VET_ALLE_TIMER', så må enten 'ukedager' eller 'enkeltdager' være satt.",
+                      "name": "omsorgstilbud.planlagt.ukedager eller omsorgstilbud.planlagt.enkeltdager",
+                      "reason": "Dersom omsorgstilbud.planlagt er satt så må enten 'ukedager' eller 'enkeltdager' være satt.",
                       "invalid_value": "enkeltdager = null, ukedager = null"
                     }
                   ]
@@ -1163,9 +1163,7 @@ class ApplicationTest {
                     selvstendigNæringsdrivende = null,
                     arbeidsgivere = null,
                     omsorgstilbud = Omsorgstilbud(
-                        planlagt = PlanlagtOmsorgstilbud(
-                            vetOmsorgstilbud = VetOmsorgstilbud.VET_ALLE_TIMER
-                        )
+                        planlagt = PlanlagtOmsorgstilbud()
                     ),
                     vedlegg = listOf()
                 )
@@ -1174,7 +1172,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med omsorgstilbudV2, der søker ikke vet de planlagte timene, men ukedager er satt`() {
+    fun `Sende søknad med omsorgstilbud, der historiske omsorgstilbud inneholder datoer lik eller etter dagens dato`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
 
         requestAndAssert(
@@ -1190,50 +1188,7 @@ class ApplicationTest {
                   "invalid_parameters": [
                     {
                       "type": "entity",
-                      "name": "omsorgstilbudV2.planlagt.ukedager eller omsorgstilbudV2.planlagt.enkeltdager",
-                      "reason": "Dersom vetOmsorgstilbud er 'VET_IKKE', så kan verken 'ukedager' eller 'enkeltdager' være satt.",
-                      "invalid_value": "enkeltdager = null, ukedager = PlanUkedager(mandag=PT7H, tirsdag=null, onsdag=null, torsdag=null, fredag=null)"
-                    }
-                  ]
-                }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils
-                .defaultSøknad(UUID.randomUUID().toString()).copy(
-                    fraOgMed = LocalDate.now().minusDays(5),
-                    tilOgMed = LocalDate.now().plusDays(4),
-                    ferieuttakIPerioden = null,
-                    omsorgstilbud = Omsorgstilbud(
-                        planlagt = PlanlagtOmsorgstilbud(
-                            vetOmsorgstilbud = VetOmsorgstilbud.VET_IKKE,
-                            ukedager = PlanUkedager(mandag = Duration.ofHours(7))
-                        )
-                    ),
-                    vedlegg = listOf()
-                )
-                .somJson()
-        )
-    }
-
-    @Test
-    fun `Sende søknad med omsorgstilbudV2, der historiske omsorgstilbud inneholder datoer lik eller etter dagens dato`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "omsorgstilbudV2.historisk.enkeltdager",
+                      "name": "omsorgstilbud.historisk.enkeltdager",
                       "reason": "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
                       "invalid_value": "enkeltdager = [Enkeltdag(dato=${LocalDate.now()}, tid=PT7H)]"
                     }
