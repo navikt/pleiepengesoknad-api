@@ -9,7 +9,6 @@ import no.nav.helse.soknad.HistoriskOmsorgstilbud
 import no.nav.helse.soknad.Omsorgstilbud
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.PlanlagtOmsorgstilbud
-import no.nav.helse.soknad.VetOmsorgstilbud
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
