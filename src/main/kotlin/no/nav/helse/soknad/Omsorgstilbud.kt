@@ -15,14 +15,8 @@ data class HistoriskOmsorgstilbud(
 data class PlanlagtOmsorgstilbud(
     val enkeltdager: List<Enkeltdag>? = null,
     val ukedager: PlanUkedager? = null,
-    val vetOmsorgstilbud: VetOmsorgstilbud,
     val erLiktHverDag: Boolean? = null
 )
-
-enum class VetOmsorgstilbud {
-    VET_ALLE_TIMER,
-    VET_IKKE
-}
 
 data class Enkeltdag(
     val dato: LocalDate,
