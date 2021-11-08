@@ -156,14 +156,19 @@ class ApplicationTest {
             httpMethod = HttpMethod.Get,
             path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.OK,
+            //language=json
             expectedResponse = """
             {
                 "organisasjoner": [{
                     "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
-                    "organisasjonsnummer": "913548221"
+                    "organisasjonsnummer": "913548221",
+                    "ansattFom": null,
+                    "ansattTom": null
                 }, {
                     "navn": "NAV, AVD WALDEMAR THRANES GATE",
-                    "organisasjonsnummer": "984054564"
+                    "organisasjonsnummer": "984054564",
+                    "ansattFom": null,
+                    "ansattTom": null
                 }]
             }
             """.trimIndent(),
@@ -184,11 +189,15 @@ class ApplicationTest {
                 "organisasjoner": [
                   {
                     "navn": "INMETA CONSULTING AS",
-                    "organisasjonsnummer": "977302390"
+                    "organisasjonsnummer": "977302390",
+                    "ansattFom": null,
+                    "ansattTom": null
                   },
                   {
                     "navn": "NAV, AVD WALDEMAR THRANES GATE",
-                    "organisasjonsnummer": "984054564"
+                    "organisasjonsnummer": "984054564",
+                    "ansattFom": null,
+                    "ansattTom": null
                   }
                 ]
             }
@@ -227,7 +236,9 @@ class ApplicationTest {
                 "organisasjoner": [
                   {
                     "navn": null,
-                    "organisasjonsnummer": "995784637"
+                    "organisasjonsnummer": "995784637",
+                    "ansattFom": null,
+                    "ansattTom": null
                   }
                 ]
             }
