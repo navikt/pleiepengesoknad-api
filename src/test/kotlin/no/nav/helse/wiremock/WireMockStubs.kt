@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
-import io.ktor.http.HttpHeaders
+import io.ktor.http.*
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 
 internal const val k9OppslagPath = "/k9-selvbetjening-oppslag-mock"
@@ -20,7 +20,13 @@ internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration
 }
 
 
-internal fun WireMockServer.stubK9OppslagSoker() : WireMockServer {
+internal fun WireMockServer.stubK9OppslagSoker(
+    statusCode: HttpStatusCode = HttpStatusCode.OK,
+    responseBody: String? = null
+): WireMockServer {
+    val responseBuilder = WireMock.aResponse()
+        .withHeader("Content-Type", "application/json")
+        .withStatus(statusCode.value)
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
@@ -30,16 +36,14 @@ internal fun WireMockServer.stubK9OppslagSoker() : WireMockServer {
             .withQueryParam("a", equalTo("etternavn"))
             .withQueryParam("a", equalTo("fødselsdato"))
             .willReturn(
-                WireMock.aResponse()
-                    .withHeader("Content-Type", "application/json")
-                    .withStatus(200)
-                    .withTransformers("k9-oppslag-soker")
+                responseBody?.let { responseBuilder.withBody(it) }
+                    ?: responseBuilder.withTransformers("k9-oppslag-soker")
             )
     )
     return this
 }
 
-internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false) : WireMockServer {
+internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false): WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
@@ -58,7 +62,7 @@ internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false) : Wi
     return this
 }
 
-internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = false) : WireMockServer {
+internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = false): WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
@@ -77,8 +81,8 @@ internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = fa
 }
 
 private fun WireMockServer.stubHealthEndpoint(
-    path : String
-) : WireMockServer{
+    path: String
+): WireMockServer {
     WireMock.stubFor(
         WireMock.get(WireMock.urlPathMatching(".*$path")).willReturn(
             WireMock.aResponse()
@@ -89,10 +93,12 @@ private fun WireMockServer.stubHealthEndpoint(
 }
 
 internal fun WireMockServer.stubK9MellomlagringHealth() = stubHealthEndpoint("$k9MellomlagringPath/health")
-internal fun WireMockServer.stubPleiepengesoknadMottakHealth() = stubHealthEndpoint("$pleiepengesoknadMottakPath/health")
+internal fun WireMockServer.stubPleiepengesoknadMottakHealth() =
+    stubHealthEndpoint("$pleiepengesoknadMottakPath/health")
+
 internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpoint("$k9OppslagPath/health")
 
-internal fun WireMockServer.stubLeggSoknadTilProsessering(path: String) : WireMockServer{
+internal fun WireMockServer.stubLeggSoknadTilProsessering(path: String): WireMockServer {
     WireMock.stubFor(
         WireMock.post(WireMock.urlMatching(".*$pleiepengesoknadMottakPath/$path"))
             .willReturn(
@@ -103,7 +109,7 @@ internal fun WireMockServer.stubLeggSoknadTilProsessering(path: String) : WireMo
     return this
 }
 
-internal fun WireMockServer.stubK9Mellomlagring() : WireMockServer{
+internal fun WireMockServer.stubK9Mellomlagring(): WireMockServer {
     WireMock.stubFor(
         WireMock.any(WireMock.urlMatching(".*$k9MellomlagringPath/v1/dokument.*"))
             .willReturn(

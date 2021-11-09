@@ -9,8 +9,31 @@ import io.ktor.server.testing.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Arbeidsform
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
+import no.nav.helse.soknad.JobberIPeriodeSvar
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -412,17 +435,40 @@ class ApplicationTest {
 
     @Test
     fun `Hente søker som ikke er myndig`() {
+        wireMockServer.stubK9OppslagSoker(
+            statusCode = HttpStatusCode.Forbidden,
+            responseBody =
+            //language=json
+            """
+            {
+                "detail": "Policy decision: DENY - Reason: (NAV-bruker er i live AND NAV-bruker er ikke myndig)",
+                "instance": "/meg",
+                "type": "/problem-details/tilgangskontroll-feil",
+                "title": "tilgangskontroll-feil",
+                "status": 403
+            }
+            """.trimIndent()
+        )
+
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = SØKER_URL,
-            expectedCode = HttpStatusCode.OK,
-            expectedResponse = expectedGetSokerJson(
-                fødselsnummer = ikkeMyndigFnr,
-                fødselsdato = ikkeMyndigDato,
-                myndig = false
-            ),
+            expectedCode = HttpStatusCode.Forbidden,
+            expectedResponse =
+            //language=json
+            """
+            {
+                "type": "/problem-details/tilgangskontroll-feil",
+                "title": "tilgangskontroll-feil",
+                "status": 403,
+                "instance": "/soker",
+                "detail": "Tilgang nektet."
+            }
+            """.trimIndent(),
             cookie = getAuthCookie(ikkeMyndigFnr)
         )
+
+        wireMockServer.stubK9OppslagSoker() // reset til default mapping
     }
 
     @Test
@@ -441,10 +487,12 @@ class ApplicationTest {
                 tilOgMed = LocalDate.now().plusDays(4),
                 ferieuttakIPerioden = FerieuttakIPerioden(
                     skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(Ferieuttak(
-                        fraOgMed = LocalDate.now(),
-                        tilOgMed = LocalDate.now().plusDays(2),
-                    ))
+                    ferieuttak = listOf(
+                        Ferieuttak(
+                            fraOgMed = LocalDate.now(),
+                            tilOgMed = LocalDate.now().plusDays(2),
+                        )
+                    )
                 ),
                 vedlegg = listOf(URL(jpegUrl)),
             ).somJson()
@@ -452,7 +500,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Validerer vedlegg hvor et ikke finnes`(){
+    fun `Validerer vedlegg hvor et ikke finnes`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val vedlegg1 = engine.jpegUrl(cookie)
         val vedlegg2 = engine.pdUrl(cookie)
@@ -482,7 +530,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Validerer vedlegg hvor alle finnes`(){
+    fun `Validerer vedlegg hvor alle finnes`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val vedlegg1 = engine.jpegUrl(cookie)
         val vedlegg2 = engine.pdUrl(cookie)
@@ -804,10 +852,12 @@ class ApplicationTest {
                 tilOgMed = LocalDate.now().plusDays(4),
                 ferieuttakIPerioden = FerieuttakIPerioden(
                     skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(Ferieuttak(
-                        fraOgMed = LocalDate.now(),
-                        tilOgMed = LocalDate.now().plusDays(2),
-                    ))
+                    ferieuttak = listOf(
+                        Ferieuttak(
+                            fraOgMed = LocalDate.now(),
+                            tilOgMed = LocalDate.now().plusDays(2),
+                        )
+                    )
                 ),
                 vedlegg = listOf(URL(jpegUrl), URL(finnesIkkeUrl)),
             ).somJson()
