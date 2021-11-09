@@ -3,13 +3,14 @@ package no.nav.helse.soker
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
-import io.ktor.http.Url
+import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
+import no.nav.helse.general.oppslag.throwable
 import no.nav.helse.k9SelvbetjeningOppslagKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -56,13 +57,11 @@ class SøkerGateway(
             result.fold(
                 { success -> objectMapper.readValue<SokerOppslagRespons>(success) },
                 { error ->
-                    logger.error(
-                        "Error response = '${
-                            error.response.body().asString("text/plain")
-                        }' fra '${request.url}'"
+                    throw error.throwable(
+                        request = request,
+                        logger = logger,
+                        errorMessage = "Feil ved henting av søkers personinformasjon"
                     )
-                    logger.error(error.toString())
-                    throw IllegalStateException("Feil ved henting av søkers personinformasjon")
                 }
             )
         }
@@ -77,3 +76,4 @@ class SøkerGateway(
         val fødselsdato: LocalDate
     )
 }
+
