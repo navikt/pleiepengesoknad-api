@@ -10,6 +10,7 @@ import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
+import no.nav.helse.general.oppslag.throwable
 import no.nav.helse.k9SelvbetjeningOppslagKonfigurert
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import org.slf4j.Logger
@@ -113,15 +114,7 @@ class ArbeidsgivereGateway(
 
             result.fold(
                 { success -> objectMapper.readValue<ArbeidsgivereOppslagRespons>(success) },
-                { error ->
-                    logger.error(
-                        "Error response = '${
-                            error.response.body().asString("text/plain")
-                        }' fra '${request.url}'"
-                    )
-                    logger.error(error.toString())
-                    throw IllegalStateException("Feil ved henting av arbeidsgiver.")
-                }
+                { error -> throw error.throwable(request, logger, "Feil ved henting av arbeidsgiver.") }
             )
         }
         return arbeidsgivereOppslagRespons.arbeidsgivere

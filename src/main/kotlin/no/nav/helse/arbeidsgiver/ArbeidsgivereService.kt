@@ -2,12 +2,13 @@ package no.nav.helse.arbeidsgiver
 
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
+import no.nav.helse.general.oppslag.TilgangNektetException
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
 
-class ArbeidsgivereService (
+class ArbeidsgivereService(
     private val arbeidsgivereGateway: ArbeidsgivereGateway
 ) {
     private companion object {
@@ -19,12 +20,17 @@ class ArbeidsgivereService (
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate
-    ) : Arbeidsgivere {
+    ): Arbeidsgivere {
         return try {
             arbeidsgivereGateway.hentArbeidsgivere(idToken, callId, fraOgMed, tilOgMed)
         } catch (cause: Throwable) {
-            logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
-            Arbeidsgivere(emptyList())
+            when (cause) {
+                is TilgangNektetException -> throw cause
+                else -> {
+                    logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
+                    Arbeidsgivere(emptyList())
+                }
+            }
         }
     }
 

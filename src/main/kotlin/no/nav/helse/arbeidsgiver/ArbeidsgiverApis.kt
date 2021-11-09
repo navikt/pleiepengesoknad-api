@@ -12,6 +12,8 @@ import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
+import no.nav.helse.general.oppslag.TilgangNektetException
+import no.nav.helse.soker.respondTilgangNektetProblemDetail
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -35,14 +37,21 @@ fun Route.arbeidsgiverApis(
         if (violations.isNotEmpty()) {
             throw Throwblem(ValidationProblemDetails(violations))
         } else {
-            call.respond(
-                arbeidsgivereService.getArbeidsgivere(
-                    idToken = idTokenProvider.getIdToken(call),
-                    callId = call.getCallId(),
-                    fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
-                    tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])
+            try {
+                call.respond(
+                    arbeidsgivereService.getArbeidsgivere(
+                        idToken = idTokenProvider.getIdToken(call),
+                        callId = call.getCallId(),
+                        fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
+                        tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])
+                    )
                 )
-            )
+            } catch (e: Exception) {
+                when (e) {
+                    is TilgangNektetException -> call.respondTilgangNektetProblemDetail(e)
+                    else -> throw e
+                }
+            }
         }
     }
 
