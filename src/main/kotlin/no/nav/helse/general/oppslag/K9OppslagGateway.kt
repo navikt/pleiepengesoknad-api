@@ -30,11 +30,11 @@ abstract class K9OppslagGateway(
 
 fun FuelError.throwable(request: Request, logger: Logger, errorMessage: String): Throwable {
     val errorResponseBody = response.body().asString("text/plain")
+    logger.error("Error response = '$errorResponseBody' fra '${request.url}'")
+    logger.error(toString())
     return when (response.statusCode) {
         403 -> TilgangNektetException("Tilgang nektet.")
         else -> {
-            logger.error("Error response = '$errorResponseBody' fra '${request.url}'")
-            logger.error(toString())
             IllegalStateException(errorMessage)
         }
     }
