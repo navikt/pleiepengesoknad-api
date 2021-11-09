@@ -436,7 +436,7 @@ class ApplicationTest {
     @Test
     fun `Hente søker som ikke er myndig`() {
         wireMockServer.stubK9OppslagSoker(
-            statusCode = HttpStatusCode.Forbidden,
+            statusCode = HttpStatusCode.fromValue(451),
             responseBody =
             //language=json
             """
@@ -445,7 +445,7 @@ class ApplicationTest {
                 "instance": "/meg",
                 "type": "/problem-details/tilgangskontroll-feil",
                 "title": "tilgangskontroll-feil",
-                "status": 403
+                "status": 451
             }
             """.trimIndent()
         )
@@ -453,14 +453,14 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = SØKER_URL,
-            expectedCode = HttpStatusCode.Forbidden,
+            expectedCode = HttpStatusCode.fromValue(451),
             expectedResponse =
             //language=json
             """
             {
                 "type": "/problem-details/tilgangskontroll-feil",
                 "title": "tilgangskontroll-feil",
-                "status": 403,
+                "status": 451,
                 "instance": "/soker",
                 "detail": "Tilgang nektet."
             }

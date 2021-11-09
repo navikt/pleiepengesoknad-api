@@ -41,7 +41,7 @@ suspend fun ApplicationCall.respondTilgangNektetProblemDetail(e: TilgangNektetEx
     logger = logger,
     problemDetails = DefaultProblemDetails(
         title = "tilgangskontroll-feil",
-        status = 403,
+        status = 451,
         instance = URI(request.path()),
         detail = e.message
     )

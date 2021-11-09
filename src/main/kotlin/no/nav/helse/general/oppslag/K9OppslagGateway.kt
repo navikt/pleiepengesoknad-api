@@ -33,7 +33,7 @@ fun FuelError.throwable(request: Request, logger: Logger, errorMessage: String):
     logger.error("Error response = '$errorResponseBody' fra '${request.url}'")
     logger.error(toString())
     return when (response.statusCode) {
-        403 -> TilgangNektetException("Tilgang nektet.")
+        451 -> TilgangNektetException("Tilgang nektet.")
         else -> {
             IllegalStateException(errorMessage)
         }
