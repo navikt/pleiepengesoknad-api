@@ -5,13 +5,11 @@ import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg
-import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import java.net.URL
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class SerDesTest {
@@ -37,165 +35,6 @@ internal class SerDesTest {
     }
 
     private companion object {
-        val now = ZonedDateTime.of(2018, 1, 2, 3, 4, 5, 6, ZoneId.of("UTC"))
-        internal val start = LocalDate.parse("2020-01-01")
-
-        internal val søknad = Søknad(
-            newVersion = null,
-            språk = Språk.nb,
-            barn = BarnDetaljer(
-                aktørId = "12345",
-                fødselsnummer = "03028104560",
-                fødselsdato = LocalDate.parse("2018-01-01"),
-                navn = "Barn Barnesen"
-            ),
-            arbeidsgivere = listOf(
-                ArbeidsforholdAnsatt(
-                    navn = "Org",
-                    organisasjonsnummer = "917755736",
-                    erAnsatt = true,
-                    arbeidsforhold = Arbeidsforhold(
-                        arbeidsform = Arbeidsform.FAST,
-                        jobberNormaltTimer = 30.0,
-                        historiskArbeid = null,
-                        planlagtArbeid = null
-                    )
-                )
-            ),
-            vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
-            fraOgMed = LocalDate.now(),
-            tilOgMed = LocalDate.now().plusDays(10),
-            nattevåk = Nattevåk(
-                harNattevåk = true,
-                tilleggsinformasjon = "Har nattevåk"
-            ),
-            selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
-                virksomhet = Virksomhet(
-                    næringstyper = listOf(Næringstyper.ANNEN),
-                    fiskerErPåBladB = false,
-                    fraOgMed = LocalDate.parse("2020-01-01"),
-                    næringsinntekt = 1111,
-                    navnPåVirksomheten = "TullOgTøys",
-                    registrertINorge = false,
-                    registrertIUtlandet = Land(
-                        landnavn = "Tyskland",
-                        landkode = "DEU"
-                    ),
-                    varigEndring = VarigEndring(
-                        inntektEtterEndring = 9999,
-                        dato = LocalDate.parse("2020-01-01"),
-                        forklaring = "Korona"
-                    ),
-                    regnskapsfører = Regnskapsfører(
-                        "Kjell Regnskap",
-                        "123456789"
-                    ),
-                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
-                    harFlereAktiveVirksomheter = true
-                ),
-                arbeidsforhold = Arbeidsforhold(
-                    arbeidsform = Arbeidsform.FAST,
-                    jobberNormaltTimer = 40.0,
-                    historiskArbeid = null,
-                    planlagtArbeid = null
-                )
-            ),
-            medlemskap = Medlemskap(
-                harBoddIUtlandetSiste12Mnd = true,
-                skalBoIUtlandetNeste12Mnd = true,
-                utenlandsoppholdNeste12Mnd = listOf(
-                    Bosted(
-                        fraOgMed = LocalDate.parse("2018-01-01"),
-                        tilOgMed =  LocalDate.parse("2018-01-10"),
-                        landnavn = "Tyskland",
-                        landkode = "DEU"
-                )),
-                utenlandsoppholdSiste12Mnd = listOf(
-                    Bosted(
-                        fraOgMed = LocalDate.parse("2017-01-01"),
-                        tilOgMed = LocalDate.parse("2017-01-10"),
-                        landnavn = "Tyskland",
-                        landkode = "DEU"
-                    )
-                )
-            ),
-            harMedsøker = true,
-            beredskap = Beredskap(
-                beredskap = true,
-                tilleggsinformasjon = "Ikke beredskap"
-            ),
-            samtidigHjemme = true,
-            harBekreftetOpplysninger = true,
-            harForståttRettigheterOgPlikter = true,
-            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
-                Utenlandsopphold(
-                    fraOgMed = LocalDate.parse("2019-10-10"),
-                    tilOgMed = LocalDate.parse("2019-11-10"),
-                    landkode = "SE",
-                    landnavn = "Sverige",
-                    erBarnetInnlagt = true,
-                    perioderBarnetErInnlagt = listOf(
-                        Periode(
-                            fraOgMed = LocalDate.parse("2020-01-01"),
-                            tilOgMed = LocalDate.parse("2020-01-02")
-                        )
-                    ),
-                    erUtenforEøs = false,
-                    årsak = Årsak.ANNET
-                ),
-                Utenlandsopphold(
-                    fraOgMed = LocalDate.parse("2019-10-10"),
-                    tilOgMed = LocalDate.parse("2019-11-10"),
-                    landkode = "SE",
-                    landnavn = "Sverige",
-                    erBarnetInnlagt = true,
-                    perioderBarnetErInnlagt = listOf(
-                        Periode(
-                            fraOgMed = LocalDate.parse("2020-01-01"),
-                            tilOgMed = LocalDate.parse("2020-01-02")
-                        )
-                    ),
-                    erUtenforEøs = false,
-                    årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
-                ),
-                Utenlandsopphold(
-                    fraOgMed = LocalDate.parse("2019-10-10"),
-                    tilOgMed = LocalDate.parse("2019-11-10"),
-                    landkode = "SE",
-                    landnavn = "Sverige",
-                    erBarnetInnlagt = true,
-                    perioderBarnetErInnlagt = listOf(
-                        Periode(
-                            fraOgMed = LocalDate.parse("2020-01-01"),
-                            tilOgMed = LocalDate.parse("2020-01-02")
-                        )
-                    ),
-                    erUtenforEøs = false,
-                    årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
-                ),
-                Utenlandsopphold(
-                    fraOgMed = LocalDate.parse("2019-10-10"),
-                    tilOgMed = LocalDate.parse("2019-11-10"),
-                    landkode = "SE",
-                    landnavn = "Sverige",
-                    erBarnetInnlagt = false,
-                    erUtenforEøs = false,
-                    årsak = null
-                )
-            )),
-            ferieuttakIPerioden = FerieuttakIPerioden(skalTaUtFerieIPerioden = false, ferieuttak = listOf(
-                Ferieuttak(
-                    fraOgMed = LocalDate.parse("2020-01-05"),
-                    tilOgMed = LocalDate.parse("2020-01-07")
-                )
-            )),
-            frilans = Frilans(
-                jobberFortsattSomFrilans = true,
-                startdato = LocalDate.parse("2018-01-01")
-            ),
-            harVærtEllerErVernepliktig = true
-        )
-
         fun søknadJson(søknadsId: String) =
             //language=json
             """
@@ -210,21 +49,33 @@ internal class SerDesTest {
                 "fødselsdato" : "2018-01-01",
                 "aktørId" : null
               },
-              "fraOgMed": "2020-01-01",
-              "tilOgMed": "2020-01-20",
-              "arbeidsgivere": {
-                "organisasjoner": [
-                  {
-                    "organisasjonsnummer": "917755736",
-                    "navn": "Org",
-                    "skalJobbeProsent": 40,
-                    "jobberNormaltTimer": 40,
-                    "skalJobbe": "REDUSERT",
-                    "vetIkkeEkstrainfo": null,
-                    "arbeidsform": "FAST"
+              "fraOgMed": "2021-01-01",
+              "tilOgMed": "2021-10-01",
+              "arbeidsgivere" :  [
+                {
+                  "navn": "Org",
+                  "organisasjonsnummer": "917755736",
+                  "erAnsatt": true,
+                  "arbeidsforhold": {
+                    "arbeidsform": "FAST",
+                    "jobberNormaltTimer": 40.0,
+                    "historiskArbeid": {
+                      "jobberIPerioden": "JA",
+                      "jobberSomVanlig": true,
+                      "erLiktHverUke": true,
+                      "enkeltdager": null,
+                      "fasteDager": null
+                    },
+                    "planlagtArbeid": {
+                      "jobberIPerioden": "JA",
+                      "jobberSomVanlig": true,
+                      "erLiktHverUke": true,
+                      "enkeltdager": null,
+                      "fasteDager": null
+                    }
                   }
-                ]
-              },
+                }
+              ],
               "vedlegg": [
                 "http://localhost:8080/vedlegg/1"
               ],
@@ -248,40 +99,54 @@ internal class SerDesTest {
                   }
                 ]
               },
-              "selvstendigVirksomheter": [
-                {
-                    "næringstyper": ["ANNEN"],
-                    "fiskerErPåBladB": false,
-                    "organisasjonsnummer": null,
-                    "fraOgMed": "2020-01-01",
-                    "tilOgMed": null,
-                    "næringsinntekt": 1111,
-                    "navnPåVirksomheten": "TullOgTøys",
-                    "registrertINorge": false,
-                    "registrertIUtlandet":{
-                      "landnavn": "Tyskland",
-                      "landkode": "DEU" 
-                    },
-                    "varigEndring": {
-                      "inntektEtterEndring": 9999,
-                      "dato": "2020-01-01",
-                      "forklaring": "Korona"
-                    },
-                    "regnskapsfører": {
-                      "navn": "Kjell Regnskap",
-                      "telefon": "123456789"
-                    },
-                    "yrkesaktivSisteTreFerdigliknedeÅrene": {
-                        "oppstartsdato": "2018-01-01"
-                     },
-                     "harFlereAktiveVirksomheter" : true
-                }
-              ],
-              "selvstendigArbeidsforhold": {
-                  "skalJobbe": "NEI",
+              "selvstendigNæringsdrivende": {
+                "virksomhet": {
+                  "næringstyper": [
+                    "ANNEN"
+                  ],
+                  "fiskerErPåBladB": false,
+                  "fraOgMed": "2020-01-01",
+                  "tilOgMed": null,
+                  "næringsinntekt": 1111,
+                  "navnPåVirksomheten": "TullOgTøys",
+                  "organisasjonsnummer": null,
+                  "registrertINorge": false,
+                  "registrertIUtlandet": {
+                    "landkode": "DEU",
+                    "landnavn": "Tyskland"
+                  },
+                  "yrkesaktivSisteTreFerdigliknedeÅrene": {
+                    "oppstartsdato": "2018-01-01"
+                  },
+                  "varigEndring": {
+                    "dato": "2020-01-01",
+                    "inntektEtterEndring": 9999,
+                    "forklaring": "Korona"
+                  },
+                  "regnskapsfører": {
+                    "navn": "Kjell Regnskap",
+                    "telefon": "123456789"
+                  },
+                  "harFlereAktiveVirksomheter": true
+                },
+                "arbeidsforhold": {
                   "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
-                  "skalJobbeProsent": 0.0
+                  "historiskArbeid": {
+                    "jobberIPerioden": "JA",
+                    "jobberSomVanlig": true,
+                    "erLiktHverUke": true,
+                    "enkeltdager": null,
+                    "fasteDager": null
+                  },
+                  "planlagtArbeid": {
+                    "jobberIPerioden": "JA",
+                    "jobberSomVanlig": true,
+                    "erLiktHverUke": true,
+                    "enkeltdager": null,
+                    "fasteDager": null
+                  }
+                }
               },
               "utenlandsoppholdIPerioden": {
                 "skalOppholdeSegIUtlandetIPerioden": true,
@@ -349,43 +214,55 @@ internal class SerDesTest {
                 "skalTaUtFerieIPerioden": true,
                 "ferieuttak": [
                   {
-                    "fraOgMed": "2020-01-05",
-                    "tilOgMed": "2020-01-07"
+                    "fraOgMed": "2021-01-01",
+                    "tilOgMed": "2021-01-10"
                   }
                 ]
               },
-              "skalBekrefteOmsorg": true,
-              "skalPassePåBarnetIHelePerioden": true,
-              "beskrivelseOmsorgsrollen": "En kort beskrivelse",
               "beredskap": {
                 "beredskap": true,
                 "tilleggsinformasjon": "Ikke beredskap"
               },
               "frilans": {
-              "jobberFortsattSomFrilans": true,
-              "startdato": "2018-01-01",
-              "sluttdato": null,
-              "arbeidsforhold": {
-                      "skalJobbe": "NEI",
-                      "arbeidsform": "FAST",
-                      "jobberNormaltTimer": 40.0,
-                      "skalJobbeProsent": 0.0
+                "startdato": "2018-01-01",
+                "sluttdato": null,
+                "jobberFortsattSomFrilans": true,
+                "arbeidsforhold": {
+                  "arbeidsform": "FAST",
+                  "jobberNormaltTimer": 40.0,
+                  "historiskArbeid": {
+                    "jobberIPerioden": "JA",
+                    "jobberSomVanlig": true,
+                    "erLiktHverUke": true,
+                    "enkeltdager": null,
+                    "fasteDager": null
+                  },
+                  "planlagtArbeid": {
+                    "jobberIPerioden": "JA",
+                    "jobberSomVanlig": true,
+                    "erLiktHverUke": true,
+                    "enkeltdager": null,
+                    "fasteDager": null
                   }
+                }
               },
               "nattevåk": {
                 "harNattevåk": true,
                 "tilleggsinformasjon": "Har nattevåk"
               },
               "omsorgstilbud": {
-                "fasteDager": {
-                  "mandag": "PT1H",
-                  "tirsdag": "PT1H",
-                  "onsdag": "PT1H",
-                  "torsdag": "PT1H",
-                  "fredag": "PT1H"
-                },
-                "vetOmsorgstilbud": "VET_ALLE_TIMER",
-                "enkeltDager": null
+                "historisk": null,
+                "planlagt": {
+                  "enkeltdager": null,
+                  "ukedager": {
+                    "mandag": "PT1H",
+                    "tirsdag": "PT1H",
+                    "onsdag": "PT1H",
+                    "torsdag": "PT1H",
+                    "fredag": "PT1H"
+                  },
+                  "erLiktHverDag": null
+                }
               },
               "barnRelasjon" : "ANNET",
               "barnRelasjonBeskrivelse" : "Gudfar til barnet",
@@ -418,19 +295,19 @@ internal class SerDesTest {
               },
               "fraOgMed": "2020-01-01",
               "tilOgMed": "2020-02-01",
-              "arbeidsgivere": {
-                "organisasjoner": [
-                  {
-                    "organisasjonsnummer": "917755736",
-                    "navn": "Org",
-                    "skalJobbeProsent": 10,
-                    "jobberNormaltTimer": 10,
-                    "skalJobbe": "REDUSERT",
-                    "vetIkkeEkstrainfo": null,
-                    "arbeidsform": "FAST"
+              "arbeidsgivere": [
+                {
+                  "navn": "Org",
+                  "organisasjonsnummer": "917755736",
+                  "erAnsatt": true,
+                  "arbeidsforhold": {
+                    "arbeidsform": "FAST",
+                    "jobberNormaltTimer": 30.0,
+                    "historiskArbeid": null,
+                    "planlagtArbeid": null
                   }
-                ]
-              },
+                }
+              ],
               "vedlegg": [
                 {
                 "content": "VGVzdA==",
@@ -461,40 +338,42 @@ internal class SerDesTest {
                   }
                 ]
               },
-              "selvstendigVirksomheter": [
-                {
-                    "næringstyper": ["ANNEN"],
-                    "fiskerErPåBladB": false,
-                    "organisasjonsnummer": null,
-                    "fraOgMed": "2020-01-01",
-                    "tilOgMed": null,
-                    "næringsinntekt": 1111,
-                    "navnPåVirksomheten": "TullOgTøys",
-                    "registrertINorge": false,
-                    "registrertIUtlandet":{
-                      "landnavn": "Tyskland",
-                      "landkode": "DEU" 
-                    },
-                    "varigEndring": {
-                      "inntektEtterEndring": 9999,
-                      "dato": "2020-01-01",
-                      "forklaring": "Korona"
-                    },
-                    "regnskapsfører": {
-                      "navn": "Kjell Regnskap",
-                      "telefon": "123456789"
-                    },
-                    "yrkesaktivSisteTreFerdigliknedeÅrene": {
-                        "oppstartsdato": "2018-01-01"
-                     },
-                     "harFlereAktiveVirksomheter" : true
-                }
-              ],
-              "selvstendigArbeidsforhold": {
-                  "skalJobbe": "NEI",
+              "selvstendigNæringsdrivende": {
+                "virksomhet": {
+                  "næringstyper": [
+                    "ANNEN"
+                  ],
+                  "fiskerErPåBladB": false,
+                  "fraOgMed": "2020-01-01",
+                  "tilOgMed": null,
+                  "næringsinntekt": 1111,
+                  "navnPåVirksomheten": "TullOgTøys",
+                  "organisasjonsnummer": null,
+                  "registrertINorge": false,
+                  "registrertIUtlandet": {
+                    "landkode": "DEU",
+                    "landnavn": "Tyskland"
+                  },
+                  "yrkesaktivSisteTreFerdigliknedeÅrene": {
+                    "oppstartsdato": "2018-01-01"
+                  },
+                  "varigEndring": {
+                    "dato": "2020-01-01",
+                    "inntektEtterEndring": 9999,
+                    "forklaring": "Korona"
+                  },
+                  "regnskapsfører": {
+                    "navn": "Kjell Regnskap",
+                    "telefon": "123456789"
+                  },
+                  "harFlereAktiveVirksomheter": true
+                },
+                "arbeidsforhold": {
                   "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
-                  "skalJobbeProsent": 0.0
+                  "historiskArbeid": null,
+                  "planlagtArbeid": null
+                }
               },
               "utenlandsoppholdIPerioden": {
                 "skalOppholdeSegIUtlandetIPerioden": true,
@@ -567,39 +446,26 @@ internal class SerDesTest {
                   }
                 ]
               },
-              "skalBekrefteOmsorg": true,
-              "skalPassePåBarnetIHelePerioden": true,
-              "beskrivelseOmsorgsrollen": "En kort beskrivelse",
               "beredskap": {
                 "beredskap": true,
                 "tilleggsinformasjon": "Ikke beredskap"
               },
               "frilans": {
-              "jobberFortsattSomFrilans": true,
-              "startdato": "2018-01-01",
-              "sluttdato": null,
-              "arbeidsforhold": {
-                      "skalJobbe": "NEI",
-                      "arbeidsform": "FAST",
-                      "jobberNormaltTimer": 40.0,
-                      "skalJobbeProsent": 0.0
+                  "jobberFortsattSomFrilans": true,
+                  "startdato": "2018-01-01",
+                  "sluttdato": null,
+                  "arbeidsforhold": {
+                    "arbeidsform": "FAST",
+                    "jobberNormaltTimer": 40.0,
+                    "historiskArbeid": null,
+                    "planlagtArbeid": null
                   }
               },
               "nattevåk": {
                 "harNattevåk": true,
                 "tilleggsinformasjon": "Har nattevåk"
               },
-              "omsorgstilbud": {
-                "fasteDager": {
-                  "mandag": "PT1H",
-                  "tirsdag": "PT1H",
-                  "onsdag": "PT1H",
-                  "torsdag": "PT1H",
-                  "fredag": "PT1H"
-                },
-                "vetOmsorgstilbud": "VET_ALLE_TIMER",
-                "enkeltDager": null
-              },
+              "omsorgstilbud": null,
               "barnRelasjon" : null,
               "barnRelasjonBeskrivelse" : null,
               "harVærtEllerErVernepliktig" : true,
