@@ -60,8 +60,8 @@ class SøknadUtils {
                 )
             ),
             vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
-            fraOgMed = LocalDate.now().minusDays(5),
-            tilOgMed = LocalDate.now().plusDays(5),
+            fraOgMed = LocalDate.parse("2021-01-01"),
+            tilOgMed = LocalDate.parse("2021-10-01"),
             nattevåk = Nattevåk(
                 harNattevåk = true,
                 tilleggsinformasjon = "Har nattevåk"
@@ -209,8 +209,8 @@ class SøknadUtils {
             ferieuttakIPerioden = FerieuttakIPerioden(
                 skalTaUtFerieIPerioden = true, ferieuttak = listOf(
                     Ferieuttak(
-                        fraOgMed = LocalDate.now(),
-                        tilOgMed = LocalDate.now().plusDays(1)
+                        fraOgMed = LocalDate.parse("2021-01-01"),
+                        tilOgMed = LocalDate.parse("2021-01-10")
                     )
                 )
             ),
