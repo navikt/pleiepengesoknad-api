@@ -27,12 +27,6 @@ enum class JobberIPeriodeSvar {
     VET_IKKE
 }
 
-enum class Arbeidsform {
-    FAST,
-    TURNUS,
-    VARIERENDE
-}
-
 internal fun List<ArbeidsforholdAnsatt>.validate(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 

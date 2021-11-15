@@ -22,7 +22,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 planlagtArbeid = null,
                 historiskArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -86,7 +85,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 planlagtArbeid = null,
                 historiskArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -137,7 +135,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 planlagtArbeid = null,
                 historiskArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.NEI,
@@ -188,7 +185,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 planlagtArbeid = null,
                 historiskArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.VET_IKKE,
@@ -239,7 +235,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 historiskArbeid = null,
                 planlagtArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -306,7 +301,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 historiskArbeid = null,
                 planlagtArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.NEI,
@@ -361,7 +355,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 historiskArbeid = null,
                 planlagtArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -429,7 +422,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 historiskArbeid = null,
                 planlagtArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -483,7 +475,6 @@ class K9FormatArbeidstidTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 jobberNormaltTimer = 37.5,
-                arbeidsform = Arbeidsform.FAST,
                 planlagtArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
                     jobberSomVanlig = true,
@@ -683,7 +674,6 @@ class K9FormatArbeidstidTest {
     @Test
     fun `Arbeidsforhold - Historisk og planlagt hvor jobberSomVanlig=true -- Forventer to perioder med fult arbeid`(){
         val arbeidsforholdJson = Arbeidsforhold(
-            arbeidsform = Arbeidsform.FAST,
             jobberNormaltTimer = 37.5,
             historiskArbeid = ArbeidIPeriode(
                 jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -723,7 +713,6 @@ class K9FormatArbeidstidTest {
     @Test
     fun `Arbeidsforhold - Historisk og planlagt hvor jobberIPerioden=NEI -- Forventer to perioder fylt med 0 timer`(){
         val arbeidsforholdJson = Arbeidsforhold(
-            arbeidsform = Arbeidsform.FAST,
             jobberNormaltTimer = 37.5,
             historiskArbeid = ArbeidIPeriode(
                 jobberIPerioden = JobberIPeriodeSvar.NEI,
@@ -772,7 +761,6 @@ class K9FormatArbeidstidTest {
 
         val arbeidsforhold = Arbeidsforhold(
             jobberNormaltTimer = 37.5,
-            arbeidsform = Arbeidsform.FAST,
             planlagtArbeid = arbeidIPeriodenUtenOppgittTid,
             historiskArbeid = arbeidIPeriodenUtenOppgittTid
         )
@@ -988,7 +976,6 @@ class K9FormatArbeidstidTest {
 
         val arbeidsforhold = Arbeidsforhold(
             jobberNormaltTimer = 37.5,
-            arbeidsform = Arbeidsform.FAST,
             planlagtArbeid = arbeidIPeriode,
             historiskArbeid = arbeidIPeriode
         )
