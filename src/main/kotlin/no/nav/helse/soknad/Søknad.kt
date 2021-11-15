@@ -159,7 +159,6 @@ enum class Årsak {
 }
 
 data class Arbeidsforhold(
-    val arbeidsform: Arbeidsform? = null, // Feltet skal bort. Settes som nullable for å støtte begge versjoner.
     val jobberNormaltTimer: Double,
     val historiskArbeid: ArbeidIPeriode? = null,
     val planlagtArbeid: ArbeidIPeriode? = null

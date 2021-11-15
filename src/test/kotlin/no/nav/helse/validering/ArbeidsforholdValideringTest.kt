@@ -1,6 +1,9 @@
 package no.nav.helse.validering
 
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.JobberIPeriodeSvar
 import no.nav.helse.soknad.validering.valider
 import java.time.Duration
 import java.time.LocalDate
@@ -10,7 +13,6 @@ import kotlin.test.assertEquals
 class ArbeidsforholdValideringTest {
 
     val arbeidsforhold = Arbeidsforhold(
-        arbeidsform = Arbeidsform.FAST,
         jobberNormaltTimer = 33.0,
         historiskArbeid = null,
         planlagtArbeid = null

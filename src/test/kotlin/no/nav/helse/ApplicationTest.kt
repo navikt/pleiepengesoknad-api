@@ -630,7 +630,6 @@ class ApplicationTest {
                         harFlereAktiveVirksomheter = true
                     ),
                     arbeidsforhold = Arbeidsforhold(
-                        arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 37.5,
                         historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -701,7 +700,6 @@ class ApplicationTest {
                         harFlereAktiveVirksomheter = true
                     ),
                     arbeidsforhold = Arbeidsforhold(
-                        arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 40.0,
                         historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
@@ -873,7 +871,6 @@ class ApplicationTest {
                         "navn" : "$forlangtNavn",
                         "organisasjonsnummer" : 12345,
                         "arbeidsforhold" : {
-                            "arbeidsform": "FAST",
                             "jobberNormaltTimer": 37.5,
                             "historisk": null,
                             "planlagt": null
