@@ -57,7 +57,6 @@ internal class SerDesTest {
                   "organisasjonsnummer": "917755736",
                   "erAnsatt": true,
                   "arbeidsforhold": {
-                    "arbeidsform": "FAST",
                     "jobberNormaltTimer": 40.0,
                     "historiskArbeid": {
                       "jobberIPerioden": "JA",
@@ -130,7 +129,6 @@ internal class SerDesTest {
                   "harFlereAktiveVirksomheter": true
                 },
                 "arbeidsforhold": {
-                  "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
                   "historiskArbeid": {
                     "jobberIPerioden": "JA",
@@ -228,7 +226,6 @@ internal class SerDesTest {
                 "sluttdato": null,
                 "jobberFortsattSomFrilans": true,
                 "arbeidsforhold": {
-                  "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
                   "historiskArbeid": {
                     "jobberIPerioden": "JA",
@@ -301,7 +298,6 @@ internal class SerDesTest {
                   "organisasjonsnummer": "917755736",
                   "erAnsatt": true,
                   "arbeidsforhold": {
-                    "arbeidsform": "FAST",
                     "jobberNormaltTimer": 30.0,
                     "historiskArbeid": null,
                     "planlagtArbeid": null
@@ -369,7 +365,6 @@ internal class SerDesTest {
                   "harFlereAktiveVirksomheter": true
                 },
                 "arbeidsforhold": {
-                  "arbeidsform": "FAST",
                   "jobberNormaltTimer": 40.0,
                   "historiskArbeid": null,
                   "planlagtArbeid": null
@@ -455,7 +450,6 @@ internal class SerDesTest {
                   "startdato": "2018-01-01",
                   "sluttdato": null,
                   "arbeidsforhold": {
-                    "arbeidsform": "FAST",
                     "jobberNormaltTimer": 40.0,
                     "historiskArbeid": null,
                     "planlagtArbeid": null
@@ -496,7 +490,6 @@ internal class SerDesTest {
                     organisasjonsnummer = "917755736",
                     erAnsatt = true,
                     arbeidsforhold = Arbeidsforhold(
-                        arbeidsform = Arbeidsform.FAST,
                         jobberNormaltTimer = 30.0,
                         historiskArbeid = null,
                         planlagtArbeid = null
@@ -542,7 +535,6 @@ internal class SerDesTest {
                     harFlereAktiveVirksomheter = true
                 ),
                 arbeidsforhold = Arbeidsforhold(
-                    arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     historiskArbeid = null,
                     planlagtArbeid = null
@@ -646,7 +638,6 @@ internal class SerDesTest {
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
-                    arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     historiskArbeid = null,
                     planlagtArbeid = null

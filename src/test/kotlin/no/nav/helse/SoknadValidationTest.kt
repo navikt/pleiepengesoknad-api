@@ -97,7 +97,6 @@ class SoknadValidationTest {
                 organisasjonsnummer = "917755736",
                 erAnsatt = true,
                 arbeidsforhold = Arbeidsforhold(
-                    arbeidsform = Arbeidsform.FAST,
                     jobberNormaltTimer = 40.0,
                     historiskArbeid = null,
                     planlagtArbeid = null
