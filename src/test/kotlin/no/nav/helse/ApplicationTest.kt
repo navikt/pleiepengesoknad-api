@@ -13,7 +13,6 @@ import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.mellomlagring.started
 import no.nav.helse.soknad.ArbeidIPeriode
 import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.Arbeidsform
 import no.nav.helse.soknad.BarnDetaljer
 import no.nav.helse.soknad.Enkeltdag
 import no.nav.helse.soknad.Ferieuttak
@@ -38,8 +37,6 @@ import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
 import no.nav.helse.wiremock.stubOppslagHealth
 import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
 import no.nav.helse.wiremock.stubSifInnsynApi
-import no.nav.helse.soknad.*
-import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
