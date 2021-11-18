@@ -6,7 +6,7 @@ import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.validering.valider
 import no.nav.helse.utils.erLikEllerEtterDagensDato
-import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -229,7 +229,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
 
 private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): MutableSet<Violation> {
 
-    return PleiepengerSyktBarn().validator.valider(k9FormatSøknad.getYtelse<PleiepengerSyktBarn>()).map {
+    return PleiepengerSyktBarnSøknadValidator().valider(k9FormatSøknad).map {
         Violation(
             parameterName = it.felt,
             parameterType = ParameterType.ENTITY,

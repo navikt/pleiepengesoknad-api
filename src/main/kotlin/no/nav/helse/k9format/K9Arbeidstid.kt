@@ -1,7 +1,13 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.*
-import no.nav.helse.soknad.JobberIPeriodeSvar.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.ArbeidsforholdAnsatt
+import no.nav.helse.soknad.JobberIPeriodeSvar.JA
+import no.nav.helse.soknad.JobberIPeriodeSvar.NEI
+import no.nav.helse.soknad.JobberIPeriodeSvar.VET_IKKE
+import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.Søknad
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
@@ -52,7 +58,7 @@ fun Arbeidsforhold?.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato:
         )
     )
 
-    val arbeidstidInfo = ArbeidstidInfo().medPerioder(null)
+    val arbeidstidInfo = ArbeidstidInfo()
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
     val gårsdagensDato = dagensDato.minusDays(1)
 

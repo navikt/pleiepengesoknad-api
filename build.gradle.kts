@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val dusseldorfKtorVersion = "3.1.6.4-e07c5ec"
 val ktorVersion = ext.get("ktorVersion").toString()
-val k9FormatVersion = "5.5.6"
+val k9FormatVersion = "5.5.12"
 val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
 val kafkaVersion = ext.get("kafkaVersion").toString() // Alligned med version fra kafka-embedded-env
 

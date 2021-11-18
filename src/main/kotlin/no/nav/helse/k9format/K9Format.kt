@@ -13,9 +13,13 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.SøknadId
-import no.nav.k9.søknad.ytelse.psb.v1.*
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap.BeredskapPeriodeInfo
+import no.nav.k9.søknad.ytelse.psb.v1.DataBruktTilUtledning
+import no.nav.k9.søknad.ytelse.psb.v1.LovbestemtFerie
 import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
+import no.nav.k9.søknad.ytelse.psb.v1.Omsorg
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.Uttak
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
 import java.time.DayOfWeek
 import java.time.Duration
@@ -66,7 +70,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, dagensDato: Loca
 
 fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
 
-fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn(NorskIdentitetsnummer.of(fødselsnummer), (fødselsdato))
+fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn().medNorskIdentitetsnummer(NorskIdentitetsnummer.of(fødselsnummer!!))
 
 fun Søknad.byggK9DataBruktTilUtledning(): DataBruktTilUtledning = DataBruktTilUtledning(
     harForståttRettigheterOgPlikter,
@@ -115,55 +119,56 @@ fun tilK9Tilsynsordning0Timer(periode: Periode) = K9Tilsynsordning().apply {
     )
 }
 
-fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = LocalDate.now()): K9Tilsynsordning = K9Tilsynsordning().apply {
+fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = LocalDate.now()): K9Tilsynsordning =
+    K9Tilsynsordning().apply {
 
-    if (historisk == null && planlagt == null) return tilK9Tilsynsordning0Timer(periode)
+        if (historisk == null && planlagt == null) return tilK9Tilsynsordning0Timer(periode)
 
-    historisk?.enkeltdager?.map {
-        leggeTilPeriode(
-            Periode(it.dato, it.dato),
-            TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
-                Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it.tid)
+        historisk?.enkeltdager?.map {
+            leggeTilPeriode(
+                Periode(it.dato, it.dato),
+                TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
+                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it.tid)
+                )
             )
-        )
-    }
+        }
 
-    planlagt?.ukedager?.apply {
-        val periodeStart = if(dagensDato.isBefore(periode.fraOgMed)) periode.fraOgMed else dagensDato
-        periodeStart.datesUntil(periode.tilOgMed.plusDays(1)).toList()
-            .map { dato: LocalDate ->
-                when (dato.dayOfWeek) {
-                    DayOfWeek.MONDAY -> mandag
-                    DayOfWeek.TUESDAY -> tirsdag
-                    DayOfWeek.WEDNESDAY -> onsdag
-                    DayOfWeek.THURSDAY -> torsdag
-                    DayOfWeek.FRIDAY -> fredag
-                    else -> null
-                }?.let { tilsynLengde: Duration ->
-                    leggeTilPeriode(
-                        Periode(dato, dato),
-                        TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
-                            Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(tilsynLengde)
+        planlagt?.ukedager?.apply {
+            val periodeStart = if (dagensDato.isBefore(periode.fraOgMed)) periode.fraOgMed else dagensDato
+            periodeStart.datesUntil(periode.tilOgMed.plusDays(1)).toList()
+                .map { dato: LocalDate ->
+                    when (dato.dayOfWeek) {
+                        DayOfWeek.MONDAY -> mandag
+                        DayOfWeek.TUESDAY -> tirsdag
+                        DayOfWeek.WEDNESDAY -> onsdag
+                        DayOfWeek.THURSDAY -> torsdag
+                        DayOfWeek.FRIDAY -> fredag
+                        else -> null
+                    }?.let { tilsynLengde: Duration ->
+                        leggeTilPeriode(
+                            Periode(dato, dato),
+                            TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
+                                Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(tilsynLengde)
+                            )
                         )
-                    )
+                    }
                 }
-            }
-    }
+        }
 
-    planlagt?.enkeltdager?.map {
-        leggeTilPeriode(
-            Periode(it.dato, it.dato),
-            TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
-                Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it.tid)
+        planlagt?.enkeltdager?.map {
+            leggeTilPeriode(
+                Periode(it.dato, it.dato),
+                TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
+                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it.tid)
+                )
             )
-        )
+        }
     }
-}
 
 fun Søknad.byggK9Uttak(periode: Periode): Uttak? {
-    val perioder = mutableMapOf<Periode, UttakPeriodeInfo>()
+    val perioder = mutableMapOf<Periode, Uttak.UttakPeriodeInfo>()
 
-    perioder[periode] = UttakPeriodeInfo(Duration.ofHours(7).plusMinutes(30))
+    perioder[periode] = Uttak.UttakPeriodeInfo(Duration.ofHours(7).plusMinutes(30))
 
     return Uttak().medPerioder(perioder)
 }
@@ -184,7 +189,7 @@ fun Medlemskap.tilK9Bosteder(): Bosteder? {
     val perioder = mutableMapOf<Periode, Bosteder.BostedPeriodeInfo>()
 
     utenlandsoppholdSiste12Mnd.forEach { bosted ->
-        if (!bosted.landkode.isNullOrEmpty()) perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] =
+        if (!bosted.landkode.isEmpty()) perioder[Periode(bosted.fraOgMed, bosted.tilOgMed)] =
             Bosteder.BostedPeriodeInfo()
                 .medLand(Landkode.of(bosted.landkode))
     }
