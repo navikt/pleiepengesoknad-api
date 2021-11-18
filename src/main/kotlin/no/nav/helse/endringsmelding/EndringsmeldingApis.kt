@@ -42,7 +42,7 @@ fun Route.endringsmeldingApis(
         val ytelse = søknadsopplysninger.getYtelse<PleiepengerSyktBarn>()
 
         val komplettEndringsmelding = call.receive<Endringsmelding>()
-            .tilKomplettEndringsmelding(søker, ytelse.barn)
+            .tilKomplettEndringsmelding(søker, ytelse.barn) // TODO: 17/11/2021 hente barn før innsending
             .forsikreValidert(ytelse.søknadsperiode)
         logger.info("Endringsmelding validert.")
 
