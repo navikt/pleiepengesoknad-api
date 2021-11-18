@@ -2,7 +2,13 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -67,7 +73,7 @@ class K9FormatTest {
                 "type": "PLEIEPENGER_SYKT_BARN",
                 "barn": {
                   "norskIdentitetsnummer": "03028104560",
-                  "fødselsdato": "2018-01-01"
+                  "fødselsdato": null
                 },
                 "søknadsperiode": [
                   "2021-01-01/2021-01-10"
@@ -151,8 +157,7 @@ class K9FormatTest {
                     "2021-01-02/2021-01-02": {
                       "etablertTilsynTimerPerDag": "PT5H"
                     }
-                  },
-                  "perioderSomSkalSlettes": {}
+                  }
                 },
                 "lovbestemtFerie": {
                   "perioder": {
@@ -210,8 +215,7 @@ class K9FormatTest {
                     "2021-01-01/2021-01-10": {
                       "timerPleieAvBarnetPerDag": "PT7H30M"
                     }
-                  },
-                  "perioderSomSkalSlettes": {}
+                  }
                 },
                 "omsorg": {
                   "relasjonTilBarnet": "ANNET",
@@ -219,7 +223,10 @@ class K9FormatTest {
                 }
               },
               "språk": "nb",
-              "journalposter": []
+              "journalposter": [],
+              "begrunnelseForInnsending": {
+                "tekst": null
+              }
             }
         """.trimIndent()
 
@@ -263,8 +270,7 @@ class K9FormatTest {
                 "2021-01-08/2021-01-08" : {
                   "etablertTilsynTimerPerDag" : "PT5H"
                 }
-              },
-              "perioderSomSkalSlettes": {}
+              }
             }
         """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
         )
@@ -303,8 +309,7 @@ class K9FormatTest {
                 "2021-01-11/2021-01-11" : {
                   "etablertTilsynTimerPerDag" : "PT5H"
                 }
-              },
-              "perioderSomSkalSlettes": {}
+              }
             }
         """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
         )
@@ -343,8 +348,7 @@ class K9FormatTest {
                 "2021-01-08/2021-01-08" : {
                   "etablertTilsynTimerPerDag" : "PT5H"
                 }
-              },
-              "perioderSomSkalSlettes": {}
+              }
             }
         """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
         )
@@ -365,8 +369,7 @@ class K9FormatTest {
                 "2021-01-04/2021-01-08" : {
                   "etablertTilsynTimerPerDag" : "PT0S"
                 }
-              },
-              "perioderSomSkalSlettes": {}
+              }
             }
         """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
         )
@@ -408,8 +411,7 @@ class K9FormatTest {
                 "2021-01-08/2021-01-08" : {
                   "etablertTilsynTimerPerDag" : "PT7H30M"
                 }
-              },
-              "perioderSomSkalSlettes": {}
+              }
             }
         """.trimIndent(), JsonUtils.toString(k9Tilsynsordning), true
         )

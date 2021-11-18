@@ -9,8 +9,30 @@ import io.ktor.server.testing.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
+import no.nav.helse.soknad.JobberIPeriodeSvar
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -621,7 +643,7 @@ class ApplicationTest {
                         næringsinntekt = 123123,
                         navnPåVirksomheten = "TullOgTøys",
                         registrertINorge = true,
-                        organisasjonsnummer = "101010",
+                        organisasjonsnummer = "926032925",
                         yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
                         regnskapsfører = Regnskapsfører(
                             navn = "Kjell",
@@ -672,6 +694,18 @@ class ApplicationTest {
                   "name": "selvstendingNæringsdrivende.virksomhet.registrertIUtlandet",
                   "reason": "Hvis registrertINorge er false må registrertIUtlandet være satt",
                   "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "ytelse.opptjeningAktivitet.selvstendigNæringsdrivende[0].perioder[2021-02-07/2021-02-08].valideringRegistrertUtlandet",
+                  "reason": "",
+                  "invalid_value": "K9-format feilkode: Feil{felt='.landkode', feilkode='påkrevd', feilmelding='landkode må være satt, og kan ikke være null, dersom virksomhet er registrert i utlandet.'}"
+                },
+                {
+                  "type": "entity",
+                  "name": "ytelse.opptjeningAktivitet.selvstendigNæringsdrivende[0].organisasjonsnummer.valid",
+                  "reason": "Organisasjonsnummer må være gyldig.",
+                  "invalid_value": "K9-format feilkode: ugyldigOrgNummer"
                 }
               ]
             }
@@ -985,6 +1019,12 @@ class ApplicationTest {
                   "name": "ytelse.søknadsperiode.perioder[0]",
                   "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
                   "invalid_value": "K9-format feilkode: ugyldigPeriode"
+                },
+                {
+                  "type": "entity",
+                  "name": "ytelse.arbeidstid.arbeidstakerList[0].organisasjonsnummer.valid",
+                  "reason": "Organisasjonsnummer må være gyldig.",
+                  "invalid_value": "K9-format feilkode: ugyldigOrgNummer"
                 }
               ]
             }
