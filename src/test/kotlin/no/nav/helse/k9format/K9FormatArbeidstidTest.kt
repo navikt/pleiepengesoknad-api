@@ -1,7 +1,19 @@
 package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.ArbeidsforholdAnsatt
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.JobberIPeriodeSvar
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.validate
 import no.nav.helse.somJson
 import no.nav.k9.søknad.felles.type.Periode
 import org.json.JSONObject
@@ -627,7 +639,7 @@ class K9FormatArbeidstidTest {
                 næringsinntekt = 1233123,
                 navnPåVirksomheten = "TullOgTøys",
                 registrertINorge = true,
-                organisasjonsnummer = "101010",
+                organisasjonsnummer = "926032925",
                 yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
                 regnskapsfører = Regnskapsfører(
                     navn = "Kjell",
@@ -785,7 +797,7 @@ class K9FormatArbeidstidTest {
                 fraOgMed = LocalDate.parse("2019-01-01"),
                 navnPåVirksomheten = "TullOgTøys",
                 registrertINorge = true,
-                organisasjonsnummer = "101010",
+                organisasjonsnummer = "926032925",
                 yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
                 regnskapsfører = Regnskapsfører(
                     navn = "Kjell",
@@ -888,7 +900,7 @@ class K9FormatArbeidstidTest {
                 fraOgMed = LocalDate.parse("2019-01-01"),
                 navnPåVirksomheten = "TullOgTøys",
                 registrertINorge = true,
-                organisasjonsnummer = "101010",
+                organisasjonsnummer = "926032925",
                 yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
                 regnskapsfører = Regnskapsfører(
                     navn = "Kjell",
