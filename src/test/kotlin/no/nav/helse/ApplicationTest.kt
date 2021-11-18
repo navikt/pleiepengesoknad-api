@@ -37,15 +37,6 @@ import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
 import no.nav.helse.wiremock.stubOppslagHealth
 import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
 import no.nav.helse.wiremock.stubSifInnsynApi
-import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubK9Mellomlagring
-import no.nav.helse.wiremock.stubK9MellomlagringHealth
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
-import no.nav.helse.wiremock.stubK9OppslagBarn
-import no.nav.helse.wiremock.stubK9OppslagSoker
-import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
-import no.nav.helse.wiremock.stubOppslagHealth
-import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -1417,8 +1408,7 @@ class ApplicationTest {
                      "2021-01-01/2021-01-01": {
                        "etablertTilsynTimerPerDag": "PT2H"
                      }
-                   },
-                   "perioderSomSkalSlettes": {}
+                   }
                  },
                  "arbeidstid": {
                    "frilanserArbeidstidInfo": null,
@@ -1464,8 +1454,7 @@ class ApplicationTest {
                    "perioderSomSkalSlettes": {}
                  },
                  "uttak": {
-                   "perioder": {},
-                   "perioderSomSkalSlettes": {}
+                   "perioder": {}
                  },
                  "opptjeningAktivitet": {}
                },
@@ -1535,7 +1524,7 @@ class ApplicationTest {
                     {
                       "type": "entity",
                       "name": "ytelse.arbeidstid.arbeidstakerList[0].perioder",
-                      "reason": "Perioden er utenfor gyldig interval. Gyldig interva: ([[2021-01-01, 2021-01-01]]), Ugyldig periode: 2021-01-07/2021-01-07",
+                      "reason": "Perioden er utenfor gyldig interval. Gyldig interva: ([[2018-01-01, 2021-01-01]]), Ugyldig periode: 2021-01-07/2021-01-07",
                       "invalid_value": "K9-format feilkode: ugyldigPeriode"
                     }
                   ]
