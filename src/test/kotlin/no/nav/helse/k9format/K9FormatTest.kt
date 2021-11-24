@@ -2,13 +2,7 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
+import no.nav.helse.soknad.*
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -180,6 +174,18 @@ class K9FormatTest {
                           "2021-01-05/2021-01-10": {
                             "jobberNormaltTimerPerDag": "PT8H",
                             "faktiskArbeidTimerPerDag": "PT8H"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "norskIdentitetsnummer": null,
+                      "organisasjonsnummer": "977155436",
+                      "arbeidstidInfo": {
+                        "perioder": {
+                          "2021-01-01/2021-01-10": {
+                            "jobberNormaltTimerPerDag": "PT0S",
+                            "faktiskArbeidTimerPerDag": "PT0S"
                           }
                         }
                       }

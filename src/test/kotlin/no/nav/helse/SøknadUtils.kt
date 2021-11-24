@@ -56,6 +56,12 @@ class SøknadUtils {
                             fasteDager = null
                         )
                     )
+                ),
+                ArbeidsforholdAnsatt(
+                    navn = "JobberIkkeHerLenger",
+                    organisasjonsnummer = "977155436",
+                    erAnsatt = false,
+                    sluttetFørSøknadsperiode = false
                 )
             ),
             vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
