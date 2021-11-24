@@ -5,12 +5,12 @@ import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
 import no.nav.helse.soknad.validering.valider
 
-
 data class ArbeidsforholdAnsatt(
     val navn: String? = null,
     val organisasjonsnummer: String,
     val erAnsatt: Boolean,
-    val arbeidsforhold: Arbeidsforhold? = null
+    val arbeidsforhold: Arbeidsforhold? = null,
+    val sluttetFørSøknadsperiode: Boolean? = null
 )
 
 data class ArbeidIPeriode(

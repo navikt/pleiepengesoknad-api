@@ -56,6 +56,7 @@ internal class SerDesTest {
                   "navn": "Org",
                   "organisasjonsnummer": "917755736",
                   "erAnsatt": true,
+                  "sluttetFørSøknadsperiode": null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 40.0,
                     "historiskArbeid": {
@@ -73,6 +74,13 @@ internal class SerDesTest {
                       "fasteDager": null
                     }
                   }
+                },
+                {
+                  "navn": "JobberIkkeHerLenger",
+                  "organisasjonsnummer" : "977155436",
+                  "erAnsatt": false,
+                  "sluttetFørSøknadsperiode": false,
+                  "arbeidsforhold" : null
                 }
               ],
               "vedlegg": [
@@ -297,6 +305,7 @@ internal class SerDesTest {
                   "navn": "Org",
                   "organisasjonsnummer": "917755736",
                   "erAnsatt": true,
+                  "sluttetFørSøknadsperiode" : null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 30.0,
                     "historiskArbeid": null,
