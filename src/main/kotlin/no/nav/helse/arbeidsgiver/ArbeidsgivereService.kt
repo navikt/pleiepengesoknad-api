@@ -27,7 +27,7 @@ class ArbeidsgivereService(
                 is TilgangNektetException -> throw cause
                 else -> {
                     logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
-                    Arbeidsgivere(emptyList())
+                    Arbeidsgivere(emptyList(), emptyList())
                 }
             }
         }

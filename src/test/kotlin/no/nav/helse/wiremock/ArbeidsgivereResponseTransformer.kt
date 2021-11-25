@@ -32,29 +32,42 @@ class ArbeidsgivereResponseTransformer : ResponseTransformer() {
 }
 
 private fun getResponse(ident: String): String {
-    when(ident) {
+    when (ident) {
         "02119970078" -> {
-        return """
+            //language=json
+            return """
             {
-                "arbeidsgivere": {
-                    "organisasjoner": [{
-                        "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
-                        "organisasjonsnummer": "913548221"
-                    }, {
-                        "navn": "NAV, AVD WALDEMAR THRANES GATE",
-                        "organisasjonsnummer": "984054564"
-                    }]
-                }
+              "arbeidsgivere": {
+                "organisasjoner": [
+                  {
+                    "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
+                    "organisasjonsnummer": "913548221"
+                  },
+                  {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564"
+                  }
+                ],
+                "private_arbeidsgivere" : [
+                    {
+                        "offentlig_ident": "10047206508",
+                        "ansatt_fom": "2014-07-01",
+                        "ansatt_tom": "2015-12-31"
+                    }
+                ]
+              }
             }
-        """.trimIndent()
-        } else -> {
-        return """
+            """.trimIndent()
+        }
+        else -> {
+            return """
                 {
                     "arbeidsgivere": {
-                        "organisasjoner": []
+                        "organisasjoner": [],
+                        "private_arbeidsgivere" : []
                     }
                 }
             """.trimIndent()
-    }
+        }
     }
 }

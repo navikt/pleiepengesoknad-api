@@ -30,7 +30,9 @@ class ArbeidsgivereGateway(
         private val attributer = Pair(
             "a", listOf(
                 "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
-                "arbeidsgivere[].organisasjoner[].navn"
+                "arbeidsgivere[].organisasjoner[].navn",
+                "arbeidsgivere[].private_arbeidsgivere[].ansettelsesperiode",
+                "arbeidsgivere[].private_arbeidsgivere[].offentlig_ident"
             )
         )
     }

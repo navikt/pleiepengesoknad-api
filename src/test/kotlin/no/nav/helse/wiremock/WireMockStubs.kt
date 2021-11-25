@@ -68,6 +68,8 @@ internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = fa
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
+            .withQueryParam("a", equalTo("arbeidsgivere[].private_arbeidsgivere[].ansettelsesperiod"))
+            .withQueryParam("a", equalTo("arbeidsgivere[].private_arbeidsgivere[].offentlig_ident"))
             .withQueryParam("fom", AnythingPattern()) // vurder regex som validerer dato-format
             .withQueryParam("tom", AnythingPattern()) // vurder regex som validerer dato-format
             .willReturn(
