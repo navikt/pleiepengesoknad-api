@@ -31,8 +31,8 @@ class ArbeidsgivereGateway(
             "a", listOf(
                 "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
                 "arbeidsgivere[].organisasjoner[].navn",
-                "arbeidsgivere[].private_arbeidsgivere[].ansettelsesperiode",
-                "arbeidsgivere[].private_arbeidsgivere[].offentlig_ident"
+                "private_arbeidsgivere[].ansettelsesperiode",
+                "private_arbeidsgivere[].offentlig_ident"
             )
         )
     }
