@@ -131,11 +131,11 @@ class ApplicationTest {
                   "organisasjonsnummer": "984054564"
                 }
               ],
-              "private_arbeidsgivere": [
+              "privateArbeidsgivere": [
                 {
-                    "offentlig_ident": "10047206508",
-                    "ansatt_fom": "2014-07-01",
-                    "ansatt_tom": "2015-12-31"
+                    "offentligIdent": "10047206508",
+                    "ansattFom": "2014-07-01",
+                    "ansattTom": "2015-12-31"
                 }
               ]
             }
@@ -154,7 +154,7 @@ class ApplicationTest {
             expectedResponse = """
             {
                 "organisasjoner": [],
-                "private_arbeidsgivere": []
+                "privateArbeidsgivere": []
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)

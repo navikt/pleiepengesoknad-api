@@ -1,5 +1,6 @@
 package no.nav.helse.arbeidsgiver
 
+import com.fasterxml.jackson.annotation.JsonAlias
 import java.time.LocalDate
 
 data class ArbeidsgivereOppslagRespons (
@@ -8,7 +9,7 @@ data class ArbeidsgivereOppslagRespons (
 
 data class Arbeidsgivere (
     val organisasjoner: List<Organisasjon>,
-    val private_arbeidsgivere: List<PrivatArbeidsgiver>
+    @JsonAlias("private_arbeidsgivere") val privateArbeidsgivere: List<PrivatArbeidsgiver>
 )
 
 class Organisasjon (
@@ -17,7 +18,7 @@ class Organisasjon (
 )
 
 data class PrivatArbeidsgiver (
-    val offentlig_ident: String,
-    val ansatt_fom: LocalDate? = null,
-    val ansatt_tom: LocalDate? = null
+    @JsonAlias("offentlig_ident") val offentligIdent: String,
+    @JsonAlias("ansatt_fom") val ansattFom: LocalDate? = null,
+    @JsonAlias("ansatt_tom") val ansattTom: LocalDate? = null
 )
