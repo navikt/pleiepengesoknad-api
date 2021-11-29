@@ -17,7 +17,7 @@ data class ArbeidsforholdAnsatt(
 data class ArbeidIPeriode(
     val jobberIPerioden: JobberIPeriodeSvar,
     val jobberSomVanlig: Boolean? = null,
-    @JsonAlias("_jobberProsent") val jobberProsent: Double? = null,
+    @JsonAlias("_jobberProsent","jobberProsent") val jobberProsent: Double? = null,
     val erLiktHverUke: Boolean? = null,
     val enkeltdager: List<Enkeltdag>? = null,
     val fasteDager: PlanUkedager? = null
