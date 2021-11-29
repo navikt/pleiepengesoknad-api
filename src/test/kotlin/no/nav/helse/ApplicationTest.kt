@@ -747,7 +747,8 @@ class ApplicationTest {
                             jobberSomVanlig = null,
                             erLiktHverUke = false,
                             enkeltdager = null,
-                            fasteDager = null
+                            fasteDager = null,
+                            jobberProsent = 50.0
                         ),
                     )
                 )

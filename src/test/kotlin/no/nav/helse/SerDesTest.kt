@@ -2,7 +2,32 @@ package no.nav.helse
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.ArbeidsforholdAnsatt
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Beredskap
+import no.nav.helse.soknad.Bosted
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.JobberIPeriodeSvar
+import no.nav.helse.soknad.KomplettSøknad
+import no.nav.helse.soknad.Land
+import no.nav.helse.soknad.Medlemskap
+import no.nav.helse.soknad.Nattevåk
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Periode
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Språk
+import no.nav.helse.soknad.Søknad
+import no.nav.helse.soknad.Utenlandsopphold
+import no.nav.helse.soknad.UtenlandsoppholdIPerioden
+import no.nav.helse.soknad.VarigEndring
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.Årsak
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg
 import org.skyscreamer.jsonassert.JSONAssert
@@ -62,6 +87,7 @@ internal class SerDesTest {
                     "historiskArbeid": {
                       "jobberIPerioden": "JA",
                       "jobberSomVanlig": true,
+                      "jobberProsent": null,
                       "erLiktHverUke": true,
                       "enkeltdager": null,
                       "fasteDager": null
@@ -69,6 +95,7 @@ internal class SerDesTest {
                     "planlagtArbeid": {
                       "jobberIPerioden": "JA",
                       "jobberSomVanlig": true,
+                      "jobberProsent": null,
                       "erLiktHverUke": true,
                       "enkeltdager": null,
                       "fasteDager": null
@@ -141,6 +168,7 @@ internal class SerDesTest {
                   "historiskArbeid": {
                     "jobberIPerioden": "JA",
                     "jobberSomVanlig": true,
+                    "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
                     "fasteDager": null
@@ -148,6 +176,7 @@ internal class SerDesTest {
                   "planlagtArbeid": {
                     "jobberIPerioden": "JA",
                     "jobberSomVanlig": true,
+                    "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
                     "fasteDager": null
@@ -238,6 +267,7 @@ internal class SerDesTest {
                   "historiskArbeid": {
                     "jobberIPerioden": "JA",
                     "jobberSomVanlig": true,
+                    "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
                     "fasteDager": null
@@ -245,6 +275,7 @@ internal class SerDesTest {
                   "planlagtArbeid": {
                     "jobberIPerioden": "JA",
                     "jobberSomVanlig": true,
+                    "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
                     "fasteDager": null
@@ -460,7 +491,14 @@ internal class SerDesTest {
                   "sluttdato": null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 40.0,
-                    "historiskArbeid": null,
+                    "historiskArbeid": {
+                      "jobberSomVanlig": false,
+                      "jobberProsent": 50.0,
+                      "enkeltdager": [],
+                      "erLiktHverUke": true,
+                      "fasteDager": null,
+                      "jobberIPerioden": "JA"
+                    },
                     "planlagtArbeid": null
                   }
               },
@@ -648,7 +686,14 @@ internal class SerDesTest {
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = null,
+                    historiskArbeid = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        jobberSomVanlig = false,
+                        jobberProsent = 50.0,
+                        erLiktHverUke = true,
+                        enkeltdager = listOf(),
+                        fasteDager = null
+                    ),
                     planlagtArbeid = null
                 )
             ),
