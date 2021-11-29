@@ -2,6 +2,7 @@ package no.nav.helse
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
+import no.nav.helse.soknad.ArbeidIPeriode
 import no.nav.helse.soknad.Arbeidsforhold
 import no.nav.helse.soknad.ArbeidsforholdAnsatt
 import no.nav.helse.soknad.BarnDetaljer
@@ -10,6 +11,7 @@ import no.nav.helse.soknad.Bosted
 import no.nav.helse.soknad.Ferieuttak
 import no.nav.helse.soknad.FerieuttakIPerioden
 import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.JobberIPeriodeSvar
 import no.nav.helse.soknad.KomplettSøknad
 import no.nav.helse.soknad.Land
 import no.nav.helse.soknad.Medlemskap
@@ -85,7 +87,7 @@ internal class SerDesTest {
                     "historiskArbeid": {
                       "jobberIPerioden": "JA",
                       "jobberSomVanlig": true,
-                      "_jobberProsent": null,
+                      "jobberProsent": null,
                       "erLiktHverUke": true,
                       "enkeltdager": null,
                       "fasteDager": null
@@ -93,7 +95,7 @@ internal class SerDesTest {
                     "planlagtArbeid": {
                       "jobberIPerioden": "JA",
                       "jobberSomVanlig": true,
-                      "_jobberProsent": null,
+                      "jobberProsent": null,
                       "erLiktHverUke": true,
                       "enkeltdager": null,
                       "fasteDager": null
@@ -166,7 +168,7 @@ internal class SerDesTest {
                   "historiskArbeid": {
                     "jobberIPerioden": "JA",
                     "jobberSomVanlig": true,
-                    "_jobberProsent": null,
+                    "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
                     "fasteDager": null
@@ -174,7 +176,7 @@ internal class SerDesTest {
                   "planlagtArbeid": {
                     "jobberIPerioden": "JA",
                     "jobberSomVanlig": true,
-                    "_jobberProsent": null,
+                    "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
                     "fasteDager": null
@@ -265,7 +267,7 @@ internal class SerDesTest {
                   "historiskArbeid": {
                     "jobberIPerioden": "JA",
                     "jobberSomVanlig": true,
-                    "_jobberProsent": null,
+                    "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
                     "fasteDager": null
@@ -273,7 +275,7 @@ internal class SerDesTest {
                   "planlagtArbeid": {
                     "jobberIPerioden": "JA",
                     "jobberSomVanlig": true,
-                    "_jobberProsent": null,
+                    "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
                     "fasteDager": null
@@ -489,7 +491,14 @@ internal class SerDesTest {
                   "sluttdato": null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 40.0,
-                    "historiskArbeid": null,
+                    "historiskArbeid": {
+                      "jobberSomVanlig": false,
+                      "jobberProsent": 50.0,
+                      "enkeltdager": [],
+                      "erLiktHverUke": true,
+                      "fasteDager": null,
+                      "jobberIPerioden": "JA"
+                    },
                     "planlagtArbeid": null
                   }
               },
@@ -677,7 +686,14 @@ internal class SerDesTest {
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = null,
+                    historiskArbeid = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        jobberSomVanlig = false,
+                        jobberProsent = 50.0,
+                        erLiktHverUke = true,
+                        enkeltdager = listOf(),
+                        fasteDager = null
+                    ),
                     planlagtArbeid = null
                 )
             ),
