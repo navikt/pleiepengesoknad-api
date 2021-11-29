@@ -1,5 +1,6 @@
 package no.nav.helse.soknad
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
@@ -16,6 +17,7 @@ data class ArbeidsforholdAnsatt(
 data class ArbeidIPeriode(
     val jobberIPerioden: JobberIPeriodeSvar,
     val jobberSomVanlig: Boolean? = null,
+    @JsonProperty("_jobberProsent") val jobberProsent: Double? = null,
     val erLiktHverUke: Boolean? = null,
     val enkeltdager: List<Enkeltdag>? = null,
     val fasteDager: PlanUkedager? = null
