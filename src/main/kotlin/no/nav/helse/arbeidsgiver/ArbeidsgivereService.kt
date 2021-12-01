@@ -44,7 +44,7 @@ class ArbeidsgivereService(
             arbeidsgivereGateway.hentArbeidsgivere(idToken, callId, organisasjoner)
         } catch (cause: Throwable) {
             logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
-            Arbeidsgivere(emptyList())
+            Arbeidsgivere(emptyList(), emptyList())
         }
     }
 }

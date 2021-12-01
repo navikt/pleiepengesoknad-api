@@ -11,32 +11,6 @@ import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.ArbeidIPeriode
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
-import no.nav.helse.soknad.JobberIPeriodeSvar
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubK9Mellomlagring
-import no.nav.helse.wiremock.stubK9MellomlagringHealth
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
-import no.nav.helse.wiremock.stubK9OppslagBarn
-import no.nav.helse.wiremock.stubK9OppslagSoker
-import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
-import no.nav.helse.wiremock.stubOppslagHealth
-import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
-import no.nav.helse.wiremock.stubSifInnsynApi
 import no.nav.helse.soknad.*
 import no.nav.helse.wiremock.*
 import org.json.JSONObject
@@ -159,17 +133,22 @@ class ApplicationTest {
             //language=json
             expectedResponse = """
             {
-                "organisasjoner": [{
+                "organisasjoner": [
+                  {
                     "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
                     "organisasjonsnummer": "913548221",
                     "ansattFom": "2011-09-03",
                     "ansattTom": "2012-06-30"
-                }, {
+                  }, 
+                  {
                     "navn": "NAV, AVD WALDEMAR THRANES GATE",
                     "organisasjonsnummer": "984054564",
                     "ansattFom": "2011-09-03",
                     "ansattTom": null
-                }]
+                  }
+                ],
+                "privateArbeidsgivere": null
+
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -199,7 +178,9 @@ class ApplicationTest {
                     "ansattFom": null,
                     "ansattTom": null
                   }
-                ]
+                ],
+                "privateArbeidsgivere": null
+
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -217,11 +198,15 @@ class ApplicationTest {
               "organisasjoner": [
                 {
                   "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
-                  "organisasjonsnummer": "913548221"
+                  "organisasjonsnummer": "913548221",
+                  "ansattFom": null,
+                  "ansattTom": null
                 },
                 {
                   "navn": "NAV, AVD WALDEMAR THRANES GATE",
-                  "organisasjonsnummer": "984054564"
+                  "organisasjonsnummer": "984054564",
+                  "ansattFom": null,
+                  "ansattTom": null
                 }
               ],
               "privateArbeidsgivere": [
@@ -247,7 +232,9 @@ class ApplicationTest {
             //language=json
             """
             {
-                "organisasjoner": []
+                "organisasjoner": [],
+                "privateArbeidsgivere": null
+
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -271,7 +258,8 @@ class ApplicationTest {
                     "ansattFom": null,
                     "ansattTom": null
                   }
-                ]
+                ],
+                "privateArbeidsgivere": null
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
