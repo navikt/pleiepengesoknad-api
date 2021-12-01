@@ -23,6 +23,7 @@ class ArbeidsforholdValideringTest {
         val arbeidIPerioden = ArbeidIPeriode(
             jobberIPerioden = JobberIPeriodeSvar.JA,
             jobberSomVanlig = false,
+            jobberProsent = 50.0,
             erLiktHverUke = false,
             enkeltdager = null,
             fasteDager = null
