@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.http.Response
 import no.nav.helse.TestUtils
 
-class ArbeidsgivereResponseTransformer : ResponseTransformer() {
+class ArbeidsgivereMedPrivateResponseTransformer : ResponseTransformer() {
     override fun transform(
         request: Request?,
         response: Response?,
@@ -22,7 +22,7 @@ class ArbeidsgivereResponseTransformer : ResponseTransformer() {
     }
 
     override fun getName(): String {
-        return "k9-oppslag-arbeidsgivere"
+        return "k9-oppslag-arbeidsgivere-med-private"
     }
 
     override fun applyGlobally(): Boolean {
@@ -47,6 +47,13 @@ private fun getResponse(ident: String): String {
                     "navn": "NAV, AVD WALDEMAR THRANES GATE",
                     "organisasjonsnummer": "984054564"
                   }
+                ],
+                "private_arbeidsgivere" : [
+                    {
+                        "offentlig_ident": "10047206508",
+                        "ansatt_fom": "2014-07-01",
+                        "ansatt_tom": "2015-12-31"
+                    }
                 ]
               }
             }
@@ -56,7 +63,8 @@ private fun getResponse(ident: String): String {
             return """
                 {
                     "arbeidsgivere": {
-                        "organisasjoner": []
+                        "organisasjoner": [],
+                        "private_arbeidsgivere" : []
                     }
                 }
             """.trimIndent()

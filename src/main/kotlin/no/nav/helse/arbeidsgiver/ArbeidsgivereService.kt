@@ -18,16 +18,17 @@ class ArbeidsgivereService(
         idToken: IdToken,
         callId: CallId,
         fraOgMed: LocalDate,
-        tilOgMed: LocalDate
+        tilOgMed: LocalDate,
+        skalHentePrivateArbeidsgivere: Boolean
     ): Arbeidsgivere {
         return try {
-            arbeidsgivereGateway.hentArbeidsgivere(idToken, callId, fraOgMed, tilOgMed)
+            arbeidsgivereGateway.hentArbeidsgivere(idToken, callId, fraOgMed, tilOgMed, skalHentePrivateArbeidsgivere)
         } catch (cause: Throwable) {
             when (cause) {
                 is TilgangNektetException -> throw cause
                 else -> {
                     logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
-                    Arbeidsgivere(emptyList())
+                    Arbeidsgivere(emptyList(), emptyList())
                 }
             }
         }

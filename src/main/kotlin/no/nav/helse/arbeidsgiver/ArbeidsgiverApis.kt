@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter
 
 private const val fraOgMedQueryName = "fra_og_med"
 private const val tilOgMedQueryName = "til_og_med"
+private const val privateArbeidsgivereQueryName = "private_arbeidsgivere"
 
 fun Route.arbeidsgiverApis(
     arbeidsgivereService: ArbeidsgivereService,
@@ -39,7 +40,8 @@ fun Route.arbeidsgiverApis(
                         idToken = idTokenProvider.getIdToken(call),
                         callId = call.getCallId(),
                         fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
-                        tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName])
+                        tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName]),
+                        skalHentePrivateArbeidsgivere = call.request.queryParameters[privateArbeidsgivereQueryName].toBoolean()
                     )
                 )
             } catch (e: Exception) {
