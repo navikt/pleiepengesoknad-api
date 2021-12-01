@@ -38,6 +38,7 @@ class K9FormatArbeidstidTest {
                 historiskArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
                     jobberSomVanlig = false,
+                    jobberProsent = 50.0,
                     erLiktHverUke = false,
                     enkeltdager = listOf(
                         Enkeltdag(
@@ -251,6 +252,7 @@ class K9FormatArbeidstidTest {
                 planlagtArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
                     jobberSomVanlig = false,
+                    jobberProsent = 50.0,
                     erLiktHverUke = false,
                     enkeltdager = listOf(
                         Enkeltdag(
@@ -317,6 +319,7 @@ class K9FormatArbeidstidTest {
                 planlagtArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.NEI,
                     jobberSomVanlig = false,
+                    jobberProsent = 50.0,
                     erLiktHverUke = false,
                     enkeltdager = null,
                     fasteDager = null
@@ -371,6 +374,7 @@ class K9FormatArbeidstidTest {
                 planlagtArbeid = ArbeidIPeriode(
                     jobberIPerioden = JobberIPeriodeSvar.JA,
                     jobberSomVanlig = false,
+                    jobberProsent = 50.0,
                     enkeltdager = null,
                     erLiktHverUke = true,
                     fasteDager = PlanUkedager(
@@ -729,6 +733,7 @@ class K9FormatArbeidstidTest {
             historiskArbeid = ArbeidIPeriode(
                 jobberIPerioden = JobberIPeriodeSvar.NEI,
                 jobberSomVanlig = false,
+                jobberProsent = 50.0,
                 erLiktHverUke = true,
                 enkeltdager = null,
                 fasteDager = null
@@ -974,6 +979,7 @@ class K9FormatArbeidstidTest {
         val arbeidIPeriode = ArbeidIPeriode(
             jobberIPerioden = JobberIPeriodeSvar.JA,
             jobberSomVanlig = false,
+            jobberProsent = 50.0,
             erLiktHverUke = true,
             enkeltdager = null,
             fasteDager = PlanUkedager(
