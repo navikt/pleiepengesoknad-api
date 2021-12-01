@@ -16,6 +16,7 @@ internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration
         .extensions(SokerResponseTransformer())
         .extensions(BarnResponseTransformer())
         .extensions(ArbeidsgivereResponseTransformer())
+        .extensions(ArbeidsgivereMedPrivateResponseTransformer())
         .extensions(K9MellomlagringResponseTransformer())
 }
 
@@ -68,6 +69,24 @@ internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = fa
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
+            .withQueryParam("fom", AnythingPattern()) // vurder regex som validerer dato-format
+            .withQueryParam("tom", AnythingPattern()) // vurder regex som validerer dato-format
+            .willReturn(
+                WireMock.aResponse()
+                    .withHeader("Content-Type", "application/json")
+                    .withStatus(if (simulerFeil) 500 else 200)
+                    .withTransformers("k9-oppslag-arbeidsgivere")
+            )
+    )
+    return this
+}
+
+internal fun WireMockServer.stubK9OppslagArbeidsgivereMedPrivate(simulerFeil: Boolean = false): WireMockServer {
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
+            .withHeader(HttpHeaders.Authorization, AnythingPattern())
+            .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
+            .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
             .withQueryParam("a", equalTo("private_arbeidsgivere[].ansettelsesperiod"))
             .withQueryParam("a", equalTo("private_arbeidsgivere[].offentlig_ident"))
             .withQueryParam("fom", AnythingPattern()) // vurder regex som validerer dato-format
@@ -76,7 +95,7 @@ internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = fa
                 WireMock.aResponse()
                     .withHeader("Content-Type", "application/json")
                     .withStatus(if (simulerFeil) 500 else 200)
-                    .withTransformers("k9-oppslag-arbeidsgivere")
+                    .withTransformers("k9-oppslag-arbeidsgivere-med-private")
             )
     )
     return this

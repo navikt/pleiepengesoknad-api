@@ -53,6 +53,7 @@ class ApplicationTest {
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
+            .stubK9OppslagArbeidsgivereMedPrivate()
             .stubK9Mellomlagring()
 
         val redisServer: RedisServer = RedisServer
@@ -131,6 +132,31 @@ class ApplicationTest {
                   "organisasjonsnummer": "984054564"
                 }
               ],
+              "privateArbeidsgivere": null
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Hente arbeidsgivere inkludert private`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = """
+            {
+              "organisasjoner": [
+                {
+                  "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
+                  "organisasjonsnummer": "913548221"
+                },
+                {
+                  "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                  "organisasjonsnummer": "984054564"
+                }
+              ],
               "privateArbeidsgivere": [
                 {
                     "offentligIdent": "10047206508",
@@ -166,7 +192,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere uten cookie satt`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
             leggTilCookie = false
@@ -177,7 +203,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med for lav ID level`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
             expectedCode = HttpStatusCode.Forbidden,
             expectedResponse = null,
             cookie = getAuthCookie(fnr = gyldigFodselsnummerA, level = 3)
@@ -188,7 +214,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med ugyldig format på ID-Token`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
             cookie = Cookie(listOf("localhost-idtoken=ikkeJwt", "Path=/", "Domain=localhost"))
@@ -199,7 +225,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere med en utloept cookie`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
             cookie = getAuthCookie(gyldigFodselsnummerA, expiry = -(oneMinuteInMillis))

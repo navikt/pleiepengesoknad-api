@@ -30,24 +30,32 @@ class ArbeidsgivereGateway(
         private val attributer = Pair(
             "a", listOf(
                 "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
+                "arbeidsgivere[].organisasjoner[].navn"
+            )
+        )
+        private val attributerMedPrivateArbeidsgivere = Pair(
+            "a", listOf(
+                "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
                 "arbeidsgivere[].organisasjoner[].navn",
                 "private_arbeidsgivere[].ansettelsesperiode",
                 "private_arbeidsgivere[].offentlig_ident"
             )
         )
+
     }
 
     internal suspend fun hentArbeidsgivere(
         idToken: IdToken,
         callId: CallId,
         fraOgMed: LocalDate,
-        tilOgMed: LocalDate
+        tilOgMed: LocalDate,
+        skalHentePrivateArbeidsgivere: Boolean
     ): Arbeidsgivere {
         val arbeidsgivereUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
             queryParameters = mapOf(
-                attributer,
+                if(skalHentePrivateArbeidsgivere) attributerMedPrivateArbeidsgivere else attributer,
                 Pair("fom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed))),
                 Pair("tom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(tilOgMed)))
             )

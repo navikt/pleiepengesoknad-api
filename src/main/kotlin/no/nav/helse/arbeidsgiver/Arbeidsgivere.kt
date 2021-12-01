@@ -8,7 +8,7 @@ data class ArbeidsgivereOppslagRespons (
 
 data class Arbeidsgivere (
     val organisasjoner: List<Organisasjon>,
-    val privateArbeidsgivere: List<PrivatArbeidsgiver>
+    val privateArbeidsgivere: List<PrivatArbeidsgiver>?
 )
 
 class Organisasjon (
