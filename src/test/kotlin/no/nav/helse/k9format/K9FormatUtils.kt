@@ -1,5 +1,6 @@
 package no.nav.helse.k9format
 
+import no.nav.helse.innsyn.K9SakInnsynSøknad
 import no.nav.k9.søknad.Søknad
 import no.nav.k9.søknad.felles.Versjon
 import no.nav.k9.søknad.felles.personopplysninger.Barn
@@ -70,4 +71,9 @@ fun defaultK9FormatPSB(
                 )
             )
         )
+)
+
+fun defaultK9SakInnsynSøknad(pleietrengendeAktørId: String, søknad: Søknad) = K9SakInnsynSøknad(
+    pleietrengendeAktørId = pleietrengendeAktørId,
+    søknad = søknad
 )

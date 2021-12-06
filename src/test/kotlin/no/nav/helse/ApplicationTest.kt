@@ -10,9 +10,35 @@ import no.nav.helse.arbeidsgiver.orgQueryName
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.k9format.defaultK9FormatPSB
+import no.nav.helse.k9format.defaultK9SakInnsynSøknad
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
+import no.nav.helse.soknad.JobberIPeriodeSvar
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
+import no.nav.helse.wiremock.stubSifInnsynApi
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -60,7 +86,14 @@ class ApplicationTest {
             .stubK9OppslagArbeidsgivereMedOrgNummer()
             .stubK9OppslagArbeidsgivereMedPrivate()
             .stubK9Mellomlagring()
-            .stubSifInnsynApi(søknad = defaultK9FormatPSB())
+            .stubSifInnsynApi(
+                k9SakInnsynSøknader = listOf(
+                    defaultK9SakInnsynSøknad(
+                        pleietrengendeAktørId = "1000000000001",
+                        søknad = defaultK9FormatPSB()
+                    )
+                )
+            )
 
         private val kafkaEnvironment = KafkaWrapper.bootstrap()
         private val kafkaKonsumer = kafkaEnvironment.testConsumer()
@@ -1345,7 +1378,7 @@ class ApplicationTest {
 
     @Test
     fun `endringsmelding - endringer innefor gyldighetsperiode`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie(fnr)
         val søknadId = UUID.randomUUID().toString()
         val mottattDato = ZonedDateTime.parse("2021-11-03T07:12:05.530Z")
 
@@ -1360,6 +1393,9 @@ class ApplicationTest {
               "harForståttRettigheterOgPlikter": true,
               "ytelse": {
                 "type": "PLEIEPENGER_SYKT_BARN",
+                "barn": {
+                  "norskIdentitetsnummer": "02119970078"
+                },
                 "arbeidstid": {
                   "arbeidstakerList": [
                     {
@@ -1403,9 +1439,9 @@ class ApplicationTest {
                "mellomnavn": "HEISANN",
                "etternavn": "MORSEN",
                "aktørId": "12345",
-               "fødselsdato": "1999-11-02",
+               "fødselsdato": "1997-05-25",
                "fornavn": "MOR",
-               "fødselsnummer": "02119970078",
+               "fødselsnummer": "26104500284",
                "myndig": true
              },
              "harBekreftetOpplysninger": true,
@@ -1416,7 +1452,7 @@ class ApplicationTest {
                "mottattDato": "$mottattDato",
                "språk": "nb",
                "søker": {
-                 "norskIdentitetsnummer": "02119970078"
+                 "norskIdentitetsnummer": "26104500284"
                },
                "ytelse": {
                  "type": "PLEIEPENGER_SYKT_BARN",
@@ -1424,7 +1460,7 @@ class ApplicationTest {
                  "endringsperiode": [],
                  "trekkKravPerioder": [],
                  "barn": {
-                   "norskIdentitetsnummer": "10987654321",
+                   "norskIdentitetsnummer": "02119970078",
                    "fødselsdato": null
                  },
                  "tilsynsordning": {
@@ -1495,7 +1531,7 @@ class ApplicationTest {
 
     @Test
     fun `endringsmelding - endringer utenfor gyldighetsperiode`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+        val cookie = getAuthCookie(fnr)
         val søknadId = UUID.randomUUID().toString()
         val mottattDato = ZonedDateTime.parse("2021-11-03T07:12:05.530Z")
 
@@ -1510,7 +1546,7 @@ class ApplicationTest {
                   "ytelse": {
                     "type": "PLEIEPENGER_SYKT_BARN",
                     "barn": {
-                      "norskIdentitetsnummer": "$ikkeMyndigFnr"
+                      "norskIdentitetsnummer": "02119970078"
                     },
                     "arbeidstid": {
                       "arbeidstakerList": [

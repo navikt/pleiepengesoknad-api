@@ -8,10 +8,10 @@ import com.github.kittinunf.fuel.httpGet
 import io.ktor.http.*
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
+import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
-import no.nav.helse.k9SelvbetjeningOppslagKonfigurert
 import no.nav.k9.søknad.Søknad
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,15 +23,15 @@ class InnsynGateway(
 ) {
 
     private companion object {
-        private val logger: Logger = LoggerFactory.getLogger("nav.SokerGateway")
+        private val logger: Logger = LoggerFactory.getLogger(InnsynGateway::class.java)
         private const val HENTE_SOKNAD_OPPLYSNINGER_OPERATION = "hente-soknad-opplysninger"
-        private val objectMapper = jacksonObjectMapper().k9SelvbetjeningOppslagKonfigurert()
+        private val objectMapper = jacksonObjectMapper().dusseldorfConfigured()
     }
 
     suspend fun hentSøknadsopplysninger(
         idToken: IdToken,
         callId: CallId
-    ): K9SakInnsynSøknad {
+    ): List<K9SakInnsynSøknad> {
         val innsynSakUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("innsyn", "sak")
@@ -51,7 +51,7 @@ class InnsynGateway(
             ) { httpRequest.awaitStringResponseResult() }
 
             result.fold(
-                { success -> objectMapper.readValue<K9SakInnsynSøknad>(success) },
+                { success -> objectMapper.readValue<List<K9SakInnsynSøknad>>(success) },
                 { error ->
                     logger.error(
                         "Error response = '${
@@ -82,6 +82,7 @@ class InnsynGateway(
 }
 
 data class K9SakInnsynSøknad(
+    val pleietrengendeAktørId: String,
     val søknad: Søknad
 )
 

@@ -6,7 +6,10 @@ import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.*
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
+import no.nav.helse.innsyn.K9SakInnsynSøknad
 import no.nav.k9.søknad.Søknad
+import org.json.JSONArray
+import org.json.JSONObject
 
 internal const val k9OppslagPath = "/k9-selvbetjening-oppslag-mock"
 private const val pleiepengesoknadMottakPath = "/pleiepengesoknad-mottak-mock"
@@ -160,20 +163,25 @@ internal fun WireMockServer.stubK9Mellomlagring(): WireMockServer {
     return this
 }
 
-internal fun WireMockServer.stubSifInnsynApi(søknad: Søknad): WireMockServer {
+internal fun WireMockServer.stubSifInnsynApi(k9SakInnsynSøknader: List<K9SakInnsynSøknad>): WireMockServer {
     WireMock.stubFor(
         WireMock.any(WireMock.urlMatching(".*$sifInnsynApiPath/innsyn/sak"))
             .willReturn(
                 WireMock.aResponse()
-                    .withBody("""
-                        {
-                            "søknad": ${Søknad.SerDes.serialize(søknad)}
-                        }
-                    """.trimIndent())
+                    .withBody(k9SakInnsynSøknader.somJsonArray().toString())
             )
     )
     return this
 }
+
+private fun List<K9SakInnsynSøknad>.somJsonArray(): JSONArray = JSONArray(map {
+    JSONObject(
+        mapOf(
+            "pleietrengendeAktørId" to it.pleietrengendeAktørId,
+            "søknad" to JSONObject(Søknad.SerDes.serialize(it.søknad))
+        )
+    )
+})
 
 internal fun WireMockServer.getK9OppslagUrl() = baseUrl() + k9OppslagPath
 internal fun WireMockServer.getPleiepengesoknadMottakUrl() = baseUrl() + pleiepengesoknadMottakPath

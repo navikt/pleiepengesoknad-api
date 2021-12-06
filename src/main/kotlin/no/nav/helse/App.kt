@@ -198,6 +198,7 @@ fun Application.pleiepengesoknadapi() {
                     kafkaProducer = kafkaProducer
                 ),
                 søkerService = søkerService,
+                barnService = barnService,
                 innsynGateway = InnsynGateway(baseUrl = configuration.getSifInnsynApiUrl()),
                 idTokenProvider = idTokenProvider
             )
