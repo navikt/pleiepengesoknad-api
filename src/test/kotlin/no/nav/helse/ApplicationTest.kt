@@ -9,6 +9,7 @@ import io.ktor.server.testing.*
 import no.nav.helse.arbeidsgiver.orgQueryName
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
+import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
 import no.nav.helse.mellomlagring.started
@@ -89,7 +90,14 @@ class ApplicationTest {
             .stubSifInnsynApi(
                 k9SakInnsynSøknader = listOf(
                     defaultK9SakInnsynSøknad(
-                        pleietrengendeAktørId = "1000000000001",
+                        barn = InnsynBarn(
+                            fødselsdato = LocalDate.parse("2000-08-27"),
+                            fornavn = "BARNESEN",
+                            mellomnavn = "EN",
+                            etternavn = "BARNESEN",
+                            aktør_id = "1000000000001",
+                            identitetsnummer = "02119970078"
+                        ),
                         søknad = defaultK9FormatPSB()
                     )
                 )

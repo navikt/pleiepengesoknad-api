@@ -17,6 +17,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
 import java.time.Duration
+import java.time.LocalDate
 
 class InnsynGateway(
     val baseUrl: URI,
@@ -81,8 +82,17 @@ class InnsynGateway(
     }
 }
 
+data class InnsynBarn(
+    val fødselsdato: LocalDate,
+    val fornavn: String,
+    val mellomnavn: String? = null,
+    val etternavn: String,
+    val aktør_id: String,
+    val identitetsnummer: String? = null
+)
+
 data class K9SakInnsynSøknad(
-    val pleietrengendeAktørId: String,
+    val barn: InnsynBarn,
     val søknad: Søknad
 )
 

@@ -7,10 +7,11 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.ENDRINGSMELDING_URL
 import no.nav.helse.ENDRINGSMELDING_VALIDERING_URL
+import no.nav.helse.barn.Barn
 import no.nav.helse.barn.BarnService
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getMetadata
-import no.nav.helse.innsyn.InnsynGateway
+import no.nav.helse.innsyn.InnsynService
 import no.nav.helse.innsyn.K9SakInnsynSøknad
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soknad.hentIdTokenOgCallId
@@ -31,22 +32,19 @@ fun Route.endringsmeldingApis(
     endringsmeldingService: EndringsmeldingService,
     søkerService: SøkerService,
     barnService: BarnService,
-    innsynGateway: InnsynGateway,
+    innsynService: InnsynService,
     idTokenProvider: IdTokenProvider
 ) {
 
     post(ENDRINGSMELDING_URL) {
         val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
         val søker = søkerService.getSoker(idToken, callId)
-        val barnListe = barnService.hentNaaverendeBarn(idToken, callId)
         val endringsmelding = call.receive<Endringsmelding>()
-        val endringsmeldingBarn = endringsmelding.ytelse.barn
+        val barn = barnFraEndringsmelding(barnService.hentNaaverendeBarn(idToken, callId), endringsmelding)
 
         logger.info("Mottar og validerer endringsmelding...")
-        val søknadsopplysninger: K9SakInnsynSøknad = innsynGateway.hentSøknadsopplysninger(idToken, callId)
-            .firstOrNull { k9SakInnsynSøknad: K9SakInnsynSøknad ->
-                barnListe.firstOrNull { it.identitetsnummer == endringsmeldingBarn.personIdent.verdi } != null
-            } ?: throw IllegalStateException("Søknadsopplysninger inneholdt ikke riktig barn.")
+
+        val søknadsopplysninger = innsynService.hentSøknadsopplysningerForBarn(idToken, callId, barn.aktørId)
 
         val ytelse = søknadsopplysninger.søknad.getYtelse<PleiepengerSyktBarn>()
 
@@ -66,23 +64,26 @@ fun Route.endringsmeldingApis(
     post(ENDRINGSMELDING_VALIDERING_URL) {
         val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
         val søker = søkerService.getSoker(idToken, callId)
-        val barnListe = barnService.hentNaaverendeBarn(idToken, callId)
+        val endringsmelding = call.receive<Endringsmelding>()
+        val barn = barnFraEndringsmelding(barnService.hentNaaverendeBarn(idToken, callId), endringsmelding)
 
         logger.info("Mottar og validerer endringsmelding...")
-        val søknadsopplysninger: K9SakInnsynSøknad = innsynGateway.hentSøknadsopplysninger(idToken, callId)
-            .firstOrNull { k9SakInnsynSøknad: K9SakInnsynSøknad ->
-                barnListe.firstOrNull { barn: no.nav.helse.barn.Barn ->
-                    barn.identitetsnummer == k9SakInnsynSøknad.søknad.getYtelse<PleiepengerSyktBarn>().barn.personIdent.verdi
-                } != null
-            } ?: throw IllegalStateException("Søknadsopplysninger inneholdt ikke forventet opplysninger om barn.")
+        val søknadsopplysninger: K9SakInnsynSøknad =
+            innsynService.hentSøknadsopplysningerForBarn(idToken, callId, barn.aktørId)
 
-        call.receive<Endringsmelding>()
+        endringsmelding
             .tilKomplettEndringsmelding(søker)
             .forsikreValidert(søknadsopplysninger.søknad.getYtelse<PleiepengerSyktBarn>().søknadsperiode)
 
         call.respond(HttpStatusCode.OK)
     }
 }
+
+private fun barnFraEndringsmelding(
+    barnListe: List<Barn>,
+    endringsmelding: Endringsmelding
+) = (barnListe.firstOrNull { it.identitetsnummer == endringsmelding.ytelse.barn.personIdent.verdi }
+    ?: throw IllegalStateException("Oppgitt barn er ikke en barn som kan sendes endringsmelding på"))
 
 private fun Endringsmelding.tilKomplettEndringsmelding(
     søker: no.nav.helse.soker.Søker

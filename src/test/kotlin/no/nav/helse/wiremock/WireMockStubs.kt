@@ -177,7 +177,7 @@ internal fun WireMockServer.stubSifInnsynApi(k9SakInnsynSøknader: List<K9SakInn
 private fun List<K9SakInnsynSøknad>.somJsonArray(): JSONArray = JSONArray(map {
     JSONObject(
         mapOf(
-            "pleietrengendeAktørId" to it.pleietrengendeAktørId,
+            "barn" to it.barn,
             "søknad" to JSONObject(Søknad.SerDes.serialize(it.søknad))
         )
     )
