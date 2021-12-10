@@ -1,10 +1,22 @@
 package no.nav.helse.general
 
-import io.ktor.application.ApplicationCall
-import io.ktor.features.callId
+import io.ktor.application.*
+import io.ktor.features.*
 
-data class CallId(val value : String)
+data class CallId(
+    val value: String
+)
 
-fun ApplicationCall.getCallId() : CallId {
+fun ApplicationCall.getCallId(): CallId {
     return CallId(callId!!)
 }
+
+data class Metadata(
+    val version: Int,
+    val correlationId: String
+)
+
+fun ApplicationCall.getMetadata() = Metadata(
+    version = 1,
+    correlationId = getCallId().value
+)

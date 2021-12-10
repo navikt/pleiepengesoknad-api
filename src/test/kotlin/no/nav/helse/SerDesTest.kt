@@ -2,34 +2,7 @@ package no.nav.helse
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.ArbeidIPeriode
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.ArbeidsforholdAnsatt
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.Beredskap
-import no.nav.helse.soknad.Bosted
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.Frilans
-import no.nav.helse.soknad.JobberIPeriodeSvar
-import no.nav.helse.soknad.KomplettSøknad
-import no.nav.helse.soknad.Land
-import no.nav.helse.soknad.Medlemskap
-import no.nav.helse.soknad.Nattevåk
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Periode
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.Språk
-import no.nav.helse.soknad.Søknad
-import no.nav.helse.soknad.Utenlandsopphold
-import no.nav.helse.soknad.UtenlandsoppholdIPerioden
-import no.nav.helse.soknad.VarigEndring
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.soknad.Årsak
-import no.nav.helse.vedlegg.DokumentEier
-import no.nav.helse.vedlegg.Vedlegg
+import no.nav.helse.soknad.*
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDate
 import java.time.ZoneId
@@ -66,6 +39,7 @@ internal class SerDesTest {
             {
               "newVersion": null,
               "søknadId" : "$søknadsId",
+              "mottatt" : "2021-01-10T03:04:05.000000006Z",
               "språk": "nb",
               "samtidigHjemme": true,
               "barn": {
@@ -344,16 +318,7 @@ internal class SerDesTest {
                   }
                 }
               ],
-              "vedlegg": [
-                {
-                "content": "VGVzdA==",
-                "contentType": "image/png",
-                "title": "Vedlegg",
-                "eier": {
-                    "eiers_fødselsnummer": "26104500284"
-                  }
-                }
-              ],
+              "vedleggUrls": [],
               "medlemskap": {
                 "harBoddIUtlandetSiste12Mnd": true,
                 "skalBoIUtlandetNeste12Mnd": true,
@@ -543,14 +508,7 @@ internal class SerDesTest {
                     )
                 )
             ),
-            vedlegg = listOf(
-                Vedlegg(
-                    content = "Test".toByteArray(),
-                    contentType = "image/png",
-                    title = "Vedlegg",
-                    eier = DokumentEier("26104500284")
-                )
-            ),
+            vedleggUrls = listOf(),
             fraOgMed = LocalDate.parse("2020-01-01"),
             tilOgMed = LocalDate.parse("2020-02-01"),
             nattevåk = Nattevåk(

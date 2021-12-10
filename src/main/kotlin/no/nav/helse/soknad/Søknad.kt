@@ -1,9 +1,16 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import io.ktor.http.*
 import no.nav.helse.barn.Barn
+import no.nav.helse.dusseldorf.ktor.client.buildURL
+import no.nav.helse.soker.Søker
+import no.nav.k9.søknad.Søknad
+import java.net.URI
 import java.net.URL
 import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.*
 
 enum class Språk { nb, nn }
@@ -11,6 +18,7 @@ enum class Språk { nb, nn }
 data class Søknad(
     val newVersion: Boolean?,
     val søknadId: String = UUID.randomUUID().toString(),
+    val mottatt: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC),
     val språk: Språk? = null,
     val barn: BarnDetaljer,
     val arbeidsgivere: List<ArbeidsforholdAnsatt>? = null,
@@ -35,12 +43,51 @@ data class Søknad(
     val barnRelasjonBeskrivelse: String? = null,
     val harVærtEllerErVernepliktig: Boolean? = null
 ) {
-
     fun oppdaterBarnMedFnr(listeOverBarn: List<Barn>) {
         if (barn.manglerIdentitetsnummer()) {
             barn oppdaterFødselsnummer listeOverBarn.hentIdentitetsnummerForBarn(barn.aktørId)
         }
     }
+
+    fun tilKomplettSøknad(
+        k9FormatSøknad: Søknad,
+        søker: Søker,
+        k9MellomlagringIngress: URI
+        ) : KomplettSøknad = KomplettSøknad(
+        språk = språk,
+        søknadId = søknadId,
+        mottatt = mottatt,
+        fraOgMed = fraOgMed,
+        tilOgMed = tilOgMed,
+        søker = søker,
+        barn = barn,
+        vedleggUrls = vedlegg.tilK9MellomLagringUrl(k9MellomlagringIngress),
+        arbeidsgivere = arbeidsgivere,
+        medlemskap = medlemskap,
+        ferieuttakIPerioden = ferieuttakIPerioden,
+        utenlandsoppholdIPerioden = utenlandsoppholdIPerioden,
+        harMedsøker = harMedsøker!!,
+        samtidigHjemme = samtidigHjemme,
+        harBekreftetOpplysninger = harBekreftetOpplysninger,
+        harForståttRettigheterOgPlikter = harForståttRettigheterOgPlikter,
+        omsorgstilbud = omsorgstilbud,
+        nattevåk = nattevåk,
+        beredskap = beredskap,
+        frilans = frilans,
+        selvstendigNæringsdrivende = selvstendigNæringsdrivende,
+        barnRelasjon = barnRelasjon,
+        barnRelasjonBeskrivelse = barnRelasjonBeskrivelse,
+        harVærtEllerErVernepliktig = harVærtEllerErVernepliktig,
+        k9FormatSøknad = k9FormatSøknad
+    )
+}
+
+fun List<URL>.tilK9MellomLagringUrl(baseUrl: URI): List<URL> = map {
+    val idFraUrl = it.path.substringAfterLast("/")
+    Url.buildURL(
+        baseUrl = baseUrl,
+        pathParts = listOf(idFraUrl)
+    ).toURL()
 }
 
 private fun List<Barn>.hentIdentitetsnummerForBarn(aktørId: String?): String? {

@@ -1,21 +1,29 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.PleiepengesoknadMottakGateway
+import no.nav.helse.barn.BarnService
 import no.nav.helse.general.CallId
+import no.nav.helse.general.Metadata
 import no.nav.helse.general.auth.IdToken
+import no.nav.helse.k9format.tilK9Format
+import no.nav.helse.kafka.KafkaProducer
 import no.nav.helse.soker.Søker
+import no.nav.helse.soker.SøkerService
+import no.nav.helse.soker.validate
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.ZonedDateTime
+import java.net.URI
 
 
 class SøknadService(
-    private val pleiepengesoknadMottakGateway: PleiepengesoknadMottakGateway,
-    private val vedleggService: VedleggService
-) {
+    private val vedleggService: VedleggService,
+    private val søkerService: SøkerService,
+    private val barnService: BarnService,
+    private val kafkaProducer: KafkaProducer,
+    private val k9MellomLagringIngress: URI
+    ) {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(SøknadService::class.java)
@@ -25,61 +33,43 @@ class SøknadService(
         søknad: Søknad,
         idToken: IdToken,
         callId: CallId,
-        k9FormatSøknad: no.nav.k9.søknad.Søknad,
-        søker: Søker,
-        mottatt: ZonedDateTime
+        metadata: Metadata
     ) {
         logger.info("Registrerer søknad")
-        logger.trace("Henter ${søknad.vedlegg.size} vedlegg.")
-        val vedlegg = vedleggService.hentVedlegg(
-            idToken = idToken,
-            vedleggUrls = søknad.vedlegg,
-            callId = callId,
-            eier = DokumentEier(søker.fødselsnummer)
-        )
 
-        logger.trace("Vedlegg hentet. Validerer vedleggene.")
-        vedlegg.validerVedlegg(søknad.vedlegg)
+        val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
+        søker.validate()
 
-        logger.trace("Legger søknad til prosessering")
-        val komplettSøknad = KomplettSøknad(
-            språk = søknad.språk,
-            søknadId = søknad.søknadId,
-            mottatt = mottatt,
-            fraOgMed = søknad.fraOgMed,
-            tilOgMed = søknad.tilOgMed,
-            søker = søker,
-            barn = BarnDetaljer(
-                fødselsnummer = søknad.barn.fødselsnummer,
-                fødselsdato = søknad.barn.fødselsdato,
-                aktørId = søknad.barn.aktørId,
-                navn = søknad.barn.navn
-            ),
-            vedlegg = vedlegg,
-            arbeidsgivere = søknad.arbeidsgivere,
-            medlemskap = søknad.medlemskap,
-            ferieuttakIPerioden = søknad.ferieuttakIPerioden,
-            utenlandsoppholdIPerioden = søknad.utenlandsoppholdIPerioden,
-            harMedsøker = søknad.harMedsøker!!,
-            samtidigHjemme = søknad.samtidigHjemme,
-            harBekreftetOpplysninger = søknad.harBekreftetOpplysninger,
-            harForståttRettigheterOgPlikter = søknad.harForståttRettigheterOgPlikter,
-            omsorgstilbud = søknad.omsorgstilbud,
-            nattevåk = søknad.nattevåk,
-            beredskap = søknad.beredskap,
-            frilans = søknad.frilans,
-            selvstendigNæringsdrivende = søknad.selvstendigNæringsdrivende,
-            barnRelasjon = søknad.barnRelasjon,
-            barnRelasjonBeskrivelse = søknad.barnRelasjonBeskrivelse,
-            harVærtEllerErVernepliktig = søknad.harVærtEllerErVernepliktig,
-            k9FormatSøknad = k9FormatSøknad
-        )
+        logger.info("Oppdaterer barn med identitetsnummer")
+        val listeOverBarnMedFnr = barnService.hentNaaverendeBarn(idToken, callId)
+        søknad.oppdaterBarnMedFnr(listeOverBarnMedFnr)
 
-        pleiepengesoknadMottakGateway.leggTilProsessering(
-            søknad = komplettSøknad,
-            callId = callId
-        )
+        val k9FormatSøknad = søknad.tilK9Format(søknad.mottatt, søker)
+        søknad.validate(k9FormatSøknad)
 
-        logger.trace("Søknad sendt til mottak.")
+        if(søknad.vedlegg.isNotEmpty()){
+            val dokumentEier = DokumentEier(søker.fødselsnummer)
+            logger.info("Validerer ${søknad.vedlegg.size} vedlegg")
+            val vedleggHentet = vedleggService.hentVedlegg(søknad.vedlegg, idToken, callId, dokumentEier)
+            vedleggHentet.validerVedlegg(søknad.vedlegg)
+
+            logger.info("Persisterer vedlegg")
+            vedleggService.persisterVedlegg(søknad.vedlegg, callId, dokumentEier)
+        }
+
+        val komplettSøknad = søknad.tilKomplettSøknad(k9FormatSøknad, søker, k9MellomLagringIngress)
+
+        try {
+            kafkaProducer.produserKafkaMelding(komplettSøknad, metadata)
+        } catch (exception: Exception) {
+            logger.info("Feilet ved å legge melding på Kafka.")
+            if(komplettSøknad.vedleggUrls.isNotEmpty()){
+                logger.info("Fjerner hold på persisterte vedlegg")
+                vedleggService.fjernHoldPåPersistertVedlegg(komplettSøknad.vedleggUrls, callId, DokumentEier(søker.fødselsnummer))
+            }
+            throw MeldingRegistreringFeiletException("Feilet ved å legge melding på Kafka")
+        }
     }
 }
+
+class MeldingRegistreringFeiletException(s: String) : Throwable(s)

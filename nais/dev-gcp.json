@@ -6,6 +6,7 @@
   "tenant": "trygdeetaten.no",
   "minReplicas": "1",
   "maxReplicas": "2",
+  "kafka-pool": "nav-dev",
   "ingresses": [
     "https://pleiepengesoknad-api.dev.nav.no",
     "https://pleiepengesoknad-api-gcp.dev.nav.no"
@@ -13,8 +14,7 @@
   "externalHosts": [
     "oauth2.googleapis.com",
     "login.microsoftonline.com",
-    "k9-selvbetjening-oppslag.dev-fss-pub.nais.io",
-    "pleiepengesoknad-mottak.dev-fss-pub.nais.io"
+    "k9-selvbetjening-oppslag.dev-fss-pub.nais.io"
   ],
   "env": {
     "REDIS_HOST": "pleiepengesoknad-api-redis",
@@ -23,9 +23,8 @@
     "COOKIE_NAME": "selvbetjening-idtoken",
     "K9_OPPSLAG_REGISTER_URL": "https://k9-selvbetjening-oppslag.dev-fss-pub.nais.io",
     "K9_MELLOMLAGRING_SERVICE_DISCOVERY": "http://k9-mellomlagring",
-    "K9_MELLOMLAGRING_CLIENT_ID": "8d0460bd-ea81-4b08-b524-cf04874a794c/.default",
-    "PLEIEPENGESOKNAD_MOTTAK_BASE_URL": "https://pleiepengesoknad-mottak.dev-fss-pub.nais.io",
-    "PLEIEPENGESOKNAD_MOTTAK_CLIENT_ID": "4962af86-b446-488a-b227-99cafcbe9c3c/.default"
+    "K9_MELLOMLAGRING_INGRESS": "https://k9-mellomlagring.dev.intern.nav.no/v1/dokument",
+    "K9_MELLOMLAGRING_CLIENT_ID": "8d0460bd-ea81-4b08-b524-cf04874a794c/.default"
   },
   "slack-channel": "sif-alerts-dev",
   "slack-notify-type": "<!here> | pleiepengesoknad-api | ",

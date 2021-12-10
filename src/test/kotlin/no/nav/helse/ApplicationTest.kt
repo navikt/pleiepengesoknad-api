@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import no.nav.helse.TestUtils.Companion.getAuthCookie
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
@@ -26,19 +27,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-private const val fnr = "26104500284"
-private const val ikkeMyndigFnr = "12125012345"
-private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
-
-// Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
-private val gyldigFodselsnummerA = "02119970078"
-private val ikkeMyndigDato = "2050-12-12"
-
 class ApplicationTest {
 
     private companion object {
 
         private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
+
+        // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
+        private val gyldigFodselsnummerA = "02119970078"
+        private val fnr = "26104500284"
+        private val ikkeMyndigFnr = "12125012345"
+        private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
 
         val wireMockServer = WireMockBuilder()
             .withAzureSupport()
@@ -47,14 +46,15 @@ class ApplicationTest {
             .pleiepengesoknadApiConfig()
             .build()
             .stubK9MellomlagringHealth()
-            .stubPleiepengesoknadMottakHealth()
             .stubOppslagHealth()
-            .stubLeggSoknadTilProsessering("v1/soknad")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
             .stubK9OppslagArbeidsgivereMedPrivate()
             .stubK9Mellomlagring()
+
+        val kafkaEnvironment = KafkaWrapper.bootstrap()
+        val kafkaKonsumer = kafkaEnvironment.testConsumer()
 
         val redisServer: RedisServer = RedisServer
             .newRedisServer().started()
@@ -65,6 +65,7 @@ class ApplicationTest {
             val testConfig = ConfigFactory.parseMap(
                 TestConfiguration.asMap(
                     wireMockServer = wireMockServer,
+                    kafkaEnvironment = kafkaEnvironment,
                     redisServer = redisServer
                 )
             )
@@ -486,9 +487,24 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad`() {
+    fun `Sende søknad`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.now().minusDays(3),
+            tilOgMed = LocalDate.now().plusDays(4),
+            ferieuttakIPerioden = FerieuttakIPerioden(
+                skalTaUtFerieIPerioden = true,
+                ferieuttak = listOf(
+                    Ferieuttak(
+                        fraOgMed = LocalDate.now(),
+                        tilOgMed = LocalDate.now().plusDays(2),
+                    )
+                )
+            ),
+            vedlegg = listOf(URL(jpegUrl))
+        )
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -496,21 +512,10 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(4),
-                ferieuttakIPerioden = FerieuttakIPerioden(
-                    skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(
-                        Ferieuttak(
-                            fraOgMed = LocalDate.now(),
-                            tilOgMed = LocalDate.now().plusDays(2),
-                        )
-                    )
-                ),
-                vedlegg = listOf(URL(jpegUrl)),
-            ).somJson()
+            requestEntity = søknad.somJson()
         )
+
+        hentOgAssertSøknad(JSONObject(søknad.somJson()))
     }
 
     @Test
@@ -1221,5 +1226,26 @@ class ApplicationTest {
             }
         }
         return respons
+    }
+
+    private fun hentOgAssertSøknad(søknad: JSONObject){
+        val hentet = kafkaKonsumer.hentSøknad(søknad.getString("søknadId"))
+        assertGyldigSøknad(søknad, hentet.data)
+    }
+
+    private fun assertGyldigSøknad(
+        søknadSendtInn: JSONObject,
+        søknadFraTopic: JSONObject
+    ) {
+        // TODO: 10/12/2021 Mer sjekker?
+        assertTrue(søknadFraTopic.has("søker"))
+        assertTrue(søknadFraTopic.has("mottatt"))
+        assertTrue(søknadFraTopic.has("k9FormatSøknad"))
+
+        assertEquals(søknadSendtInn.getString("søknadId"), søknadFraTopic.getString("søknadId"))
+
+        if(søknadSendtInn.has("vedleggUrls") && !søknadSendtInn.getJSONArray("vedleggUrls").isEmpty){
+            assertEquals(søknadSendtInn.getJSONArray("vedleggUrls").length(),søknadFraTopic.getJSONArray("vedleggUrls").length())
+        }
     }
 }

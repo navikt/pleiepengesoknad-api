@@ -1,8 +1,8 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
-import no.nav.helse.vedlegg.Vedlegg
 import no.nav.k9.søknad.Søknad
+import java.net.URL
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -15,7 +15,7 @@ data class KomplettSøknad(
     val søker: Søker,
     val barn: BarnDetaljer,
     val arbeidsgivere: List<ArbeidsforholdAnsatt>?,
-    val vedlegg: List<Vedlegg> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
+    var vedleggUrls : List<URL> = listOf(),
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
