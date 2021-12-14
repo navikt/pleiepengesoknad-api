@@ -5,7 +5,6 @@ import no.nav.helse.soknad.Arbeidsforhold
 import no.nav.helse.soknad.ArbeidsforholdAnsatt
 import no.nav.helse.soknad.JobberIPeriodeSvar.JA
 import no.nav.helse.soknad.JobberIPeriodeSvar.NEI
-import no.nav.helse.soknad.JobberIPeriodeSvar.VET_IKKE
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.Søknad
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
@@ -27,7 +26,14 @@ internal fun Søknad.byggK9Arbeidstid(dagensDato: LocalDate): Arbeidstid = Arbei
     arbeidsgivere?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode, dagensDato)) }
 
     frilans?.let {
-        medFrilanserArbeidstid(it.arbeidsforhold.beregnK9ArbeidstidInfo(periode, dagensDato, frilans.startdato, frilans.sluttdato))
+        medFrilanserArbeidstid(
+            it.arbeidsforhold.beregnK9ArbeidstidInfo(
+                periode,
+                dagensDato,
+                frilans.startdato,
+                frilans.sluttdato
+            )
+        )
     }
 
     selvstendigNæringsdrivende?.let {
@@ -38,7 +44,7 @@ internal fun Søknad.byggK9Arbeidstid(dagensDato: LocalDate): Arbeidstid = Arbei
 fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
     periode: Periode,
     dagensDato: LocalDate
-) : List<Arbeidstaker> {
+): List<Arbeidstaker> {
     return this.map {
         Arbeidstaker(
             null, //K9 format vil ikke ha både fnr og org nummer
@@ -48,8 +54,13 @@ fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
     }
 }
 
-fun Arbeidsforhold?.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato: LocalDate, startdato: LocalDate? = null, sluttdato: LocalDate? = null): ArbeidstidInfo {
-    if(this == null) return ArbeidstidInfo().medPerioder(
+fun Arbeidsforhold?.beregnK9ArbeidstidInfo(
+    søknadsperiode: Periode,
+    dagensDato: LocalDate,
+    startdato: LocalDate? = null,
+    sluttdato: LocalDate? = null
+): ArbeidstidInfo {
+    if (this == null) return ArbeidstidInfo().medPerioder(
         mapOf(
             Periode(søknadsperiode.fraOgMed, søknadsperiode.tilOgMed) to ArbeidstidPeriodeInfo(
                 NULL_ARBEIDSTIMER,
@@ -64,7 +75,8 @@ fun Arbeidsforhold?.beregnK9ArbeidstidInfo(søknadsperiode: Periode, dagensDato:
 
     historiskArbeid?.let {
         val fraOgMedHistorisk = søknadsperiode.fraOgMed
-        val tilOgMedHistorisk = if (søknadsperiode.tilOgMed.isBefore(gårsdagensDato)) søknadsperiode.tilOgMed else gårsdagensDato
+        val tilOgMedHistorisk =
+            if (søknadsperiode.tilOgMed.isBefore(gårsdagensDato)) søknadsperiode.tilOgMed else gårsdagensDato
 
         it.beregnK9ArbeidstidInfo(
             fraOgMed = fraOgMedHistorisk,
@@ -101,30 +113,25 @@ fun ArbeidIPeriode.beregnK9ArbeidstidInfo(
     normalTimerPerDag: Duration
 ) {
 
-    when(jobberIPerioden) {
-        JA -> when(jobberSomVanlig){
-            //Jobber som vanlig. Jobber altså 100% i hele periodem.
-            true -> arbeidstidInfo.leggTilPeriode(fraOgMed, tilOgMed, normalTimerPerDag, normalTimerPerDag)
-
-            //Jobber ikke som vanlig. Da skal enkeltdager eller fasteDager være sendt inn. Hull fylles med 0 timer.
-            false -> {
-                enkeltdager?.let {
-                    fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { dato ->
-                        val faktiskTimerPerDag = enkeltdager.find { it.dato == dato }?.tid ?: NULL_ARBEIDSTIMER
-                        arbeidstidInfo.leggTilPeriode(dato, dato, normalTimerPerDag, faktiskTimerPerDag)
-                    }
+    when (jobberIPerioden) {
+        JA -> {
+            enkeltdager?.let {
+                fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { dato ->
+                    val faktiskTimerPerDag = enkeltdager.find { it.dato == dato }?.tid ?: NULL_ARBEIDSTIMER
+                    arbeidstidInfo.leggTilPeriode(dato, dato, normalTimerPerDag, faktiskTimerPerDag)
                 }
+            }
 
-                fasteDager?.let {
-                    fasteDager.tilK9ArbeidstidPeriodePlan(fraOgMed, tilOgMed, normalTimerPerDag, startdato, sluttdato).forEach {
+            fasteDager?.let {
+                fasteDager.tilK9ArbeidstidPeriodePlan(fraOgMed, tilOgMed, normalTimerPerDag, startdato, sluttdato)
+                    .forEach {
                         arbeidstidInfo.leggeTilPeriode(it.first, it.second)
                     }
-                }
             }
         }
 
         //Jobber ikke. Altså 0 timer per dag i hele perioden
-        VET_IKKE, NEI -> arbeidstidInfo.leggTilPeriode(fraOgMed, tilOgMed, normalTimerPerDag, NULL_ARBEIDSTIMER)
+        NEI -> arbeidstidInfo.leggTilPeriode(fraOgMed, tilOgMed, normalTimerPerDag, NULL_ARBEIDSTIMER)
     }
 
 }
@@ -161,8 +168,8 @@ fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
                 DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
                 else -> NULL_ARBEIDSTIMER
             }
-            startdato?.let { if(dato.isBefore(startdato)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
-            sluttdato?.let { if(dato.isAfter(sluttdato)) faktiskArbeidstimer = NULL_ARBEIDSTIMER}
+            startdato?.let { if (dato.isBefore(startdato)) faktiskArbeidstimer = NULL_ARBEIDSTIMER }
+            sluttdato?.let { if (dato.isAfter(sluttdato)) faktiskArbeidstimer = NULL_ARBEIDSTIMER }
             Pair(
                 Periode(dato, dato),
                 ArbeidstidPeriodeInfo()

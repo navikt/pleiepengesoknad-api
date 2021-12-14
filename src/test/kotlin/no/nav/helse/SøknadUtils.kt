@@ -46,17 +46,19 @@ class SøknadUtils {
                         jobberNormaltTimer = 40.0,
                         historiskArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
-                            jobberSomVanlig = true,
                             erLiktHverUke = true,
                             enkeltdager = null,
-                            fasteDager = null
+                            fasteDager = PlanUkedager(
+                                mandag = Duration.ofHours(7).plusMinutes(30)
+                            )
                         ),
                         planlagtArbeid = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
-                            jobberSomVanlig = true,
                             erLiktHverUke = true,
                             enkeltdager = null,
-                            fasteDager = null
+                            fasteDager = PlanUkedager(
+                                mandag = Duration.ofHours(7).plusMinutes(30)
+                            )
                         )
                     )
                 ),
@@ -102,17 +104,19 @@ class SøknadUtils {
                     jobberNormaltTimer = 40.0,
                     historiskArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
-                        jobberSomVanlig = true,
                         erLiktHverUke = true,
                         enkeltdager = null,
-                        fasteDager = null
+                        fasteDager = PlanUkedager(
+                            mandag = Duration.ofHours(7).plusMinutes(30)
+                        )
                     ),
                     planlagtArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
-                        jobberSomVanlig = true,
                         erLiktHverUke = true,
                         enkeltdager = null,
-                        fasteDager = null
+                        fasteDager = PlanUkedager(
+                            mandag = Duration.ofHours(7).plusMinutes(30)
+                        )
                     )
                 )
             ),
@@ -228,16 +232,19 @@ class SøknadUtils {
                     jobberNormaltTimer = 40.0,
                     historiskArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
-                        jobberSomVanlig = true,
                         erLiktHverUke = true,
                         enkeltdager = null,
-                        fasteDager = null
+                        fasteDager = PlanUkedager(
+                            mandag = Duration.ofHours(7).plusMinutes(30)
+                        )
                     ),
                     planlagtArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
-                        jobberSomVanlig = true,
                         erLiktHverUke = true,
-                        enkeltdager = null
+                        enkeltdager = null,
+                        fasteDager = PlanUkedager(
+                            mandag = Duration.ofHours(7).plusMinutes(30)
+                        )
                     )
                 )
             ),

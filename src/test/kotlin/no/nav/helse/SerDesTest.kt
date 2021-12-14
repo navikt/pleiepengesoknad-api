@@ -60,19 +60,29 @@ internal class SerDesTest {
                     "jobberNormaltTimer": 40.0,
                     "historiskArbeid": {
                       "jobberIPerioden": "JA",
-                      "jobberSomVanlig": true,
                       "jobberProsent": null,
                       "erLiktHverUke": true,
                       "enkeltdager": null,
-                      "fasteDager": null
+                      "fasteDager": {
+                          "mandag": "PT7H30M",
+                          "tirsdag": null,
+                          "onsdag": null,
+                          "torsdag": null,
+                          "fredag": null
+                        }
                     },
                     "planlagtArbeid": {
                       "jobberIPerioden": "JA",
-                      "jobberSomVanlig": true,
                       "jobberProsent": null,
                       "erLiktHverUke": true,
                       "enkeltdager": null,
-                      "fasteDager": null
+                      "fasteDager": {
+                          "mandag": "PT7H30M",
+                          "tirsdag": null,
+                          "onsdag": null,
+                          "torsdag": null,
+                          "fredag": null
+                        }
                     }
                   }
                 },
@@ -141,19 +151,29 @@ internal class SerDesTest {
                   "jobberNormaltTimer": 40.0,
                   "historiskArbeid": {
                     "jobberIPerioden": "JA",
-                    "jobberSomVanlig": true,
                     "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
-                    "fasteDager": null
+                    "fasteDager": {
+                      "mandag": "PT7H30M",
+                      "tirsdag": null,
+                      "onsdag": null,
+                      "torsdag": null,
+                      "fredag": null
+                    }
                   },
                   "planlagtArbeid": {
                     "jobberIPerioden": "JA",
-                    "jobberSomVanlig": true,
                     "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
-                    "fasteDager": null
+                    "fasteDager": {
+                      "mandag": "PT7H30M",
+                      "tirsdag": null,
+                      "onsdag": null,
+                      "torsdag": null,
+                      "fredag": null
+                    }
                   }
                 }
               },
@@ -240,19 +260,29 @@ internal class SerDesTest {
                   "jobberNormaltTimer": 40.0,
                   "historiskArbeid": {
                     "jobberIPerioden": "JA",
-                    "jobberSomVanlig": true,
                     "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
-                    "fasteDager": null
+                    "fasteDager": {
+                      "mandag": "PT7H30M",
+                      "tirsdag": null,
+                      "onsdag": null,
+                      "torsdag": null,
+                      "fredag": null
+                    }
                   },
                   "planlagtArbeid": {
                     "jobberIPerioden": "JA",
-                    "jobberSomVanlig": true,
                     "jobberProsent": null,
                     "erLiktHverUke": true,
                     "enkeltdager": null,
-                    "fasteDager": null
+                    "fasteDager": {
+                      "mandag": "PT7H30M",
+                      "tirsdag": null,
+                      "onsdag": null,
+                      "torsdag": null,
+                      "fredag": null
+                    }
                   }
                 }
               },
@@ -457,7 +487,6 @@ internal class SerDesTest {
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 40.0,
                     "historiskArbeid": {
-                      "jobberSomVanlig": false,
                       "jobberProsent": 50.0,
                       "enkeltdager": [],
                       "erLiktHverUke": true,
@@ -646,7 +675,6 @@ internal class SerDesTest {
                     jobberNormaltTimer = 40.0,
                     historiskArbeid = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
-                        jobberSomVanlig = false,
                         jobberProsent = 50.0,
                         erLiktHverUke = true,
                         enkeltdager = listOf(),

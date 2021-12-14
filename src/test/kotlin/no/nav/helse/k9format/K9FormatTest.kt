@@ -2,7 +2,13 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.HistoriskOmsorgstilbud
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.PlanlagtOmsorgstilbud
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -166,17 +172,33 @@ class K9FormatTest {
                       "norskIdentitetsnummer": null,
                       "organisasjonsnummer": "917755736",
                       "arbeidstidInfo": {
-                        "perioder": {
-                          "2021-01-01/2021-01-04": {
-                            "jobberNormaltTimerPerDag": "PT8H",
-                            "faktiskArbeidTimerPerDag": "PT8H"
-                          },
-                          "2021-01-05/2021-01-10": {
-                            "jobberNormaltTimerPerDag": "PT8H",
-                            "faktiskArbeidTimerPerDag": "PT8H"
-                          }
-                        }
-                      }
+                         "perioder": {
+                           "2021-01-01/2021-01-01": {
+                             "jobberNormaltTimerPerDag": "PT8H",
+                             "faktiskArbeidTimerPerDag": "PT0S"
+                           },
+                           "2021-01-04/2021-01-04": {
+                             "jobberNormaltTimerPerDag": "PT8H",
+                             "faktiskArbeidTimerPerDag": "PT7H30M"
+                           },
+                           "2021-01-05/2021-01-05": {
+                               "jobberNormaltTimerPerDag": "PT8H",
+                                "faktiskArbeidTimerPerDag": "PT0S"
+                           },
+                           "2021-01-06/2021-01-06": {
+                                "jobberNormaltTimerPerDag": "PT8H",
+                                "faktiskArbeidTimerPerDag": "PT0S"
+                           },
+                           "2021-01-07/2021-01-07": {
+                                "jobberNormaltTimerPerDag": "PT8H",
+                                "faktiskArbeidTimerPerDag": "PT0S"
+                           },
+                           "2021-01-08/2021-01-08": {
+                                "jobberNormaltTimerPerDag": "PT8H",
+                                "faktiskArbeidTimerPerDag": "PT0S"
+                           }
+                         }
+                       }
                     },
                     {
                       "norskIdentitetsnummer": null,
@@ -193,27 +215,59 @@ class K9FormatTest {
                   ],
                   "frilanserArbeidstidInfo": {
                     "perioder": {
-                      "2021-01-01/2021-01-04": {
-                        "jobberNormaltTimerPerDag": "PT8H",
-                        "faktiskArbeidTimerPerDag": "PT8H"
-                      },
-                      "2021-01-05/2021-01-10": {
-                        "jobberNormaltTimerPerDag": "PT8H",
-                        "faktiskArbeidTimerPerDag": "PT8H"
-                      }
-                    }
+                       "2021-01-01/2021-01-01": {
+                         "jobberNormaltTimerPerDag": "PT8H",
+                         "faktiskArbeidTimerPerDag": "PT0S"
+                       },
+                       "2021-01-04/2021-01-04": {
+                         "jobberNormaltTimerPerDag": "PT8H",
+                         "faktiskArbeidTimerPerDag": "PT7H30M"
+                       },
+                       "2021-01-05/2021-01-05": {
+                           "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                       },
+                       "2021-01-06/2021-01-06": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                       },
+                       "2021-01-07/2021-01-07": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                       },
+                       "2021-01-08/2021-01-08": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                       }
+                     }
                   },
                   "selvstendigNæringsdrivendeArbeidstidInfo": {
                     "perioder": {
-                      "2021-01-01/2021-01-04": {
-                        "jobberNormaltTimerPerDag": "PT8H",
-                        "faktiskArbeidTimerPerDag": "PT8H"
-                      },
-                      "2021-01-05/2021-01-10": {
-                        "jobberNormaltTimerPerDag": "PT8H",
-                        "faktiskArbeidTimerPerDag": "PT8H"
-                      }
-                    }
+                       "2021-01-01/2021-01-01": {
+                         "jobberNormaltTimerPerDag": "PT8H",
+                         "faktiskArbeidTimerPerDag": "PT0S"
+                       },
+                       "2021-01-04/2021-01-04": {
+                         "jobberNormaltTimerPerDag": "PT8H",
+                         "faktiskArbeidTimerPerDag": "PT7H30M"
+                       },
+                       "2021-01-05/2021-01-05": {
+                           "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                       },
+                       "2021-01-06/2021-01-06": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                       },
+                       "2021-01-07/2021-01-07": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                       },
+                       "2021-01-08/2021-01-08": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                       }
+                     }
                   }
                 },
                 "uttak": {
@@ -252,7 +306,10 @@ class K9FormatTest {
                     fredag = Duration.ofHours(5)
                 )
             )
-        ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(
+            dagensDato = LocalDate.parse("2021-01-04"),
+            periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08"))
+        )
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
 
@@ -294,7 +351,10 @@ class K9FormatTest {
                     fredag = Duration.ofHours(5)
                 )
             )
-        ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-06"), periode = Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11")))
+        ).tilK9Tilsynsordning(
+            dagensDato = LocalDate.parse("2021-01-06"),
+            periode = Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11"))
+        )
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
 
@@ -333,7 +393,10 @@ class K9FormatTest {
                     fredag = Duration.ofHours(5)
                 )
             )
-        ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(
+            dagensDato = LocalDate.parse("2021-01-04"),
+            periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08"))
+        )
 
         assertEquals(4, k9Tilsynsordning.perioder.size)
 
@@ -393,7 +456,10 @@ class K9FormatTest {
                     fredag = Duration.ofHours(10)
                 )
             )
-        ).tilK9Tilsynsordning(dagensDato = LocalDate.parse("2021-01-04"), periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")))
+        ).tilK9Tilsynsordning(
+            dagensDato = LocalDate.parse("2021-01-04"),
+            periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08"))
+        )
 
         assertEquals(5, k9Tilsynsordning.perioder.size)
 
@@ -462,7 +528,10 @@ class K9FormatTest {
                     fredag = Duration.ofHours(1)
                 )
             )
-        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")), LocalDate.parse("2021-09-03"))
+        ).tilK9Tilsynsordning(
+            Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")),
+            LocalDate.parse("2021-09-03")
+        )
 
         assertEquals(9, tilsynsordning.perioder.size)
     }
