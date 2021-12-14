@@ -41,7 +41,6 @@ class ApplicationTest {
 
         val wireMockServer = WireMockBuilder()
             .withAzureSupport()
-            .withNaisStsSupport()
             .withLoginServiceSupport()
             .pleiepengesoknadApiConfig()
             .build()
@@ -439,7 +438,7 @@ class ApplicationTest {
     """.trimIndent()
 
     @Test
-    fun `Hente soeker`() {
+    fun `Hente søker`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = SØKER_URL,
@@ -602,9 +601,31 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad med AktørID som ID på barnet`() {
+    fun `Sende søknad med AktørID som ID på barnet`() {
         val cookie = getAuthCookie("26104500284")
         val jpegUrl = engine.jpegUrl(cookie)
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.now().minusDays(3),
+            tilOgMed = LocalDate.now().plusDays(4),
+            selvstendigNæringsdrivende = null,
+            omsorgstilbud = null,
+            vedlegg = listOf(URL(jpegUrl)),
+            ferieuttakIPerioden = FerieuttakIPerioden(
+                skalTaUtFerieIPerioden = true,
+                ferieuttak = listOf(
+                    Ferieuttak(
+                        fraOgMed = LocalDate.now(),
+                        tilOgMed = LocalDate.now().plusDays(2),
+                    )
+                )
+            ),
+            barn = BarnDetaljer(
+                fødselsdato = LocalDate.parse("2018-01-01"),
+                navn = "Barn Barnesen",
+                aktørId = "1000000000001",
+                fødselsnummer = null
+            )
+        )
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -612,93 +633,75 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(4),
-                selvstendigNæringsdrivende = null,
-                omsorgstilbud = null,
-                vedlegg = listOf(URL(jpegUrl)),
-                ferieuttakIPerioden = FerieuttakIPerioden(
-                    skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(
-                        Ferieuttak(
-                            fraOgMed = LocalDate.now(),
-                            tilOgMed = LocalDate.now().plusDays(2),
-                        )
-                    )
-                ),
-                barn = BarnDetaljer(
-                    fødselsdato = LocalDate.parse("2018-01-01"),
-                    navn = "Barn Barnesen",
-                    aktørId = "1000000000001",
-                    fødselsnummer = null
-                )
-            ).somJson()
+            requestEntity = søknad.somJson()
         )
+
+        hentOgAssertSøknad(JSONObject(søknad))
     }
 
     @Test
     fun `Sende søknad med selvstendig næringsvirksomhet som har regnskapsfører`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
-
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            omsorgstilbud = null,
+            ferieuttakIPerioden = null,
+            fraOgMed = LocalDate.now().minusDays(3),
+            tilOgMed = LocalDate.now().plusDays(4),
+            vedlegg = listOf(URL(jpegUrl)),
+            selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                Virksomhet(
+                    næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
+                    fiskerErPåBladB = false,
+                    fraOgMed = LocalDate.now().minusDays(1),
+                    tilOgMed = LocalDate.now(),
+                    næringsinntekt = 123123,
+                    navnPåVirksomheten = "TullOgTøys",
+                    registrertINorge = true,
+                    organisasjonsnummer = "926032925",
+                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                    regnskapsfører = Regnskapsfører(
+                        navn = "Kjell",
+                        telefon = "84554"
+                    ),
+                    harFlereAktiveVirksomheter = true
+                ),
+                arbeidsforhold = Arbeidsforhold(
+                    jobberNormaltTimer = 37.5,
+                    historiskArbeid = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        erLiktHverUke = false,
+                        enkeltdager = listOf(
+                            Enkeltdag(
+                                dato = LocalDate.parse("2021-01-01"),
+                                tid = Duration.ofHours(7).plusMinutes(30)
+                            )
+                        ),
+                        fasteDager = null
+                    ),
+                    planlagtArbeid = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        erLiktHverUke = false,
+                        enkeltdager = listOf(
+                            Enkeltdag(
+                                dato = LocalDate.parse("2021-01-02"),
+                                tid = Duration.ofHours(7).plusMinutes(30)
+                            )
+                        ),
+                        fasteDager = null
+                    )
+                )
+            )
+        )
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.defaultSøknad().copy(
-                omsorgstilbud = null,
-                ferieuttakIPerioden = null,
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(4),
-                vedlegg = listOf(URL(jpegUrl)),
-                selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
-                    Virksomhet(
-                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
-                        fiskerErPåBladB = false,
-                        fraOgMed = LocalDate.now().minusDays(1),
-                        tilOgMed = LocalDate.now(),
-                        næringsinntekt = 123123,
-                        navnPåVirksomheten = "TullOgTøys",
-                        registrertINorge = true,
-                        organisasjonsnummer = "926032925",
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
-                        regnskapsfører = Regnskapsfører(
-                            navn = "Kjell",
-                            telefon = "84554"
-                        ),
-                        harFlereAktiveVirksomheter = true
-                    ),
-                    arbeidsforhold = Arbeidsforhold(
-                        jobberNormaltTimer = 37.5,
-                        historiskArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
-                            erLiktHverUke = false,
-                            enkeltdager = listOf(
-                                Enkeltdag(
-                                    dato = LocalDate.parse("2021-01-01"),
-                                    tid = Duration.ofHours(7).plusMinutes(30)
-                                )
-                            ),
-                            fasteDager = null
-                        ),
-                        planlagtArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
-                            erLiktHverUke = false,
-                            enkeltdager = listOf(
-                                Enkeltdag(
-                                    dato = LocalDate.parse("2021-01-02"),
-                                    tid = Duration.ofHours(7).plusMinutes(30)
-                                )
-                            ),
-                            fasteDager = null
-                        )
-                    )
-                )
-            ).somJson()
+            requestEntity = søknad.somJson()
         )
+        hentOgAssertSøknad(JSONObject(søknad))
     }
 
     @Test
@@ -1248,10 +1251,12 @@ class ApplicationTest {
         søknadSendtInn: JSONObject,
         søknadFraTopic: JSONObject
     ) {
-        // TODO: 10/12/2021 Mer sjekker?
         assertTrue(søknadFraTopic.has("søker"))
         assertTrue(søknadFraTopic.has("mottatt"))
         assertTrue(søknadFraTopic.has("k9FormatSøknad"))
+
+        val k9Format = søknadFraTopic.getJSONObject("k9FormatSøknad")
+        assertEquals("PLEIEPENGER_SYKT_BARN", k9Format.getJSONObject("ytelse").getString("type"))
 
         assertEquals(søknadSendtInn.getString("søknadId"), søknadFraTopic.getString("søknadId"))
 

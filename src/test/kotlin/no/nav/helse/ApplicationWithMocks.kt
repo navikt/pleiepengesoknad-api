@@ -20,7 +20,6 @@ class ApplicationWithMocks {
             val wireMockServer = WireMockBuilder()
                 .withPort(8081)
                 .withAzureSupport()
-                .withNaisStsSupport()
                 .withLoginServiceSupport()
                 .pleiepengesoknadApiConfig()
                 .build()
