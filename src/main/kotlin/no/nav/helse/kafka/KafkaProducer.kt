@@ -5,6 +5,7 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.Result
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.general.Metadata
+import no.nav.helse.general.formaterStatuslogging
 import no.nav.helse.soknad.KomplettSøknad
 import no.nav.helse.somJson
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -43,13 +44,11 @@ class KafkaProducer(
                 )
             )
         ).get()
-
         logger.info(
-            "Søknad med søknadID: {} sendes til topic {} med offset '{}' til partition '{}'",
-            komplettSøknad.søknadId,
-            PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.name,
-            recordMetaData.offset(),
-            recordMetaData.partition()
+            formaterStatuslogging(komplettSøknad.søknadId,
+                "sendes til topic ${PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.name} " +
+                        "med offset '${recordMetaData.offset()}' til partition '${recordMetaData.partition()}'"
+            )
         )
     }
 
