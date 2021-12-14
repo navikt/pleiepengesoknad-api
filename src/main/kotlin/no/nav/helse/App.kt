@@ -26,14 +26,7 @@ import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.client.buildURL
-import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
-import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
-import no.nav.helse.dusseldorf.ktor.core.correlationIdAndRequestIdInMdc
-import no.nav.helse.dusseldorf.ktor.core.generated
-import no.nav.helse.dusseldorf.ktor.core.id
-import no.nav.helse.dusseldorf.ktor.core.log
-import no.nav.helse.dusseldorf.ktor.core.logProxyProperties
-import no.nav.helse.dusseldorf.ktor.core.logRequests
+import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
@@ -46,6 +39,7 @@ import no.nav.helse.endringsmelding.endringsmeldingApis
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.IdTokenStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
+import no.nav.helse.kafka.KafkaProducer
 import no.nav.helse.innsyn.InnsynGateway
 import no.nav.helse.innsyn.InnsynService
 import no.nav.helse.kafka.KafkaProducer
@@ -61,9 +55,13 @@ import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.K9MellomlagringGateway
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.helse.vedlegg.vedleggApis
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.time.Duration
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+
+private val logger: Logger = LoggerFactory.getLogger("no.nav.helse.AppKt.pleiepengesoknadapi")
 
 fun Application.pleiepengesoknadapi() {
     val appId = environment.config.id()
@@ -124,12 +122,6 @@ fun Application.pleiepengesoknadapi() {
 
         val vedleggService = VedleggService(k9MellomlagringGateway = k9MellomlagringGateway)
 
-        val pleiepengesoknadMottakGateway = PleiepengesoknadMottakGateway(
-            baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
-            accessTokenClient = accessTokenClientResolver.accessTokenClient(),
-            pleiepengesoknadMottakClientId = configuration.getPleiepengesoknadMottakClientId()
-        )
-
         val søkerGateway = SøkerGateway(baseUrl = configuration.getK9OppslagUrl())
         val barnGateway = BarnGateway(baseUrl = configuration.getK9OppslagUrl())
         val arbeidsgivereGateway = ArbeidsgivereGateway(baseUrl = configuration.getK9OppslagUrl())
@@ -140,9 +132,13 @@ fun Application.pleiepengesoknadapi() {
             cache = configuration.cache()
         )
 
-        val kafkaProducer = KafkaProducer(
-            kafkaConfig = configuration.getKafkaConfig()
-        )
+        val kafkaProducer = KafkaProducer(kafkaConfig = configuration.getKafkaConfig())
+
+        environment.monitor.subscribe(ApplicationStopping) {
+            logger.info("Stopper Kafka Producer.")
+            kafkaProducer.stop()
+            logger.info("Kafka Producer Stoppet.")
+        }
 
         authenticate(*issuers.allIssuers()) {
             søkerApis(
@@ -186,8 +182,11 @@ fun Application.pleiepengesoknadapi() {
             soknadApis(
                 idTokenProvider = idTokenProvider,
                 søknadService = SøknadService(
-                    pleiepengesoknadMottakGateway = pleiepengesoknadMottakGateway,
-                    vedleggService = vedleggService
+                    vedleggService = vedleggService,
+                    barnService = barnService,
+                    søkerService = søkerService,
+                    kafkaProducer = kafkaProducer,
+                    k9MellomLagringIngress = configuration.getK9MellomlagringIngress()
                 ),
                 barnService = barnService,
                 søkerService = søkerService,
@@ -210,15 +209,10 @@ fun Application.pleiepengesoknadapi() {
         val healthService = HealthService(
             healthChecks = setOf(
                 kafkaProducer,
-                pleiepengesoknadMottakGateway,
                 HttpRequestHealthCheck(
                     mapOf(
                         Url.buildURL(
                             baseUrl = configuration.getK9MellomlagringUrl(),
-                            pathParts = listOf("health")
-                        ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK),
-                        Url.buildURL(
-                            baseUrl = configuration.getPleiepengesoknadMottakBaseUrl(),
                             pathParts = listOf("health")
                         ) to HttpRequestHealthConfig(expectedStatus = HttpStatusCode.OK)
                     )
@@ -270,16 +264,11 @@ fun ObjectMapper.pleiepengesøknadKonfigurert(): ObjectMapper {
     }
 }
 
-
-fun ObjectMapper.pleiepengesøknadMottakKonfigurert(): ObjectMapper {
-    return pleiepengesøknadKonfigurert().configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-}
-
-fun ObjectMapper.k9MellomlagringGatewayKonfigurert(): ObjectMapper {
-    return jacksonObjectMapper().dusseldorfConfigured().apply {
-        configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-        propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
-    }
+ fun ObjectMapper.k9MellomlagringGatewayKonfigurert(): ObjectMapper {
+     return jacksonObjectMapper().dusseldorfConfigured().apply {
+         configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
+         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
+     }
 }
 
 fun ObjectMapper.k9SelvbetjeningOppslagKonfigurert(): ObjectMapper {

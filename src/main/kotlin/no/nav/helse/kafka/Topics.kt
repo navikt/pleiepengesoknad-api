@@ -1,5 +1,6 @@
 package no.nav.helse.kafka
 
+import no.nav.helse.general.Metadata
 import org.apache.kafka.common.serialization.Serializer
 import org.apache.kafka.common.serialization.StringSerializer
 
@@ -17,4 +18,5 @@ internal data class TopicUse<V>(
 
 object Topics {
     const val MOTTATT_ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN = "dusseldorf.privat-endringsmelding-pleiepenger-sykt-barn-mottatt"
+    const val MOTTATT_PLEIEPENGER_SYKT_BARN = "dusseldorf.privat-pleiepengesoknad-mottatt-v2"
 }

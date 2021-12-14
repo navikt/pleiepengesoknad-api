@@ -2,7 +2,6 @@ package no.nav.helse
 
 import no.nav.common.JAASCredential
 import no.nav.common.KafkaEnvironment
-import no.nav.helse.kafka.Metadata
 import no.nav.helse.kafka.TopicEntry
 import no.nav.helse.kafka.Topics
 import org.apache.kafka.clients.CommonClientConfigs
@@ -26,7 +25,8 @@ object KafkaWrapper {
             withSchemaRegistry = false,
             withSecurity = true,
             topicNames = listOf(
-                Topics.MOTTATT_ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN
+                Topics.MOTTATT_ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN,
+                Topics.MOTTATT_PLEIEPENGER_SYKT_BARN
             )
         )
     }
@@ -48,7 +48,8 @@ internal fun KafkaEnvironment.testConsumer() : KafkaConsumer<String, TopicEntry<
         StringDeserializer(),
         EndringsmeldingOutgoingDeserialiser()
     )
-    consumer.subscribe(listOf(Topics.MOTTATT_ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN))
+    consumer.subscribe(listOf(Topics.MOTTATT_ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN,
+        Topics.MOTTATT_PLEIEPENGER_SYKT_BARN))
     return consumer
 }
 
@@ -69,6 +70,25 @@ internal fun KafkaConsumer<String, TopicEntry<JSONObject>>.hentEndringsmelding(
         }
     }
     throw IllegalStateException("Fant ikke opprettet oppgave for melding med søknadsId $søknadId etter $maxWaitInSeconds sekunder.")
+}
+
+internal fun KafkaConsumer<String, TopicEntry<JSONObject>>.hentSøknad(
+    søknadId: String,
+    maxWaitInSeconds: Long = 20,
+) : TopicEntry<JSONObject> {
+    val end = System.currentTimeMillis() + Duration.ofSeconds(maxWaitInSeconds).toMillis()
+    while (System.currentTimeMillis() < end) {
+        seekToBeginning(assignment())
+        val entries = poll(Duration.ofSeconds(1))
+            .records(Topics.MOTTATT_PLEIEPENGER_SYKT_BARN)
+            .filter { it.key() == søknadId }
+
+        if (entries.isNotEmpty()) {
+            assertEquals(1, entries.size)
+            return entries.first().value()
+        }
+    }
+    throw IllegalStateException("Fant ikke opprettet melding med søknadsId $søknadId etter $maxWaitInSeconds sekunder.")
 }
 
 private class EndringsmeldingOutgoingDeserialiser : Deserializer<TopicEntry<JSONObject>> {

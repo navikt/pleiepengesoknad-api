@@ -47,14 +47,11 @@ data class Configuration(val config: ApplicationConfig) {
     internal fun getSifInnsynApiUrl() = URI(config.getRequiredString("nav.gateways.sif_innsyn_api_url", secret = false))
 
     internal fun getK9MellomlagringUrl() = URI(config.getRequiredString("nav.gateways.k9_mellomlagring_url", secret = false))
-
     internal fun getK9MellomlagringScopes() = getScopesFor("k9-mellomlagring-scope")
-
-    internal fun getPleiepengesoknadMottakBaseUrl() = URI(config.getRequiredString("nav.gateways.pleiepengesoknad_mottak_base_url", secret = false))
+    internal fun getK9MellomlagringIngress() = URI(config.getRequiredString("nav.gateways.k9_mellomlagring_ingress", secret = false))
 
     private fun getScopesFor(operation: String) = config.getRequiredList("nav.auth.scopes.$operation", secret = false, builder = { it }).toSet()
 
-    internal fun getPleiepengesoknadMottakClientId() = getScopesFor("pleiepengesoknad-mottak-client-id")
     internal fun getRedisPort() = config.getRequiredString("nav.redis.port", secret = false).toInt()
     internal fun getRedisHost() = config.getRequiredString("nav.redis.host", secret = false)
 

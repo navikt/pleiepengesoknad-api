@@ -20,7 +20,6 @@ object TestConfiguration {
         port : Int = 8080,
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
         sifInnaynApiUrl: String? = wireMockServer?.getSifInnsynApiUrl(),
-        pleiepengesoknadMottakUrl : String? = wireMockServer?.getPleiepengesoknadMottakUrl(),
         k9MellomlagringUrl : String? = wireMockServer?.getK9MellomlagringUrl(),
         corsAdresses : String = "http://localhost:8080",
         redisServer: RedisServer
@@ -31,8 +30,8 @@ object TestConfiguration {
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
             Pair("nav.gateways.k9_oppslag_url", "$k9OppslagUrl"),
             Pair("nav.gateways.sif_innsyn_api_url", "$sifInnaynApiUrl"),
-            Pair("nav.gateways.pleiepengesoknad_mottak_base_url", "$pleiepengesoknadMottakUrl"),
             Pair("nav.gateways.k9_mellomlagring_url", "$k9MellomlagringUrl"),
+            Pair("nav.gateways.k9_mellomlagring_ingress","$k9MellomlagringUrl"),
             Pair("nav.cors.addresses", corsAdresses),
         )
 
@@ -43,7 +42,6 @@ object TestConfiguration {
             map["nav.auth.clients.0.private_key_jwk"] = ClientCredentials.ClientA.privateKeyJwk
             map["nav.auth.clients.0.certificate_hex_thumbprint"] = ClientCredentials.ClientA.certificateHexThumbprint
             map["nav.auth.clients.0.discovery_endpoint"] = wireMockServer.getAzureV2WellKnownUrl()
-            map["nav.auth.scopes.pleiepengesoknad-mottak-client-id"] = "pleiepengesoknad-mottak/.default"
             map["nav.auth.scopes.k9-mellomlagring-scope"] = "k9-mellomlagring/.default"
 
             map["nav.auth.issuers.0.alias"] = "login-service-v1"

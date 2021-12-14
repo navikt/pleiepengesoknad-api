@@ -12,7 +12,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 internal const val k9OppslagPath = "/k9-selvbetjening-oppslag-mock"
-private const val pleiepengesoknadMottakPath = "/pleiepengesoknad-mottak-mock"
 private const val k9MellomlagringPath = "/k9-mellomlagring-mock"
 private const val sifInnsynApiPath = "/sif-innsyn-api-mock"
 
@@ -136,21 +135,8 @@ private fun WireMockServer.stubHealthEndpoint(
 }
 
 internal fun WireMockServer.stubK9MellomlagringHealth() = stubHealthEndpoint("$k9MellomlagringPath/health")
-internal fun WireMockServer.stubPleiepengesoknadMottakHealth() =
-    stubHealthEndpoint("$pleiepengesoknadMottakPath/health")
 
 internal fun WireMockServer.stubOppslagHealth() = stubHealthEndpoint("$k9OppslagPath/health")
-
-internal fun WireMockServer.stubLeggSoknadTilProsessering(path: String): WireMockServer {
-    WireMock.stubFor(
-        WireMock.post(WireMock.urlMatching(".*$pleiepengesoknadMottakPath/$path"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(202)
-            )
-    )
-    return this
-}
 
 internal fun WireMockServer.stubK9Mellomlagring(): WireMockServer {
     WireMock.stubFor(
@@ -184,6 +170,5 @@ private fun List<K9SakInnsynSøknad>.somJsonArray(): JSONArray = JSONArray(map {
 })
 
 internal fun WireMockServer.getK9OppslagUrl() = baseUrl() + k9OppslagPath
-internal fun WireMockServer.getPleiepengesoknadMottakUrl() = baseUrl() + pleiepengesoknadMottakPath
 internal fun WireMockServer.getK9MellomlagringUrl() = baseUrl() + k9MellomlagringPath
 internal fun WireMockServer.getSifInnsynApiUrl() = baseUrl() + sifInnsynApiPath

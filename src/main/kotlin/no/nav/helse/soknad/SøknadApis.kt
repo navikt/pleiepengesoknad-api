@@ -11,7 +11,9 @@ import no.nav.helse.barn.BarnService
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.auth.IdTokenProvider
+import no.nav.helse.general.formaterStatuslogging
 import no.nav.helse.general.getCallId
+import no.nav.helse.general.getMetadata
 import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
@@ -36,38 +38,16 @@ fun Route.soknadApis(
 ) {
 
     post(SØKNAD_URL) {
-        val mottatt = ZonedDateTime.now(ZoneOffset.UTC)
-        val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
-
-        logger.trace("Mottatt ny søknad. Mapper søknad.")
         val søknad = call.receive<Søknad>()
-
-        logger.trace("Henter søker.")
-        val søker: Søker = søkerService.getSoker(idToken = idToken, callId = callId)
-        logger.trace("Søker hentet. Validerer søkeren.")
-        søker.validate()
-
-        logger.trace("Oppdaterer barn med identitetsnummer")
-        val listeOverBarnMedFnr = barnService.hentNaaverendeBarn(idTokenProvider.getIdToken(call), call.getCallId())
-        søknad.oppdaterBarnMedFnr(listeOverBarnMedFnr)
-
-        logger.info("Mapper om søknad til k9format.")
-        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
-
-        logger.info("Validerer søknad")
-        søknad.validate(k9FormatSøknad)
-        logger.trace("Validering OK. Registrerer søknad.")
+        logger.info(formaterStatuslogging(søknad.søknadId, "mottatt"))
 
         søknadService.registrer(
             søknad = søknad,
             callId = call.getCallId(),
-            idToken = idTokenProvider.getIdToken(call),
-            k9FormatSøknad = k9FormatSøknad,
-            søker = søker,
-            mottatt = mottatt
+            metadata = call.getMetadata(),
+            idToken = idTokenProvider.getIdToken(call)
         )
 
-        logger.trace("Søknad registrert.")
         call.respond(HttpStatusCode.Accepted)
     }
 
