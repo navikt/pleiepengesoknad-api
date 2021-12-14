@@ -1,38 +1,12 @@
 package no.nav.helse
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.helse.soknad.ArbeidIPeriode
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.ArbeidsforholdAnsatt
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.BarnRelasjon
-import no.nav.helse.soknad.Beredskap
-import no.nav.helse.soknad.Bosted
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.Frilans
-import no.nav.helse.soknad.JobberIPeriodeSvar
-import no.nav.helse.soknad.Land
-import no.nav.helse.soknad.Medlemskap
-import no.nav.helse.soknad.Nattevåk
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.Periode
-import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.Språk
-import no.nav.helse.soknad.Søknad
-import no.nav.helse.soknad.Utenlandsopphold
-import no.nav.helse.soknad.UtenlandsoppholdIPerioden
-import no.nav.helse.soknad.VarigEndring
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.soknad.Årsak
+import no.nav.helse.soknad.*
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.*
 
 
@@ -53,6 +27,7 @@ class SøknadUtils {
         fun defaultSøknad(søknadId: String = UUID.randomUUID().toString()) = Søknad(
             newVersion = null,
             søknadId = søknadId,
+            mottatt = ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
             språk = Språk.nb,
             barn = BarnDetaljer(
                 fødselsnummer = "03028104560",

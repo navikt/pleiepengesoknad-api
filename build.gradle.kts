@@ -4,6 +4,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val dusseldorfKtorVersion = "3.1.6.4-e07c5ec"
 val ktorVersion = ext.get("ktorVersion").toString()
 val k9FormatVersion = "5.5.12"
+val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
+val kafkaVersion = ext.get("kafkaVersion").toString() // Alligned med version fra kafka-embedded-env
+
 val mainClass = "no.nav.helse.AppKt"
 
 val fuelVersion = "2.3.1"
@@ -33,6 +36,9 @@ dependencies {
     implementation("no.nav.k9:soknad:$k9FormatVersion")
     implementation ( "org.glassfish:jakarta.el:3.0.3")
 
+    // kafka
+    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
+
     // Client
     implementation ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
     implementation ( "no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
@@ -48,7 +54,8 @@ dependencies {
     testImplementation ("org.skyscreamer:jsonassert:1.5.0")
     testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-
+    testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
+    testImplementation("io.mockk:mockk:1.12.0")
 }
 
 repositories {
@@ -65,6 +72,7 @@ repositories {
 
     mavenCentral()
     maven("https://jitpack.io")
+    maven("https://packages.confluent.io/maven/")
 }
 
 

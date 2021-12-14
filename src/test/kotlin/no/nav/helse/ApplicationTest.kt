@@ -6,34 +6,12 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import no.nav.helse.TestUtils.Companion.getAuthCookie
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.ArbeidIPeriode
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
-import no.nav.helse.soknad.JobberIPeriodeSvar
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubK9Mellomlagring
-import no.nav.helse.wiremock.stubK9MellomlagringHealth
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
-import no.nav.helse.wiremock.stubK9OppslagBarn
-import no.nav.helse.wiremock.stubK9OppslagSoker
-import no.nav.helse.wiremock.stubLeggSoknadTilProsessering
-import no.nav.helse.wiremock.stubOppslagHealth
-import no.nav.helse.wiremock.stubPleiepengesoknadMottakHealth
+import no.nav.helse.soknad.*
+import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -49,35 +27,33 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-private const val fnr = "26104500284"
-private const val ikkeMyndigFnr = "12125012345"
-private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
-
-// Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
-private val gyldigFodselsnummerA = "02119970078"
-private val ikkeMyndigDato = "2050-12-12"
-
 class ApplicationTest {
 
     private companion object {
 
         private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
 
+        // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
+        private val gyldigFodselsnummerA = "02119970078"
+        private val fnr = "26104500284"
+        private val ikkeMyndigFnr = "12125012345"
+        private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
+
         val wireMockServer = WireMockBuilder()
             .withAzureSupport()
-            .withNaisStsSupport()
             .withLoginServiceSupport()
             .pleiepengesoknadApiConfig()
             .build()
             .stubK9MellomlagringHealth()
-            .stubPleiepengesoknadMottakHealth()
             .stubOppslagHealth()
-            .stubLeggSoknadTilProsessering("v1/soknad")
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
             .stubK9OppslagArbeidsgivereMedPrivate()
             .stubK9Mellomlagring()
+
+        val kafkaEnvironment = KafkaWrapper.bootstrap()
+        val kafkaKonsumer = kafkaEnvironment.testConsumer()
 
         val redisServer: RedisServer = RedisServer
             .newRedisServer().started()
@@ -88,6 +64,7 @@ class ApplicationTest {
             val testConfig = ConfigFactory.parseMap(
                 TestConfiguration.asMap(
                     wireMockServer = wireMockServer,
+                    kafkaEnvironment = kafkaEnvironment,
                     redisServer = redisServer
                 )
             )
@@ -461,7 +438,7 @@ class ApplicationTest {
     """.trimIndent()
 
     @Test
-    fun `Hente soeker`() {
+    fun `Hente søker`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = SØKER_URL,
@@ -509,9 +486,24 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad`() {
+    fun `Sende søknad`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.now().minusDays(3),
+            tilOgMed = LocalDate.now().plusDays(4),
+            ferieuttakIPerioden = FerieuttakIPerioden(
+                skalTaUtFerieIPerioden = true,
+                ferieuttak = listOf(
+                    Ferieuttak(
+                        fraOgMed = LocalDate.now(),
+                        tilOgMed = LocalDate.now().plusDays(2),
+                    )
+                )
+            ),
+            vedlegg = listOf(URL(jpegUrl))
+        )
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -519,21 +511,10 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(4),
-                ferieuttakIPerioden = FerieuttakIPerioden(
-                    skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(
-                        Ferieuttak(
-                            fraOgMed = LocalDate.now(),
-                            tilOgMed = LocalDate.now().plusDays(2),
-                        )
-                    )
-                ),
-                vedlegg = listOf(URL(jpegUrl)),
-            ).somJson()
+            requestEntity = søknad.somJson()
         )
+
+        hentOgAssertSøknad(JSONObject(søknad.somJson()))
     }
 
     @Test
@@ -620,9 +601,31 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende soknad med AktørID som ID på barnet`() {
+    fun `Sende søknad med AktørID som ID på barnet`() {
         val cookie = getAuthCookie("26104500284")
         val jpegUrl = engine.jpegUrl(cookie)
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.now().minusDays(3),
+            tilOgMed = LocalDate.now().plusDays(4),
+            selvstendigNæringsdrivende = null,
+            omsorgstilbud = null,
+            vedlegg = listOf(URL(jpegUrl)),
+            ferieuttakIPerioden = FerieuttakIPerioden(
+                skalTaUtFerieIPerioden = true,
+                ferieuttak = listOf(
+                    Ferieuttak(
+                        fraOgMed = LocalDate.now(),
+                        tilOgMed = LocalDate.now().plusDays(2),
+                    )
+                )
+            ),
+            barn = BarnDetaljer(
+                fødselsdato = LocalDate.parse("2018-01-01"),
+                navn = "Barn Barnesen",
+                aktørId = "1000000000001",
+                fødselsnummer = null
+            )
+        )
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -630,93 +633,75 @@ class ApplicationTest {
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(4),
-                selvstendigNæringsdrivende = null,
-                omsorgstilbud = null,
-                vedlegg = listOf(URL(jpegUrl)),
-                ferieuttakIPerioden = FerieuttakIPerioden(
-                    skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(
-                        Ferieuttak(
-                            fraOgMed = LocalDate.now(),
-                            tilOgMed = LocalDate.now().plusDays(2),
-                        )
-                    )
-                ),
-                barn = BarnDetaljer(
-                    fødselsdato = LocalDate.parse("2018-01-01"),
-                    navn = "Barn Barnesen",
-                    aktørId = "1000000000001",
-                    fødselsnummer = null
-                )
-            ).somJson()
+            requestEntity = søknad.somJson()
         )
+
+        hentOgAssertSøknad(JSONObject(søknad))
     }
 
     @Test
     fun `Sende søknad med selvstendig næringsvirksomhet som har regnskapsfører`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
         val jpegUrl = engine.jpegUrl(cookie)
-
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            omsorgstilbud = null,
+            ferieuttakIPerioden = null,
+            fraOgMed = LocalDate.now().minusDays(3),
+            tilOgMed = LocalDate.now().plusDays(4),
+            vedlegg = listOf(URL(jpegUrl)),
+            selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                Virksomhet(
+                    næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
+                    fiskerErPåBladB = false,
+                    fraOgMed = LocalDate.now().minusDays(1),
+                    tilOgMed = LocalDate.now(),
+                    næringsinntekt = 123123,
+                    navnPåVirksomheten = "TullOgTøys",
+                    registrertINorge = true,
+                    organisasjonsnummer = "926032925",
+                    yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
+                    regnskapsfører = Regnskapsfører(
+                        navn = "Kjell",
+                        telefon = "84554"
+                    ),
+                    harFlereAktiveVirksomheter = true
+                ),
+                arbeidsforhold = Arbeidsforhold(
+                    jobberNormaltTimer = 37.5,
+                    historiskArbeid = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        erLiktHverUke = false,
+                        enkeltdager = listOf(
+                            Enkeltdag(
+                                dato = LocalDate.parse("2021-01-01"),
+                                tid = Duration.ofHours(7).plusMinutes(30)
+                            )
+                        ),
+                        fasteDager = null
+                    ),
+                    planlagtArbeid = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                        erLiktHverUke = false,
+                        enkeltdager = listOf(
+                            Enkeltdag(
+                                dato = LocalDate.parse("2021-01-02"),
+                                tid = Duration.ofHours(7).plusMinutes(30)
+                            )
+                        ),
+                        fasteDager = null
+                    )
+                )
+            )
+        )
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
             cookie = cookie,
-            requestEntity = SøknadUtils.defaultSøknad().copy(
-                omsorgstilbud = null,
-                ferieuttakIPerioden = null,
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(4),
-                vedlegg = listOf(URL(jpegUrl)),
-                selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
-                    Virksomhet(
-                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
-                        fiskerErPåBladB = false,
-                        fraOgMed = LocalDate.now().minusDays(1),
-                        tilOgMed = LocalDate.now(),
-                        næringsinntekt = 123123,
-                        navnPåVirksomheten = "TullOgTøys",
-                        registrertINorge = true,
-                        organisasjonsnummer = "926032925",
-                        yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.now()),
-                        regnskapsfører = Regnskapsfører(
-                            navn = "Kjell",
-                            telefon = "84554"
-                        ),
-                        harFlereAktiveVirksomheter = true
-                    ),
-                    arbeidsforhold = Arbeidsforhold(
-                        jobberNormaltTimer = 37.5,
-                        historiskArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
-                            erLiktHverUke = false,
-                            enkeltdager = listOf(
-                                Enkeltdag(
-                                    dato = LocalDate.parse("2021-01-01"),
-                                    tid = Duration.ofHours(7).plusMinutes(30)
-                                )
-                            ),
-                            fasteDager = null
-                        ),
-                        planlagtArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
-                            erLiktHverUke = false,
-                            enkeltdager = listOf(
-                                Enkeltdag(
-                                    dato = LocalDate.parse("2021-01-02"),
-                                    tid = Duration.ofHours(7).plusMinutes(30)
-                                )
-                            ),
-                            fasteDager = null
-                        )
-                    )
-                )
-            ).somJson()
+            requestEntity = søknad.somJson()
         )
+        hentOgAssertSøknad(JSONObject(søknad))
     }
 
     @Test
@@ -1255,5 +1240,28 @@ class ApplicationTest {
             }
         }
         return respons
+    }
+
+    private fun hentOgAssertSøknad(søknad: JSONObject){
+        val hentet = kafkaKonsumer.hentSøknad(søknad.getString("søknadId"))
+        assertGyldigSøknad(søknad, hentet.data)
+    }
+
+    private fun assertGyldigSøknad(
+        søknadSendtInn: JSONObject,
+        søknadFraTopic: JSONObject
+    ) {
+        assertTrue(søknadFraTopic.has("søker"))
+        assertTrue(søknadFraTopic.has("mottatt"))
+        assertTrue(søknadFraTopic.has("k9FormatSøknad"))
+
+        val k9Format = søknadFraTopic.getJSONObject("k9FormatSøknad")
+        assertEquals("PLEIEPENGER_SYKT_BARN", k9Format.getJSONObject("ytelse").getString("type"))
+
+        assertEquals(søknadSendtInn.getString("søknadId"), søknadFraTopic.getString("søknadId"))
+
+        if(søknadSendtInn.has("vedleggUrls") && !søknadSendtInn.getJSONArray("vedleggUrls").isEmpty){
+            assertEquals(søknadSendtInn.getJSONArray("vedleggUrls").length(),søknadFraTopic.getJSONArray("vedleggUrls").length())
+        }
     }
 }

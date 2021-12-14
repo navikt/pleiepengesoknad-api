@@ -3,6 +3,12 @@ package no.nav.helse.vedlegg
 import no.nav.helse.dusseldorf.ktor.core.*
 import java.net.URL
 
+data class VedleggId(val value: String)
+
+data class VedleggListe (
+    val vedleggUrl: List<URL>
+)
+
 data class Vedlegg(
     val content: ByteArray,
     val contentType: String,
