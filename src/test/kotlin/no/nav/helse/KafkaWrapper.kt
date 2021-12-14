@@ -2,6 +2,7 @@ package no.nav.helse
 
 import no.nav.common.JAASCredential
 import no.nav.common.KafkaEnvironment
+import no.nav.helse.general.Metadata
 import no.nav.helse.kafka.TopicEntry
 import no.nav.helse.kafka.Topics
 import org.apache.kafka.clients.CommonClientConfigs

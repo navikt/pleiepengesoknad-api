@@ -1,7 +1,7 @@
 package no.nav.helse.endringsmelding
 
+import no.nav.helse.general.Metadata
 import no.nav.helse.kafka.KafkaProducer
-import no.nav.helse.kafka.Metadata
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -21,7 +21,7 @@ class EndringsmeldingService(
         logger.info("Registrerer endringsmelding...")
 
         try {
-            kafkaProducer.produserKafkaMelding(komplettEndringsmelding, metadata)
+            kafkaProducer.produserEndringsmelding(komplettEndringsmelding, metadata)
         } catch (exception: Exception) {
             logger.info("Feilet ved å legge melding på Kafka.")
             throw MeldingRegistreringFeiletException("Feilet ved å legge melding på Kafka")

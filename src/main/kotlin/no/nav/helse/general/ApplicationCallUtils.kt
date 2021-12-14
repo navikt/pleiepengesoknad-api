@@ -2,7 +2,6 @@ package no.nav.helse.general
 
 import io.ktor.application.*
 import io.ktor.features.*
-import no.nav.helse.kafka.Metadata
 
 data class CallId(
     val value: String

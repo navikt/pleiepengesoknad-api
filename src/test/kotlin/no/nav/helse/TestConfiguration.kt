@@ -9,7 +9,6 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2WellKnownUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getLoginServiceV1WellKnownUrl
 import no.nav.helse.wiremock.getK9MellomlagringUrl
 import no.nav.helse.wiremock.getK9OppslagUrl
-import no.nav.helse.wiremock.getPleiepengesoknadMottakUrl
 import no.nav.helse.wiremock.getSifInnsynApiUrl
 
 object TestConfiguration {

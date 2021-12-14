@@ -39,7 +39,6 @@ import no.nav.helse.endringsmelding.endringsmeldingApis
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.IdTokenStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
-import no.nav.helse.kafka.KafkaProducer
 import no.nav.helse.innsyn.InnsynGateway
 import no.nav.helse.innsyn.InnsynService
 import no.nav.helse.kafka.KafkaProducer
