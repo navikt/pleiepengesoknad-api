@@ -33,10 +33,12 @@ import no.nav.helse.wiremock.pleiepengesoknadApiConfig
 import no.nav.helse.wiremock.stubK9Mellomlagring
 import no.nav.helse.wiremock.stubK9MellomlagringHealth
 import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
 import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
 import no.nav.helse.wiremock.stubK9OppslagBarn
 import no.nav.helse.wiremock.stubK9OppslagSoker
 import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubSifInnsynApi
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
