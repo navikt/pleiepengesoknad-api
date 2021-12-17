@@ -215,10 +215,9 @@ private fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(
             else -> null
         }
 
-        perioder[periode] = UtenlandsoppholdPeriodeInfo.builder()
-            .land(Landkode.of(it.landkode))
-            .årsak(årsak)
-            .build()
+        perioder[periode] = UtenlandsoppholdPeriodeInfo()
+            .medLand(Landkode.of(it.landkode))
+            .apply { årsak?.let { medÅrsak(årsak) } }
     }
 
     return Utenlandsopphold().medPerioder(perioder)

@@ -35,63 +35,66 @@ internal fun Frilans.tilK9Frilanser(): Frilanser {
 fun no.nav.helse.soknad.SelvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> {
 
     return listOf(
-        SelvstendigNæringsdrivende(
-            mapOf(
-                Periode(
-                    virksomhet.fraOgMed,
-                    virksomhet.tilOgMed
-                ) to virksomhet.tilK9SelvstendingNæringsdrivendeInfo()
-            ),
-            Organisasjonsnummer.of(virksomhet.organisasjonsnummer),
-            virksomhet.navnPåVirksomheten
-        )
+        SelvstendigNæringsdrivende()
+            .medVirksomhetNavn(virksomhet.navnPåVirksomheten)
+            .apply { virksomhet.organisasjonsnummer?.let { medOrganisasjonsnummer(Organisasjonsnummer.of(it)) } }
+            .medPerioder(
+                mapOf(
+                    Periode(
+                        virksomhet.fraOgMed,
+                        virksomhet.tilOgMed
+                    ) to virksomhet.tilK9SelvstendingNæringsdrivendeInfo()
+                )
+            )
     )
 }
 
 internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo {
-    val infoBuilder = SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo.builder()
+    val infoBuilder = SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo()
     infoBuilder
-        .virksomhetstyper(næringstyper.tilK9VirksomhetType())
+        .medVirksomhetstyper(næringstyper.tilK9VirksomhetType())
 
     if (registrertINorge) {
         infoBuilder
-            .landkode(Landkode.NORGE)
-            .registrertIUtlandet(false)
+            .medLandkode(Landkode.NORGE)
+            .medRegistrertIUtlandet(false)
     } else {
-        infoBuilder
-            .landkode(Landkode.of(registrertIUtlandet?.landkode))
-            .registrertIUtlandet(true)
+        registrertIUtlandet?.let {
+            infoBuilder
+                .medLandkode(Landkode.of(registrertIUtlandet.landkode))
+                .medRegistrertIUtlandet(true)
+        }
     }
 
     when (erEldreEnn3År()) {
-        true -> infoBuilder.erNyoppstartet(false)
-        false -> infoBuilder.erNyoppstartet(true)
+        true -> infoBuilder.medErNyoppstartet(false)
+        false -> infoBuilder.medErNyoppstartet(true)
     }
 
     regnskapsfører?.let {
         infoBuilder
-            .regnskapsførerNavn(regnskapsfører.navn)
-            .regnskapsførerTelefon(regnskapsfører.telefon)
+            .medRegnskapsførerNavn(regnskapsfører.navn)
+            .medRegnskapsførerTlf(regnskapsfører.telefon)
     }
 
     næringsinntekt?.let {
         infoBuilder
-            .bruttoInntekt(næringsinntekt.toBigDecimal())
+            .medBruttoInntekt(næringsinntekt.toBigDecimal())
     }
 
     varigEndring?.let {
         infoBuilder
-            .bruttoInntekt(it.inntektEtterEndring.toBigDecimal())
-            .erVarigEndring(true)
-            .endringDato(it.dato)
-            .endringBegrunnelse(it.forklaring)
-    } ?: infoBuilder.erVarigEndring(false)
+            .medBruttoInntekt(it.inntektEtterEndring.toBigDecimal())
+            .medErVarigEndring(true)
+            .medEndringDato(it.dato)
+            .medEndringBegrunnelse(it.forklaring)
+    } ?: infoBuilder.medErVarigEndring(false)
 
     yrkesaktivSisteTreFerdigliknedeÅrene?.let {
-        infoBuilder.erNyIArbeidslivet(true)
+        infoBuilder.medErNyIArbeidslivet(true)
     }
 
-    return infoBuilder.build()
+    return infoBuilder
 }
 
 private fun Virksomhet.erEldreEnn3År() =
