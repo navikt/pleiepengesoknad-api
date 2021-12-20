@@ -17,8 +17,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
-import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.Test
 
 class K9FormatTest {
 
@@ -534,5 +534,56 @@ class K9FormatTest {
         )
 
         assertEquals(9, tilsynsordning.perioder.size)
+    }
+
+    @Test
+    fun `Omsorgstilbud med ukedager både historisk og planlagt splitter på dagens dato`(){
+        val tilsynsordning = Omsorgstilbud(
+            historisk = HistoriskOmsorgstilbud(
+                ukedager = PlanUkedager(
+                    mandag = Duration.ofHours(1),
+                    tirsdag = Duration.ofHours(1),
+                    onsdag = Duration.ofHours(1),
+                    torsdag = Duration.ofHours(1),
+                    fredag = Duration.ofHours(1)
+                )
+            ),
+            planlagt = PlanlagtOmsorgstilbud(
+                ukedager = PlanUkedager(
+                    mandag = Duration.ofHours(5),
+                    tirsdag = Duration.ofHours(5),
+                    onsdag = Duration.ofHours(5),
+                    torsdag = Duration.ofHours(5),
+                    fredag = Duration.ofHours(5)
+                )
+            )
+        ).tilK9Tilsynsordning(
+            Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")),
+            LocalDate.parse("2021-01-06")
+        )
+
+        val forventet = """
+            {
+              "perioder" : {
+                "2021-01-04/2021-01-04" : {
+                  "etablertTilsynTimerPerDag" : "PT1H"
+                },
+                "2021-01-05/2021-01-05" : {
+                  "etablertTilsynTimerPerDag" : "PT1H"
+                },
+                "2021-01-06/2021-01-06" : {
+                  "etablertTilsynTimerPerDag" : "PT5H"
+                },
+                "2021-01-07/2021-01-07" : {
+                  "etablertTilsynTimerPerDag" : "PT5H"
+                },
+                "2021-01-08/2021-01-08" : {
+                  "etablertTilsynTimerPerDag" : "PT5H"
+                }
+              }
+            }
+        """.trimIndent()
+
+        assertEquals(forventet, JsonUtils.toString(tilsynsordning))
     }
 }

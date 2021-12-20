@@ -5,6 +5,7 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.validering.valider
+import no.nav.helse.utils.erFørDagensDato
 import no.nav.helse.utils.erLikEllerEtterDagensDato
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
 import java.time.LocalDate
@@ -354,28 +355,66 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
 }
 
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
+    if(historisk == null && planlagt == null){
+        add(
+            Violation(
+                parameterName = "omsorgstilbud",
+                parameterType = ParameterType.ENTITY,
+                reason = "Dersom omsorgstilbud er satt må minst en av historisk eller planlagt være satt."
+            )
+        )
+    }
 
-    if (historisk != null && historisk.enkeltdager.isNotEmpty()) {
-        if (historisk.enkeltdager.any() { it.dato.erLikEllerEtterDagensDato() }) {
+    historisk?.let { addAll(it.valider()) }
+    planlagt?.let { addAll(it.valider()) }
+}
+
+fun HistoriskOmsorgstilbud.valider() = mutableSetOf<Violation>().apply {
+    if (ukedager == null && enkeltdager.isNullOrEmpty()) {
+        add(
+            Violation(
+                parameterName = "omsorgstilbud.historisk.ukedager eller omsorgstilbud.historisk.enkeltdager",
+                parameterType = ParameterType.ENTITY,
+                reason = "Dersom omsorgstilbud.historisk er satt så må enten 'ukedager' eller 'enkeltdager' være satt.",
+                invalidValue = "enkeltdager = $enkeltdager, ukedager = $ukedager"
+            )
+        )
+    }
+
+    enkeltdager?.let {
+        if (it.any() { it.dato.erLikEllerEtterDagensDato() }) {
             add(
                 Violation(
                     parameterName = "omsorgstilbud.historisk.enkeltdager",
                     parameterType = ParameterType.ENTITY,
                     reason = "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
-                    invalidValue = "enkeltdager = ${historisk.enkeltdager}"
+                    invalidValue = "enkeltdager = $enkeltdager"
                 )
             )
         }
     }
+}
 
-    if (planlagt != null) {
-        if (planlagt.ukedager == null && planlagt.enkeltdager.isNullOrEmpty()) {
+fun PlanlagtOmsorgstilbud.valider() = mutableSetOf<Violation>().apply {
+    if (ukedager == null && enkeltdager.isNullOrEmpty()) {
+        add(
+            Violation(
+                parameterName = "omsorgstilbud.planlagt.ukedager eller omsorgstilbud.planlagt.enkeltdager",
+                parameterType = ParameterType.ENTITY,
+                reason = "Dersom omsorgstilbud.planlagt er satt så må enten 'ukedager' eller 'enkeltdager' være satt.",
+                invalidValue = "enkeltdager = $enkeltdager, ukedager = $ukedager"
+            )
+        )
+    }
+
+    enkeltdager?.let {
+        if (it.any() { it.dato.erFørDagensDato() }) {
             add(
                 Violation(
-                    parameterName = "omsorgstilbud.planlagt.ukedager eller omsorgstilbud.planlagt.enkeltdager",
+                    parameterName = "omsorgstilbud.planlagt.enkeltdager",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Dersom omsorgstilbud.planlagt er satt så må enten 'ukedager' eller 'enkeltdager' være satt.",
-                    invalidValue = "enkeltdager = ${planlagt.enkeltdager}, ukedager = ${planlagt.ukedager}"
+                    reason = "Planlagt enkeltdager inneholder datoer som er før dagens dato.",
+                    invalidValue = "enkeltdager = $enkeltdager"
                 )
             )
         }

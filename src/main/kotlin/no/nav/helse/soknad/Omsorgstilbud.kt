@@ -9,7 +9,8 @@ data class Omsorgstilbud(
 )
 
 data class HistoriskOmsorgstilbud(
-    val enkeltdager: List<Enkeltdag>
+    val enkeltdager: List<Enkeltdag>? = null,
+    val ukedager: PlanUkedager? = null
 )
 
 data class PlanlagtOmsorgstilbud(
