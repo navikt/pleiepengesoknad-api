@@ -121,7 +121,7 @@ class SøknadUtils {
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
-                planlagt = PlanlagtOmsorgstilbud(
+                planlagt = Omsorgsdager(
                     ukedager = PlanUkedager(
                         mandag = Duration.ofHours(1),
                         tirsdag = Duration.ofHours(1),

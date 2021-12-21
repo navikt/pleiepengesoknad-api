@@ -365,11 +365,11 @@ fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
         )
     }
 
-    historisk?.let { addAll(it.valider()) }
-    planlagt?.let { addAll(it.valider()) }
+    historisk?.let { addAll(it.validerHistoriskOmsorgsdager()) }
+    planlagt?.let { addAll(it.validerPlanlagtOmsorgsdager()) }
 }
 
-fun HistoriskOmsorgstilbud.valider() = mutableSetOf<Violation>().apply {
+fun Omsorgsdager.validerHistoriskOmsorgsdager() = mutableSetOf<Violation>().apply {
     if (ukedager == null && enkeltdager.isNullOrEmpty()) {
         add(
             Violation(
@@ -395,7 +395,7 @@ fun HistoriskOmsorgstilbud.valider() = mutableSetOf<Violation>().apply {
     }
 }
 
-fun PlanlagtOmsorgstilbud.valider() = mutableSetOf<Violation>().apply {
+fun Omsorgsdager.validerPlanlagtOmsorgsdager() = mutableSetOf<Violation>().apply {
     if (ukedager == null && enkeltdager.isNullOrEmpty()) {
         add(
             Violation(

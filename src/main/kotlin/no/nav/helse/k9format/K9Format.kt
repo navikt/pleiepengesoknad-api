@@ -143,7 +143,7 @@ fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = 
                 }
         }
 
-        historisk?.enkeltdager?.map {
+        historisk?.enkeltdager?.forEach {
             leggeTilPeriode(
                 Periode(it.dato, it.dato),
                 TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
@@ -174,7 +174,7 @@ fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = 
                 }
         }
 
-        planlagt?.enkeltdager?.map {
+        planlagt?.enkeltdager?.forEach {
             leggeTilPeriode(
                 Periode(it.dato, it.dato),
                 TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
