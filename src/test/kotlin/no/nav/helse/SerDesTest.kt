@@ -300,8 +300,7 @@ internal class SerDesTest {
                     "onsdag": "PT1H",
                     "torsdag": "PT1H",
                     "fredag": "PT1H"
-                  },
-                  "erLiktHverDag": null
+                  }
                 }
               },
               "barnRelasjon" : "ANNET",
