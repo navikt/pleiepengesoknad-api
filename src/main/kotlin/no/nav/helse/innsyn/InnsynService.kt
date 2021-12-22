@@ -14,7 +14,7 @@ class InnsynService(
     ): K9SakInnsynSøknad {
         return innsynGateway.hentSøknadsopplysninger(idToken, callId)
             .firstOrNull { k9SakInnsynSøknad: K9SakInnsynSøknad ->
-                k9SakInnsynSøknad.barn.aktør_id == barnAktørId
+                k9SakInnsynSøknad.barn.aktørId == barnAktørId
             } ?: throw IllegalStateException("Søknadsopplysninger inneholdt ikke riktig barn.")
     }
 }

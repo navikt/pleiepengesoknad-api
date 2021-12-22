@@ -89,7 +89,7 @@ class ApplicationTest {
                             fornavn = "BARNESEN",
                             mellomnavn = "EN",
                             etternavn = "BARNESEN",
-                            aktør_id = "1000000000001",
+                            aktørId = "1000000000001",
                             identitetsnummer = "02119970078"
                         ),
                         søknad = defaultK9FormatPSB()
