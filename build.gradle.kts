@@ -55,7 +55,7 @@ dependencies {
     testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
-    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("io.mockk:mockk:1.12.2")
 }
 
 repositories {
