@@ -10,29 +10,8 @@ import no.nav.helse.TestUtils.Companion.getAuthCookie
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.ArbeidIPeriode
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
-import no.nav.helse.soknad.JobberIPeriodeSvar
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubK9Mellomlagring
-import no.nav.helse.wiremock.stubK9MellomlagringHealth
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
-import no.nav.helse.wiremock.stubK9OppslagBarn
-import no.nav.helse.wiremock.stubK9OppslagSoker
-import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.soknad.*
+import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -56,6 +35,7 @@ class ApplicationTest {
 
         // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
         private val gyldigFodselsnummerA = "02119970078"
+        private val fnrMedToArbeidsforhold = "19116812889"
         private val fnr = "26104500284"
         private val ikkeMyndigFnr = "12125012345"
         private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
@@ -157,6 +137,27 @@ class ApplicationTest {
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Dersom bruker har flere arbeidsforhold per arbeidsgiver skal man kun få tilbake et arbeidsforhold per arbeidsgiver`(){
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = """
+            {
+              "organisasjoner": [
+                {
+                  "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                  "organisasjonsnummer": "984054564"
+                }
+              ],
+              "privateArbeidsgivere": null
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(fnrMedToArbeidsforhold)
         )
     }
 
