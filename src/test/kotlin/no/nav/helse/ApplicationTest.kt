@@ -35,6 +35,7 @@ class ApplicationTest {
 
         // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
         private val gyldigFodselsnummerA = "02119970078"
+        private val fnrMedToArbeidsforhold = "19116812889"
         private val fnr = "26104500284"
         private val ikkeMyndigFnr = "12125012345"
         private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
@@ -136,6 +137,27 @@ class ApplicationTest {
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Dersom bruker har flere arbeidsforhold per arbeidsgiver skal man kun få tilbake et arbeidsforhold per arbeidsgiver`(){
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = """
+            {
+              "organisasjoner": [
+                {
+                  "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                  "organisasjonsnummer": "984054564"
+                }
+              ],
+              "privateArbeidsgivere": null
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(fnrMedToArbeidsforhold)
         )
     }
 
