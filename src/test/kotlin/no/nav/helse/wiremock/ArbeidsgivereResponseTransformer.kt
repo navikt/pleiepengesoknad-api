@@ -52,6 +52,25 @@ private fun getResponse(ident: String): String {
             }
             """.trimIndent()
         }
+        "19116812889" -> {
+            //language=json
+            return """
+            {
+              "arbeidsgivere": {
+                "organisasjoner": [
+                  {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564"
+                  },
+                  {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564"
+                  }
+                ]
+              }
+            }
+            """.trimIndent()
+        }
         else -> {
             return """
                 {

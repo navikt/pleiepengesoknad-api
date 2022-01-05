@@ -35,15 +35,17 @@ fun Route.arbeidsgiverApis(
             throw Throwblem(ValidationProblemDetails(violations))
         } else {
             try {
-                call.respond(
-                    arbeidsgivereService.getArbeidsgivere(
-                        idToken = idTokenProvider.getIdToken(call),
-                        callId = call.getCallId(),
-                        fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
-                        tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName]),
-                        skalHentePrivateArbeidsgivere = call.request.queryParameters[privateArbeidsgivereQueryName].toBoolean()
-                    )
+                val arbeidsgivere = arbeidsgivereService.getArbeidsgivere(
+                    idToken = idTokenProvider.getIdToken(call),
+                    callId = call.getCallId(),
+                    fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
+                    tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName]),
+                    skalHentePrivateArbeidsgivere = call.request.queryParameters[privateArbeidsgivereQueryName].toBoolean()
                 )
+
+                val unikeOrganisasjoner = arbeidsgivere.organisasjoner.distinctBy { it.organisasjonsnummer }
+
+                call.respond(arbeidsgivere.copy(organisasjoner = unikeOrganisasjoner))
             } catch (e: Exception) {
                 when (e) {
                     is TilgangNektetException -> call.respondTilgangNektetProblemDetail(e)
