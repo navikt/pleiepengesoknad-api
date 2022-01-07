@@ -936,7 +936,6 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad med ugylidge parametre gir feil`() {
-        val forlangtNavn = SøknadUtils.forLangtNavn()
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = SØKNAD_URL,
@@ -953,7 +952,7 @@ class ApplicationTest {
                     "tilOgMed": "1990-09-28",
                     "arbeidsgivere" : [
                       {
-                        "navn" : "$forlangtNavn",
+                        "navn" : "  ",
                         "organisasjonsnummer" : 12345,
                         "arbeidsforhold" : {
                             "jobberNormaltTimer": 37.5,
@@ -1008,8 +1007,8 @@ class ApplicationTest {
                 {
                   "type": "entity",
                   "name": "arbeidsgivere.arbeidsforholdAnsatt[0].navn",
-                  "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
-                  "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
+                  "reason": "Navnet på organisasjonen kan ikke være tomt eller kun whitespace.",
+                  "invalid_value": "  "
                 },
                 {
                   "type": "entity",
