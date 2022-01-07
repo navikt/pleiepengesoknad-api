@@ -12,9 +12,6 @@ import java.util.*
 
 class SøknadUtils {
     companion object {
-        fun forLangtNavn() =
-            "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
-
         internal val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert()
 
         val søker = no.nav.helse.soker.Søker(
