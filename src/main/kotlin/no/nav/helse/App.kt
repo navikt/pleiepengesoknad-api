@@ -179,8 +179,7 @@ fun Application.pleiepengesoknadapi() {
                     vedleggService = vedleggService,
                     barnService = barnService,
                     søkerService = søkerService,
-                    kafkaProducer = kafkaProducer,
-                    k9MellomLagringIngress = configuration.getK9MellomlagringIngress()
+                    kafkaProducer = kafkaProducer
                 ),
                 barnService = barnService,
                 søkerService = søkerService,
