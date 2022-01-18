@@ -2,13 +2,7 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
+import no.nav.helse.soknad.*
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -41,7 +35,7 @@ class K9FormatTest {
             ),
             omsorgstilbud = Omsorgstilbud(
                 historisk = null,
-                planlagt = PlanlagtOmsorgstilbud(
+                planlagt = Omsorgsdager(
                     ukedager = null,
                     enkeltdager = listOf(
                         Enkeltdag(
@@ -297,7 +291,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            planlagt = PlanlagtOmsorgstilbud(
+            planlagt = Omsorgsdager(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
                     tirsdag = Duration.ofHours(5),
@@ -342,7 +336,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            planlagt = PlanlagtOmsorgstilbud(
+            planlagt = Omsorgsdager(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
                     tirsdag = Duration.ofHours(5),
@@ -384,7 +378,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            planlagt = PlanlagtOmsorgstilbud(
+            planlagt = Omsorgsdager(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(5),
                     tirsdag = Duration.ofHours(5),
@@ -447,7 +441,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            planlagt = PlanlagtOmsorgstilbud(
+            planlagt = Omsorgsdager(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(10),
                     tirsdag = Duration.ofHours(10),
@@ -492,10 +486,10 @@ class K9FormatTest {
     @Test
     fun `gitt omsorgstilbud med både historisk og planlagte omsorgsdager, forvent riktig mapping`() {
         val tilsynsordning = Omsorgstilbud(
-            historisk = HistoriskOmsorgstilbud(
+            historisk = Omsorgsdager(
                 enkeltdager = listOf(Enkeltdag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
             ),
-            planlagt = PlanlagtOmsorgstilbud(
+            planlagt = Omsorgsdager(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(1),
                     tirsdag = Duration.ofHours(1),
@@ -512,14 +506,14 @@ class K9FormatTest {
     @Test
     fun `gitt omsorgstilbud med både historisk og planlagte omsorgsdager der historisk har dato lik eller etter dagens dato, forvent at den blir eksludert`() {
         val tilsynsordning = Omsorgstilbud(
-            historisk = HistoriskOmsorgstilbud(
+            historisk = Omsorgsdager(
                 enkeltdager = listOf(
                     Enkeltdag(LocalDate.parse("2021-09-01"), Duration.ofHours(7)),
                     Enkeltdag(LocalDate.parse("2021-09-02"), Duration.ofHours(7)),
                     Enkeltdag(LocalDate.parse("2021-09-03"), Duration.ofHours(7))
                 )
             ),
-            planlagt = PlanlagtOmsorgstilbud(
+            planlagt = Omsorgsdager(
                 ukedager = PlanUkedager(
                     mandag = Duration.ofHours(1),
                     tirsdag = Duration.ofHours(1),
@@ -534,5 +528,56 @@ class K9FormatTest {
         )
 
         assertEquals(9, tilsynsordning.perioder.size)
+    }
+
+    @Test
+    fun `Omsorgstilbud med ukedager både historisk og planlagt splitter på dagens dato`(){
+        val tilsynsordning = Omsorgstilbud(
+            historisk = Omsorgsdager(
+                ukedager = PlanUkedager(
+                    mandag = Duration.ofHours(1),
+                    tirsdag = Duration.ofHours(1),
+                    onsdag = Duration.ofHours(1),
+                    torsdag = Duration.ofHours(1),
+                    fredag = Duration.ofHours(1)
+                )
+            ),
+            planlagt = Omsorgsdager(
+                ukedager = PlanUkedager(
+                    mandag = Duration.ofHours(5),
+                    tirsdag = Duration.ofHours(5),
+                    onsdag = Duration.ofHours(5),
+                    torsdag = Duration.ofHours(5),
+                    fredag = Duration.ofHours(5)
+                )
+            )
+        ).tilK9Tilsynsordning(
+            Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")),
+            LocalDate.parse("2021-01-06")
+        )
+
+        val forventet = """
+            {
+              "perioder" : {
+                "2021-01-04/2021-01-04" : {
+                  "etablertTilsynTimerPerDag" : "PT1H"
+                },
+                "2021-01-05/2021-01-05" : {
+                  "etablertTilsynTimerPerDag" : "PT1H"
+                },
+                "2021-01-06/2021-01-06" : {
+                  "etablertTilsynTimerPerDag" : "PT5H"
+                },
+                "2021-01-07/2021-01-07" : {
+                  "etablertTilsynTimerPerDag" : "PT5H"
+                },
+                "2021-01-08/2021-01-08" : {
+                  "etablertTilsynTimerPerDag" : "PT5H"
+                }
+              }
+            }
+        """.trimIndent()
+
+        assertEquals(forventet, JsonUtils.toString(tilsynsordning))
     }
 }

@@ -1114,7 +1114,7 @@ class ApplicationTest {
                     selvstendigNæringsdrivende = null,
                     arbeidsgivere = null,
                     omsorgstilbud = Omsorgstilbud(
-                        planlagt = PlanlagtOmsorgstilbud()
+                        planlagt = Omsorgsdager()
                     ),
                     vedlegg = listOf()
                 )
@@ -1153,7 +1153,7 @@ class ApplicationTest {
                     fraOgMed = LocalDate.now(),
                     tilOgMed = LocalDate.now().plusDays(1),
                     omsorgstilbud = Omsorgstilbud(
-                        historisk = HistoriskOmsorgstilbud(
+                        historisk = Omsorgsdager(
                             enkeltdager = listOf(
                                 Enkeltdag(dato = LocalDate.now(), tid = Duration.ofHours(7))
                             ),
