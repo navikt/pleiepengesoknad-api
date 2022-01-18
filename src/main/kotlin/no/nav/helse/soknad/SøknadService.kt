@@ -14,15 +14,13 @@ import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.net.URI
 
 
 class SøknadService(
     private val vedleggService: VedleggService,
     private val søkerService: SøkerService,
     private val barnService: BarnService,
-    private val kafkaProducer: KafkaProducer,
-    private val k9MellomLagringIngress: URI
+    private val kafkaProducer: KafkaProducer
     ) {
 
     private companion object {
@@ -57,15 +55,15 @@ class SøknadService(
             vedleggService.persisterVedlegg(søknad.vedlegg, callId, dokumentEier)
         }
 
-        val komplettSøknad = søknad.tilKomplettSøknad(k9FormatSøknad, søker, k9MellomLagringIngress)
+        val komplettSøknad = søknad.tilKomplettSøknad(k9FormatSøknad, søker)
 
         try {
             kafkaProducer.produserKafkaMelding(komplettSøknad, metadata)
         } catch (exception: Exception) {
             logger.info("Feilet ved å legge melding på Kafka.")
-            if(komplettSøknad.vedleggUrls.isNotEmpty()){
+            if(komplettSøknad.vedleggId.isNotEmpty()){
                 logger.info("Fjerner hold på persisterte vedlegg")
-                vedleggService.fjernHoldPåPersistertVedlegg(komplettSøknad.vedleggUrls, callId, DokumentEier(søker.fødselsnummer))
+                vedleggService.fjernHoldPåPersistertVedlegg(komplettSøknad.vedleggId, callId, DokumentEier(søker.fødselsnummer))
             }
             throw MeldingRegistreringFeiletException("Feilet ved å legge melding på Kafka")
         }

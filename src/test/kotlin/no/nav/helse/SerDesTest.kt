@@ -347,7 +347,7 @@ internal class SerDesTest {
                   }
                 }
               ],
-              "vedleggUrls": [],
+              "vedleggId": [],
               "medlemskap": {
                 "harBoddIUtlandetSiste12Mnd": true,
                 "skalBoIUtlandetNeste12Mnd": true,
@@ -536,7 +536,7 @@ internal class SerDesTest {
                     )
                 )
             ),
-            vedleggUrls = listOf(),
+            vedleggId = listOf(),
             fraOgMed = LocalDate.parse("2020-01-01"),
             tilOgMed = LocalDate.parse("2020-02-01"),
             nattevåk = Nattevåk(
