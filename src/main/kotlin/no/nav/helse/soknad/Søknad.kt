@@ -1,12 +1,9 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import io.ktor.http.*
 import no.nav.helse.barn.Barn
-import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.soker.Søker
 import no.nav.k9.søknad.Søknad
-import java.net.URI
 import java.net.URL
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -51,9 +48,8 @@ data class Søknad(
 
     fun tilKomplettSøknad(
         k9FormatSøknad: Søknad,
-        søker: Søker,
-        k9MellomlagringIngress: URI
-        ) : KomplettSøknad = KomplettSøknad(
+        søker: Søker
+    ): KomplettSøknad = KomplettSøknad(
         språk = språk,
         søknadId = søknadId,
         mottatt = mottatt,
@@ -61,7 +57,7 @@ data class Søknad(
         tilOgMed = tilOgMed,
         søker = søker,
         barn = barn,
-        vedleggUrls = vedlegg.tilK9MellomLagringUrl(k9MellomlagringIngress),
+        vedleggId = vedlegg.map { it.vedleggId() },
         arbeidsgivere = arbeidsgivere,
         medlemskap = medlemskap,
         ferieuttakIPerioden = ferieuttakIPerioden,
@@ -82,13 +78,7 @@ data class Søknad(
     )
 }
 
-fun List<URL>.tilK9MellomLagringUrl(baseUrl: URI): List<URL> = map {
-    val idFraUrl = it.path.substringAfterLast("/")
-    Url.buildURL(
-        baseUrl = baseUrl,
-        pathParts = listOf(idFraUrl)
-    ).toURL()
-}
+fun URL.vedleggId() = this.toString().substringAfterLast("/")
 
 private fun List<Barn>.hentIdentitetsnummerForBarn(aktørId: String?): String? {
     this.forEach {
