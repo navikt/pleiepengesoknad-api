@@ -20,11 +20,10 @@ import no.nav.helse.soknad.BarnDetaljer
 import no.nav.helse.soknad.Enkeltdag
 import no.nav.helse.soknad.Ferieuttak
 import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.HistoriskOmsorgstilbud
 import no.nav.helse.soknad.JobberIPeriodeSvar
 import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Omsorgsdager
 import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanlagtOmsorgstilbud
 import no.nav.helse.soknad.Regnskapsfører
 import no.nav.helse.soknad.SelvstendigNæringsdrivende
 import no.nav.helse.soknad.Virksomhet
@@ -64,6 +63,7 @@ class ApplicationTest {
 
         // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
         private val gyldigFodselsnummerA = "02119970078"
+        private val fnrMedToArbeidsforhold = "19116812889"
         private val fnr = "26104500284"
         private val ikkeMyndigFnr = "12125012345"
         private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
@@ -219,6 +219,31 @@ class ApplicationTest {
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Dersom bruker har flere arbeidsforhold per arbeidsgiver skal man kun få tilbake et arbeidsforhold per arbeidsgiver`(){
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse =
+            //language=json
+            """
+            {
+              "organisasjoner": [
+                {
+                  "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                  "organisasjonsnummer": "984054564",
+                  "ansattFom": null,
+                  "ansattTom": null
+                }
+              ],
+              "privateArbeidsgivere": null
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(fnrMedToArbeidsforhold)
         )
     }
 
@@ -1101,7 +1126,6 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad med ugylidge parametre gir feil`() {
-        val forlangtNavn = SøknadUtils.forLangtNavn()
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = SØKNAD_URL,
@@ -1118,7 +1142,7 @@ class ApplicationTest {
                     "tilOgMed": "1990-09-28",
                     "arbeidsgivere" : [
                       {
-                        "navn" : "$forlangtNavn",
+                        "navn" : "  ",
                         "organisasjonsnummer" : 12345,
                         "arbeidsforhold" : {
                             "jobberNormaltTimer": 37.5,
@@ -1173,8 +1197,8 @@ class ApplicationTest {
                 {
                   "type": "entity",
                   "name": "arbeidsgivere.arbeidsforholdAnsatt[0].navn",
-                  "reason": "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
-                  "invalid_value": "DetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangtDetteNavnetErForLangt"
+                  "reason": "Navnet på organisasjonen kan ikke være tomt eller kun whitespace.",
+                  "invalid_value": "  "
                 },
                 {
                   "type": "entity",
@@ -1280,7 +1304,7 @@ class ApplicationTest {
                     selvstendigNæringsdrivende = null,
                     arbeidsgivere = null,
                     omsorgstilbud = Omsorgstilbud(
-                        planlagt = PlanlagtOmsorgstilbud()
+                        planlagt = Omsorgsdager()
                     ),
                     vedlegg = listOf()
                 )
@@ -1319,7 +1343,7 @@ class ApplicationTest {
                     fraOgMed = LocalDate.now(),
                     tilOgMed = LocalDate.now().plusDays(1),
                     omsorgstilbud = Omsorgstilbud(
-                        historisk = HistoriskOmsorgstilbud(
+                        historisk = Omsorgsdager(
                             enkeltdager = listOf(
                                 Enkeltdag(dato = LocalDate.now(), tid = Duration.ofHours(7))
                             ),

@@ -70,6 +70,25 @@ private fun getResponse(ident: String, organisasjonsnummere: List<String>?): Str
                 }
             }
         """.trimIndent()
+        }
+        "19116812889" -> {
+            //language=json
+            return """
+            {
+              "arbeidsgivere": {
+                "organisasjoner": [
+                  {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564"
+                  },
+                  {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564"
+                  }
+                ]
+              }
+            }
+            """.trimIndent()
             }
             else -> {
                 //language=json

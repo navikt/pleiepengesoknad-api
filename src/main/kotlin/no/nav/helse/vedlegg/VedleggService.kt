@@ -6,6 +6,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import no.nav.helse.general.CallId
 import no.nav.helse.general.auth.IdToken
+import no.nav.helse.soknad.vedleggId
 import java.net.URL
 
 class VedleggService(
@@ -26,7 +27,7 @@ class VedleggService(
     }
 
     suspend fun hentVedlegg(
-        vedleggId: VedleggId,
+        vedleggId: String,
         idToken: IdToken,
         callId: CallId,
         eier: DokumentEier
@@ -50,7 +51,7 @@ class VedleggService(
             val futures = mutableListOf<Deferred<Vedlegg?>>()
             vedleggUrls.forEach {
                 futures.add(async { hentVedlegg(
-                    vedleggId = vedleggIdFromUrl(it),
+                    vedleggId = it.vedleggId(),
                     idToken = idToken,
                     callId = callId,
                     eier = eier
@@ -91,14 +92,12 @@ class VedleggService(
     }
 
     suspend fun fjernHoldPåPersistertVedlegg(
-        vedleggsUrls: List<URL>,
+        vedleggId: List<String>,
         callId: CallId,
         eier: DokumentEier
     ) {
-        val vedleggsId = vedleggsUrls.map { vedleggIdFromUrl(it) }
-
         k9MellomlagringGateway.fjernHoldPåPersistertVedlegg(
-            vedleggId = vedleggsId,
+            vedleggId = vedleggId,
             callId = callId,
             eier = eier
         )

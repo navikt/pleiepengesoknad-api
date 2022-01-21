@@ -46,12 +46,12 @@ internal fun List<ArbeidsforholdAnsatt>.validate(): MutableSet<Violation> {
             )
         }
 
-        if (arbeidsforholdAnsatt.navn != null && arbeidsforholdAnsatt.navn.erBlankEllerLengreEnn(100)) {
+        if (arbeidsforholdAnsatt.navn.isNullOrBlank()) {
             violations.add(
                 Violation(
                     parameterName = "arbeidsgivere.arbeidsforholdAnsatt[$index].navn",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Navnet på organisasjonen kan ikke være tomt, og kan maks være 100 tegn.",
+                    reason = "Navnet på organisasjonen kan ikke være tomt eller kun whitespace.",
                     invalidValue = arbeidsforholdAnsatt.navn
                 )
             )
@@ -60,5 +60,3 @@ internal fun List<ArbeidsforholdAnsatt>.validate(): MutableSet<Violation> {
 
     return violations
 }
-
-internal fun String.erBlankEllerLengreEnn(maxLength: Int): Boolean = isBlank() || length > maxLength

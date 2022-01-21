@@ -124,7 +124,30 @@ fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = 
 
         if (historisk == null && planlagt == null) return tilK9Tilsynsordning0Timer(periode)
 
-        historisk?.enkeltdager?.map {
+        historisk?.ukedager?.apply {
+            val gårsdagensDato = dagensDato.minusDays(1)
+            val periodeTilOgMed = if(gårsdagensDato.isBefore(periode.tilOgMed)) gårsdagensDato else periode.tilOgMed
+            periode.fraOgMed.datesUntil(periodeTilOgMed.plusDays(1)).toList()
+                .map { dato: LocalDate ->
+                    when(dato.dayOfWeek){
+                        DayOfWeek.MONDAY -> mandag
+                        DayOfWeek.TUESDAY -> tirsdag
+                        DayOfWeek.WEDNESDAY -> onsdag
+                        DayOfWeek.THURSDAY -> torsdag
+                        DayOfWeek.FRIDAY -> fredag
+                        else -> null
+                    }?.let {tilsynLengde: Duration ->
+                        leggeTilPeriode(
+                            Periode(dato, dato),
+                            TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
+                                Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(tilsynLengde)
+                            )
+                        )
+                    }
+                }
+        }
+
+        historisk?.enkeltdager?.forEach {
             leggeTilPeriode(
                 Periode(it.dato, it.dato),
                 TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
@@ -155,7 +178,7 @@ fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = 
                 }
         }
 
-        planlagt?.enkeltdager?.map {
+        planlagt?.enkeltdager?.forEach {
             leggeTilPeriode(
                 Periode(it.dato, it.dato),
                 TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(

@@ -16,6 +16,7 @@ import no.nav.helse.general.getCallId
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soknad.hentIdTokenOgCallId
+import no.nav.helse.soknad.vedleggId
 import no.nav.helse.somJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -37,7 +38,7 @@ fun Route.vedleggApis(
         var eier = idTokenProvider.getIdToken(call).getSubject()
         if (eier == null) call.respond(HttpStatusCode.Forbidden) else {
             val vedlegg = vedleggService.hentVedlegg(
-                vedleggId = vedleggId,
+                vedleggId = vedleggId.value,
                 idToken = idTokenProvider.getIdToken(call),
                 callId = call.getCallId(),
                 eier = DokumentEier(eier)
@@ -119,7 +120,7 @@ fun Route.vedleggApis(
         val vedleggSomIkkeFinnes = mutableListOf<URL>()
         vedleggListe.vedleggUrl.forEach{ vedleggUrl: URL ->
             val resultat = vedleggService.hentVedlegg(
-                vedleggIdFromUrl(vedleggUrl),
+                vedleggUrl.vedleggId(),
                 idToken,
                 callId,
                 DokumentEier(søker.fødselsnummer)

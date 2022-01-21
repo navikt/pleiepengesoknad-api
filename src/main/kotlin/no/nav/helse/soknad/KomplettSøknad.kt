@@ -2,7 +2,6 @@ package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
 import no.nav.k9.søknad.Søknad
-import java.net.URL
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -15,7 +14,7 @@ data class KomplettSøknad(
     val søker: Søker,
     val barn: BarnDetaljer,
     val arbeidsgivere: List<ArbeidsforholdAnsatt>?,
-    var vedleggUrls : List<URL> = listOf(),
+    var vedleggId : List<String> = listOf(),
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
