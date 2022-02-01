@@ -123,7 +123,19 @@ class K9FormatTest {
                 },
                 "utenlandsopphold": {
                   "perioder": {
-                    "2021-01-01/2021-01-10": {
+                    "2019-10-10/2019-11-10": {
+                      "land": "SE",
+                      "årsak": null
+                    },
+                    "2020-10-10/2020-11-10": {
+                      "land": "SE",
+                      "årsak": "barnetInnlagtIHelseinstitusjonForNorskOffentligRegning"
+                    },
+                    "2021-10-10/2021-11-10": {
+                      "land": "SE",
+                      "årsak": "barnetInnlagtIHelseinstitusjonDekketEtterAvtaleMedEtAnnetLandOmTrygd"
+                    },
+                    "2022-10-10/2022-11-10": {
                       "land": "SE",
                       "årsak": null
                     }

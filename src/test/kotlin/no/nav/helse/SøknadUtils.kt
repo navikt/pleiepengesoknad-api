@@ -174,8 +174,8 @@ class SøknadUtils {
                         årsak = Årsak.ANNET
                     ),
                     Utenlandsopphold(
-                        fraOgMed = LocalDate.parse("2019-10-10"),
-                        tilOgMed = LocalDate.parse("2019-11-10"),
+                        fraOgMed = LocalDate.parse("2020-10-10"),
+                        tilOgMed = LocalDate.parse("2020-11-10"),
                         landkode = "SE",
                         landnavn = "Sverige",
                         erBarnetInnlagt = true,
@@ -189,8 +189,8 @@ class SøknadUtils {
                         årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
                     ),
                     Utenlandsopphold(
-                        fraOgMed = LocalDate.parse("2019-10-10"),
-                        tilOgMed = LocalDate.parse("2019-11-10"),
+                        fraOgMed = LocalDate.parse("2021-10-10"),
+                        tilOgMed = LocalDate.parse("2021-11-10"),
                         landkode = "SE",
                         landnavn = "Sverige",
                         erBarnetInnlagt = true,
@@ -204,8 +204,8 @@ class SøknadUtils {
                         årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
                     ),
                     Utenlandsopphold(
-                        fraOgMed = LocalDate.parse("2019-10-10"),
-                        tilOgMed = LocalDate.parse("2019-11-10"),
+                        fraOgMed = LocalDate.parse("2022-10-10"),
+                        tilOgMed = LocalDate.parse("2022-11-10"),
                         landkode = "SE",
                         landnavn = "Sverige",
                         erBarnetInnlagt = false,
