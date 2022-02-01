@@ -58,7 +58,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, dagensDato: Loca
         }
     }
     utenlandsoppholdIPerioden?.let {
-        psb.medUtenlandsopphold(utenlandsoppholdIPerioden.tilK9Utenlandsopphold(søknadsperiode))
+        psb.medUtenlandsopphold(utenlandsoppholdIPerioden.tilK9Utenlandsopphold())
     }
 
     return K9Søknad(SøknadId.of(søknadId), k9FormatVersjon, mottatt, søker.tilK9Søker(), psb)
@@ -222,20 +222,18 @@ fun Medlemskap.tilK9Bosteder(): Bosteder? {
     return Bosteder().medPerioder(perioder)
 }
 
-private fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(
-    periode: Periode
-): Utenlandsopphold {
+private fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(): Utenlandsopphold {
     val perioder = mutableMapOf<Periode, UtenlandsoppholdPeriodeInfo>()
 
-    opphold.forEach {
-        val årsak = when (it.årsak) {
+    opphold.forEach { utenlandsopphold ->
+        val årsak = when (utenlandsopphold.årsak) {
             Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING -> UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
             Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD -> UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
             else -> null
         }
-
+        val periode = Periode(utenlandsopphold.fraOgMed, utenlandsopphold.tilOgMed)
         perioder[periode] = UtenlandsoppholdPeriodeInfo()
-            .medLand(Landkode.of(it.landkode))
+            .medLand(Landkode.of(utenlandsopphold.landkode))
             .apply { årsak?.let { medÅrsak(årsak) } }
     }
 

@@ -198,8 +198,8 @@ internal class SerDesTest {
                   {
                     "landnavn": "Sverige",
                     "landkode": "SE",
-                    "fraOgMed": "2019-10-10",
-                    "tilOgMed": "2019-11-10",
+                    "fraOgMed": "2020-10-10",
+                    "tilOgMed": "2020-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": true,
                     "perioderBarnetErInnlagt" : [
@@ -213,8 +213,8 @@ internal class SerDesTest {
                   {
                     "landnavn": "Sverige",
                     "landkode": "SE",
-                    "fraOgMed": "2019-10-10",
-                    "tilOgMed": "2019-11-10",
+                    "fraOgMed": "2021-10-10",
+                    "tilOgMed": "2021-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": true,
                     "perioderBarnetErInnlagt" : [
@@ -227,8 +227,8 @@ internal class SerDesTest {
                   },{
                     "landnavn": "Sverige",
                     "landkode": "SE",
-                    "fraOgMed": "2019-10-10",
-                    "tilOgMed": "2019-11-10",
+                    "fraOgMed": "2022-10-10",
+                    "tilOgMed": "2022-11-10",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": false,
                     "perioderBarnetErInnlagt" : [],
