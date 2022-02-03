@@ -291,18 +291,27 @@ internal class SerDesTest {
                 "tilleggsinformasjon": "Har nattevåk"
               },
               "omsorgstilbud": {
-                "historisk": null,
-                "planlagt": {
-                  "enkeltdager": null,
-                  "ukedager": {
-                    "mandag": "PT1H",
-                    "tirsdag": "PT1H",
-                    "onsdag": "PT1H",
-                    "torsdag": "PT1H",
-                    "fredag": "PT1H"
-                  }
-                }
-              },
+                "erLiktHverDag": false,
+                "ukedager" : null,
+                "enkeltdager" : [
+                      {
+                        "dato": "2021-01-01",
+                        "tid": "PT4H"
+                      },
+                      {
+                        "dato": "2021-01-02",
+                        "tid": "PT4H"
+                      },
+                      {
+                        "dato": "2021-01-03",
+                        "tid": "PT4H"
+                      },
+                      {
+                        "dato": "2021-01-04",
+                        "tid": "PT4H"
+                      }
+                    ]
+               },
               "barnRelasjon" : "ANNET",
               "barnRelasjonBeskrivelse" : "Gudfar til barnet",
               "harVærtEllerErVernepliktig" : true
