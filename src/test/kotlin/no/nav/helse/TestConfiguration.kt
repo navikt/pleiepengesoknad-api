@@ -23,7 +23,6 @@ object TestConfiguration {
         corsAdresses : String = "http://localhost:8080",
         redisServer: RedisServer
     ) : Map<String, String> {
-
         val map = mutableMapOf(
             Pair("ktor.deployment.port", "$port"),
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
@@ -31,6 +30,7 @@ object TestConfiguration {
             Pair("nav.gateways.sif_innsyn_api_url", "$sifInnaynApiUrl"),
             Pair("nav.gateways.k9_mellomlagring_url", "$k9MellomlagringUrl"),
             Pair("nav.cors.addresses", corsAdresses),
+            Pair("NAIS_CLUSTER_NAME", "local")
         )
 
         // Clients

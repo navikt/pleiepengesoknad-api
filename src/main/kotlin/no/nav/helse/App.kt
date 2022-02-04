@@ -26,14 +26,7 @@ import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.client.buildURL
-import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
-import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
-import no.nav.helse.dusseldorf.ktor.core.correlationIdAndRequestIdInMdc
-import no.nav.helse.dusseldorf.ktor.core.generated
-import no.nav.helse.dusseldorf.ktor.core.id
-import no.nav.helse.dusseldorf.ktor.core.log
-import no.nav.helse.dusseldorf.ktor.core.logProxyProperties
-import no.nav.helse.dusseldorf.ktor.core.logRequests
+import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
@@ -207,7 +200,8 @@ fun Application.pleiepengesoknadapi() {
                 innsynService = InnsynService(
                     innsynGateway = InnsynGateway(baseUrl = configuration.getSifInnsynApiUrl())
                 ),
-                idTokenProvider = idTokenProvider
+                idTokenProvider = idTokenProvider,
+                miljø = configuration.miljø()
             )
         }
 

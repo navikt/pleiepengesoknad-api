@@ -20,6 +20,14 @@ data class Configuration(val config: ApplicationConfig) {
         EnforceEqualsOrContains("acr", "Level4")
     )
 
+    enum class Miljø { PROD, DEV, LOCAL }
+
+    internal fun miljø(): Miljø = when(config.getRequiredString("NAIS_CLUSTER_NAME", false)){
+        "prod-gcp" -> Miljø.PROD
+        "dev-gcp" -> Miljø.DEV
+        else -> Miljø.LOCAL
+    }
+
     internal fun issuers() = config.issuers().withAdditionalClaimRules(mapOf(
         "login-service-v1" to loginServiceClaimRules,
         "login-service-v2" to loginServiceClaimRules

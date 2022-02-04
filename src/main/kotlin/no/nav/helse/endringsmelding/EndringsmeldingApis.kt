@@ -5,6 +5,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import no.nav.helse.Configuration
 import no.nav.helse.ENDRINGSMELDING_URL
 import no.nav.helse.ENDRINGSMELDING_VALIDERING_URL
 import no.nav.helse.barn.Barn
@@ -33,10 +34,13 @@ fun Route.endringsmeldingApis(
     søkerService: SøkerService,
     barnService: BarnService,
     innsynService: InnsynService,
-    idTokenProvider: IdTokenProvider
+    idTokenProvider: IdTokenProvider,
+    miljø: Configuration.Miljø
 ) {
 
     post(ENDRINGSMELDING_URL) {
+        if(miljø == Configuration.Miljø.PROD) return@post call.respond(HttpStatusCode.Forbidden)
+
         val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
         val søker = søkerService.getSoker(idToken, callId)
         val endringsmelding = call.receive<Endringsmelding>()
