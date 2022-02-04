@@ -50,7 +50,7 @@ class K9FormatTest {
             fødselsdato = LocalDate.parse("2000-01-01"),
             fødselsnummer = "123456789"
         )
-        val k9Format = søknad.tilK9Format(mottatt, søker, dagensDato = LocalDate.parse("2021-01-05"))
+        val k9Format = søknad.tilK9Format(mottatt, søker)
 
         val forventetK9FormatJsonV2 =
             //language=json

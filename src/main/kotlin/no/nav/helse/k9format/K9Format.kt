@@ -19,7 +19,6 @@ import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
 import java.time.DayOfWeek
 import java.time.Duration
-import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.streams.toList
 import no.nav.k9.søknad.Søknad as K9Søknad
@@ -32,13 +31,13 @@ import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.Tilsynsordning as K9Tilsynsordning
 const val DAGER_PER_UKE = 5
 private val k9FormatVersjon = Versjon.of("1.0.0")
 
-fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, dagensDato: LocalDate = LocalDate.now()): K9Søknad {
+fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     val søknadsperiode = Periode(fraOgMed, tilOgMed)
     val psb = PleiepengerSyktBarn()
         .medSøknadsperiode(søknadsperiode)
         .medBarn(barn.tilK9Barn())
         .medOpptjeningAktivitet(byggK9OpptjeningAktivitet())
-        .medArbeidstid(byggK9Arbeidstid(dagensDato))
+        .medArbeidstid(byggK9Arbeidstid())
         .medUttak(byggK9Uttak(søknadsperiode))
         .medBosteder(medlemskap.tilK9Bosteder())
         .medSøknadInfo(byggK9DataBruktTilUtledning())

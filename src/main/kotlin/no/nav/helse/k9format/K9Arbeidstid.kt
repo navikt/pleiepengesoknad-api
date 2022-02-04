@@ -1,12 +1,8 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.ArbeidIPeriode
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.ArbeidsforholdAnsatt
+import no.nav.helse.soknad.*
 import no.nav.helse.soknad.JobberIPeriodeSvar.JA
 import no.nav.helse.soknad.JobberIPeriodeSvar.NEI
-import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.Søknad
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
@@ -20,16 +16,15 @@ import kotlin.streams.toList
 
 val NULL_ARBEIDSTIMER = Duration.ZERO
 
-internal fun Søknad.byggK9Arbeidstid(dagensDato: LocalDate): Arbeidstid = Arbeidstid().apply {
+internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
     val periode = Periode(fraOgMed, tilOgMed)
 
-    arbeidsgivere?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode, dagensDato)) }
+    arbeidsgivere?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode)) }
 
     frilans?.let {
         medFrilanserArbeidstid(
             it.arbeidsforhold.beregnK9ArbeidstidInfo(
                 periode,
-                dagensDato,
                 frilans.startdato,
                 frilans.sluttdato
             )
@@ -37,24 +32,22 @@ internal fun Søknad.byggK9Arbeidstid(dagensDato: LocalDate): Arbeidstid = Arbei
     }
 
     selvstendigNæringsdrivende?.let {
-        medSelvstendigNæringsdrivendeArbeidstidInfo(it.arbeidsforhold.beregnK9ArbeidstidInfo(periode, dagensDato))
+        medSelvstendigNæringsdrivendeArbeidstidInfo(it.arbeidsforhold.beregnK9ArbeidstidInfo(periode))
     }
 }
 
 fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
-    periode: Periode,
-    dagensDato: LocalDate
+    periode: Periode
 ): List<Arbeidstaker> {
     return this.map {
         Arbeidstaker()
             .medOrganisasjonsnummer(Organisasjonsnummer.of(it.organisasjonsnummer))
-            .medArbeidstidInfo(it.arbeidsforhold.beregnK9ArbeidstidInfo(periode, dagensDato))
+            .medArbeidstidInfo(it.arbeidsforhold.beregnK9ArbeidstidInfo(periode))
     }
 }
 
 fun Arbeidsforhold?.beregnK9ArbeidstidInfo(
     søknadsperiode: Periode,
-    dagensDato: LocalDate,
     startdato: LocalDate? = null,
     sluttdato: LocalDate? = null
 ): ArbeidstidInfo {
@@ -68,36 +61,16 @@ fun Arbeidsforhold?.beregnK9ArbeidstidInfo(
 
     val arbeidstidInfo = ArbeidstidInfo()
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
-    val gårsdagensDato = dagensDato.minusDays(1)
 
-    historiskArbeid?.let {
-        val fraOgMedHistorisk = søknadsperiode.fraOgMed
-        val tilOgMedHistorisk =
-            if (søknadsperiode.tilOgMed.isBefore(gårsdagensDato)) søknadsperiode.tilOgMed else gårsdagensDato
+    arbeidIPeriode.beregnK9ArbeidstidInfo(
+        fraOgMed = søknadsperiode.fraOgMed,
+        tilOgMed = søknadsperiode.tilOgMed,
+        arbeidstidInfo = arbeidstidInfo,
+        normalTimerPerDag = normalTimerPerDag,
+        startdato = startdato,
+        sluttdato = sluttdato
+    )
 
-        it.beregnK9ArbeidstidInfo(
-            fraOgMed = fraOgMedHistorisk,
-            tilOgMed = tilOgMedHistorisk,
-            arbeidstidInfo = arbeidstidInfo,
-            normalTimerPerDag = normalTimerPerDag,
-            startdato = startdato,
-            sluttdato = sluttdato
-        )
-    }
-
-    planlagtArbeid?.let {
-        val fraOgMedPlanlagt = if (søknadsperiode.fraOgMed.isAfter(dagensDato)) søknadsperiode.fraOgMed else dagensDato
-        val tilOgMedPlanlagt = søknadsperiode.tilOgMed
-
-        it.beregnK9ArbeidstidInfo(
-            fraOgMed = fraOgMedPlanlagt,
-            tilOgMed = tilOgMedPlanlagt,
-            arbeidstidInfo = arbeidstidInfo,
-            normalTimerPerDag = normalTimerPerDag,
-            startdato = startdato,
-            sluttdato = sluttdato
-        )
-    }
     return arbeidstidInfo
 }
 
@@ -109,7 +82,6 @@ fun ArbeidIPeriode.beregnK9ArbeidstidInfo(
     sluttdato: LocalDate? = null,
     normalTimerPerDag: Duration
 ) {
-
     when (jobberIPerioden) {
         JA -> {
             enkeltdager?.let {

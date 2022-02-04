@@ -197,6 +197,5 @@ enum class Årsak {
 
 data class Arbeidsforhold(
     val jobberNormaltTimer: Double,
-    val historiskArbeid: ArbeidIPeriode? = null,
-    val planlagtArbeid: ArbeidIPeriode? = null
+    val arbeidIPeriode: ArbeidIPeriode,
 )

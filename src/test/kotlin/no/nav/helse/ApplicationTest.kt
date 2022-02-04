@@ -690,23 +690,12 @@ class ApplicationTest {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 37.5,
-                    historiskArbeid = ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         erLiktHverUke = false,
                         enkeltdager = listOf(
                             Enkeltdag(
                                 dato = LocalDate.parse("2021-01-01"),
-                                tid = Duration.ofHours(7).plusMinutes(30)
-                            )
-                        ),
-                        fasteDager = null
-                    ),
-                    planlagtArbeid = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = false,
-                        enkeltdager = listOf(
-                            Enkeltdag(
-                                dato = LocalDate.parse("2021-01-02"),
                                 tid = Duration.ofHours(7).plusMinutes(30)
                             )
                         ),
@@ -782,7 +771,7 @@ class ApplicationTest {
                     ),
                     arbeidsforhold = Arbeidsforhold(
                         jobberNormaltTimer = 40.0,
-                        historiskArbeid = ArbeidIPeriode(
+                        arbeidIPeriode = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             erLiktHverUke = false,
                             enkeltdager = listOf(
@@ -792,14 +781,7 @@ class ApplicationTest {
                                 )
                             ),
                             fasteDager = null
-                        ),
-                        planlagtArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.NEI,
-                            erLiktHverUke = null,
-                            enkeltdager = null,
-                            fasteDager = null,
-                            jobberProsent = 50.0
-                        ),
+                        )
                     )
                 )
             ).somJson()
@@ -956,8 +938,9 @@ class ApplicationTest {
                         "organisasjonsnummer" : 12345,
                         "arbeidsforhold" : {
                             "jobberNormaltTimer": 37.5,
-                            "historisk": null,
-                            "planlagt": null
+                            "arbeidIPeriode": {
+                              "jobberIPerioden" : "NEI"
+                            }
                         }
                       }  
                     ],

@@ -41,15 +41,7 @@ class SøknadUtils {
                     erAnsatt = true,
                     arbeidsforhold = Arbeidsforhold(
                         jobberNormaltTimer = 40.0,
-                        historiskArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
-                            erLiktHverUke = true,
-                            enkeltdager = null,
-                            fasteDager = PlanUkedager(
-                                mandag = Duration.ofHours(7).plusMinutes(30)
-                            )
-                        ),
-                        planlagtArbeid = ArbeidIPeriode(
+                        arbeidIPeriode = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             erLiktHverUke = true,
                             enkeltdager = null,
@@ -99,15 +91,7 @@ class SøknadUtils {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = true,
-                        enkeltdager = null,
-                        fasteDager = PlanUkedager(
-                            mandag = Duration.ofHours(7).plusMinutes(30)
-                        )
-                    ),
-                    planlagtArbeid = ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         erLiktHverUke = true,
                         enkeltdager = null,
@@ -237,15 +221,7 @@ class SøknadUtils {
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = true,
-                        enkeltdager = null,
-                        fasteDager = PlanUkedager(
-                            mandag = Duration.ofHours(7).plusMinutes(30)
-                        )
-                    ),
-                    planlagtArbeid = ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         erLiktHverUke = true,
                         enkeltdager = null,

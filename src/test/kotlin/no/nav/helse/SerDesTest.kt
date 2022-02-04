@@ -58,20 +58,7 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode": null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 40.0,
-                    "historiskArbeid": {
-                      "jobberIPerioden": "JA",
-                      "jobberProsent": null,
-                      "erLiktHverUke": true,
-                      "enkeltdager": null,
-                      "fasteDager": {
-                          "mandag": "PT7H30M",
-                          "tirsdag": null,
-                          "onsdag": null,
-                          "torsdag": null,
-                          "fredag": null
-                        }
-                    },
-                    "planlagtArbeid": {
+                    "arbeidIPeriode": {
                       "jobberIPerioden": "JA",
                       "jobberProsent": null,
                       "erLiktHverUke": true,
@@ -149,20 +136,7 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "jobberNormaltTimer": 40.0,
-                  "historiskArbeid": {
-                    "jobberIPerioden": "JA",
-                    "jobberProsent": null,
-                    "erLiktHverUke": true,
-                    "enkeltdager": null,
-                    "fasteDager": {
-                      "mandag": "PT7H30M",
-                      "tirsdag": null,
-                      "onsdag": null,
-                      "torsdag": null,
-                      "fredag": null
-                    }
-                  },
-                  "planlagtArbeid": {
+                  "arbeidIPeriode": {
                     "jobberIPerioden": "JA",
                     "jobberProsent": null,
                     "erLiktHverUke": true,
@@ -258,20 +232,7 @@ internal class SerDesTest {
                 "jobberFortsattSomFrilans": true,
                 "arbeidsforhold": {
                   "jobberNormaltTimer": 40.0,
-                  "historiskArbeid": {
-                    "jobberIPerioden": "JA",
-                    "jobberProsent": null,
-                    "erLiktHverUke": true,
-                    "enkeltdager": null,
-                    "fasteDager": {
-                      "mandag": "PT7H30M",
-                      "tirsdag": null,
-                      "onsdag": null,
-                      "torsdag": null,
-                      "fredag": null
-                    }
-                  },
-                  "planlagtArbeid": {
+                  "arbeidIPeriode": {
                     "jobberIPerioden": "JA",
                     "jobberProsent": null,
                     "erLiktHverUke": true,
@@ -351,8 +312,13 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode" : null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 30.0,
-                    "historiskArbeid": null,
-                    "planlagtArbeid": null
+                    "arbeidIPeriode": {
+                      "jobberIPerioden": "NEI",
+                      "jobberProsent": null,
+                      "erLiktHverUke": null,
+                      "enkeltdager": null,
+                      "fasteDager": null
+                    }
                   }
                 }
               ],
@@ -409,8 +375,13 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "jobberNormaltTimer": 40.0,
-                  "historiskArbeid": null,
-                  "planlagtArbeid": null
+                  "arbeidIPeriode": {
+                    "jobberIPerioden": "NEI",
+                    "jobberProsent": null,
+                    "erLiktHverUke": null,
+                    "enkeltdager": null,
+                    "fasteDager": null
+                  }
                 }
               },
               "utenlandsoppholdIPerioden": {
@@ -494,14 +465,13 @@ internal class SerDesTest {
                   "sluttdato": null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 40.0,
-                    "historiskArbeid": {
+                    "arbeidIPeriode": {
                       "jobberProsent": 50.0,
                       "enkeltdager": [],
                       "erLiktHverUke": true,
                       "fasteDager": null,
                       "jobberIPerioden": "JA"
-                    },
-                    "planlagtArbeid": null
+                    }
                   }
               },
               "nattevåk": {
@@ -540,8 +510,9 @@ internal class SerDesTest {
                     erAnsatt = true,
                     arbeidsforhold = Arbeidsforhold(
                         jobberNormaltTimer = 30.0,
-                        historiskArbeid = null,
-                        planlagtArbeid = null
+                        arbeidIPeriode = ArbeidIPeriode(
+                            jobberIPerioden = JobberIPeriodeSvar.NEI
+                        )
                     )
                 )
             ),
@@ -578,8 +549,9 @@ internal class SerDesTest {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = null,
-                    planlagtArbeid = null
+                    arbeidIPeriode = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.NEI
+                    )
                 )
             ),
             medlemskap = Medlemskap(
@@ -681,14 +653,13 @@ internal class SerDesTest {
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         jobberProsent = 50.0,
                         erLiktHverUke = true,
                         enkeltdager = listOf(),
                         fasteDager = null
-                    ),
-                    planlagtArbeid = null
+                    )
                 )
             ),
             harVærtEllerErVernepliktig = true,
