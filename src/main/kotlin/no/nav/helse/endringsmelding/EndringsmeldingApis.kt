@@ -39,7 +39,7 @@ fun Route.endringsmeldingApis(
 ) {
 
     post(ENDRINGSMELDING_URL) {
-        if(miljø == Configuration.Miljø.PROD) return@post call.respond(HttpStatusCode.Forbidden)
+        if(miljø == Configuration.Miljø.PROD) return@post call.respond(HttpStatusCode.NotImplemented)
 
         val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
         val søker = søkerService.getSoker(idToken, callId)
