@@ -2,12 +2,7 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.Omsorgsdager
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.*
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
