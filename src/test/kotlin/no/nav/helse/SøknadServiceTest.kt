@@ -67,7 +67,7 @@ internal class SøknadServiceTest{
 
                 coEvery {vedleggService.hentVedlegg(vedleggUrls = any(), any(), any(), any()) } returns listOf(Vedlegg("bytearray".toByteArray(), "vedlegg", "vedlegg", DokumentEier("290990123456")))
 
-                every { kafkaProducer.produserKafkaMelding(any(), any()) } throws Exception("Mocket feil ved kafkaProducer")
+                every { kafkaProducer.produserPleiepengerMelding(any(), any()) } throws Exception("Mocket feil ved kafkaProducer")
 
                 søknadService.registrer(
                     søknad = SøknadUtils.defaultSøknad().copy(
