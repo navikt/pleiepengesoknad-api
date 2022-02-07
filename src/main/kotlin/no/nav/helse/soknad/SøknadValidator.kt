@@ -96,7 +96,7 @@ class FraOgMedTilOgMedValidator {
 internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations = barn.validate()
 
-    arbeidsgivere?.let { violations.addAll(arbeidsgivere.validate()) }
+    violations.addAll(arbeidsgivere.validate())
 
     selvstendigNæringsdrivende?.let { selvstendigNæringsdrivende ->
         violations.addAll(selvstendigNæringsdrivende.virksomhet.validate())

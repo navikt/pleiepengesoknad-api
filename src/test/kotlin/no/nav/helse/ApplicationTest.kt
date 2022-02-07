@@ -995,6 +995,7 @@ class ApplicationTest {
                     "aktørId": null,
                     "fodselsdato": null
                   },
+                  "arbeidsgivere" : [],
                   "medlemskap": {
                     "harBoddIUtlandetSiste12Mnd": false,
                     "skalBoIUtlandetNeste12Mnd": false,

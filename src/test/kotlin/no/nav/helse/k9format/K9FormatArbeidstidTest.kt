@@ -414,7 +414,7 @@ class K9FormatArbeidstidTest {
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.parse("2021-01-04"),
             tilOgMed = LocalDate.parse("2021-01-15"),
-            arbeidsgivere = null,
+            arbeidsgivere = listOf(),
             omsorgstilbud = null,
             utenlandsoppholdIPerioden = null,
             ferieuttakIPerioden = null,

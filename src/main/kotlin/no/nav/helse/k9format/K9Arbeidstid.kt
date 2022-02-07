@@ -19,7 +19,7 @@ val NULL_ARBEIDSTIMER = Duration.ZERO
 internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
     val periode = Periode(fraOgMed, tilOgMed)
 
-    arbeidsgivere?.let { medArbeidstaker(it.tilK9Arbeidstaker(periode)) }
+    if(arbeidsgivere.isNotEmpty()) medArbeidstaker(arbeidsgivere.tilK9Arbeidstaker(periode))
 
     frilans?.let {
         medFrilanserArbeidstid(

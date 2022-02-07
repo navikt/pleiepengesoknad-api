@@ -18,7 +18,7 @@ data class Søknad(
     val mottatt: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC),
     val språk: Språk? = null,
     val barn: BarnDetaljer,
-    val arbeidsgivere: List<ArbeidsforholdAnsatt>? = null,
+    val arbeidsgivere: List<ArbeidsforholdAnsatt>,
     val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
