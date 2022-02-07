@@ -9,6 +9,7 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2WellKnownUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getLoginServiceV1WellKnownUrl
 import no.nav.helse.wiremock.getK9MellomlagringUrl
 import no.nav.helse.wiremock.getK9OppslagUrl
+import no.nav.helse.wiremock.getSifInnsynApiUrl
 
 object TestConfiguration {
 
@@ -17,17 +18,19 @@ object TestConfiguration {
         kafkaEnvironment: KafkaEnvironment? = null,
         port : Int = 8080,
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
+        sifInnaynApiUrl: String? = wireMockServer?.getSifInnsynApiUrl(),
         k9MellomlagringUrl : String? = wireMockServer?.getK9MellomlagringUrl(),
         corsAdresses : String = "http://localhost:8080",
         redisServer: RedisServer
     ) : Map<String, String> {
-
         val map = mutableMapOf(
             Pair("ktor.deployment.port", "$port"),
             Pair("nav.authorization.cookie_name", "localhost-idtoken"),
             Pair("nav.gateways.k9_oppslag_url", "$k9OppslagUrl"),
+            Pair("nav.gateways.sif_innsyn_api_url", "$sifInnaynApiUrl"),
             Pair("nav.gateways.k9_mellomlagring_url", "$k9MellomlagringUrl"),
             Pair("nav.cors.addresses", corsAdresses),
+            Pair("NAIS_CLUSTER_NAME", "local")
         )
 
         // Clients
@@ -46,16 +49,17 @@ object TestConfiguration {
             map["nav.auth.issuers.1.audience"] = LoginService.V1_0.getAudience()
         }
 
-        // Kafka
-        kafkaEnvironment?.let {
-            map["nav.kafka.bootstrap_servers"] = it.brokersURL
-        }
-
         map["nav.redis.host"] = "localhost"
         map["nav.redis.port"] = "${redisServer.bindPort}"
         map["nav.storage.passphrase"] = "verySecret"
 
-        map["nav.mellomlagring.tid_timer"] = "1"
+        map["nav.mellomlagring.søknad_tid_timer"] = "1"
+        map["nav.mellomlagring.endringsmelding_tid_timer"] = "1"
+
+        // Kafka
+        kafkaEnvironment?.let {
+            map["nav.kafka.bootstrap_servers"] = it.brokersURL
+        }
 
         return map.toMap()
     }

@@ -13,8 +13,11 @@ data class Arbeidsgivere (
 
 class Organisasjon (
     val organisasjonsnummer: String,
-    val navn: String?
+    val navn: String?,
+    val ansattFom: LocalDate? = null,
+    val ansattTom: LocalDate? = null
 )
+
 
 data class PrivatArbeidsgiver (
     val offentligIdent: String,

@@ -17,5 +17,6 @@ internal data class TopicUse<V>(
 }
 
 object Topics {
+    const val MOTTATT_ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN = "dusseldorf.privat-endringsmelding-pleiepenger-sykt-barn-mottatt"
     const val MOTTATT_PLEIEPENGER_SYKT_BARN = "dusseldorf.privat-pleiepengesoknad-mottatt-v2"
 }
