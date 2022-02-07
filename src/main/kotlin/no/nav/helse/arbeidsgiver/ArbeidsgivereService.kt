@@ -35,7 +35,7 @@ class ArbeidsgivereService(
         }
     }
 
-    suspend fun hentArbeidsgivere(
+    suspend fun hentOrganisasjoner(
         idToken: IdToken,
         callId: CallId,
         organisasjoner: Set<Organisasjonsnummer>

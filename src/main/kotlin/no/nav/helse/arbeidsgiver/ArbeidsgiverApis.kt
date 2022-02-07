@@ -67,7 +67,7 @@ fun Route.arbeidsgiverApis(
             throw Throwblem(ValidationProblemDetails(violations))
         } else {
             call.respond(
-                arbeidsgivereService.hentArbeidsgivere(
+                arbeidsgivereService.hentOrganisasjoner(
                     idToken = idTokenProvider.getIdToken(call),
                     callId = call.getCallId(),
                     organisasjoner = org!!.map { Organisasjonsnummer.of(it) }.toSet()
