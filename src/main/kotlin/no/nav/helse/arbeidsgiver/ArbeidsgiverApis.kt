@@ -1,9 +1,11 @@
 package no.nav.helse.arbeidsgiver
 
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.ARBEIDSGIVER_URL
+import no.nav.helse.Configuration
 import no.nav.helse.ORGANISASJONER_URL
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
@@ -25,7 +27,8 @@ private const val privateArbeidsgivereQueryName = "private_arbeidsgivere"
 
 fun Route.arbeidsgiverApis(
     arbeidsgivereService: ArbeidsgivereService,
-    idTokenProvider: IdTokenProvider
+    idTokenProvider: IdTokenProvider,
+    miljø: Configuration.Miljø
 ) {
 
     get(ARBEIDSGIVER_URL) {
@@ -60,6 +63,8 @@ fun Route.arbeidsgiverApis(
     }
 
     get(ORGANISASJONER_URL) {
+        if(miljø == Configuration.Miljø.PROD) return@get call.respond(HttpStatusCode.NotImplemented)
+
         val org = ((call.request.queryParameters.getAll(orgQueryName)?.toSet()))
         val violations = validate(org)
 
