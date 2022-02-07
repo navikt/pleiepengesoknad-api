@@ -102,7 +102,7 @@ class SøknadUtils {
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
-                erLiktHverDag = false,
+                erLiktHverUke = false,
                 enkeltdager = listOf(
                     Enkeltdag(
                         LocalDate.parse("2021-01-01"),

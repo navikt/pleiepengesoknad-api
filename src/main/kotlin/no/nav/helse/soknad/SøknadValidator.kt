@@ -373,42 +373,42 @@ fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
         )
     }
 
-    if(erLiktHverDag == true && ukedager == null){
+    if(erLiktHverUke == true && ukedager == null){
         add(
             Violation(
-                parameterName = "omsorgstilbud.ukedager og omsorgstilbud.erLiktHverDag",
+                parameterName = "omsorgstilbud.ukedager og omsorgstilbud.erLiktHverUke",
                 parameterType = ParameterType.ENTITY,
-                reason = "Hvis erLiktHverDag er true må ukedager være satt."
+                reason = "Hvis erLiktHverUke er true må ukedager være satt."
             )
         )
     }
 
-    if(erLiktHverDag == true && enkeltdager != null){
+    if(erLiktHverUke == true && enkeltdager != null){
         add(
             Violation(
-                parameterName = "omsorgstilbud.enkeltdager og omsorgstilbud.erLiktHverDag",
+                parameterName = "omsorgstilbud.enkeltdager og omsorgstilbud.erLiktHverUke",
                 parameterType = ParameterType.ENTITY,
-                reason = "Hvis erLiktHverDag er true må enkeldager være null."
+                reason = "Hvis erLiktHverUke er true må enkeldager være null."
             )
         )
     }
 
-    if(erLiktHverDag == false && ukedager != null){
+    if(erLiktHverUke == false && ukedager != null){
         add(
             Violation(
-                parameterName = "omsorgstilbud.ukedager og omsorgstilbud.erLiktHverDag",
+                parameterName = "omsorgstilbud.ukedager og omsorgstilbud.erLiktHverUke",
                 parameterType = ParameterType.ENTITY,
-                reason = "Hvis erLiktHverDag er false kan ikke ukedager være satt."
+                reason = "Hvis erLiktHverUke er false kan ikke ukedager være satt."
             )
         )
     }
 
-    if(erLiktHverDag == false && enkeltdager == null){
+    if(erLiktHverUke == false && enkeltdager == null){
         add(
             Violation(
-                parameterName = "omsorgstilbud.enkeltdager og omsorgstilbud.erLiktHverDag",
+                parameterName = "omsorgstilbud.enkeltdager og omsorgstilbud.erLiktHverUke",
                 parameterType = ParameterType.ENTITY,
-                reason = "Hvis erLiktHverDag er false kan ikke enkeltdager være null."
+                reason = "Hvis erLiktHverUke er false kan ikke enkeltdager være null."
             )
         )
     }
