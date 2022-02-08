@@ -159,7 +159,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
         )
     }
 
-    violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden?.opphold))
+    violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden.opphold))
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
     violations.addAll(nullSjekk(harMedsøker, "harMedsøker"))
 
@@ -276,9 +276,9 @@ private fun validerBosted(list: List<Bosted>): MutableSet<Violation> {
     return violations
 }
 
-private fun validerUtenladsopphold(list: List<Utenlandsopphold>?): MutableSet<Violation> {
+private fun validerUtenladsopphold(list: List<Utenlandsopphold>): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
-    list?.mapIndexed { index, utenlandsopphold ->
+    list.forEachIndexed { index, utenlandsopphold ->
         val fraDataErEtterTilDato = utenlandsopphold.fraOgMed.isAfter(utenlandsopphold.tilOgMed)
         if (fraDataErEtterTilDato) {
             violations.add(
