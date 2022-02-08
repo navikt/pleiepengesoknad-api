@@ -16,7 +16,7 @@ data class KomplettSøknad(
     val arbeidsgivere: List<ArbeidsforholdAnsatt>?,
     var vedleggId : List<String> = listOf(),
     val medlemskap: Medlemskap,
-    val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden?,
+    val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
     val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean?,
