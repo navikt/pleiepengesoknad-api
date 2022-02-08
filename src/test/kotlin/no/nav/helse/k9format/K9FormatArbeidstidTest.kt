@@ -1,19 +1,7 @@
 package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
-import no.nav.helse.soknad.ArbeidIPeriode
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.ArbeidsforholdAnsatt
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Frilans
-import no.nav.helse.soknad.JobberIPeriodeSvar
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.soknad.validate
+import no.nav.helse.soknad.*
 import no.nav.helse.somJson
 import no.nav.k9.søknad.felles.type.Periode
 import org.json.JSONObject
@@ -55,7 +43,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-06"),
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = null
@@ -118,7 +106,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-06"),
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = null
@@ -176,7 +164,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-06"),
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = null
@@ -231,7 +219,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-06"),
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = null
@@ -292,7 +280,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-06"),
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = null
@@ -352,7 +340,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-06"),
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = null
@@ -430,7 +418,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-06"),
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = null
@@ -481,7 +469,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-06"),
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = null
@@ -524,7 +512,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-10"),
             arbeidsgivere = null,
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = frilans,
             selvstendigNæringsdrivende = null
@@ -580,7 +568,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-10"),
             arbeidsgivere = null,
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             frilans = null,
             selvstendigNæringsdrivende = selvstendigNæringsdrivende
@@ -687,7 +675,7 @@ class K9FormatArbeidstidTest {
             fraOgMed = LocalDate.parse("2021-01-04"), //5 dager
             tilOgMed = LocalDate.parse("2021-01-08"),
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             arbeidsgivere = listOf(arbeidsforholdAnsatt),
             frilans = frilans,
@@ -776,7 +764,7 @@ class K9FormatArbeidstidTest {
             tilOgMed = LocalDate.parse("2021-01-15"),
             arbeidsgivere = null,
             omsorgstilbud = null,
-            utenlandsoppholdIPerioden = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
             ferieuttakIPerioden = null,
             selvstendigNæringsdrivende = null,
             frilans = frilans

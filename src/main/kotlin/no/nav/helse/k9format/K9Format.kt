@@ -57,7 +57,8 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, dagensDato: Loca
             psb.medLovbestemtFerie(ferieuttakIPerioden.tilK9LovbestemtFerie())
         }
     }
-    utenlandsoppholdIPerioden?.let {
+
+    if(utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden == true){
         psb.medUtenlandsopphold(utenlandsoppholdIPerioden.tilK9Utenlandsopphold())
     }
 
