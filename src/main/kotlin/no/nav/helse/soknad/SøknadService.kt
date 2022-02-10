@@ -58,7 +58,7 @@ class SøknadService(
         val komplettSøknad = søknad.tilKomplettSøknad(k9FormatSøknad, søker)
 
         try {
-            kafkaProducer.produserKafkaMelding(komplettSøknad, metadata)
+            kafkaProducer.produserPleiepengerMelding(komplettSøknad, metadata)
         } catch (exception: Exception) {
             logger.info("Feilet ved å legge melding på Kafka.")
             if(komplettSøknad.vedleggId.isNotEmpty()){

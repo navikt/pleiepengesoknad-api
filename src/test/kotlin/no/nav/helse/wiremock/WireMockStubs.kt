@@ -6,9 +6,14 @@ import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import io.ktor.http.*
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
+import no.nav.helse.innsyn.K9SakInnsynSøknad
+import no.nav.k9.søknad.Søknad
+import org.json.JSONArray
+import org.json.JSONObject
 
 internal const val k9OppslagPath = "/k9-selvbetjening-oppslag-mock"
 private const val k9MellomlagringPath = "/k9-mellomlagring-mock"
+private const val sifInnsynApiPath = "/sif-innsyn-api-mock"
 
 internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration {
     it
@@ -64,7 +69,7 @@ internal fun WireMockServer.stubK9OppslagBarn(simulerFeil: Boolean = false): Wir
 
 internal fun WireMockServer.stubK9OppslagArbeidsgivere(simulerFeil: Boolean = false): WireMockServer {
     WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/.*"))
+        WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/meg.*"))
             .withHeader(HttpHeaders.Authorization, AnythingPattern())
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
             .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
@@ -100,6 +105,23 @@ internal fun WireMockServer.stubK9OppslagArbeidsgivereMedPrivate(simulerFeil: Bo
     return this
 }
 
+internal fun WireMockServer.stubK9OppslagArbeidsgivereMedOrgNummer(simulerFeil: Boolean = false): WireMockServer {
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlPathMatching("$k9OppslagPath/arbeidsgivere.*"))
+            .withHeader(HttpHeaders.Authorization, AnythingPattern())
+            .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].organisasjonsnummer"))
+            .withQueryParam("a", equalTo("arbeidsgivere[].organisasjoner[].navn"))
+            .withQueryParam("org", AnythingPattern()) // vurder regex som validerer dato-format
+            .willReturn(
+                WireMock.aResponse()
+                    .withHeader("Content-Type", "application/json")
+                    .withStatus(if (simulerFeil) 500 else 200)
+                    .withTransformers("k9-oppslag-arbeidsgivere")
+            )
+    )
+    return this
+}
+
 private fun WireMockServer.stubHealthEndpoint(
     path: String
 ): WireMockServer {
@@ -127,5 +149,26 @@ internal fun WireMockServer.stubK9Mellomlagring(): WireMockServer {
     return this
 }
 
+internal fun WireMockServer.stubSifInnsynApi(k9SakInnsynSøknader: List<K9SakInnsynSøknad>): WireMockServer {
+    WireMock.stubFor(
+        WireMock.any(WireMock.urlMatching(".*$sifInnsynApiPath/innsyn/sak"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withBody(k9SakInnsynSøknader.somJsonArray().toString())
+            )
+    )
+    return this
+}
+
+private fun List<K9SakInnsynSøknad>.somJsonArray(): JSONArray = JSONArray(map {
+    JSONObject(
+        mapOf(
+            "barn" to it.barn,
+            "søknad" to JSONObject(Søknad.SerDes.serialize(it.søknad))
+        )
+    )
+})
+
 internal fun WireMockServer.getK9OppslagUrl() = baseUrl() + k9OppslagPath
 internal fun WireMockServer.getK9MellomlagringUrl() = baseUrl() + k9MellomlagringPath
+internal fun WireMockServer.getSifInnsynApiUrl() = baseUrl() + sifInnsynApiPath

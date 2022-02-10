@@ -6,20 +6,15 @@ import no.nav.helse.soknad.ArbeidIPeriode
 import no.nav.helse.soknad.Arbeidsforhold
 import no.nav.helse.soknad.JobberIPeriodeSvar
 
-fun Arbeidsforhold.valider(path: String): MutableSet<Violation> {
-    val feil = mutableSetOf<Violation>()
-
-    if (historiskArbeid != null) feil.addAll(historiskArbeid.valider("$path.arbeidsforhold.historiskArbeid"))
-    if (planlagtArbeid != null) feil.addAll(planlagtArbeid.valider("$path.arbeidsforhold.planlagtArbeid"))
-
-    return feil
+fun Arbeidsforhold.valider(path: String) = mutableSetOf<Violation>().apply {
+    addAll(arbeidIPeriode.valider("$path.arbeidsforhold.arbeidIPeriode"))
 }
 
 fun ArbeidIPeriode.valider(path: String): MutableSet<Violation> {
     val feil = mutableSetOf<Violation>()
 
-    when (jobberIPerioden()) {
-        true -> {
+    when (jobberIPerioden) {
+        JobberIPeriodeSvar.JA -> {
             if (erLiktHverUke == null && enkeltdager == null) {
                 feil.add(
                     Violation(
@@ -44,13 +39,13 @@ fun ArbeidIPeriode.valider(path: String): MutableSet<Violation> {
                 feil.add(Violation(
                     parameterName = "$path.erLiktHverUke && $path.enkeltdager",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Dersom erLiktHverUke er true, kan ikke enkeltdager være null.",
+                    reason = "Dersom erLiktHverUke er false, kan ikke enkeltdager være null.",
                     invalidValue = "erLiktHverUke=$erLiktHverUke && enkeltdager=$enkeltdager"
                 ))
             }
         }
 
-        false -> {
+        JobberIPeriodeSvar.NEI -> {
             if (enkeltdager != null) {
                 feil.add(
                     Violation(
@@ -86,5 +81,3 @@ fun ArbeidIPeriode.valider(path: String): MutableSet<Violation> {
 
     return feil
 }
-
-fun ArbeidIPeriode.jobberIPerioden(): Boolean = this.jobberIPerioden == JobberIPeriodeSvar.JA

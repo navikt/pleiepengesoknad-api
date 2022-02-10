@@ -26,7 +26,14 @@ import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.client.buildURL
-import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.dusseldorf.ktor.core.DefaultProbeRoutes
+import no.nav.helse.dusseldorf.ktor.core.DefaultStatusPages
+import no.nav.helse.dusseldorf.ktor.core.correlationIdAndRequestIdInMdc
+import no.nav.helse.dusseldorf.ktor.core.generated
+import no.nav.helse.dusseldorf.ktor.core.id
+import no.nav.helse.dusseldorf.ktor.core.log
+import no.nav.helse.dusseldorf.ktor.core.logProxyProperties
+import no.nav.helse.dusseldorf.ktor.core.logRequests
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
@@ -34,9 +41,13 @@ import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
+import no.nav.helse.endringsmelding.EndringsmeldingService
+import no.nav.helse.endringsmelding.endringsmeldingApis
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.auth.IdTokenStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
+import no.nav.helse.innsyn.InnsynGateway
+import no.nav.helse.innsyn.InnsynService
 import no.nav.helse.kafka.KafkaProducer
 import no.nav.helse.mellomlagring.MellomlagringService
 import no.nav.helse.mellomlagring.mellomlagringApis
@@ -54,7 +65,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
 
-fun main(args: Array<String>): Unit  = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 private val logger: Logger = LoggerFactory.getLogger("no.nav.helse.AppKt.pleiepengesoknadapi")
 
@@ -95,7 +106,7 @@ fun Application.pleiepengesoknadapi() {
     install(Authentication) {
         multipleJwtIssuers(
             issuers = issuers,
-            extractHttpAuthHeader = {call ->
+            extractHttpAuthHeader = { call ->
                 idTokenProvider.getIdToken(call)
                     .somHttpAuthHeader()
             }
@@ -150,12 +161,14 @@ fun Application.pleiepengesoknadapi() {
                 arbeidsgivereService = ArbeidsgivereService(
                     arbeidsgivereGateway = arbeidsgivereGateway
                 ),
-                idTokenProvider = idTokenProvider
+                idTokenProvider = idTokenProvider,
+                miljø = configuration.miljø()
             )
 
             mellomlagringApis(
                 mellomlagringService = MellomlagringService(
                     søknadMellomlagretTidTimer = configuration.getSoknadMellomlagringTidTimer(),
+                    endringsmeldingMellomlagretTidTimer = configuration.getEndringsmeldingMellomlagringTidTimer(),
                     redisStore = RedisStore(
                         redisClient = RedisConfig.redisClient(
                             redisHost = configuration.getRedisHost(),
@@ -184,6 +197,19 @@ fun Application.pleiepengesoknadapi() {
                 barnService = barnService,
                 søkerService = søkerService,
                 vedleggService = vedleggService
+            )
+
+            endringsmeldingApis(
+                endringsmeldingService = EndringsmeldingService(
+                    kafkaProducer = kafkaProducer
+                ),
+                søkerService = søkerService,
+                barnService = barnService,
+                innsynService = InnsynService(
+                    innsynGateway = InnsynGateway(baseUrl = configuration.getSifInnsynApiUrl())
+                ),
+                idTokenProvider = idTokenProvider,
+                miljø = configuration.miljø()
             )
         }
 
@@ -230,13 +256,16 @@ fun Application.pleiepengesoknadapi() {
         correlationIdAndRequestIdInMdc()
         logRequests()
         mdc("id_token_jti") { call ->
-            try { idTokenProvider.getIdToken(call).getId() }
-            catch (cause: Throwable) { null }
+            try {
+                idTokenProvider.getIdToken(call).getId()
+            } catch (cause: Throwable) {
+                null
+            }
         }
     }
 }
 
- fun ObjectMapper.pleiepengesøknadKonfigurert(): ObjectMapper {
+fun ObjectMapper.pleiepengesøknadKonfigurert(): ObjectMapper {
     return dusseldorfConfigured().apply {
         configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
     }
@@ -249,10 +278,10 @@ fun Application.pleiepengesoknadapi() {
      }
 }
 
- fun ObjectMapper.k9SelvbetjeningOppslagKonfigurert(): ObjectMapper {
-     return jacksonObjectMapper().dusseldorfConfigured().apply {
-         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-         registerModule(JavaTimeModule())
-         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
-     }
+fun ObjectMapper.k9SelvbetjeningOppslagKonfigurert(): ObjectMapper {
+    return jacksonObjectMapper().dusseldorfConfigured().apply {
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        registerModule(JavaTimeModule())
+        propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
+    }
 }

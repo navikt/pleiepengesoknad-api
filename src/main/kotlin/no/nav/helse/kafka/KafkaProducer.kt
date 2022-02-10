@@ -4,6 +4,7 @@ import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.Result
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
+import no.nav.helse.endringsmelding.KomplettEndringsmelding
 import no.nav.helse.general.Metadata
 import no.nav.helse.general.formaterStatuslogging
 import no.nav.helse.soknad.KomplettSøknad
@@ -17,24 +18,37 @@ import org.slf4j.LoggerFactory
 class KafkaProducer(
     val kafkaConfig: KafkaConfig
 ) : HealthCheck {
-    private val NAME = "SøknadProducer"
+    private val NAME = "KafkaProducerPleiepenger"
+    private val logger = LoggerFactory.getLogger(KafkaProducer::class.java)
+
     private val PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC = TopicUse(
         name = Topics.MOTTATT_PLEIEPENGER_SYKT_BARN,
         valueSerializer = SøknadSerializer()
     )
-    private val logger = LoggerFactory.getLogger(KafkaProducer::class.java)
-    private val producer = KafkaProducer(
+
+    private val ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC = TopicUse(
+        name = Topics.MOTTATT_ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN,
+        valueSerializer = SøknadSerializer()
+    )
+
+    private val endringsmeldingProducer = KafkaProducer(
+        kafkaConfig.producer(NAME),
+        ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.keySerializer(),
+        ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.valueSerializer
+    )
+
+    private val pleiepengerSøknadProducer = KafkaProducer(
         kafkaConfig.producer(NAME),
         PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.keySerializer(),
         PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.valueSerializer
     )
 
-    internal fun produserKafkaMelding(
+    internal fun produserPleiepengerMelding(
         komplettSøknad: KomplettSøknad,
         metadata: Metadata
     ) {
         if (metadata.version != 1) throw IllegalStateException("Kan ikke legge melding med versjon ${metadata.version} til prosessering.")
-        val recordMetaData = producer.send(
+        val recordMetaData = pleiepengerSøknadProducer.send(
             ProducerRecord(
                 PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.name,
                 komplettSøknad.søknadId,
@@ -52,11 +66,40 @@ class KafkaProducer(
         )
     }
 
-    internal fun stop() = producer.close()
+    internal fun produserEndringsmelding(
+        komplettEndringsmelding: KomplettEndringsmelding,
+        metadata: Metadata
+    ) {
+        if (metadata.version != 1) throw IllegalStateException("Kan ikke legge melding med versjon ${metadata.version} til prosessering.")
+        val recordMetaData = endringsmeldingProducer.send(
+            ProducerRecord(
+                ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.name,
+                komplettEndringsmelding.k9Format.søknadId.id,
+                TopicEntry(
+                    metadata = metadata,
+                    data = JSONObject(komplettEndringsmelding.somJson())
+                )
+            )
+        ).get()
+
+        logger.info(
+            "Endringsmelding med søknadID: {} sendes til topic {} med offset '{}' til partition '{}'",
+            komplettEndringsmelding.k9Format.søknadId.id,
+            ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.name,
+            recordMetaData.offset(),
+            recordMetaData.partition()
+        )
+    }
+
+    internal fun stop() {
+        endringsmeldingProducer.close()
+        pleiepengerSøknadProducer.close()
+    }
 
     override suspend fun check(): Result {
         return try {
-            producer.partitionsFor(PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.name)
+            endringsmeldingProducer.partitionsFor(ENDRINGSMELDING_PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.name)
+            pleiepengerSøknadProducer.partitionsFor(PLEIEPENGER_SYKT_BARN_MOTTATT_TOPIC.name)
             Healthy(NAME, "Tilkobling til Kafka OK!")
         } catch (cause: Throwable) {
             logger.error("Feil ved tilkobling til Kafka", cause)

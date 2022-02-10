@@ -7,8 +7,12 @@ import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import no.nav.helse.TestUtils.Companion.getAuthCookie
+import no.nav.helse.arbeidsgiver.orgQueryName
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
+import no.nav.helse.innsyn.InnsynBarn
+import no.nav.helse.k9format.defaultK9FormatPSB
+import no.nav.helse.k9format.defaultK9SakInnsynSøknad
 import no.nav.helse.mellomlagring.started
 import no.nav.helse.soknad.*
 import no.nav.helse.wiremock.*
@@ -16,11 +20,13 @@ import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.skyscreamer.jsonassert.JSONAssert
+import org.skyscreamer.jsonassert.JSONCompareMode
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -50,11 +56,27 @@ class ApplicationTest {
             .stubK9OppslagSoker()
             .stubK9OppslagBarn()
             .stubK9OppslagArbeidsgivere()
+            .stubK9OppslagArbeidsgivereMedOrgNummer()
             .stubK9OppslagArbeidsgivereMedPrivate()
             .stubK9Mellomlagring()
+            .stubSifInnsynApi(
+                k9SakInnsynSøknader = listOf(
+                    defaultK9SakInnsynSøknad(
+                        barn = InnsynBarn(
+                            fødselsdato = LocalDate.parse("2000-08-27"),
+                            fornavn = "BARNESEN",
+                            mellomnavn = "EN",
+                            etternavn = "BARNESEN",
+                            aktørId = "1000000000001",
+                            identitetsnummer = "02119970078"
+                        ),
+                        søknad = defaultK9FormatPSB()
+                    )
+                )
+            )
 
-        val kafkaEnvironment = KafkaWrapper.bootstrap()
-        val kafkaKonsumer = kafkaEnvironment.testConsumer()
+        private val kafkaEnvironment = KafkaWrapper.bootstrap()
+        private val kafkaKonsumer = kafkaEnvironment.testConsumer()
 
         val redisServer: RedisServer = RedisServer
             .newRedisServer().started()
@@ -121,19 +143,57 @@ class ApplicationTest {
             httpMethod = HttpMethod.Get,
             path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.OK,
+            //language=json
             expectedResponse = """
             {
-              "organisasjoner": [
-                {
-                  "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
-                  "organisasjonsnummer": "913548221"
-                },
-                {
-                  "navn": "NAV, AVD WALDEMAR THRANES GATE",
-                  "organisasjonsnummer": "984054564"
-                }
-              ],
-              "privateArbeidsgivere": null
+                "organisasjoner": [
+                  {
+                    "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
+                    "organisasjonsnummer": "913548221",
+                    "ansattFom": "2011-09-03",
+                    "ansattTom": "2012-06-30"
+                  }, 
+                  {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564",
+                    "ansattFom": "2011-09-03",
+                    "ansattTom": null
+                  }
+                ],
+                "privateArbeidsgivere": null
+
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Hente arbeidsgivere med organisasjonsnummer`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL?$orgQueryName=977302390&$orgQueryName=984054564",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse =
+            //language=json
+            """
+            {
+                "organisasjoner": [
+                  {
+                    "navn": "INMETA CONSULTING AS",
+                    "organisasjonsnummer": "977302390",
+                    "ansattFom": null,
+                    "ansattTom": null
+                  },
+                  {
+                    "navn": "NAV, AVD WALDEMAR THRANES GATE",
+                    "organisasjonsnummer": "984054564",
+                    "ansattFom": null,
+                    "ansattTom": null
+                  }
+                ],
+                "privateArbeidsgivere": null
+
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -146,12 +206,16 @@ class ApplicationTest {
             httpMethod = HttpMethod.Get,
             path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
             expectedCode = HttpStatusCode.OK,
-            expectedResponse = """
+            expectedResponse =
+            //language=json
+            """
             {
               "organisasjoner": [
                 {
                   "navn": "NAV, AVD WALDEMAR THRANES GATE",
-                  "organisasjonsnummer": "984054564"
+                  "organisasjonsnummer": "984054564",
+                  "ansattFom": null,
+                  "ansattTom": null
                 }
               ],
               "privateArbeidsgivere": null
@@ -172,11 +236,15 @@ class ApplicationTest {
               "organisasjoner": [
                 {
                   "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
-                  "organisasjonsnummer": "913548221"
+                  "organisasjonsnummer": "913548221",
+                  "ansattFom": null,
+                  "ansattTom": null
                 },
                 {
                   "navn": "NAV, AVD WALDEMAR THRANES GATE",
-                  "organisasjonsnummer": "984054564"
+                  "organisasjonsnummer": "984054564",
+                  "ansattFom": null,
+                  "ansattTom": null
                 }
               ],
               "privateArbeidsgivere": [
@@ -187,6 +255,106 @@ class ApplicationTest {
                 }
               ]
             }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Finner ingen arbeidsgivere når organisasjonsnummer ikke er funnet`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL?$orgQueryName=925568600",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse =
+            //language=json
+            """
+            {
+                "organisasjoner": [],
+                "privateArbeidsgivere": null
+
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `Finner arbeidsgiver uten navn`() {
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL?$orgQueryName=995784637",
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse =
+            //language=json
+            """
+            {
+                "organisasjoner": [
+                  {
+                    "navn": null,
+                    "organisasjonsnummer": "995784637",
+                    "ansattFom": null,
+                    "ansattTom": null
+                  }
+                ],
+                "privateArbeidsgivere": null
+            }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `gitt orgnummer er ugyldig, forvent valideringsfeil`() {
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL?$orgQueryName=977302390&$orgQueryName=ugyldig_orgnummer",
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse =
+            //language=json
+            """
+                {
+                    "type": "/problem-details/invalid-request-parameters",
+                    "title": "invalid-request-parameters",
+                    "status": 400,
+                    "detail": "Requesten inneholder ugyldige paramtere.",
+                    "instance": "about:blank",
+                    "invalid_parameters": [{
+                        "type": "query",
+                        "name": "$orgQueryName[1]",
+                        "reason": "Query parameter $orgQueryName[1] er av ugyldig format",
+                        "invalid_value": "ugyldig_orgnummer"
+                    }]
+                }
+            """.trimIndent(),
+            cookie = getAuthCookie(gyldigFodselsnummerA)
+        )
+    }
+
+    @Test
+    fun `gitt orgnummer mangler på query parameter, forvent valideringsfeil`() {
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = "$ORGANISASJONER_URL",
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse =
+            //language=json
+            """
+                {
+                    "type": "/problem-details/invalid-request-parameters",
+                    "title": "invalid-request-parameters",
+                    "status": 400,
+                    "detail": "Requesten inneholder ugyldige paramtere.",
+                    "instance": "about:blank",
+                    "invalid_parameters": [{
+                        "type": "query",
+                        "name": "$orgQueryName",
+                        "reason": "Påkrevd query parameter '$orgQueryName' er ikke satt.",
+                        "invalid_value": null
+                    }]
+                }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
         )
@@ -690,23 +858,12 @@ class ApplicationTest {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 37.5,
-                    historiskArbeid = ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         erLiktHverUke = false,
                         enkeltdager = listOf(
                             Enkeltdag(
                                 dato = LocalDate.parse("2021-01-01"),
-                                tid = Duration.ofHours(7).plusMinutes(30)
-                            )
-                        ),
-                        fasteDager = null
-                    ),
-                    planlagtArbeid = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = false,
-                        enkeltdager = listOf(
-                            Enkeltdag(
-                                dato = LocalDate.parse("2021-01-02"),
                                 tid = Duration.ofHours(7).plusMinutes(30)
                             )
                         ),
@@ -782,7 +939,7 @@ class ApplicationTest {
                     ),
                     arbeidsforhold = Arbeidsforhold(
                         jobberNormaltTimer = 40.0,
-                        historiskArbeid = ArbeidIPeriode(
+                        arbeidIPeriode = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             erLiktHverUke = false,
                             enkeltdager = listOf(
@@ -792,14 +949,7 @@ class ApplicationTest {
                                 )
                             ),
                             fasteDager = null
-                        ),
-                        planlagtArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.NEI,
-                            erLiktHverUke = null,
-                            enkeltdager = null,
-                            fasteDager = null,
-                            jobberProsent = 50.0
-                        ),
+                        )
                     )
                 )
             ).somJson()
@@ -845,6 +995,7 @@ class ApplicationTest {
                     "aktørId": null,
                     "fodselsdato": null
                   },
+                  "arbeidsgivere" : [],
                   "medlemskap": {
                     "harBoddIUtlandetSiste12Mnd": false,
                     "skalBoIUtlandetNeste12Mnd": false,
@@ -956,8 +1107,9 @@ class ApplicationTest {
                         "organisasjonsnummer" : 12345,
                         "arbeidsforhold" : {
                             "jobberNormaltTimer": 37.5,
-                            "historisk": null,
-                            "planlagt": null
+                            "arbeidIPeriode": {
+                              "jobberIPerioden" : "NEI"
+                            }
                         }
                       }  
                     ],
@@ -1083,93 +1235,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med omsorgstilbud planlagt er satt men både ukedager og enkeltdager er null`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "omsorgstilbud.planlagt.ukedager eller omsorgstilbud.planlagt.enkeltdager",
-                      "reason": "Dersom omsorgstilbud.planlagt er satt så må enten 'ukedager' eller 'enkeltdager' være satt.",
-                      "invalid_value": "enkeltdager = null, ukedager = null"
-                    }
-                  ]
-                }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils
-                .defaultSøknad(UUID.randomUUID().toString()).copy(
-                    frilans = null,
-                    selvstendigNæringsdrivende = null,
-                    arbeidsgivere = null,
-                    omsorgstilbud = Omsorgstilbud(
-                        planlagt = Omsorgsdager()
-                    ),
-                    vedlegg = listOf()
-                )
-                .somJson()
-        )
-    }
-
-    @Test
-    fun `Sende søknad med omsorgstilbud, der historiske omsorgstilbud inneholder datoer lik eller etter dagens dato`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "omsorgstilbud.historisk.enkeltdager",
-                      "reason": "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
-                      "invalid_value": "enkeltdager = [Enkeltdag(dato=${LocalDate.now()}, tid=PT7H)]"
-                    }
-                  ]
-                }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils
-                .defaultSøknad(UUID.randomUUID().toString()).copy(
-                    fraOgMed = LocalDate.now(),
-                    tilOgMed = LocalDate.now().plusDays(1),
-                    omsorgstilbud = Omsorgstilbud(
-                        historisk = Omsorgsdager(
-                            enkeltdager = listOf(
-                                Enkeltdag(dato = LocalDate.now(), tid = Duration.ofHours(7))
-                            ),
-                        )
-                    ),
-                    vedlegg = listOf(),
-                    ferieuttakIPerioden = null,
-                    frilans = null,
-                    selvstendigNæringsdrivende = null,
-                    arbeidsgivere = null,
-                )
-                .somJson()
-        )
-    }
-
-    @Test
     fun `Test haandtering av vedlegg`() {
         val cookie = getAuthCookie(fnr)
         val jpeg = "vedlegg/iPhone_6.jpg".fromResources().readBytes()
@@ -1222,6 +1287,286 @@ class ApplicationTest {
             contentType = "image/png",
             fileName = "big_picture.png",
             expectedCode = HttpStatusCode.PayloadTooLarge
+        )
+    }
+
+    @Test
+    fun `endringsmelding - endringer innefor gyldighetsperiode`() {
+        val cookie = getAuthCookie(fnr)
+        val søknadId = UUID.randomUUID().toString()
+        val mottattDato = ZonedDateTime.parse("2021-11-03T07:12:05.530Z")
+
+        //language=json
+        val endringsmelding = """
+            {
+             "søknadId": "$søknadId",
+              "id": "123",
+              "språk": "nb",
+              "mottattDato": "$mottattDato",
+              "harBekreftetOpplysninger": true,
+              "harForståttRettigheterOgPlikter": true,
+              "ytelse": {
+                "type": "PLEIEPENGER_SYKT_BARN",
+                "barn": {
+                  "norskIdentitetsnummer": "02119970078"
+                },
+                "arbeidstid": {
+                  "arbeidstakerList": [
+                    {
+                      "organisasjonsnummer": "917755736",
+                      "arbeidstidInfo": {
+                        "perioder": {
+                          "2021-01-01/2021-01-01": {
+                            "jobberNormaltTimerPerDag": "PT1H0M",
+                            "faktiskArbeidTimerPerDag": "PT0H"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "tilsynsordning": {
+                  "perioder": {
+                    "2021-01-01/2021-01-01": {
+                      "etablertTilsynTimerPerDag": "PT2H0M"
+                    }
+                  }
+                }
+              }
+            }
+        """.trimIndent()
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = ENDRINGSMELDING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.Accepted,
+            expectedResponse = null,
+            requestEntity = endringsmelding
+        )
+
+        hentOgAsserEndringsmelding(
+            //language=json
+            """
+           {
+             "søker": {
+               "mellomnavn": "HEISANN",
+               "etternavn": "MORSEN",
+               "aktørId": "12345",
+               "fødselsdato": "1997-05-25",
+               "fornavn": "MOR",
+               "fødselsnummer": "26104500284",
+               "myndig": true
+             },
+             "harBekreftetOpplysninger": true,
+             "harForståttRettigheterOgPlikter": true,
+             "k9Format": {
+               "søknadId": "$søknadId",
+               "versjon": "1.0.0",
+               "mottattDato": "$mottattDato",
+               "språk": "nb",
+               "søker": {
+                 "norskIdentitetsnummer": "26104500284"
+               },
+               "ytelse": {
+                 "type": "PLEIEPENGER_SYKT_BARN",
+                 "søknadsperiode": [],
+                 "endringsperiode": [],
+                 "trekkKravPerioder": [],
+                 "barn": {
+                   "norskIdentitetsnummer": "02119970078",
+                   "fødselsdato": null
+                 },
+                 "tilsynsordning": {
+                   "perioder": {
+                     "2021-01-01/2021-01-01": {
+                       "etablertTilsynTimerPerDag": "PT2H"
+                     }
+                   }
+                 },
+                 "arbeidstid": {
+                   "frilanserArbeidstidInfo": null,
+                   "arbeidstakerList": [
+                     {
+                       "organisasjonsnummer": "917755736",
+                       "norskIdentitetsnummer": null,
+                       "arbeidstidInfo": {
+                         "perioder": {
+                           "2021-01-01/2021-01-01": {
+                             "faktiskArbeidTimerPerDag": "PT0S",
+                             "jobberNormaltTimerPerDag": "PT1H"
+                           }
+                         }
+                       }
+                     }
+                   ],
+                   "selvstendigNæringsdrivendeArbeidstidInfo": null
+                 },
+                 "bosteder": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "lovbestemtFerie": {
+                   "perioder": {}
+                 },
+                 "omsorg": {
+                   "beskrivelseAvOmsorgsrollen": null,
+                   "relasjonTilBarnet": null
+                 },
+                 "utenlandsopphold": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "nattevåk": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "infoFraPunsj": null,
+                 "dataBruktTilUtledning": null,
+                 "beredskap": {
+                   "perioder": {},
+                   "perioderSomSkalSlettes": {}
+                 },
+                 "uttak": {
+                   "perioder": {}
+                 },
+                 "opptjeningAktivitet": {}
+               },
+               "journalposter": [],
+               "begrunnelseForInnsending": {
+                 "tekst": null
+               }
+             }
+           }
+            """.trimIndent(),
+            JSONObject(endringsmelding)
+        )
+    }
+
+    @Test
+    fun `endringsmelding - endringer utenfor gyldighetsperiode`() {
+        val cookie = getAuthCookie(fnr)
+        val søknadId = UUID.randomUUID().toString()
+        val mottattDato = ZonedDateTime.parse("2021-11-03T07:12:05.530Z")
+
+        //language=json
+        val endringsmelding = """
+                {
+                  "søknadId": "$søknadId",
+                  "språk": "nb",
+                  "mottattDato": "$mottattDato",
+                  "harBekreftetOpplysninger": true,
+                  "harForståttRettigheterOgPlikter": true,
+                  "ytelse": {
+                    "type": "PLEIEPENGER_SYKT_BARN",
+                    "barn": {
+                      "norskIdentitetsnummer": "02119970078"
+                    },
+                    "arbeidstid": {
+                      "arbeidstakerList": [
+                        {
+                          "organisasjonsnummer": "917755736",
+                          "arbeidstidInfo": {
+                            "perioder": {
+                              "2021-01-07/2021-01-07": {
+                                "jobberNormaltTimerPerDag": "PT1H0M",
+                                "faktiskArbeidTimerPerDag": "PT0H"
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+            """.trimIndent()
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = ENDRINGSMELDING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.BadRequest,
+            expectedResponse =
+            //language=json
+            """
+                {
+                  "type": "/problem-details/invalid-request-parameters",
+                  "title": "invalid-request-parameters",
+                  "status": 400,
+                  "detail": "Requesten inneholder ugyldige paramtere.",
+                  "instance": "about:blank",
+                  "invalid_parameters": [
+                    {
+                      "type": "entity",
+                      "name": "ytelse.arbeidstid.arbeidstakerList[0].perioder",
+                      "reason": "Perioden er utenfor gyldig interval. Gyldig interva: ([[2018-01-01, 2021-01-01]]), Ugyldig periode: 2021-01-07/2021-01-07",
+                      "invalid_value": "K9-format feilkode: ugyldigPeriode"
+                    }
+                  ]
+                }
+            """.trimIndent(),
+            requestEntity = endringsmelding
+        )
+    }
+
+    @Test
+    fun `gitt to mellomlagrede verdier på samme person, fovent at begge mellomlagres, og de de ikke overskriver hverandre`() {
+        val cookie = getAuthCookie(gyldigFodselsnummerA)
+
+        val mellomlagringSøknad = """
+                {
+                    "mellomlagring": "soknad"
+                }
+            """.trimIndent()
+
+
+        val mellomlagringEndringsmelding = """
+                {
+                    "mellomlagring": "endringsmelding"
+                }
+            """.trimIndent()
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = MELLOMLAGRING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.NoContent,
+            expectedResponse = null,
+            requestEntity = mellomlagringSøknad
+        )
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Post,
+            path = ENDRINGSMELDING_MELLOMLAGRING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.NoContent,
+            expectedResponse = null,
+            requestEntity = mellomlagringEndringsmelding
+        )
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = MELLOMLAGRING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = mellomlagringSøknad
+        )
+
+        requestAndAssert(
+            httpMethod = HttpMethod.Get,
+            path = ENDRINGSMELDING_MELLOMLAGRING_URL,
+            cookie = cookie,
+            expectedCode = HttpStatusCode.OK,
+            expectedResponse = mellomlagringEndringsmelding
+        )
+    }
+
+    private fun hentOgAsserEndringsmelding(forventenEndringsmelding: String, endringsmelding: JSONObject) {
+        val komplettEndringsmelding = kafkaKonsumer.hentEndringsmelding(endringsmelding.getString("søknadId"))
+
+        JSONAssert.assertEquals(
+            forventenEndringsmelding,
+            komplettEndringsmelding.data,
+            JSONCompareMode.STRICT
         )
     }
 

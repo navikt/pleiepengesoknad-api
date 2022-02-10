@@ -41,15 +41,7 @@ class SøknadUtils {
                     erAnsatt = true,
                     arbeidsforhold = Arbeidsforhold(
                         jobberNormaltTimer = 40.0,
-                        historiskArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
-                            erLiktHverUke = true,
-                            enkeltdager = null,
-                            fasteDager = PlanUkedager(
-                                mandag = Duration.ofHours(7).plusMinutes(30)
-                            )
-                        ),
-                        planlagtArbeid = ArbeidIPeriode(
+                        arbeidIPeriode = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             erLiktHverUke = true,
                             enkeltdager = null,
@@ -99,15 +91,7 @@ class SøknadUtils {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = true,
-                        enkeltdager = null,
-                        fasteDager = PlanUkedager(
-                            mandag = Duration.ofHours(7).plusMinutes(30)
-                        )
-                    ),
-                    planlagtArbeid = ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         erLiktHverUke = true,
                         enkeltdager = null,
@@ -118,13 +102,23 @@ class SøknadUtils {
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
-                planlagt = Omsorgsdager(
-                    ukedager = PlanUkedager(
-                        mandag = Duration.ofHours(1),
-                        tirsdag = Duration.ofHours(1),
-                        onsdag = Duration.ofHours(1),
-                        torsdag = Duration.ofHours(1),
-                        fredag = Duration.ofHours(1)
+                erLiktHverUke = false,
+                enkeltdager = listOf(
+                    Enkeltdag(
+                        LocalDate.parse("2021-01-01"),
+                        Duration.ofHours(4)
+                    ),
+                    Enkeltdag(
+                        LocalDate.parse("2021-01-02"),
+                        Duration.ofHours(4)
+                    ),
+                    Enkeltdag(
+                        LocalDate.parse("2021-01-03"),
+                        Duration.ofHours(4)
+                    ),
+                    Enkeltdag(
+                        LocalDate.parse("2021-01-04"),
+                        Duration.ofHours(4)
                     )
                 )
             ),
@@ -227,15 +221,7 @@ class SøknadUtils {
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = true,
-                        enkeltdager = null,
-                        fasteDager = PlanUkedager(
-                            mandag = Duration.ofHours(7).plusMinutes(30)
-                        )
-                    ),
-                    planlagtArbeid = ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         erLiktHverUke = true,
                         enkeltdager = null,
