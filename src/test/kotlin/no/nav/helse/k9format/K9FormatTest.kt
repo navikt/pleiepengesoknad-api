@@ -2,12 +2,7 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.Omsorgsdager
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.*
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -39,15 +34,14 @@ class K9FormatTest {
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
-                historisk = null,
-                planlagt = Omsorgsdager(
-                    ukedager = null,
-                    enkeltdager = listOf(
-                        Enkeltdag(
-                            fraOgMed.plusDays(1),
-                            Duration.ofHours(5)
-                        )
-                    )
+                enkeltdager = null,
+                erLiktHverUke = true,
+                ukedager = PlanUkedager(
+                    mandag = Duration.ofHours(4),
+                    tirsdag = null,
+                    onsdag = Duration.ofHours(2),
+                    torsdag = null,
+                    fredag = Duration.ofHours(5),
                 )
             )
         )
@@ -56,7 +50,7 @@ class K9FormatTest {
             fødselsdato = LocalDate.parse("2000-01-01"),
             fødselsnummer = "123456789"
         )
-        val k9Format = søknad.tilK9Format(mottatt, søker, dagensDato = LocalDate.parse("2021-01-05"))
+        val k9Format = søknad.tilK9Format(mottatt, søker)
 
         val forventetK9FormatJsonV2 =
             //language=json
@@ -165,7 +159,16 @@ class K9FormatTest {
                 },
                 "tilsynsordning": {
                   "perioder": {
-                    "2021-01-02/2021-01-02": {
+                    "2021-01-01/2021-01-01": {
+                      "etablertTilsynTimerPerDag": "PT5H"
+                    },
+                    "2021-01-04/2021-01-04": {
+                      "etablertTilsynTimerPerDag": "PT4H"
+                    },
+                    "2021-01-06/2021-01-06": {
+                      "etablertTilsynTimerPerDag": "PT2H"
+                    },
+                    "2021-01-08/2021-01-08": {
                       "etablertTilsynTimerPerDag": "PT5H"
                     }
                   }
@@ -308,17 +311,15 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            planlagt = Omsorgsdager(
-                ukedager = PlanUkedager(
-                    mandag = Duration.ofHours(5),
-                    tirsdag = Duration.ofHours(5),
-                    onsdag = Duration.ofHours(5),
-                    torsdag = Duration.ofHours(5),
-                    fredag = Duration.ofHours(5)
-                )
+            erLiktHverUke = true,
+            ukedager = PlanUkedager(
+                mandag = Duration.ofHours(5),
+                tirsdag = Duration.ofHours(5),
+                onsdag = Duration.ofHours(5),
+                torsdag = Duration.ofHours(5),
+                fredag = Duration.ofHours(5)
             )
         ).tilK9Tilsynsordning(
-            dagensDato = LocalDate.parse("2021-01-04"),
             periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08"))
         )
 
@@ -353,17 +354,15 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            planlagt = Omsorgsdager(
-                ukedager = PlanUkedager(
-                    mandag = Duration.ofHours(5),
-                    tirsdag = Duration.ofHours(5),
-                    onsdag = Duration.ofHours(5),
-                    torsdag = Duration.ofHours(5),
-                    fredag = Duration.ofHours(5)
-                )
+            erLiktHverUke = true,
+            ukedager = PlanUkedager(
+                mandag = Duration.ofHours(5),
+                tirsdag = Duration.ofHours(5),
+                onsdag = Duration.ofHours(5),
+                torsdag = Duration.ofHours(5),
+                fredag = Duration.ofHours(5)
             )
         ).tilK9Tilsynsordning(
-            dagensDato = LocalDate.parse("2021-01-06"),
             periode = Periode(LocalDate.parse("2021-01-06"), LocalDate.parse("2021-01-11"))
         )
 
@@ -395,17 +394,15 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            planlagt = Omsorgsdager(
-                ukedager = PlanUkedager(
-                    mandag = Duration.ofHours(5),
-                    tirsdag = Duration.ofHours(5),
-                    onsdag = Duration.ofHours(5),
-                    torsdag = null,
-                    fredag = Duration.ofHours(5)
-                )
+            erLiktHverUke = true,
+            ukedager = PlanUkedager(
+                mandag = Duration.ofHours(5),
+                tirsdag = Duration.ofHours(5),
+                onsdag = Duration.ofHours(5),
+                torsdag = null,
+                fredag = Duration.ofHours(5)
             )
         ).tilK9Tilsynsordning(
-            dagensDato = LocalDate.parse("2021-01-04"),
             periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08"))
         )
 
@@ -458,17 +455,15 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            planlagt = Omsorgsdager(
-                ukedager = PlanUkedager(
-                    mandag = Duration.ofHours(10),
-                    tirsdag = Duration.ofHours(10),
-                    onsdag = Duration.ofHours(10),
-                    torsdag = Duration.ofHours(10),
-                    fredag = Duration.ofHours(10)
-                )
+            erLiktHverUke = true,
+            ukedager = PlanUkedager(
+                mandag = Duration.ofHours(10),
+                tirsdag = Duration.ofHours(10),
+                onsdag = Duration.ofHours(10),
+                torsdag = Duration.ofHours(10),
+                fredag = Duration.ofHours(10)
             )
         ).tilK9Tilsynsordning(
-            dagensDato = LocalDate.parse("2021-01-04"),
             periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08"))
         )
 
@@ -501,100 +496,72 @@ class K9FormatTest {
     }
 
     @Test
-    fun `gitt omsorgstilbud med både historisk og planlagte omsorgsdager, forvent riktig mapping`() {
+    fun `gitt omsorgstilbud med 4 enkeltdager, forvent riktig mapping`() {
         val tilsynsordning = Omsorgstilbud(
-            historisk = Omsorgsdager(
-                enkeltdager = listOf(Enkeltdag(LocalDate.now().minusDays(1), Duration.ofHours(7)))
-            ),
-            planlagt = Omsorgsdager(
-                ukedager = PlanUkedager(
-                    mandag = Duration.ofHours(1),
-                    tirsdag = Duration.ofHours(1),
-                    onsdag = Duration.ofHours(1),
-                    torsdag = Duration.ofHours(1),
-                    fredag = Duration.ofHours(1)
+            erLiktHverUke = false,
+            enkeltdager = listOf(
+                Enkeltdag(
+                    LocalDate.parse("2021-01-01"),
+                    Duration.ofHours(4)
+                ),
+                Enkeltdag(
+                    LocalDate.parse("2021-01-02"),
+                    Duration.ofHours(4)
+                ),
+                Enkeltdag(
+                    LocalDate.parse("2021-01-03"),
+                    Duration.ofHours(4)
+                ),
+                Enkeltdag(
+                    LocalDate.parse("2021-01-04"),
+                    Duration.ofHours(4)
                 )
             )
         ).tilK9Tilsynsordning(Periode(LocalDate.now(), LocalDate.now().plusDays(7)))
 
-        assertEquals(7, tilsynsordning.perioder.size)
+        assertEquals(4, tilsynsordning.perioder.size)
     }
 
     @Test
-    fun `gitt omsorgstilbud med både historisk og planlagte omsorgsdager der historisk har dato lik eller etter dagens dato, forvent at den blir eksludert`() {
+    fun `Omsorgstilbud med ukedager blir som forventet k9format`(){
         val tilsynsordning = Omsorgstilbud(
-            historisk = Omsorgsdager(
-                enkeltdager = listOf(
-                    Enkeltdag(LocalDate.parse("2021-09-01"), Duration.ofHours(7)),
-                    Enkeltdag(LocalDate.parse("2021-09-02"), Duration.ofHours(7)),
-                    Enkeltdag(LocalDate.parse("2021-09-03"), Duration.ofHours(7))
-                )
-            ),
-            planlagt = Omsorgsdager(
-                ukedager = PlanUkedager(
-                    mandag = Duration.ofHours(1),
-                    tirsdag = Duration.ofHours(1),
-                    onsdag = Duration.ofHours(1),
-                    torsdag = Duration.ofHours(1),
-                    fredag = Duration.ofHours(1)
-                )
+            erLiktHverUke = true,
+            enkeltdager = null,
+            ukedager = PlanUkedager(
+                mandag = Duration.ofHours(1),
+                tirsdag = Duration.ofHours(2),
+                onsdag = Duration.ofHours(3),
+                torsdag = Duration.ofHours(4),
+                fredag = Duration.ofHours(5),
             )
-        ).tilK9Tilsynsordning(
-            Periode(LocalDate.parse("2021-09-03"), LocalDate.parse("2021-09-13")),
-            LocalDate.parse("2021-09-03")
-        )
+        ).tilK9Tilsynsordning(Periode(LocalDate.parse("2022-01-07"), LocalDate.parse("2022-01-14")))
 
-        assertEquals(9, tilsynsordning.perioder.size)
-    }
-
-    @Test
-    fun `Omsorgstilbud med ukedager både historisk og planlagt splitter på dagens dato`(){
-        val tilsynsordning = Omsorgstilbud(
-            historisk = Omsorgsdager(
-                ukedager = PlanUkedager(
-                    mandag = Duration.ofHours(1),
-                    tirsdag = Duration.ofHours(1),
-                    onsdag = Duration.ofHours(1),
-                    torsdag = Duration.ofHours(1),
-                    fredag = Duration.ofHours(1)
-                )
-            ),
-            planlagt = Omsorgsdager(
-                ukedager = PlanUkedager(
-                    mandag = Duration.ofHours(5),
-                    tirsdag = Duration.ofHours(5),
-                    onsdag = Duration.ofHours(5),
-                    torsdag = Duration.ofHours(5),
-                    fredag = Duration.ofHours(5)
-                )
-            )
-        ).tilK9Tilsynsordning(
-            Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08")),
-            LocalDate.parse("2021-01-06")
-        )
-
+        //language=json
         val forventet = """
             {
-              "perioder" : {
-                "2021-01-04/2021-01-04" : {
-                  "etablertTilsynTimerPerDag" : "PT1H"
+              "perioder": {
+                "2022-01-07/2022-01-07": {
+                  "etablertTilsynTimerPerDag": "PT5H"
                 },
-                "2021-01-05/2021-01-05" : {
-                  "etablertTilsynTimerPerDag" : "PT1H"
+                "2022-01-10/2022-01-10": {
+                  "etablertTilsynTimerPerDag": "PT1H"
                 },
-                "2021-01-06/2021-01-06" : {
-                  "etablertTilsynTimerPerDag" : "PT5H"
+                "2022-01-11/2022-01-11": {
+                  "etablertTilsynTimerPerDag": "PT2H"
                 },
-                "2021-01-07/2021-01-07" : {
-                  "etablertTilsynTimerPerDag" : "PT5H"
+                "2022-01-12/2022-01-12": {
+                  "etablertTilsynTimerPerDag": "PT3H"
                 },
-                "2021-01-08/2021-01-08" : {
-                  "etablertTilsynTimerPerDag" : "PT5H"
+                "2022-01-13/2022-01-13": {
+                  "etablertTilsynTimerPerDag": "PT4H"
+                },
+                "2022-01-14/2022-01-14": {
+                  "etablertTilsynTimerPerDag": "PT5H"
                 }
               }
             }
         """.trimIndent()
 
-        assertEquals(forventet, JsonUtils.toString(tilsynsordning))
+        JSONAssert.assertEquals(forventet, JsonUtils.toString(tilsynsordning), true)
     }
 }

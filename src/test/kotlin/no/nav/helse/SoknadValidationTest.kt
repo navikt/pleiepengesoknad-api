@@ -98,8 +98,9 @@ class SoknadValidationTest {
                 erAnsatt = true,
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 40.0,
-                    historiskArbeid = null,
-                    planlagtArbeid = null
+                    arbeidIPeriode = ArbeidIPeriode(
+                        jobberIPerioden = JobberIPeriodeSvar.NEI
+                    )
                 )
             )
         ),

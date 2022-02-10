@@ -14,30 +14,8 @@ import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
 import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.ArbeidIPeriode
-import no.nav.helse.soknad.Arbeidsforhold
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.JobberIPeriodeSvar
-import no.nav.helse.soknad.Næringstyper
-import no.nav.helse.soknad.Omsorgsdager
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
-import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubK9Mellomlagring
-import no.nav.helse.wiremock.stubK9MellomlagringHealth
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
-import no.nav.helse.wiremock.stubK9OppslagBarn
-import no.nav.helse.wiremock.stubK9OppslagSoker
-import no.nav.helse.wiremock.stubOppslagHealth
-import no.nav.helse.wiremock.stubSifInnsynApi
+import no.nav.helse.soknad.*
+import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -880,23 +858,12 @@ class ApplicationTest {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     jobberNormaltTimer = 37.5,
-                    historiskArbeid = ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.JA,
                         erLiktHverUke = false,
                         enkeltdager = listOf(
                             Enkeltdag(
                                 dato = LocalDate.parse("2021-01-01"),
-                                tid = Duration.ofHours(7).plusMinutes(30)
-                            )
-                        ),
-                        fasteDager = null
-                    ),
-                    planlagtArbeid = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = false,
-                        enkeltdager = listOf(
-                            Enkeltdag(
-                                dato = LocalDate.parse("2021-01-02"),
                                 tid = Duration.ofHours(7).plusMinutes(30)
                             )
                         ),
@@ -972,7 +939,7 @@ class ApplicationTest {
                     ),
                     arbeidsforhold = Arbeidsforhold(
                         jobberNormaltTimer = 40.0,
-                        historiskArbeid = ArbeidIPeriode(
+                        arbeidIPeriode = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.JA,
                             erLiktHverUke = false,
                             enkeltdager = listOf(
@@ -982,14 +949,7 @@ class ApplicationTest {
                                 )
                             ),
                             fasteDager = null
-                        ),
-                        planlagtArbeid = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.NEI,
-                            erLiktHverUke = null,
-                            enkeltdager = null,
-                            fasteDager = null,
-                            jobberProsent = 50.0
-                        ),
+                        )
                     )
                 )
             ).somJson()
@@ -1035,6 +995,7 @@ class ApplicationTest {
                     "aktørId": null,
                     "fodselsdato": null
                   },
+                  "arbeidsgivere" : [],
                   "medlemskap": {
                     "harBoddIUtlandetSiste12Mnd": false,
                     "skalBoIUtlandetNeste12Mnd": false,
@@ -1146,8 +1107,9 @@ class ApplicationTest {
                         "organisasjonsnummer" : 12345,
                         "arbeidsforhold" : {
                             "jobberNormaltTimer": 37.5,
-                            "historisk": null,
-                            "planlagt": null
+                            "arbeidIPeriode": {
+                              "jobberIPerioden" : "NEI"
+                            }
                         }
                       }  
                     ],
@@ -1269,93 +1231,6 @@ class ApplicationTest {
               ]
             }
             """.trimIndent()
-        )
-    }
-
-    @Test
-    fun `Sende søknad med omsorgstilbud planlagt er satt men både ukedager og enkeltdager er null`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "omsorgstilbud.planlagt.ukedager eller omsorgstilbud.planlagt.enkeltdager",
-                      "reason": "Dersom omsorgstilbud.planlagt er satt så må enten 'ukedager' eller 'enkeltdager' være satt.",
-                      "invalid_value": "enkeltdager = null, ukedager = null"
-                    }
-                  ]
-                }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils
-                .defaultSøknad(UUID.randomUUID().toString()).copy(
-                    frilans = null,
-                    selvstendigNæringsdrivende = null,
-                    arbeidsgivere = null,
-                    omsorgstilbud = Omsorgstilbud(
-                        planlagt = Omsorgsdager()
-                    ),
-                    vedlegg = listOf()
-                )
-                .somJson()
-        )
-    }
-
-    @Test
-    fun `Sende søknad med omsorgstilbud, der historiske omsorgstilbud inneholder datoer lik eller etter dagens dato`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedResponse = """
-                {
-                  "type": "/problem-details/invalid-request-parameters",
-                  "title": "invalid-request-parameters",
-                  "status": 400,
-                  "detail": "Requesten inneholder ugyldige paramtere.",
-                  "instance": "about:blank",
-                  "invalid_parameters": [
-                    {
-                      "type": "entity",
-                      "name": "omsorgstilbud.historisk.enkeltdager",
-                      "reason": "Historiske enkeltdager inneholder datoer som er enten lik eller senere enn dagens dato.",
-                      "invalid_value": "enkeltdager = [Enkeltdag(dato=${LocalDate.now()}, tid=PT7H)]"
-                    }
-                  ]
-                }
-            """.trimIndent(),
-            expectedCode = HttpStatusCode.BadRequest,
-            cookie = cookie,
-            requestEntity = SøknadUtils
-                .defaultSøknad(UUID.randomUUID().toString()).copy(
-                    fraOgMed = LocalDate.now(),
-                    tilOgMed = LocalDate.now().plusDays(1),
-                    omsorgstilbud = Omsorgstilbud(
-                        historisk = Omsorgsdager(
-                            enkeltdager = listOf(
-                                Enkeltdag(dato = LocalDate.now(), tid = Duration.ofHours(7))
-                            ),
-                        )
-                    ),
-                    vedlegg = listOf(),
-                    ferieuttakIPerioden = null,
-                    frilans = null,
-                    selvstendigNæringsdrivende = null,
-                    arbeidsgivere = null,
-                )
-                .somJson()
         )
     }
 

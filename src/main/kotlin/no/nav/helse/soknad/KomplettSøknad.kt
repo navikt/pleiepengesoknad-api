@@ -13,7 +13,7 @@ data class KomplettSøknad(
     val tilOgMed: LocalDate,
     val søker: Søker,
     val barn: BarnDetaljer,
-    val arbeidsgivere: List<ArbeidsforholdAnsatt>?,
+    val arbeidsgivere: List<ArbeidsforholdAnsatt>,
     var vedleggId : List<String> = listOf(),
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,

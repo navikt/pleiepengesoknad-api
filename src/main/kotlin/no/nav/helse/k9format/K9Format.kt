@@ -19,7 +19,6 @@ import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
 import java.time.DayOfWeek
 import java.time.Duration
-import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.streams.toList
 import no.nav.k9.søknad.Søknad as K9Søknad
@@ -32,13 +31,13 @@ import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.Tilsynsordning as K9Tilsynsordning
 const val DAGER_PER_UKE = 5
 private val k9FormatVersjon = Versjon.of("1.0.0")
 
-fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, dagensDato: LocalDate = LocalDate.now()): K9Søknad {
+fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     val søknadsperiode = Periode(fraOgMed, tilOgMed)
     val psb = PleiepengerSyktBarn()
         .medSøknadsperiode(søknadsperiode)
         .medBarn(barn.tilK9Barn())
         .medOpptjeningAktivitet(byggK9OpptjeningAktivitet())
-        .medArbeidstid(byggK9Arbeidstid(dagensDato))
+        .medArbeidstid(byggK9Arbeidstid())
         .medUttak(byggK9Uttak(søknadsperiode))
         .medBosteder(medlemskap.tilK9Bosteder())
         .medSøknadInfo(byggK9DataBruktTilUtledning())
@@ -48,7 +47,7 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker, dagensDato: Loca
     nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
 
     when {
-        omsorgstilbud != null -> psb.medTilsynsordning(omsorgstilbud.tilK9Tilsynsordning(søknadsperiode, dagensDato))
+        omsorgstilbud != null -> psb.medTilsynsordning(omsorgstilbud.tilK9Tilsynsordning(søknadsperiode))
         else -> psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
     }
 
@@ -116,72 +115,43 @@ fun tilK9Tilsynsordning0Timer(periode: Periode) = K9Tilsynsordning().apply {
     )
 }
 
-fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode, dagensDato: LocalDate = LocalDate.now()): K9Tilsynsordning =
+fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode): K9Tilsynsordning =
     K9Tilsynsordning().apply {
 
-        if (historisk == null && planlagt == null) return tilK9Tilsynsordning0Timer(periode)
+        if (enkeltdager == null && ukedager == null) return tilK9Tilsynsordning0Timer(periode)
 
-        historisk?.ukedager?.apply {
-            val gårsdagensDato = dagensDato.minusDays(1)
-            val periodeTilOgMed = if(gårsdagensDato.isBefore(periode.tilOgMed)) gårsdagensDato else periode.tilOgMed
-            periode.fraOgMed.datesUntil(periodeTilOgMed.plusDays(1)).toList()
-                .map { dato: LocalDate ->
-                    when(dato.dayOfWeek){
-                        DayOfWeek.MONDAY -> mandag
-                        DayOfWeek.TUESDAY -> tirsdag
-                        DayOfWeek.WEDNESDAY -> onsdag
-                        DayOfWeek.THURSDAY -> torsdag
-                        DayOfWeek.FRIDAY -> fredag
-                        else -> null
-                    }?.let {tilsynLengde: Duration ->
-                        leggeTilPeriode(
-                            Periode(dato, dato),
-                            TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
-                                Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(tilsynLengde)
-                            )
-                        )
-                    }
-                }
-        }
-
-        historisk?.enkeltdager?.forEach {
+        enkeltdager?.forEach { enkeltdag ->
             leggeTilPeriode(
-                Periode(it.dato, it.dato),
+                Periode(enkeltdag.dato, enkeltdag.dato),
                 TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
-                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it.tid)
+                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(enkeltdag.tid)
                 )
             )
         }
 
-        planlagt?.ukedager?.apply {
-            val periodeStart = if (dagensDato.isBefore(periode.fraOgMed)) periode.fraOgMed else dagensDato
-            periodeStart.datesUntil(periode.tilOgMed.plusDays(1)).toList()
-                .map { dato: LocalDate ->
-                    when (dato.dayOfWeek) {
-                        DayOfWeek.MONDAY -> mandag
-                        DayOfWeek.TUESDAY -> tirsdag
-                        DayOfWeek.WEDNESDAY -> onsdag
-                        DayOfWeek.THURSDAY -> torsdag
-                        DayOfWeek.FRIDAY -> fredag
+        ukedager?.let { ukedager ->
+            periode.fraOgMed.datesUntil(periode.tilOgMed.plusDays(1))
+                .toList()
+                .forEach { dato ->
+                    val tilsynslengde = when (dato.dayOfWeek) {
+                        DayOfWeek.MONDAY -> ukedager.mandag
+                        DayOfWeek.TUESDAY -> ukedager.tirsdag
+                        DayOfWeek.WEDNESDAY -> ukedager.onsdag
+                        DayOfWeek.THURSDAY -> ukedager.torsdag
+                        DayOfWeek.FRIDAY -> ukedager.fredag
                         else -> null
-                    }?.let { tilsynLengde: Duration ->
+                    }
+
+                    tilsynslengde?.let {
                         leggeTilPeriode(
                             Periode(dato, dato),
-                            TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
-                                Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(tilsynLengde)
-                            )
+                            TilsynPeriodeInfo()
+                                .medEtablertTilsynTimerPerDag(
+                                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it)
+                                )
                         )
                     }
                 }
-        }
-
-        planlagt?.enkeltdager?.forEach {
-            leggeTilPeriode(
-                Periode(it.dato, it.dato),
-                TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
-                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it.tid)
-                )
-            )
         }
     }
 
