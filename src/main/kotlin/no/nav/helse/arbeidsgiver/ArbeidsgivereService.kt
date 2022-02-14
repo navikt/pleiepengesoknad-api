@@ -20,16 +20,17 @@ class ArbeidsgivereService(
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate,
-        skalHentePrivateArbeidsgivere: Boolean
+        skalHentePrivateArbeidsgivere: Boolean,
+        skalHenteFrilansoppdrag: Boolean
     ): Arbeidsgivere {
         return try {
-            arbeidsgivereGateway.hentArbeidsgivere(idToken, callId, fraOgMed, tilOgMed, skalHentePrivateArbeidsgivere)
+            arbeidsgivereGateway.hentArbeidsgivere(idToken, callId, fraOgMed, tilOgMed, skalHentePrivateArbeidsgivere, skalHenteFrilansoppdrag)
         } catch (cause: Throwable) {
             when (cause) {
                 is TilgangNektetException -> throw cause
                 else -> {
                     logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
-                    Arbeidsgivere(emptyList(), emptyList())
+                    Arbeidsgivere(emptyList(), emptyList(), emptyList())
                 }
             }
         }
@@ -44,7 +45,7 @@ class ArbeidsgivereService(
             arbeidsgivereGateway.hentArbeidsgivere(idToken, callId, organisasjoner)
         } catch (cause: Throwable) {
             logger.error("Feil ved henting av arbeidsgivere, returnerer en tom liste", cause)
-            Arbeidsgivere(emptyList(), emptyList())
+            Arbeidsgivere(emptyList(), emptyList(), emptyList())
         }
     }
 }

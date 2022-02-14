@@ -8,7 +8,8 @@ data class ArbeidsgivereOppslagRespons (
 
 data class Arbeidsgivere (
     val organisasjoner: List<Organisasjon>,
-    val privateArbeidsgivere: List<PrivatArbeidsgiver>?
+    val privateArbeidsgivere: List<PrivatArbeidsgiver>?,
+    val frilansoppdrag: List<Frilansoppdrag>?
 )
 
 class Organisasjon (
@@ -18,9 +19,17 @@ class Organisasjon (
     val ansattTom: LocalDate? = null
 )
 
-
 data class PrivatArbeidsgiver (
     val offentligIdent: String,
+    val ansattFom: LocalDate? = null,
+    val ansattTom: LocalDate? = null
+)
+
+data class Frilansoppdrag (
+    val type: String,
+    val organisasjonsnummer: String? = null,
+    val navn: String? = null,
+    val offentligIdent: String? = null,
     val ansattFom: LocalDate? = null,
     val ansattTom: LocalDate? = null
 )

@@ -30,21 +30,19 @@ class ArbeidsgivereGateway(
         private const val HENTE_ARBEIDSGIVERE_MED_ORGANISASJONSNUMMER_OPERATION =
             "hente-arbeidsgivere-med-organisasjonsnummer"
         private val objectMapper = jacksonObjectMapper().k9SelvbetjeningOppslagKonfigurert()
-        private val arbeidsgivereAttributer = Pair(
-            "a", listOf(
-                "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
-                "arbeidsgivere[].organisasjoner[].navn",
-                "arbeidsgivere[].organisasjoner[].ansettelsesperiode"
-            )
+
+        private val arbeidsgivereAttributter = listOf(
+            "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
+            "arbeidsgivere[].organisasjoner[].navn",
+            "arbeidsgivere[].organisasjoner[].ansettelsesperiode"
         )
-        private val attributerMedPrivateArbeidsgivere = Pair(
-            "a", listOf(
-                "arbeidsgivere[].organisasjoner[].organisasjonsnummer",
-                "arbeidsgivere[].organisasjoner[].navn",
-                "private_arbeidsgivere[].ansettelsesperiode",
-                "private_arbeidsgivere[].offentlig_ident"
-            )
+
+        private val privateArbeidsgivereAttributter = listOf(
+            "private_arbeidsgivere[].ansettelsesperiode",
+            "private_arbeidsgivere[].offentlig_ident"
         )
+
+        private val frilansoppdragAttributter = listOf("frilansoppdrag[]")
 
     }
 
@@ -53,13 +51,20 @@ class ArbeidsgivereGateway(
         callId: CallId,
         fraOgMed: LocalDate,
         tilOgMed: LocalDate,
-        skalHentePrivateArbeidsgivere: Boolean
+        skalHentePrivateArbeidsgivere: Boolean,
+        skalHenteFrilansoppdrag: Boolean
     ): Arbeidsgivere {
+        var attributter = Pair("a", mutableListOf<String>())
+
+        arbeidsgivereAttributter.forEach { attributter.second.add(it) }
+        if(skalHentePrivateArbeidsgivere){ privateArbeidsgivereAttributter.forEach { attributter.second.add(it) } }
+        if(skalHenteFrilansoppdrag){ frilansoppdragAttributter.forEach { attributter.second.add(it) } }
+
         val arbeidsgivereUrl = Url.buildURL(
             baseUrl = baseUrl,
             pathParts = listOf("meg"),
             queryParameters = mapOf(
-                if(skalHentePrivateArbeidsgivere) attributerMedPrivateArbeidsgivere else arbeidsgivereAttributer,
+                attributter,
                 Pair("fom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(fraOgMed))),
                 Pair("tom", listOf(DateTimeFormatter.ISO_LOCAL_DATE.format(tilOgMed)))
             )
@@ -104,7 +109,8 @@ class ArbeidsgivereGateway(
             baseUrl = baseUrl,
             pathParts = listOf("arbeidsgivere"),
             queryParameters = mapOf(
-                arbeidsgivereAttributer, Pair("org", organisasjoner.map { it.verdi }),
+                Pair("a", arbeidsgivereAttributter),
+                Pair("org", organisasjoner.map { it.verdi }),
             )
         ).toString()
 
