@@ -56,9 +56,9 @@ class ArbeidsgivereGateway(
     ): Arbeidsgivere {
         var attributter = Pair("a", mutableListOf<String>())
 
-        arbeidsgivereAttributter.forEach { attributter.second.add(it) }
-        if(skalHentePrivateArbeidsgivere){ privateArbeidsgivereAttributter.forEach { attributter.second.add(it) } }
-        if(skalHenteFrilansoppdrag){ frilansoppdragAttributter.forEach { attributter.second.add(it) } }
+        attributter.second.addAll(arbeidsgivereAttributter)
+        if(skalHentePrivateArbeidsgivere) attributter.second.addAll(privateArbeidsgivereAttributter)
+        if(skalHenteFrilansoppdrag) attributter.second.addAll(frilansoppdragAttributter)
 
         val arbeidsgivereUrl = Url.buildURL(
             baseUrl = baseUrl,
