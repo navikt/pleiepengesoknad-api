@@ -7,11 +7,7 @@ import io.ktor.routing.*
 import no.nav.helse.ARBEIDSGIVER_URL
 import no.nav.helse.Configuration
 import no.nav.helse.ORGANISASJONER_URL
-import no.nav.helse.dusseldorf.ktor.core.ParameterType
-import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
-import no.nav.helse.dusseldorf.ktor.core.Violation
-import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
+import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import no.nav.helse.general.oppslag.TilgangNektetException
@@ -24,6 +20,7 @@ private const val fraOgMedQueryName = "fra_og_med"
 private const val tilOgMedQueryName = "til_og_med"
 const val orgQueryName = "org"
 private const val privateArbeidsgivereQueryName = "private_arbeidsgivere"
+private const val frilansoppdragQueryName = "frilansoppdrag"
 
 fun Route.arbeidsgiverApis(
     arbeidsgivereService: ArbeidsgivereService,
@@ -47,7 +44,8 @@ fun Route.arbeidsgiverApis(
                     callId = call.getCallId(),
                     fraOgMed = LocalDate.parse(call.request.queryParameters[fraOgMedQueryName]),
                     tilOgMed = LocalDate.parse(call.request.queryParameters[tilOgMedQueryName]),
-                    skalHentePrivateArbeidsgivere = call.request.queryParameters[privateArbeidsgivereQueryName].toBoolean()
+                    skalHentePrivateArbeidsgivere = call.request.queryParameters[privateArbeidsgivereQueryName].toBoolean(),
+                    skalHenteFrilansoppdrag  = call.request.queryParameters[frilansoppdragQueryName].toBoolean()
                 )
 
                 val unikeOrganisasjoner = arbeidsgivere.organisasjoner.distinctBy { it.organisasjonsnummer }
