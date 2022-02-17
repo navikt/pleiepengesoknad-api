@@ -160,7 +160,8 @@ class ApplicationTest {
                     "ansattTom": null
                   }
                 ],
-                "privateArbeidsgivere": null
+                "privateArbeidsgivere": null,
+                "frilansoppdrag": null
 
             }
             """.trimIndent(),
@@ -192,7 +193,8 @@ class ApplicationTest {
                     "ansattTom": null
                   }
                 ],
-                "privateArbeidsgivere": null
+                "privateArbeidsgivere": null,
+                "frilansoppdrag": null
 
             }
             """.trimIndent(),
@@ -218,7 +220,8 @@ class ApplicationTest {
                   "ansattTom": null
                 }
               ],
-              "privateArbeidsgivere": null
+              "privateArbeidsgivere": null,
+              "frilansoppdrag": null
             }
             """.trimIndent(),
             cookie = getAuthCookie(fnrMedToArbeidsforhold)
@@ -226,32 +229,50 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Hente arbeidsgivere inkludert private`() {
+    fun `Hente arbeidsgivere inkludert private og frilans`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
-            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
+            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true&frilansoppdrag=true",
             expectedCode = HttpStatusCode.OK,
             expectedResponse = """
             {
               "organisasjoner": [
                 {
-                  "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
                   "organisasjonsnummer": "913548221",
+                  "navn": "EQUINOR AS, AVD STATOIL SOKKELVIRKSOMHET ÆØÅ",
                   "ansattFom": null,
                   "ansattTom": null
                 },
                 {
-                  "navn": "NAV, AVD WALDEMAR THRANES GATE",
                   "organisasjonsnummer": "984054564",
+                  "navn": "NAV, AVD WALDEMAR THRANES GATE",
                   "ansattFom": null,
                   "ansattTom": null
                 }
               ],
               "privateArbeidsgivere": [
                 {
-                    "offentligIdent": "10047206508",
-                    "ansattFom": "2014-07-01",
-                    "ansattTom": "2015-12-31"
+                  "offentligIdent": "10047206508",
+                  "ansattFom": "2014-07-01",
+                  "ansattTom": "2015-12-31"
+                }
+              ],
+              "frilansoppdrag": [
+                {
+                  "type": "Person",
+                  "organisasjonsnummer": null,
+                  "navn": null,
+                  "offentligIdent": "805824352",
+                  "ansattFom": "2020-01-01",
+                  "ansattTom": "2022-02-28"
+                },
+                {
+                  "type": "Organisasjon",
+                  "organisasjonsnummer": "123456789",
+                  "navn": "DNB, FORSIKRING",
+                  "offentligIdent": null,
+                  "ansattFom": "2020-01-01",
+                  "ansattTom": "2022-02-28"
                 }
               ]
             }
@@ -271,7 +292,8 @@ class ApplicationTest {
             """
             {
                 "organisasjoner": [],
-                "privateArbeidsgivere": null
+                "privateArbeidsgivere": null,
+                "frilansoppdrag" : null
 
             }
             """.trimIndent(),
@@ -297,7 +319,8 @@ class ApplicationTest {
                     "ansattTom": null
                   }
                 ],
-                "privateArbeidsgivere": null
+                "privateArbeidsgivere": null,
+                "frilansoppdrag": null
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)
@@ -370,7 +393,9 @@ class ApplicationTest {
             expectedResponse = """
             {
                 "organisasjoner": [],
-                "privateArbeidsgivere": []
+                "privateArbeidsgivere": [],
+                "frilansoppdrag": []
+                
             }
             """.trimIndent(),
             cookie = getAuthCookie(gyldigFodselsnummerA)

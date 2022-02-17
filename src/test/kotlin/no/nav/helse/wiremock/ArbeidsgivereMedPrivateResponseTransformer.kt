@@ -48,12 +48,27 @@ private fun getResponse(ident: String): String {
                     "organisasjonsnummer": "984054564"
                   }
                 ],
-                "private_arbeidsgivere" : [
-                    {
-                        "offentlig_ident": "10047206508",
-                        "ansatt_fom": "2014-07-01",
-                        "ansatt_tom": "2015-12-31"
-                    }
+                "private_arbeidsgivere": [
+                  {
+                    "offentlig_ident": "10047206508",
+                    "ansatt_fom": "2014-07-01",
+                    "ansatt_tom": "2015-12-31"
+                  }
+                ],
+                "frilansoppdrag": [
+                  {
+                    "type": "Person",
+                    "ansatt_fom": "2020-01-01",
+                    "ansatt_tom": "2022-02-28",
+                    "offentlig_ident": "805824352"
+                  },
+                  {
+                    "type": "Organisasjon",
+                    "ansatt_fom": "2020-01-01",
+                    "ansatt_tom": "2022-02-28",
+                    "organisasjonsnummer": "123456789",
+                    "navn": "DNB, FORSIKRING"
+                  }
                 ]
               }
             }
