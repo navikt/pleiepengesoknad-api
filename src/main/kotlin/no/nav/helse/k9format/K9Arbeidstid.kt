@@ -36,7 +36,7 @@ internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
     }
 }
 
-fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
+fun List<Arbeidsgiver>.tilK9Arbeidstaker(
     periode: Periode
 ): List<Arbeidstaker> {
     return this.map {
@@ -59,10 +59,18 @@ fun Arbeidsforhold?.beregnK9ArbeidstidInfo(
         )
     )
 
-    val arbeidstidInfo = ArbeidstidInfo()
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
+    val arbeidstidInfo = ArbeidstidInfo()
 
-    arbeidIPeriode.beregnK9ArbeidstidInfo(
+    if(!harFraværIPeriode) return ArbeidstidInfo().medPerioder(
+        mapOf(
+            Periode(søknadsperiode.fraOgMed, søknadsperiode.tilOgMed) to ArbeidstidPeriodeInfo()
+                .medFaktiskArbeidTimerPerDag(normalTimerPerDag)
+                .medJobberNormaltTimerPerDag(normalTimerPerDag)
+        )
+    )
+
+    arbeidIPeriode?.beregnK9ArbeidstidInfo(
         fraOgMed = søknadsperiode.fraOgMed,
         tilOgMed = søknadsperiode.tilOgMed,
         arbeidstidInfo = arbeidstidInfo,

@@ -14,8 +14,51 @@ import kotlin.test.Test
 class K9FormatArbeidstidTest {
 
     @Test
+    fun `Dersom harFraværIPeriode er false bruker man jobberNormaltTimer for planlagt og faktisk timer`() {
+        val arbeidsforholdAnsatt = Arbeidsgiver(
+            navn = "Org",
+            organisasjonsnummer = "917755736",
+            erAnsatt = true,
+            arbeidsforhold = Arbeidsforhold(
+                jobberNormaltTimer = 37.5,
+                arbeidIPeriode = null,
+                harFraværIPeriode = false
+            )
+        )
+
+        val søknad = SøknadUtils.defaultSøknad().copy(
+            fraOgMed = LocalDate.parse("2021-01-04"),
+            tilOgMed = LocalDate.parse("2021-01-06"),
+            arbeidsgivere = listOf(arbeidsforholdAnsatt),
+            omsorgstilbud = null,
+            utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(skalOppholdeSegIUtlandetIPerioden = false, opphold = listOf()),
+            ferieuttakIPerioden = null,
+            frilans = null,
+            selvstendigNæringsdrivende = null
+        )
+
+        val k9Format = søknad.tilK9Format(ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")), SøknadUtils.søker)
+        søknad.validate(k9Format)
+
+        val forventetJson = """
+            {
+              "perioder": {
+                "2021-01-04/2021-01-06": {
+                  "faktiskArbeidTimerPerDag": "PT7H30M",
+                  "jobberNormaltTimerPerDag": "PT7H30M"
+                }
+              }
+            }
+        """.trimIndent()
+
+        val json = JSONObject(k9Format.somJson()).getJSONObject("ytelse").getJSONObject("arbeidstid")
+            .getJSONArray("arbeidstakerList").getJSONObject(0).getJSONObject("arbeidstidInfo")
+        JSONAssert.assertEquals(JSONObject(forventetJson), json, true)
+    }
+
+    @Test
     fun `Dersom søker jobber i perioden og det er oppgitt en enkeltdag, forventer man at resten av perioden blir fylt med 0 timer`() {
-        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+        val arbeidsforholdAnsatt = Arbeidsgiver(
             navn = "Org",
             organisasjonsnummer = "917755736",
             erAnsatt = true,
@@ -32,7 +75,8 @@ class K9FormatArbeidstidTest {
                         )
                     ),
                     fasteDager = null
-                )
+                ),
+                harFraværIPeriode = true
             )
         )
 
@@ -76,7 +120,7 @@ class K9FormatArbeidstidTest {
 
     @Test
     fun `Dersom søker jobber og har oppgitt full plan, forventer man at perioden blir fylt`() {
-        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+        val arbeidsforholdAnsatt = Arbeidsgiver(
             navn = "Org",
             organisasjonsnummer = "917755736",
             erAnsatt = true,
@@ -93,7 +137,8 @@ class K9FormatArbeidstidTest {
                         torsdag = Duration.ofHours(6).plusMinutes(30),
                         fredag = Duration.ofHours(7).plusMinutes(30)
                     )
-                )
+                ),
+                harFraværIPeriode = true
             )
         )
 
@@ -139,7 +184,7 @@ class K9FormatArbeidstidTest {
 
     @Test
     fun `Dersom søker jobber og har oppgitt plan med noen hull, forventer man at perioden blir fylt og dagene som ikke er oppgitt får 0 timer`() {
-        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+        val arbeidsforholdAnsatt = Arbeidsgiver(
             navn = "Org",
             organisasjonsnummer = "917755736",
             erAnsatt = true,
@@ -156,7 +201,8 @@ class K9FormatArbeidstidTest {
                         torsdag = null,
                         fredag = Duration.ofHours(7).plusMinutes(30)
                     )
-                )
+                ),
+                harFraværIPeriode = true
             )
         )
 
@@ -206,7 +252,7 @@ class K9FormatArbeidstidTest {
 
     @Test
     fun `Dersom søker ikke jobber i perioden, forventer man at perioden blir fylt med 0 faktiskArbeidTimerPerDag`() {
-        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+        val arbeidsforholdAnsatt = Arbeidsgiver(
             navn = "Org",
             organisasjonsnummer = "917755736",
             erAnsatt = true,
@@ -217,7 +263,8 @@ class K9FormatArbeidstidTest {
                     erLiktHverUke = null,
                     enkeltdager = null,
                     fasteDager = null
-                )
+                ),
+                harFraværIPeriode = true
             )
         )
 
@@ -253,7 +300,7 @@ class K9FormatArbeidstidTest {
 
     @Test
     fun `Dersom søker har sluttet før perioden og arbeidsforhold=null, forventer man at perioden er fylt med 0-0 timer`() {
-        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+        val arbeidsforholdAnsatt = Arbeidsgiver(
             navn = "Org",
             organisasjonsnummer = "917755736",
             erAnsatt = false,
@@ -295,7 +342,7 @@ class K9FormatArbeidstidTest {
 
     @Test
     fun `Kombinasjon av selvstending, ansatt og frilans med arbeidsforhold=null-- Forventer en periode per arbeid med 0-0 timer`() {
-        val arbeidsforholdAnsatt = ArbeidsforholdAnsatt(
+        val arbeidsforholdAnsatt = Arbeidsgiver(
             navn = "Org",
             organisasjonsnummer = "917755736",
             erAnsatt = false,
@@ -402,6 +449,7 @@ class K9FormatArbeidstidTest {
         val arbeidsforhold = Arbeidsforhold(
             jobberNormaltTimer = 37.5,
             arbeidIPeriode = arbeidIPeriode,
+            harFraværIPeriode = true
         )
 
         val frilans = Frilans(

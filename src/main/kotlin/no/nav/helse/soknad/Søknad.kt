@@ -18,7 +18,7 @@ data class Søknad(
     val mottatt: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC),
     val språk: Språk? = null,
     val barn: BarnDetaljer,
-    val arbeidsgivere: List<ArbeidsforholdAnsatt>,
+    val arbeidsgivere: List<Arbeidsgiver>,
     val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
@@ -194,8 +194,3 @@ enum class Årsak {
     BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD,
     ANNET,
 }
-
-data class Arbeidsforhold(
-    val jobberNormaltTimer: Double,
-    val arbeidIPeriode: ArbeidIPeriode,
-)

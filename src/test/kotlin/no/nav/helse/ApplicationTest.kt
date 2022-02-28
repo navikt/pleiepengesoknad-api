@@ -893,7 +893,8 @@ class ApplicationTest {
                             )
                         ),
                         fasteDager = null
-                    )
+                    ),
+                    harFraværIPeriode = true
                 )
             )
         )
@@ -974,7 +975,8 @@ class ApplicationTest {
                                 )
                             ),
                             fasteDager = null
-                        )
+                        ),
+                        harFraværIPeriode = true
                     )
                 )
             ).somJson()
@@ -1128,13 +1130,15 @@ class ApplicationTest {
                     "tilOgMed": "1990-09-28",
                     "arbeidsgivere" : [
                       {
+                        "type": "Organisasjon",
                         "navn" : "  ",
                         "organisasjonsnummer" : 12345,
                         "arbeidsforhold" : {
                             "jobberNormaltTimer": 37.5,
                             "arbeidIPeriode": {
                               "jobberIPerioden" : "NEI"
-                            }
+                            },
+                            "harFraværIPeriode" : true
                         }
                       }  
                     ],
@@ -1177,13 +1181,13 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.arbeidsforholdAnsatt[0].organisasjonsnummer",
+                  "name": "arbeidsgivere[0].organisasjonsnummer",
                   "reason": "Ikke gyldig organisasjonsnummer.",
                   "invalid_value": "12345"
                 },
                 {
                   "type": "entity",
-                  "name": "arbeidsgivere.arbeidsforholdAnsatt[0].navn",
+                  "name": "arbeidsgivere[0].navn",
                   "reason": "Navnet på organisasjonen kan ikke være tomt eller kun whitespace.",
                   "invalid_value": "  "
                 },

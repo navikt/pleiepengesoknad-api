@@ -92,7 +92,7 @@ class SoknadValidationTest {
             navn = null
         ),
         arbeidsgivere = listOf(
-            ArbeidsforholdAnsatt(
+            Arbeidsgiver(
                 navn = "Org",
                 organisasjonsnummer = "917755736",
                 erAnsatt = true,
@@ -100,7 +100,8 @@ class SoknadValidationTest {
                     jobberNormaltTimer = 40.0,
                     arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.NEI
-                    )
+                    ),
+                    harFraværIPeriode = false
                 )
             )
         ),
