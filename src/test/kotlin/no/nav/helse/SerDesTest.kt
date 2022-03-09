@@ -46,7 +46,8 @@ internal class SerDesTest {
                 "fødselsnummer": "03028104560",
                 "navn": "Barn Barnesen",
                 "fødselsdato" : "2018-01-01",
-                "aktørId" : null
+                "aktørId" : null,
+                "årsakManglerIdentitetsnummer": null
               },
               "fraOgMed": "2021-01-01",
               "tilOgMed": "2021-10-01",
@@ -300,7 +301,8 @@ internal class SerDesTest {
                 "fødselsnummer": "03028104560",
                 "navn": "Barn Barnesen",
                 "aktørId": "12345",
-                "fødselsdato" : "2018-01-01"
+                "fødselsdato" : "2018-01-01",
+                "årsakManglerIdentitetsnummer" : null
               },
               "fraOgMed": "2020-01-01",
               "tilOgMed": "2020-02-01",
