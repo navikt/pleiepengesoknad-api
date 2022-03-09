@@ -66,7 +66,15 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
 
 fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
 
-fun BarnDetaljer.tilK9Barn(): K9Barn = K9Barn().medNorskIdentitetsnummer(NorskIdentitetsnummer.of(fødselsnummer!!))
+fun BarnDetaljer.tilK9Barn(): K9Barn {
+    val k9Barn = K9Barn()
+
+    if(this.fødselsnummer != null){
+        k9Barn.medNorskIdentitetsnummer(NorskIdentitetsnummer.of(this.fødselsnummer))
+    } else k9Barn.medFødselsdato(this.fødselsdato)
+
+    return k9Barn
+}
 
 fun Søknad.byggK9DataBruktTilUtledning(): DataBruktTilUtledning = DataBruktTilUtledning(
     harForståttRettigheterOgPlikter,

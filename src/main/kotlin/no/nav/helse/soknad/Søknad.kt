@@ -81,10 +81,7 @@ data class Søknad(
 fun URL.vedleggId() = this.toString().substringAfterLast("/")
 
 private fun List<Barn>.hentIdentitetsnummerForBarn(aktørId: String?): String? {
-    this.forEach {
-        if (it.aktørId == aktørId) return it.identitetsnummer
-    }
-    return null
+    return this.firstOrNull(){ it.aktørId == aktørId}?.identitetsnummer
 }
 
 enum class BarnRelasjon(val utskriftsvennlig: String) {

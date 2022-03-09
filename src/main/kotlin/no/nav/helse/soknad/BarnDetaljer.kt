@@ -14,7 +14,8 @@ data class BarnDetaljer(
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fødselsdato: LocalDate?,
     val aktørId: String?,
-    val navn: String?
+    val navn: String?,
+    val årsakManglerIdentitetsnummer: ÅrsakManglerIdentitetsnummer? = null
 ) {
     override fun toString(): String {
         return "BarnDetaljer(aktørId=***, navn=***, fodselsdato=***"
@@ -23,23 +24,42 @@ data class BarnDetaljer(
     fun manglerIdentitetsnummer(): Boolean = fødselsnummer.isNullOrEmpty()
 
     infix fun oppdaterFødselsnummer(fødselsnummer: String?){
-        logger.info("Oppdaterer fnr på barn")
+        logger.info("Forsøker å oppdaterer fnr på barn")
         this.fødselsnummer = fødselsnummer
     }
+}
+
+enum class ÅrsakManglerIdentitetsnummer {
+    NYFØDT,
+    BARNET_BOR_I_UTLANDET,
+    ANNET
 }
 
 internal fun BarnDetaljer.validate(): MutableSet<Violation> {
     val violations = mutableSetOf<Violation>()
 
     if(fødselsnummer.isNullOrEmpty()){
-        violations.add(
-            Violation(
-                parameterName = "barn.fødselsnummer",
-                parameterType = ParameterType.ENTITY,
-                reason = "Fødselsnummer må være satt",
-                invalidValue = fødselsnummer
+        if(årsakManglerIdentitetsnummer == null){
+            violations.add(
+                Violation(
+                    parameterName = "barn.årsakManglerIdentitetsnummer",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "årsakManglerIdentitetsnummer må være satt når fødselsnummer er null",
+                    invalidValue = årsakManglerIdentitetsnummer
+                )
             )
-        )
+        }
+
+        if(fødselsdato == null){
+            violations.add(
+                Violation(
+                    parameterName = "barn.fødselsdato",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "fødselsdato må være satt når fødselsnummer er null",
+                    invalidValue = fødselsdato
+                )
+            )
+        }
     }
 
     if (fødselsnummer != null && !fødselsnummer!!.erGyldigNorskIdentifikator()) {
