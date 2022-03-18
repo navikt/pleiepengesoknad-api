@@ -7,12 +7,13 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class SøkerTest {
+
     @Test
-    fun `En person som fyller 18 i morgen kan ikke søke`() {
+    fun `En person som fyller 18 i overimorgen kan ikke søke`() {
         val soker = Søker(
             aktørId = "1234",
             fødselsnummer = "29099012345",
-            fødselsdato = LocalDate.now().minusYears(18).plusDays(1)
+            fødselsdato = LocalDate.now().minusYears(18).plusDays(2)
         )
         assertFalse(soker.myndig)
     }

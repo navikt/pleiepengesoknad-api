@@ -35,7 +35,7 @@ class SøknadUtils {
             barnRelasjon = BarnRelasjon.ANNET,
             barnRelasjonBeskrivelse = "Gudfar til barnet",
             arbeidsgivere = listOf(
-                ArbeidsforholdAnsatt(
+                Arbeidsgiver(
                     navn = "Org",
                     organisasjonsnummer = "917755736",
                     erAnsatt = true,
@@ -48,10 +48,11 @@ class SøknadUtils {
                             fasteDager = PlanUkedager(
                                 mandag = Duration.ofHours(7).plusMinutes(30)
                             )
-                        )
+                        ),
+                        harFraværIPeriode = true
                     )
                 ),
-                ArbeidsforholdAnsatt(
+                Arbeidsgiver(
                     navn = "JobberIkkeHerLenger",
                     organisasjonsnummer = "977155436",
                     erAnsatt = false,
@@ -98,7 +99,8 @@ class SøknadUtils {
                         fasteDager = PlanUkedager(
                             mandag = Duration.ofHours(7).plusMinutes(30)
                         )
-                    )
+                    ),
+                    harFraværIPeriode = true
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
@@ -228,7 +230,8 @@ class SøknadUtils {
                         fasteDager = PlanUkedager(
                             mandag = Duration.ofHours(7).plusMinutes(30)
                         )
-                    )
+                    ),
+                    harFraværIPeriode = true
                 )
             ),
             harVærtEllerErVernepliktig = true

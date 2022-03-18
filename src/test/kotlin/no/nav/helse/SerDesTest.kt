@@ -59,6 +59,7 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode": null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 40.0,
+                    "harFraværIPeriode": true,
                     "arbeidIPeriode": {
                       "jobberIPerioden": "JA",
                       "jobberProsent": null,
@@ -137,6 +138,7 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "jobberNormaltTimer": 40.0,
+                  "harFraværIPeriode": true,
                   "arbeidIPeriode": {
                     "jobberIPerioden": "JA",
                     "jobberProsent": null,
@@ -233,6 +235,7 @@ internal class SerDesTest {
                 "jobberFortsattSomFrilans": true,
                 "arbeidsforhold": {
                   "jobberNormaltTimer": 40.0,
+                  "harFraværIPeriode": true,
                   "arbeidIPeriode": {
                     "jobberIPerioden": "JA",
                     "jobberProsent": null,
@@ -314,6 +317,7 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode" : null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 30.0,
+                    "harFraværIPeriode": true,
                     "arbeidIPeriode": {
                       "jobberIPerioden": "NEI",
                       "jobberProsent": null,
@@ -377,6 +381,7 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "jobberNormaltTimer": 40.0,
+                  "harFraværIPeriode": true,
                   "arbeidIPeriode": {
                     "jobberIPerioden": "NEI",
                     "jobberProsent": null,
@@ -467,6 +472,7 @@ internal class SerDesTest {
                   "sluttdato": null,
                   "arbeidsforhold": {
                     "jobberNormaltTimer": 40.0,
+                    "harFraværIPeriode": true,
                     "arbeidIPeriode": {
                       "jobberProsent": 50.0,
                       "enkeltdager": [],
@@ -506,7 +512,7 @@ internal class SerDesTest {
                 fornavn = "Ola"
             ),
             arbeidsgivere = listOf(
-                ArbeidsforholdAnsatt(
+                Arbeidsgiver(
                     navn = "Org",
                     organisasjonsnummer = "917755736",
                     erAnsatt = true,
@@ -514,7 +520,8 @@ internal class SerDesTest {
                         jobberNormaltTimer = 30.0,
                         arbeidIPeriode = ArbeidIPeriode(
                             jobberIPerioden = JobberIPeriodeSvar.NEI
-                        )
+                        ),
+                        harFraværIPeriode = true
                     )
                 )
             ),
@@ -553,7 +560,8 @@ internal class SerDesTest {
                     jobberNormaltTimer = 40.0,
                     arbeidIPeriode = ArbeidIPeriode(
                         jobberIPerioden = JobberIPeriodeSvar.NEI
-                    )
+                    ),
+                    harFraværIPeriode = true
                 )
             ),
             medlemskap = Medlemskap(
@@ -661,7 +669,8 @@ internal class SerDesTest {
                         erLiktHverUke = true,
                         enkeltdager = listOf(),
                         fasteDager = null
-                    )
+                    ),
+                    harFraværIPeriode = true
                 )
             ),
             harVærtEllerErVernepliktig = true,

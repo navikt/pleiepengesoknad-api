@@ -7,7 +7,7 @@ import no.nav.helse.soknad.Arbeidsforhold
 import no.nav.helse.soknad.JobberIPeriodeSvar
 
 fun Arbeidsforhold.valider(path: String) = mutableSetOf<Violation>().apply {
-    addAll(arbeidIPeriode.valider("$path.arbeidsforhold.arbeidIPeriode"))
+    arbeidIPeriode?.let { addAll(arbeidIPeriode.valider("$path.arbeidsforhold.arbeidIPeriode")) }
 }
 
 fun ArbeidIPeriode.valider(path: String): MutableSet<Violation> {

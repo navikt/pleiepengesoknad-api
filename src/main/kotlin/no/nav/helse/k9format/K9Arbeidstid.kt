@@ -36,7 +36,7 @@ internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
     }
 }
 
-fun List<ArbeidsforholdAnsatt>.tilK9Arbeidstaker(
+fun List<Arbeidsgiver>.tilK9Arbeidstaker(
     periode: Periode
 ): List<Arbeidstaker> {
     return this.map {
@@ -59,10 +59,18 @@ fun Arbeidsforhold?.beregnK9ArbeidstidInfo(
         )
     )
 
-    val arbeidstidInfo = ArbeidstidInfo()
     val normalTimerPerDag = jobberNormaltTimer.tilTimerPerDag().tilDuration()
+    val arbeidstidInfo = ArbeidstidInfo()
 
-    arbeidIPeriode.beregnK9ArbeidstidInfo(
+    if(!harFraværIPeriode) return ArbeidstidInfo().medPerioder(
+        mapOf(
+            Periode(søknadsperiode.fraOgMed, søknadsperiode.tilOgMed) to ArbeidstidPeriodeInfo()
+                .medFaktiskArbeidTimerPerDag(normalTimerPerDag)
+                .medJobberNormaltTimerPerDag(normalTimerPerDag)
+        )
+    )
+
+    arbeidIPeriode?.beregnK9ArbeidstidInfo(
         fraOgMed = søknadsperiode.fraOgMed,
         tilOgMed = søknadsperiode.tilOgMed,
         arbeidstidInfo = arbeidstidInfo,
@@ -129,14 +137,7 @@ fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
 
     val perioder: List<Pair<Periode, ArbeidstidPeriodeInfo>> =
         periodeFraOgMed.ukedagerTilOgMed(periodeTilOgMed).map { dato ->
-            var faktiskArbeidstimer = when (dato.dayOfWeek) {
-                DayOfWeek.MONDAY -> this.mandag ?: NULL_ARBEIDSTIMER
-                DayOfWeek.TUESDAY -> this.tirsdag ?: NULL_ARBEIDSTIMER
-                DayOfWeek.WEDNESDAY -> this.onsdag ?: NULL_ARBEIDSTIMER
-                DayOfWeek.THURSDAY -> this.torsdag ?: NULL_ARBEIDSTIMER
-                DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
-                else -> NULL_ARBEIDSTIMER
-            }
+            var faktiskArbeidstimer = this.timerGittUkedag(dato.dayOfWeek)
             startdato?.let { if (dato.isBefore(startdato)) faktiskArbeidstimer = NULL_ARBEIDSTIMER }
             sluttdato?.let { if (dato.isAfter(sluttdato)) faktiskArbeidstimer = NULL_ARBEIDSTIMER }
             Pair(
@@ -148,6 +149,17 @@ fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
         }
 
     return perioder
+}
+
+private fun PlanUkedager.timerGittUkedag(dag: DayOfWeek): Duration {
+   return when (dag) {
+        DayOfWeek.MONDAY -> this.mandag ?: NULL_ARBEIDSTIMER
+        DayOfWeek.TUESDAY -> this.tirsdag ?: NULL_ARBEIDSTIMER
+        DayOfWeek.WEDNESDAY -> this.onsdag ?: NULL_ARBEIDSTIMER
+        DayOfWeek.THURSDAY -> this.torsdag ?: NULL_ARBEIDSTIMER
+        DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
+        else -> NULL_ARBEIDSTIMER
+    }
 }
 
 fun LocalDate.ukedagerTilOgMed(tilOgMed: LocalDate): List<LocalDate> = datesUntil(tilOgMed.plusDays(1))

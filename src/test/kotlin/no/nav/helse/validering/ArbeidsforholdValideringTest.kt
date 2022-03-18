@@ -13,7 +13,8 @@ class ArbeidsforholdValideringTest {
         jobberNormaltTimer = 33.0,
         arbeidIPeriode = ArbeidIPeriode(
             jobberIPerioden = JobberIPeriodeSvar.NEI
-        )
+        ),
+        harFraværIPeriode = false
     )
 
     @Test
