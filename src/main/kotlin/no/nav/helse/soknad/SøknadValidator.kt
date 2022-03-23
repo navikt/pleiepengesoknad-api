@@ -150,15 +150,6 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     violations.addAll(nullSjekk(medlemskap.skalBoIUtlandetNeste12Mnd, "medlemskap.skalBoIUtlandetNeste12Mnd"))
     violations.addAll(validerBosted(medlemskap.utenlandsoppholdNeste12Mnd))
 
-    if (utenlandsoppholdIPerioden != null) {
-        violations.addAll(
-            nullSjekk(
-                utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden,
-                "utenlandsoppholdIPerioden.skalOppholdeSegIUtlandetIPerioden"
-            )
-        )
-    }
-
     violations.addAll(validerUtenladsopphold(utenlandsoppholdIPerioden.opphold))
     violations.addAll(validerFerieuttakIPerioden(ferieuttakIPerioden))
     violations.addAll(nullSjekk(harMedsøker, "harMedsøker"))

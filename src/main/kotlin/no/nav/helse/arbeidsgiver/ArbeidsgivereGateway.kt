@@ -43,7 +43,6 @@ class ArbeidsgivereGateway(
         )
 
         private val frilansoppdragAttributter = listOf("frilansoppdrag[]")
-
     }
 
     internal suspend fun hentArbeidsgivere(

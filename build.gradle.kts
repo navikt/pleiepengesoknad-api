@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val dusseldorfKtorVersion = "3.1.6.7-7d29e37"
+val dusseldorfKtorVersion = "3.1.6.8-248832c"
 val ktorVersion = ext.get("ktorVersion").toString()
 val k9FormatVersion = "5.6"
 val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
@@ -10,14 +10,15 @@ val kafkaVersion = ext.get("kafkaVersion").toString() // Alligned med version fr
 val mainClass = "no.nav.helse.AppKt"
 
 val fuelVersion = "2.3.1"
+val lettuceVersion = "6.1.8.RELEASE"
 
 plugins {
     kotlin("jvm") version "1.6.10"
-    id("com.github.johnrengelman.shadow") version "7.1.1"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 buildscript {
-    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/109ae9ba66daf97083e807d314a515fd72d6e69c/gradle/dusseldorf-ktor.gradle.kts")
+    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/248832c3f3f7518a5cfe51cbc0c063ca73a98f81/gradle/dusseldorf-ktor.gradle.kts")
 }
 
 dependencies {
@@ -42,10 +43,10 @@ dependencies {
     // Client
     implementation ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
     implementation ( "no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
-    implementation ("io.lettuce:lettuce-core:5.3.5.RELEASE")
-    implementation("com.github.fppt:jedis-mock:0.17.0")
+    implementation ("io.lettuce:lettuce-core:$lettuceVersion")
 
     // Test
+    testImplementation("com.github.fppt:jedis-mock:1.0.1")
     testImplementation ( "no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
     testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion") {
@@ -56,7 +57,7 @@ dependencies {
     testImplementation("org.awaitility:awaitility-kotlin:4.1.1")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
-    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("io.mockk:mockk:1.12.3")
 }
 
 repositories {
