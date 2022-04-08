@@ -162,46 +162,31 @@ class SøknadUtils {
                         erBarnetInnlagt = true,
                         perioderBarnetErInnlagt = listOf(
                             Periode(
-                                fraOgMed = LocalDate.parse("2020-01-01"),
-                                tilOgMed = LocalDate.parse("2020-01-02")
-                            )
-                        ),
-                        erUtenforEøs = false,
-                        årsak = Årsak.ANNET
-                    ),
-                    Utenlandsopphold(
-                        fraOgMed = LocalDate.parse("2020-10-10"),
-                        tilOgMed = LocalDate.parse("2020-11-10"),
-                        landkode = "SE",
-                        landnavn = "Sverige",
-                        erBarnetInnlagt = true,
-                        perioderBarnetErInnlagt = listOf(
-                            Periode(
-                                fraOgMed = LocalDate.parse("2020-01-01"),
-                                tilOgMed = LocalDate.parse("2020-01-02")
-                            )
-                        ),
-                        erUtenforEøs = false,
-                        årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
-                    ),
-                    Utenlandsopphold(
-                        fraOgMed = LocalDate.parse("2021-10-10"),
-                        tilOgMed = LocalDate.parse("2021-11-10"),
-                        landkode = "SE",
-                        landnavn = "Sverige",
-                        erBarnetInnlagt = true,
-                        perioderBarnetErInnlagt = listOf(
-                            Periode(
-                                fraOgMed = LocalDate.parse("2020-01-01"),
-                                tilOgMed = LocalDate.parse("2020-01-02")
+                                fraOgMed = LocalDate.parse("2019-10-15"),
+                                tilOgMed = LocalDate.parse("2019-10-20")
                             )
                         ),
                         erUtenforEøs = false,
                         årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
                     ),
                     Utenlandsopphold(
-                        fraOgMed = LocalDate.parse("2022-10-10"),
-                        tilOgMed = LocalDate.parse("2022-11-10"),
+                        fraOgMed = LocalDate.parse("2020-11-10"),
+                        tilOgMed = LocalDate.parse("2020-11-15"),
+                        landkode = "SE",
+                        landnavn = "Sverige",
+                        erBarnetInnlagt = true,
+                        perioderBarnetErInnlagt = listOf(
+                            Periode(
+                                fraOgMed = LocalDate.parse("2020-11-10"),
+                                tilOgMed = LocalDate.parse("2020-11-12")
+                            )
+                        ),
+                        erUtenforEøs = false,
+                        årsak = Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
+                    ),
+                    Utenlandsopphold(
+                        fraOgMed = LocalDate.parse("2022-12-10"),
+                        tilOgMed = LocalDate.parse("2022-12-20"),
                         landkode = "SE",
                         landnavn = "Sverige",
                         erBarnetInnlagt = false,

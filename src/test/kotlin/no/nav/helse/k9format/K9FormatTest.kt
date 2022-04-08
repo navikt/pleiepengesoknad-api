@@ -73,6 +73,22 @@ class K9FormatTest {
                 ],
                 "endringsperiode": [],
                 "trekkKravPerioder": [],
+                "beredskap" : {
+                  "perioder" : {
+                    "2021-01-01/2021-01-10" : {
+                      "tilleggsinformasjon" : "Ikke beredskap"
+                    }
+                  },
+                  "perioderSomSkalSlettes" : { }
+                },
+                "nattevåk" : {
+                  "perioder" : {
+                    "2021-01-01/2021-01-10" : {
+                      "tilleggsinformasjon" : "Har nattevåk"
+                    }
+                  },
+                  "perioderSomSkalSlettes" : { }
+                },
                 "opptjeningAktivitet": {
                   "selvstendigNæringsdrivende": [
                     {
@@ -120,42 +136,34 @@ class K9FormatTest {
                   },
                   "perioderSomSkalSlettes": {}
                 },
-                "utenlandsopphold": {
-                  "perioder": {
-                    "2019-10-10/2019-11-10": {
-                      "land": "SE",
-                      "årsak": null
+                "utenlandsopphold" : {
+                  "perioder" : {
+                    "2019-10-10/2019-10-14" : {
+                      "land" : "SE",
+                      "årsak" : null
                     },
-                    "2020-10-10/2020-11-10": {
-                      "land": "SE",
-                      "årsak": "barnetInnlagtIHelseinstitusjonForNorskOffentligRegning"
+                    "2019-10-15/2019-10-20" : {
+                      "land" : "SE",
+                      "årsak" : "barnetInnlagtIHelseinstitusjonDekketEtterAvtaleMedEtAnnetLandOmTrygd"
                     },
-                    "2021-10-10/2021-11-10": {
-                      "land": "SE",
-                      "årsak": "barnetInnlagtIHelseinstitusjonDekketEtterAvtaleMedEtAnnetLandOmTrygd"
+                    "2019-10-21/2019-11-10" : {
+                      "land" : "SE",
+                      "årsak" : null
                     },
-                    "2022-10-10/2022-11-10": {
-                      "land": "SE",
-                      "årsak": null
+                    "2020-11-10/2020-11-12" : {
+                      "land" : "SE",
+                      "årsak" : "barnetInnlagtIHelseinstitusjonForNorskOffentligRegning"
+                    },
+                    "2020-11-13/2020-11-15" : {
+                      "land" : "SE",
+                      "årsak" : null
+                    },
+                    "2022-12-10/2022-12-20" : {
+                      "land" : "SE",
+                      "årsak" : null
                     }
                   },
-                  "perioderSomSkalSlettes": {}
-                },
-                "beredskap": {
-                  "perioder": {
-                    "2021-01-01/2021-01-10": {
-                      "tilleggsinformasjon": "Ikke beredskap"
-                    }
-                  },
-                  "perioderSomSkalSlettes": {}
-                },
-                "nattevåk": {
-                  "perioder": {
-                    "2021-01-01/2021-01-10": {
-                      "tilleggsinformasjon": "Har nattevåk"
-                    }
-                  },
-                  "perioderSomSkalSlettes": {}
+                  "perioderSomSkalSlettes" : { }
                 },
                 "tilsynsordning": {
                   "perioder": {

@@ -1,6 +1,7 @@
 package no.nav.helse.soknad
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import no.nav.fpsak.tidsserie.LocalDateInterval
 import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
 import no.nav.k9.søknad.Søknad
@@ -142,7 +143,9 @@ data class Utenlandsopphold(
 data class Periode(
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate
-)
+){
+    fun somLocalDateInterval() = LocalDateInterval(fraOgMed, tilOgMed)
+}
 
 data class Bosted(
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -189,5 +192,11 @@ data class Frilans(
 enum class Årsak {
     BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING,
     BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD,
-    ANNET,
+    ANNET;
+
+    fun tilK9Årsak()= when(this) {
+        BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING -> no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
+        BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD -> no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold.UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
+        else -> null
+    }
 }
