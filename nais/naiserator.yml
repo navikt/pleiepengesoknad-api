@@ -44,7 +44,12 @@ spec:
     application:
       enabled: true
       tenant: {{tenant}}
+  tokenx:
+    enabled: true
   accessPolicy:
+    inbound:
+      rules:
+        - pleiepengesoknad
     outbound:
       rules:
         - application: {{app}}-redis
