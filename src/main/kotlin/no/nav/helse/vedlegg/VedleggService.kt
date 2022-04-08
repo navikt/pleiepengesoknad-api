@@ -4,8 +4,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.IdToken
 import no.nav.helse.soknad.vedleggId
 import java.net.URL
 

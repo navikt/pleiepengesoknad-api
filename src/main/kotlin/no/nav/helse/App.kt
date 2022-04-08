@@ -20,6 +20,8 @@ import no.nav.helse.arbeidsgiver.arbeidsgiverApis
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenStatusPages
 import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.clients
 import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
@@ -43,8 +45,6 @@ import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
 import no.nav.helse.endringsmelding.EndringsmeldingService
 import no.nav.helse.endringsmelding.endringsmeldingApis
-import no.nav.helse.general.auth.IdTokenProvider
-import no.nav.helse.general.auth.IdTokenStatusPages
 import no.nav.helse.general.systemauth.AccessTokenClientResolver
 import no.nav.helse.innsyn.InnsynGateway
 import no.nav.helse.innsyn.InnsynService
