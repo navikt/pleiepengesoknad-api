@@ -166,46 +166,31 @@ internal class SerDesTest {
                     "erBarnetInnlagt": true,
                     "perioderBarnetErInnlagt" : [
                       {
-                        "fraOgMed" : "2020-01-01",
-                        "tilOgMed": "2020-01-02"
-                      }
-                    ],
-                    "årsak": "ANNET"
-                  },
-                  {
-                    "landnavn": "Sverige",
-                    "landkode": "SE",
-                    "fraOgMed": "2020-10-10",
-                    "tilOgMed": "2020-11-10",
-                    "erUtenforEøs": false,
-                    "erBarnetInnlagt": true,
-                    "perioderBarnetErInnlagt" : [
-                      {
-                        "fraOgMed" : "2020-01-01",
-                        "tilOgMed": "2020-01-02"
-                      }
-                    ],
-                    "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
-                  },
-                  {
-                    "landnavn": "Sverige",
-                    "landkode": "SE",
-                    "fraOgMed": "2021-10-10",
-                    "tilOgMed": "2021-11-10",
-                    "erUtenforEøs": false,
-                    "erBarnetInnlagt": true,
-                    "perioderBarnetErInnlagt" : [
-                      {
-                        "fraOgMed" : "2020-01-01",
-                        "tilOgMed": "2020-01-02"
+                        "fraOgMed" : "2019-10-15",
+                        "tilOgMed": "2019-10-20"
                       }
                     ],
                     "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD"
+                  },
+                  {
+                    "landnavn": "Sverige",
+                    "landkode": "SE",
+                    "fraOgMed": "2020-11-10",
+                    "tilOgMed": "2020-11-15",
+                    "erUtenforEøs": false,
+                    "erBarnetInnlagt": true,
+                    "perioderBarnetErInnlagt" : [
+                      {
+                        "fraOgMed" : "2020-11-10",
+                        "tilOgMed": "2020-11-12"
+                      }
+                    ],
+                    "årsak": "BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING"
                   },{
                     "landnavn": "Sverige",
                     "landkode": "SE",
-                    "fraOgMed": "2022-10-10",
-                    "tilOgMed": "2022-11-10",
+                    "fraOgMed": "2022-12-10",
+                    "tilOgMed": "2022-12-20",
                     "erUtenforEøs": false,
                     "erBarnetInnlagt": false,
                     "perioderBarnetErInnlagt" : [],

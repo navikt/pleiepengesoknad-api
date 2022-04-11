@@ -1,5 +1,6 @@
 package no.nav.helse.k9format
 
+import no.nav.fpsak.tidsserie.LocalDateTimeline
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import no.nav.helse.soknad.Beredskap
@@ -8,7 +9,6 @@ import no.nav.k9.søknad.felles.Versjon
 import no.nav.k9.søknad.felles.personopplysninger.Bosteder
 import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold
 import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold.UtenlandsoppholdPeriodeInfo
-import no.nav.k9.søknad.felles.personopplysninger.Utenlandsopphold.UtenlandsoppholdÅrsak
 import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.Periode
@@ -201,20 +201,35 @@ fun Medlemskap.tilK9Bosteder(): Bosteder? {
     return Bosteder().medPerioder(perioder)
 }
 
-private fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(): Utenlandsopphold {
+internal fun UtenlandsoppholdIPerioden.tilK9Utenlandsopphold(): Utenlandsopphold {
     val perioder = mutableMapOf<Periode, UtenlandsoppholdPeriodeInfo>()
 
     opphold.forEach { utenlandsopphold ->
-        val årsak = when (utenlandsopphold.årsak) {
-            Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING -> UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING
-            Årsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD -> UtenlandsoppholdÅrsak.BARNET_INNLAGT_I_HELSEINSTITUSJON_DEKKET_ETTER_AVTALE_MED_ET_ANNET_LAND_OM_TRYGD
-            else -> null
+        var tidslinjeUtenInnleggelse = LocalDateTimeline(utenlandsopphold.fraOgMed, utenlandsopphold.tilOgMed, 1)
+
+        utenlandsopphold.perioderBarnetErInnlagt.forEach { periodeMedInnleggelse ->
+            tidslinjeUtenInnleggelse = tidslinjeUtenInnleggelse.disjoint(periodeMedInnleggelse.somLocalDateInterval())
+            perioder[Periode(periodeMedInnleggelse.fraOgMed, periodeMedInnleggelse.tilOgMed)] = utenlandsopphold.somUtenlandsoppholdPeriodeInfo()
         }
-        val periode = Periode(utenlandsopphold.fraOgMed, utenlandsopphold.tilOgMed)
-        perioder[periode] = UtenlandsoppholdPeriodeInfo()
-            .medLand(Landkode.of(utenlandsopphold.landkode))
-            .apply { årsak?.let { medÅrsak(årsak) } }
+
+        val gjenværendePerioderUtenInnleggelse = tidslinjeUtenInnleggelse.toSegments().map {
+            no.nav.helse.soknad.Periode(it.fom, it.tom)
+        }
+
+        gjenværendePerioderUtenInnleggelse.forEach { periodeUtenInnleggelse ->
+            perioder[Periode(periodeUtenInnleggelse.fraOgMed, periodeUtenInnleggelse.tilOgMed)] = UtenlandsoppholdPeriodeInfo()
+                .medLand(Landkode.of(utenlandsopphold.landkode))
+        }
     }
 
     return Utenlandsopphold().medPerioder(perioder)
 }
+
+private fun no.nav.helse.soknad.Utenlandsopphold.somUtenlandsoppholdPeriodeInfo() =
+    UtenlandsoppholdPeriodeInfo()
+        .medLand(Landkode.of(landkode))
+        .apply {
+            if (årsak != null && årsak != no.nav.helse.soknad.Årsak.ANNET) {
+                medÅrsak(årsak.tilK9Årsak())
+            }
+        }
