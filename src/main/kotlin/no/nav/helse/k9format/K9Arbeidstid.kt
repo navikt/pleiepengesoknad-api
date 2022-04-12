@@ -151,17 +151,6 @@ fun PlanUkedager.tilK9ArbeidstidPeriodePlan(
     return perioder
 }
 
-private fun PlanUkedager.timerGittUkedag(dag: DayOfWeek): Duration {
-   return when (dag) {
-        DayOfWeek.MONDAY -> this.mandag ?: NULL_ARBEIDSTIMER
-        DayOfWeek.TUESDAY -> this.tirsdag ?: NULL_ARBEIDSTIMER
-        DayOfWeek.WEDNESDAY -> this.onsdag ?: NULL_ARBEIDSTIMER
-        DayOfWeek.THURSDAY -> this.torsdag ?: NULL_ARBEIDSTIMER
-        DayOfWeek.FRIDAY -> this.fredag ?: NULL_ARBEIDSTIMER
-        else -> NULL_ARBEIDSTIMER
-    }
-}
-
 fun LocalDate.ukedagerTilOgMed(tilOgMed: LocalDate): List<LocalDate> = datesUntil(tilOgMed.plusDays(1))
     .toList()
     .filterNot { it.dayOfWeek == DayOfWeek.SUNDAY || it.dayOfWeek == DayOfWeek.SATURDAY }
