@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.fpsak.tidsserie.LocalDateInterval
 import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import no.nav.k9.søknad.Søknad
 import java.net.URL
 import java.time.LocalDate
@@ -187,7 +188,10 @@ data class Frilans(
     val sluttdato: LocalDate? = null,
     val jobberFortsattSomFrilans: Boolean,
     val arbeidsforhold: Arbeidsforhold? = null
-)
+) {
+    fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) =
+        arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
+}
 
 enum class Årsak {
     BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING,

@@ -17,12 +17,18 @@ class ArbeidstidEnkeltdag(
                 .medFaktiskArbeidTimerPerDag(arbeidstimer.faktiskTimer)
         )
     }
+
+    override fun equals(other: Any?) = other === this || other is ArbeidstidEnkeltdag && this.equals(other)
+    private fun equals(other: ArbeidstidEnkeltdag) = this.dato == other.dato && this.arbeidstimer == other.arbeidstimer
 }
 
 class Arbeidstimer(
     val normalTimer: Duration,
     val faktiskTimer: Duration
-)
+){
+    override fun equals(other: Any?) = other === this || other is Arbeidstimer && this.equals(other)
+    private fun equals(other: Arbeidstimer) = this.normalTimer == other.normalTimer && this.faktiskTimer == other.faktiskTimer
+}
 
 enum class ArbeiderIPeriodenSvar {
     SOM_VANLIG,

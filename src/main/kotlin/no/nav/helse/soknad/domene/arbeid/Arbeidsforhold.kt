@@ -26,25 +26,61 @@ class Arbeidsforhold(
     }
 
     private fun arbeiderSomVanlig(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
-            .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDag())
-            .medFaktiskArbeidTimerPerDag(normalarbeidstid.timerPerDag())
+        val arbeidstidInfo = ArbeidstidInfo()
 
-        return ArbeidstidInfo()
-            .medPerioder(
+        if(normalarbeidstid.harOppgittTimerSomSnitt()){
+            val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
+                .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraSnitt())
+                .medFaktiskArbeidTimerPerDag(normalarbeidstid.timerPerDagFraSnitt())
+
+            arbeidstidInfo.medPerioder(
                 mapOf(Periode(fraOgMed, tilOgMed) to arbeidstidPeriodeInfo)
             )
+        } else if(normalarbeidstid.harOppgittTimerSomFasteDager()){
+            fraOgMed.ukedagerTilOgMed(tilOgMed).forEach {ukedagIPerioden ->
+                val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
+                    .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(ukedagIPerioden.dayOfWeek))
+                    .medFaktiskArbeidTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(ukedagIPerioden.dayOfWeek))
+
+                arbeidstidInfo.leggeTilPeriode(
+                    Periode(ukedagIPerioden, ukedagIPerioden),
+                    arbeidstidPeriodeInfo
+                )
+            }
+        } else {
+            throw Exception("Klarte ikke mappe opp arbeider som vanlig fordi normalarbeidstid har oppgitt verken snitt eller fastedager")
+        }
+
+        return arbeidstidInfo
     }
 
     private fun arbeiderIkke(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
-            .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDag())
-            .medFaktiskArbeidTimerPerDag(NULL_TIMER)
+        val arbeidstidInfo = ArbeidstidInfo()
 
-        return ArbeidstidInfo()
-            .medPerioder(
+        if(normalarbeidstid.harOppgittTimerSomSnitt()){
+            val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
+                .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraSnitt())
+                .medFaktiskArbeidTimerPerDag(NULL_TIMER)
+
+            arbeidstidInfo.medPerioder(
                 mapOf(Periode(fraOgMed, tilOgMed) to arbeidstidPeriodeInfo)
             )
+        } else if(normalarbeidstid.harOppgittTimerSomFasteDager()){
+            fraOgMed.ukedagerTilOgMed(tilOgMed).forEach {ukedagIPerioden ->
+                val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
+                    .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(ukedagIPerioden.dayOfWeek))
+                    .medFaktiskArbeidTimerPerDag(NULL_TIMER)
+
+                arbeidstidInfo.leggeTilPeriode(
+                    Periode(ukedagIPerioden, ukedagIPerioden),
+                    arbeidstidPeriodeInfo
+                )
+            }
+        } else {
+            throw Exception("Klarte ikke mappe opp arbeider ikke fordi normalarbeidstid har oppgitt verken snitt eller fastedager")
+        }
+
+        return arbeidstidInfo
     }
 
     private fun arbeiderEnkeltdager(): ArbeidstidInfo {
@@ -65,7 +101,7 @@ class Arbeidsforhold(
 
         fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { dagIPerioden ->
             val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
-                .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDag(dagIPerioden.dayOfWeek))
+                .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(dagIPerioden.dayOfWeek))
                 .medFaktiskArbeidTimerPerDag(arbeidIPeriode.timerPerDagFraFasteDager(dagIPerioden.dayOfWeek))
 
             arbeidstidInfo.leggeTilPeriode(
@@ -77,37 +113,31 @@ class Arbeidsforhold(
     }
 
     private fun arbeiderProsentAvNormalt(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        val arbeidstidInfo = ArbeidstidInfo()
-        fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { ukedagIPerioden ->
-            val normaltimer = normalarbeidstid.timerPerDag(ukedagIPerioden.dayOfWeek)
-            val faktiskeTimer = arbeidIPeriode.timerPerDagFraProsentAvNormalt(normaltimer)
+        require(normalarbeidstid.harOppgittTimerSomSnitt()) { "Dersom man arbeider prosent av normalt må normalarbeidstid være oppgitt som snitt" }
 
-            arbeidstidInfo.leggeTilPeriode(
-                Periode(ukedagIPerioden, ukedagIPerioden),
-                ArbeidstidPeriodeInfo()
-                    .medJobberNormaltTimerPerDag(normaltimer)
-                    .medFaktiskArbeidTimerPerDag(faktiskeTimer)
-            )
-        }
+        val normaltimer = normalarbeidstid.timerPerDagFraSnitt()
+        val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
+            .medJobberNormaltTimerPerDag(normaltimer)
+            .medFaktiskArbeidTimerPerDag(arbeidIPeriode.timerPerDagFraProsentAvNormalt(normaltimer))
 
-        return arbeidstidInfo
+        return ArbeidstidInfo().medPerioder(
+            mapOf(Periode(fraOgMed, tilOgMed) to arbeidstidPeriodeInfo)
+        )
     }
 
     private fun arbeiderTimerISnittPerUke(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        val arbeidstidInfo = ArbeidstidInfo()
+        require(normalarbeidstid.harOppgittTimerSomSnitt()) { "Dersom man arbeider timer i snitt per uke av normalt må normalarbeidstid være oppgitt som snitt" }
 
-        fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { ukedagIPerioden ->
-            val normaltimer = normalarbeidstid.timerPerDag(ukedagIPerioden.dayOfWeek)
-            val faktiskeTimer = arbeidIPeriode.timerPerDagFraTimerPerUke()
+        val arbeidstidPeriodeInfo =
+            ArbeidstidPeriodeInfo()
+                .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraSnitt())
+                .medFaktiskArbeidTimerPerDag(arbeidIPeriode.timerPerDagFraTimerPerUke())
 
-            arbeidstidInfo.leggeTilPeriode(
-                Periode(ukedagIPerioden, ukedagIPerioden),
-                ArbeidstidPeriodeInfo()
-                    .medJobberNormaltTimerPerDag(normaltimer)
-                    .medFaktiskArbeidTimerPerDag(faktiskeTimer)
-            )
-        }
-
-        return arbeidstidInfo
+        return ArbeidstidInfo().medPerioder(
+            mapOf(Periode(fraOgMed, tilOgMed) to arbeidstidPeriodeInfo)
+        )
     }
+
+    override fun equals(other: Any?) = other === this || other is Arbeidsforhold && this.equals(other)
+    private fun equals(other: Arbeidsforhold) = this.normalarbeidstid == other.normalarbeidstid && this.arbeidIPeriode == other.arbeidIPeriode
 }

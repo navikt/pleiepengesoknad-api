@@ -7,6 +7,7 @@ import java.time.DayOfWeek
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class NormalArbeidstidTest {
 
@@ -51,7 +52,8 @@ class NormalArbeidstidTest {
             timerFasteDager = null
         )
 
-        assertEquals(Duration.ofHours(7).plusMinutes(30), normalarbeidstid.timerPerDag())
+        assertTrue(normalarbeidstid.harOppgittTimerSomSnitt())
+        assertEquals(Duration.ofHours(7).plusMinutes(30), normalarbeidstid.timerPerDagFraSnitt())
     }
 
     @Test
@@ -62,14 +64,14 @@ class NormalArbeidstidTest {
             timerPerUkeISnitt = null,
             timerFasteDager = PlanUkedager(mandag = femTimer, tirsdag = femTimer)
         )
-
-        assertEquals(femTimer, normalarbeidstid.timerPerDag(DayOfWeek.MONDAY))
-        assertEquals(femTimer, normalarbeidstid.timerPerDag(DayOfWeek.TUESDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDag(DayOfWeek.WEDNESDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDag(DayOfWeek.THURSDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDag(DayOfWeek.FRIDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDag(DayOfWeek.SATURDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDag(DayOfWeek.SUNDAY))
+        assertTrue(normalarbeidstid.harOppgittTimerSomFasteDager())
+        assertEquals(femTimer, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.MONDAY))
+        assertEquals(femTimer, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.TUESDAY))
+        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.WEDNESDAY))
+        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.THURSDAY))
+        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.FRIDAY))
+        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.SATURDAY))
+        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.SUNDAY))
     }
 
 }

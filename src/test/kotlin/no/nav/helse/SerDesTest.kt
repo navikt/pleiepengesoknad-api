@@ -3,6 +3,9 @@ package no.nav.helse
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.LocalDate
 import java.time.ZoneId
@@ -17,7 +20,6 @@ internal class SerDesTest {
         val søknadId = UUID.randomUUID().toString()
         val søknad = SøknadUtils.defaultSøknad(søknadId)
         val søknadJson = søknadJson(søknadId)
-
         JSONAssert.assertEquals(søknadJson, søknad.somJson(), true)
         assertEquals(søknad, SøknadUtils.objectMapper.readValue(søknadJson))
     }
@@ -219,20 +221,19 @@ internal class SerDesTest {
                 "sluttdato": null,
                 "jobberFortsattSomFrilans": true,
                 "arbeidsforhold": {
-                  "jobberNormaltTimer": 40.0,
-                  "harFraværIPeriode": true,
-                  "arbeidIPeriode": {
-                    "jobberIPerioden": "JA",
-                    "jobberProsent": null,
+                  "normalarbeidstid": {
                     "erLiktHverUke": true,
-                    "enkeltdager": null,
-                    "fasteDager": {
-                      "mandag": "PT7H30M",
-                      "tirsdag": null,
-                      "onsdag": null,
-                      "torsdag": null,
-                      "fredag": null
-                    }
+                    "timerPerUkeISnitt": 37.5,
+                    "timerFasteDager": null
+                  },
+                  "arbeidIPeriode": {
+                    "type": "ARBEIDER_VANLIG",
+                    "arbeiderIPerioden": "SOM_VANLIG",
+                    "erLiktHverUke": null,
+                    "fasteDager": null,
+                    "prosentAvNormalt": null,
+                    "timerPerUke": null,
+                    "enkeltdager": null
                   }
                 }
               },
@@ -456,17 +457,22 @@ internal class SerDesTest {
                   "startdato": "2018-01-01",
                   "sluttdato": null,
                   "arbeidsforhold": {
-                    "jobberNormaltTimer": 40.0,
-                    "harFraværIPeriode": true,
-                    "arbeidIPeriode": {
-                      "jobberProsent": 50.0,
-                      "enkeltdager": [],
+                    "normalarbeidstid": {
                       "erLiktHverUke": true,
+                      "timerPerUkeISnitt": 37.5,
+                      "timerFasteDager": null
+                    },
+                    "arbeidIPeriode": {
+                      "type": "ARBEIDER_VANLIG",
+                      "arbeiderIPerioden": "SOM_VANLIG",
+                      "erLiktHverUke": null,
                       "fasteDager": null,
-                      "jobberIPerioden": "JA"
+                      "prosentAvNormalt": null,
+                      "timerPerUke": null,
+                      "enkeltdager": null
                     }
                   }
-              },
+                },
               "nattevåk": {
                 "harNattevåk": true,
                 "tilleggsinformasjon": "Har nattevåk"
@@ -646,16 +652,15 @@ internal class SerDesTest {
             frilans = Frilans(
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01"),
-                arbeidsforhold = Arbeidsforhold(
-                    jobberNormaltTimer = 40.0,
-                    arbeidIPeriode = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        jobberProsent = 50.0,
+                arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                    normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,
-                        enkeltdager = listOf(),
-                        fasteDager = null
+                        timerPerUkeISnitt = 37.5
                     ),
-                    harFraværIPeriode = true
+                    arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                        type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                        arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
                 )
             ),
             harVærtEllerErVernepliktig = true,

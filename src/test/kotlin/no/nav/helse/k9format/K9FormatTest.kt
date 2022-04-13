@@ -237,30 +237,10 @@ class K9FormatTest {
                   ],
                   "frilanserArbeidstidInfo": {
                     "perioder": {
-                       "2021-01-01/2021-01-01": {
-                         "jobberNormaltTimerPerDag": "PT8H",
-                         "faktiskArbeidTimerPerDag": "PT0S"
-                       },
-                       "2021-01-04/2021-01-04": {
-                         "jobberNormaltTimerPerDag": "PT8H",
-                         "faktiskArbeidTimerPerDag": "PT7H30M"
-                       },
-                       "2021-01-05/2021-01-05": {
-                           "jobberNormaltTimerPerDag": "PT8H",
-                            "faktiskArbeidTimerPerDag": "PT0S"
-                       },
-                       "2021-01-06/2021-01-06": {
-                            "jobberNormaltTimerPerDag": "PT8H",
-                            "faktiskArbeidTimerPerDag": "PT0S"
-                       },
-                       "2021-01-07/2021-01-07": {
-                            "jobberNormaltTimerPerDag": "PT8H",
-                            "faktiskArbeidTimerPerDag": "PT0S"
-                       },
-                       "2021-01-08/2021-01-08": {
-                            "jobberNormaltTimerPerDag": "PT8H",
-                            "faktiskArbeidTimerPerDag": "PT0S"
-                       }
+                          "2021-01-01/2021-01-10": {
+                            "jobberNormaltTimerPerDag": "PT7H30M",
+                            "faktiskArbeidTimerPerDag": "PT7H30M"
+                          }
                      }
                   },
                   "selvstendigNæringsdrivendeArbeidstidInfo": {

@@ -12,7 +12,6 @@ class NormalArbeidstid (
 ) {
     companion object{
         const val DAGER_I_EN_UKE = 5
-        val NULL_ARBEIDSTIMER = Duration.ZERO
     }
 
     init {
@@ -21,12 +20,21 @@ class NormalArbeidstid (
         require(timerFasteDager == null || timerPerUkeISnitt == null) { "Et av feltene må være null" }
     }
 
-    fun timerPerDag(gjeldeneDag: DayOfWeek? = null): Duration {
-        return if(timerPerUkeISnitt != null) {
-            (timerPerUkeISnitt/DAGER_I_EN_UKE).tilDuration()
-        } else if(timerFasteDager != null && gjeldeneDag != null) {
-            timerFasteDager.timerGittUkedag(gjeldeneDag)
-        } else NULL_ARBEIDSTIMER
+    internal fun harOppgittTimerSomSnitt() = timerPerUkeISnitt != null
+    internal fun harOppgittTimerSomFasteDager() = timerFasteDager != null
+
+    internal fun timerPerDagFraSnitt(): Duration {
+        requireNotNull(timerPerUkeISnitt) { "timerPerUkeISnitt må være satt for å hente timer per dag fra snitt." }
+        return (timerPerUkeISnitt/DAGER_I_EN_UKE).tilDuration()
     }
 
+    internal fun timerPerDagFraFasteDager(gjeldeneUkedag: DayOfWeek): Duration {
+        requireNotNull(timerFasteDager) { "timerFasteDager må være satt for å hente timer per dag fra faste dager." }
+        return timerFasteDager.timerGittUkedag(gjeldeneUkedag)
+    }
+
+    override fun equals(other: Any?) = this === other || other is NormalArbeidstid && this.equals(other)
+    private fun equals(other: NormalArbeidstid) = this.erLiktHverUke == other.erLiktHverUke
+            && this.timerPerUkeISnitt == other.timerPerUkeISnitt
+            && this.timerFasteDager == other.timerFasteDager
 }

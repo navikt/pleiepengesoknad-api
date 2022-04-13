@@ -7,7 +7,7 @@ import no.nav.helse.soknad.Frilans
 fun Frilans.valider(): MutableSet<Violation> {
     val feil = mutableSetOf<Violation>()
 
-    if(arbeidsforhold != null) feil.addAll(arbeidsforhold.valider("frilans"))
+    //if(arbeidsforhold != null) feil.addAll(arbeidsforhold.valider("frilans"))
 
     if(sluttdato != null && sluttdato.isBefore(startdato)){
         feil.add(

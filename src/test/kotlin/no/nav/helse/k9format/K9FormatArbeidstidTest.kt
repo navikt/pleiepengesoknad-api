@@ -2,6 +2,9 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import no.nav.helse.somJson
 import org.json.JSONObject
 import org.skyscreamer.jsonassert.JSONAssert
@@ -456,7 +459,16 @@ class K9FormatArbeidstidTest {
             startdato = LocalDate.parse("2021-01-06"),
             sluttdato = LocalDate.parse("2021-01-13"),
             jobberFortsattSomFrilans = false,
-            arbeidsforhold = arbeidsforhold
+            arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(
+                    erLiktHverUke = true,
+                    timerPerUkeISnitt = 37.5
+                ),
+                arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                )
+            )
         )
 
         val søknad = SøknadUtils.defaultSøknad().copy(

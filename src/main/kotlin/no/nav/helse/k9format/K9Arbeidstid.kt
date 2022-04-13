@@ -22,15 +22,10 @@ internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
     if(arbeidsgivere.isNotEmpty()) medArbeidstaker(arbeidsgivere.tilK9Arbeidstaker(periode))
 
     frilans?.let {
-        medFrilanserArbeidstid(
-            it.arbeidsforhold.beregnK9ArbeidstidInfo(
-                periode,
-                frilans.startdato,
-                frilans.sluttdato
-            )
-        )
+        if(it.arbeidsforhold != null){
+            medFrilanserArbeidstid(it.k9ArbeidstidInfo(fraOgMed, tilOgMed))
+        }
     }
-
     selvstendigNæringsdrivende?.let {
         medSelvstendigNæringsdrivendeArbeidstidInfo(it.arbeidsforhold.beregnK9ArbeidstidInfo(periode))
     }
