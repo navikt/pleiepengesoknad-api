@@ -108,6 +108,7 @@ internal class SerDesTest {
                 ]
               },
               "selvstendigNæringsdrivende": {
+                "harInntektSomSelvstendig": true,
                 "virksomhet": {
                   "næringstyper": [
                     "ANNEN"
@@ -217,7 +218,8 @@ internal class SerDesTest {
               "frilans": {
                 "startdato": "2018-01-01",
                 "sluttdato": null,
-                "jobberFortsattSomFrilans": true,
+                "erFortsattFrilanser": true,
+                "harInntektSomFrilanser": true,
                 "arbeidsforhold": {
                   "normalarbeidstid": {
                     "erLiktHverUke": true,
@@ -339,6 +341,7 @@ internal class SerDesTest {
                 ]
               },
               "selvstendigNæringsdrivende": {
+                "harInntektSomSelvstendig": true,
                 "virksomhet": {
                   "næringstyper": [
                     "ANNEN"
@@ -461,7 +464,8 @@ internal class SerDesTest {
                 "tilleggsinformasjon": "Ikke beredskap"
               },
               "frilans": {
-                  "jobberFortsattSomFrilans": true,
+                  "erFortsattFrilanser": true,
+                  "harInntektSomFrilanser": true,
                   "startdato": "2018-01-01",
                   "sluttdato": null,
                   "arbeidsforhold": {
@@ -535,6 +539,7 @@ internal class SerDesTest {
                 tilleggsinformasjon = "Har nattevåk"
             ),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                harInntektSomSelvstendig = true,
                 virksomhet = Virksomhet(
                     næringstyper = listOf(Næringstyper.ANNEN),
                     fiskerErPåBladB = false,
@@ -664,7 +669,8 @@ internal class SerDesTest {
                 )
             ),
             frilans = Frilans(
-                jobberFortsattSomFrilans = true,
+                harInntektSomFrilanser = true,
+                erFortsattFrilanser = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(

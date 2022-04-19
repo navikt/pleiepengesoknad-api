@@ -36,8 +36,8 @@ data class Søknad(
     val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
-    val frilans: Frilans? = null,
-    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende? = null,
+    val frilans: Frilans,
+    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
     val harVærtEllerErVernepliktig: Boolean? = null
@@ -182,11 +182,12 @@ data class Ferieuttak(
 }
 
 data class Frilans(
+    val harInntektSomFrilanser: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
-    val startdato: LocalDate,
+    val startdato: LocalDate? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val sluttdato: LocalDate? = null,
-    val jobberFortsattSomFrilans: Boolean,
+    val erFortsattFrilanser: Boolean? = null,
     val arbeidsforhold: Arbeidsforhold? = null
 ) {
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) =

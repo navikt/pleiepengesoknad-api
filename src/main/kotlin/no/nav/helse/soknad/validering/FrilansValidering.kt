@@ -7,7 +7,30 @@ import no.nav.helse.soknad.Frilans
 fun Frilans.valider(): MutableSet<Violation> {
     val feil = mutableSetOf<Violation>()
 
-    //if(arbeidsforhold != null) feil.addAll(arbeidsforhold.valider("frilans"))
+    if(harInntektSomFrilanser){
+        if(startdato == null){
+            feil.add(
+                Violation(
+                    parameterName = "frilans.startdato",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "startdato må være satt når man har inntektSomFrilanser.",
+                    invalidValue = "startdato=$startdato"
+                )
+            )
+        }
+
+        if(erFortsattFrilanser == null){
+            feil.add(
+                Violation(
+                    parameterName = "frilans.erFortsattFrilanser",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "erFortsattFrilanser må være satt når man har inntektSomFrilanser.",
+                    invalidValue = "erFortsattFrilanser=$erFortsattFrilanser"
+                )
+            )
+        }
+
+    }
 
     if(sluttdato != null && sluttdato.isBefore(startdato)){
         feil.add(

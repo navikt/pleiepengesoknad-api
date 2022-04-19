@@ -22,7 +22,8 @@ class FrilansArbeidsforholdTest {
         val frilans = Frilans(
             startdato = LocalDate.parse("2020-01-01"),
             sluttdato = null,
-            jobberFortsattSomFrilans = true,
+            erFortsattFrilanser = true,
+            harInntektSomFrilanser = true,
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
                     erLiktHverUke = true,

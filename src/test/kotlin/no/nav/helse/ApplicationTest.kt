@@ -16,8 +16,6 @@ import no.nav.helse.k9format.defaultK9SakInnsynSøknad
 import no.nav.helse.mellomlagring.started
 import no.nav.helse.soknad.*
 import no.nav.helse.soknad.domene.arbeid.*
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
-import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
@@ -825,7 +823,7 @@ class ApplicationTest {
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.now().minusDays(3),
             tilOgMed = LocalDate.now().plusDays(4),
-            selvstendigNæringsdrivende = null,
+            selvstendigNæringsdrivende = SelvstendigNæringsdrivende(harInntektSomSelvstendig = false),
             omsorgstilbud = null,
             vedlegg = listOf(URL(jpegUrl)),
             ferieuttakIPerioden = FerieuttakIPerioden(
@@ -868,6 +866,7 @@ class ApplicationTest {
             tilOgMed = LocalDate.now().plusDays(4),
             vedlegg = listOf(URL(jpegUrl)),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                harInntektSomSelvstendig = true,
                 Virksomhet(
                     næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                     fiskerErPåBladB = false,
@@ -945,6 +944,7 @@ class ApplicationTest {
                 tilOgMed = LocalDate.parse("2022-01-10"),
                 ferieuttakIPerioden = null,
                 selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                    harInntektSomSelvstendig = true,
                     virksomhet = Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
@@ -1016,6 +1016,12 @@ class ApplicationTest {
                     "fodselsdato": null
                   },
                   "arbeidsgivere" : [],
+                  "frilans" : {
+                    "harInntektSomFrilans": false
+                  },
+                  "selvstendigNæringsdrivende": {
+                    "harInntektSomSelvstendig": false
+                  },
                   "medlemskap": {
                     "harBoddIUtlandetSiste12Mnd": false,
                     "skalBoIUtlandetNeste12Mnd": false,

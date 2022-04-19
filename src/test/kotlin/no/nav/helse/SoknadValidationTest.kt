@@ -94,6 +94,8 @@ class SoknadValidationTest {
             fødselsdato = LocalDate.now(),
             navn = null
         ),
+        frilans = Frilans(harInntektSomFrilanser = false),
+        selvstendigNæringsdrivende = SelvstendigNæringsdrivende(harInntektSomSelvstendig = false),
         arbeidsgivere = listOf(
             Arbeidsgiver(
                 navn = "Org",

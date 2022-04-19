@@ -93,14 +93,43 @@ class FraOgMedTilOgMedValidator {
     }
 }
 
+internal fun SelvstendigNæringsdrivende.valider(): Set<Violation> {
+    val violations = mutableSetOf<Violation>()
+
+    if(harInntektSomSelvstendig){
+        if(arbeidsforhold == null){
+            violations.add(
+                Violation(
+                    parameterName = "SelvstendigNæringsdrivende.arbeidsforhold",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "arbeidsforhold må være satt når man har harInntektSomSelvstendig.",
+                    invalidValue = "arbeidsforhold=$arbeidsforhold"
+                )
+            )
+        }
+
+        if(virksomhet == null){
+            violations.add(
+                Violation(
+                    parameterName = "SelvstendigNæringsdrivende.virksomhet",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "virksomhet må være satt når man har harInntektSomSelvstendig.",
+                    invalidValue = "virksomhet=$virksomhet"
+                )
+            )
+        }
+    }
+
+    virksomhet?.let { violations.addAll(it.validate()) }
+    return violations
+}
+
 internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
     val violations = barn.validate()
 
     violations.addAll(arbeidsgivere.validate())
 
-    selvstendigNæringsdrivende?.let { selvstendigNæringsdrivende ->
-        violations.addAll(selvstendigNæringsdrivende.virksomhet.validate())
-    }
+    violations.addAll(selvstendigNæringsdrivende.valider())
 
     frilans?.let { violations.addAll(it.valider()) }
 

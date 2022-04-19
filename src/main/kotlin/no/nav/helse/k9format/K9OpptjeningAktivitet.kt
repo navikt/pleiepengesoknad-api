@@ -20,8 +20,12 @@ fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 internal fun Søknad.byggK9OpptjeningAktivitet(): OpptjeningAktivitet {
     val opptjeningAktivitet = OpptjeningAktivitet()
-    selvstendigNæringsdrivende?.let { opptjeningAktivitet.medSelvstendigNæringsdrivende(it.tilK9SelvstendigNæringsdrivende()) }
-    frilans?.let { opptjeningAktivitet.medFrilanser(it.tilK9Frilanser()) }
+    if(selvstendigNæringsdrivende.harInntektSomSelvstendig){
+        opptjeningAktivitet.medSelvstendigNæringsdrivende(selvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende())
+    }
+    if(frilans.harInntektSomFrilanser){
+        opptjeningAktivitet.medFrilanser(frilans.tilK9Frilanser())
+    }
     return opptjeningAktivitet
 }
 
@@ -33,7 +37,7 @@ internal fun Frilans.tilK9Frilanser(): Frilanser {
 }
 
 fun no.nav.helse.soknad.SelvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> {
-
+    requireNotNull(virksomhet)
     return listOf(
         SelvstendigNæringsdrivende()
             .medVirksomhetNavn(virksomhet.navnPåVirksomheten)

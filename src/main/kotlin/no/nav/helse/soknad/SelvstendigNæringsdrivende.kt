@@ -7,7 +7,8 @@ import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import java.time.LocalDate
 
 data class SelvstendigNæringsdrivende(
-    val virksomhet: Virksomhet,
+    val harInntektSomSelvstendig: Boolean,
+    val virksomhet: Virksomhet? = null,
     val arbeidsforhold: Arbeidsforhold? = null
 ){
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) =

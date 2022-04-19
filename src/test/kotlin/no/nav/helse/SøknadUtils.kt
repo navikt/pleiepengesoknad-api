@@ -68,6 +68,7 @@ class SøknadUtils {
                 tilleggsinformasjon = "Har nattevåk"
             ),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                harInntektSomSelvstendig = true,
                 virksomhet = Virksomhet(
                     næringstyper = listOf(Næringstyper.ANNEN),
                     fiskerErPåBladB = false,
@@ -203,7 +204,8 @@ class SøknadUtils {
                 )
             ),
             frilans = Frilans(
-                jobberFortsattSomFrilans = true,
+                erFortsattFrilanser = true,
+                harInntektSomFrilanser = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
