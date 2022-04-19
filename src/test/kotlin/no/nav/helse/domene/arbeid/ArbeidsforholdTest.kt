@@ -130,14 +130,10 @@ class ArbeidsforholdTest {
         val perioder = k9Arbeid.perioder
         assertEquals(3, perioder.size)
 
-        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, mandag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(femTimer, perioder[Periode(mandag, mandag)]!!.faktiskArbeidTimerPerDag)
-
-        assertEquals(syvOgEnHalvTime, perioder[Periode(onsdag, onsdag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(femTimer, perioder[Periode(onsdag, onsdag)]!!.faktiskArbeidTimerPerDag)
-
-        assertEquals(syvOgEnHalvTime, perioder[Periode(fredag, fredag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(femTimer, perioder[Periode(fredag, fredag)]!!.faktiskArbeidTimerPerDag)
+        listOf(mandag, onsdag, fredag).forEach { dag ->
+            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(femTimer, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
+        }
     }
 
     @Test
