@@ -60,22 +60,21 @@ internal class SerDesTest {
                   "erAnsatt": true,
                   "sluttetFørSøknadsperiode": null,
                   "arbeidsforhold": {
-                    "jobberNormaltTimer": 40.0,
-                    "harFraværIPeriode": true,
-                    "arbeidIPeriode": {
-                      "jobberIPerioden": "JA",
-                      "jobberProsent": null,
-                      "erLiktHverUke": true,
-                      "enkeltdager": null,
-                      "fasteDager": {
-                          "mandag": "PT7H30M",
-                          "tirsdag": null,
-                          "onsdag": null,
-                          "torsdag": null,
-                          "fredag": null
-                        }
-                    }
+                  "normalarbeidstid": {
+                    "erLiktHverUke": true,
+                    "timerPerUkeISnitt": 37.5,
+                    "timerFasteDager": null
+                  },
+                  "arbeidIPeriode": {
+                    "type": "ARBEIDER_VANLIG",
+                    "arbeiderIPerioden": "SOM_VANLIG",
+                    "erLiktHverUke": null,
+                    "fasteDager": null,
+                    "prosentAvNormalt": null,
+                    "timerPerUke": null,
+                    "enkeltdager": null
                   }
+                }
                 },
                 {
                   "navn": "JobberIkkeHerLenger",
@@ -139,20 +138,19 @@ internal class SerDesTest {
                   "harFlereAktiveVirksomheter": true
                 },
                 "arbeidsforhold": {
-                  "jobberNormaltTimer": 40.0,
-                  "harFraværIPeriode": true,
-                  "arbeidIPeriode": {
-                    "jobberIPerioden": "JA",
-                    "jobberProsent": null,
+                  "normalarbeidstid": {
                     "erLiktHverUke": true,
-                    "enkeltdager": null,
-                    "fasteDager": {
-                      "mandag": "PT7H30M",
-                      "tirsdag": null,
-                      "onsdag": null,
-                      "torsdag": null,
-                      "fredag": null
-                    }
+                    "timerPerUkeISnitt": 37.5,
+                    "timerFasteDager": null
+                  },
+                  "arbeidIPeriode": {
+                    "type": "ARBEIDER_VANLIG",
+                    "arbeiderIPerioden": "SOM_VANLIG",
+                    "erLiktHverUke": null,
+                    "fasteDager": null,
+                    "prosentAvNormalt": null,
+                    "timerPerUke": null,
+                    "enkeltdager": null
                   }
                 }
               },
@@ -246,19 +244,19 @@ internal class SerDesTest {
                 "ukedager" : null,
                 "enkeltdager" : [
                       {
-                        "dato": "2021-01-01",
+                        "dato": "2022-01-01",
                         "tid": "PT4H"
                       },
                       {
-                        "dato": "2021-01-02",
+                        "dato": "2022-01-02",
                         "tid": "PT4H"
                       },
                       {
-                        "dato": "2021-01-03",
+                        "dato": "2022-01-03",
                         "tid": "PT4H"
                       },
                       {
-                        "dato": "2021-01-04",
+                        "dato": "2022-01-04",
                         "tid": "PT4H"
                       }
                     ]
@@ -302,16 +300,21 @@ internal class SerDesTest {
                   "erAnsatt": true,
                   "sluttetFørSøknadsperiode" : null,
                   "arbeidsforhold": {
-                    "jobberNormaltTimer": 30.0,
-                    "harFraværIPeriode": true,
-                    "arbeidIPeriode": {
-                      "jobberIPerioden": "NEI",
-                      "jobberProsent": null,
-                      "erLiktHverUke": null,
-                      "enkeltdager": null,
-                      "fasteDager": null
+                      "normalarbeidstid": {
+                        "erLiktHverUke": true,
+                        "timerPerUkeISnitt": 37.5,
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_VANLIG",
+                        "arbeiderIPerioden": "SOM_VANLIG",
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "prosentAvNormalt": null,
+                        "timerPerUke": null,
+                        "enkeltdager": null
+                      }
                     }
-                  }
                 }
               ],
               "vedleggId": [],
@@ -366,14 +369,19 @@ internal class SerDesTest {
                   "harFlereAktiveVirksomheter": true
                 },
                 "arbeidsforhold": {
-                  "jobberNormaltTimer": 40.0,
-                  "harFraværIPeriode": true,
+                  "normalarbeidstid": {
+                    "erLiktHverUke": true,
+                    "timerPerUkeISnitt": 37.5,
+                    "timerFasteDager": null
+                  },
                   "arbeidIPeriode": {
-                    "jobberIPerioden": "NEI",
-                    "jobberProsent": null,
+                    "type": "ARBEIDER_VANLIG",
+                    "arbeiderIPerioden": "SOM_VANLIG",
                     "erLiktHverUke": null,
-                    "enkeltdager": null,
-                    "fasteDager": null
+                    "fasteDager": null,
+                    "prosentAvNormalt": null,
+                    "timerPerUke": null,
+                    "enkeltdager": null
                   }
                 }
               },
@@ -507,12 +515,15 @@ internal class SerDesTest {
                     navn = "Org",
                     organisasjonsnummer = "917755736",
                     erAnsatt = true,
-                    arbeidsforhold = Arbeidsforhold(
-                        jobberNormaltTimer = 30.0,
-                        arbeidIPeriode = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.NEI
+                    arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                        normalarbeidstid = NormalArbeidstid(
+                            erLiktHverUke = true,
+                            timerPerUkeISnitt = 37.5
                         ),
-                        harFraværIPeriode = true
+                        arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                            type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                            arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                        )
                     )
                 )
             ),
@@ -547,12 +558,15 @@ internal class SerDesTest {
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
                     harFlereAktiveVirksomheter = true
                 ),
-                arbeidsforhold = Arbeidsforhold(
-                    jobberNormaltTimer = 40.0,
-                    arbeidIPeriode = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.NEI
+                arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                    normalarbeidstid = NormalArbeidstid(
+                        erLiktHverUke = true,
+                        timerPerUkeISnitt = 37.5
                     ),
-                    harFraværIPeriode = true
+                    arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                        type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                        arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
                 )
             ),
             medlemskap = Medlemskap(

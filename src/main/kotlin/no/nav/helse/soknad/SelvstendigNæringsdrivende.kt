@@ -3,12 +3,16 @@ package no.nav.helse.soknad
 import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import java.time.LocalDate
 
 data class SelvstendigNæringsdrivende(
     val virksomhet: Virksomhet,
     val arbeidsforhold: Arbeidsforhold? = null
-)
+){
+    fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) =
+        arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
+}
 
 data class Virksomhet(
     val næringstyper: List<Næringstyper> = listOf(),

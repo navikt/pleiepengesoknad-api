@@ -3,6 +3,9 @@ package no.nav.helse
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import org.junit.jupiter.api.Assertions
 import java.net.URL
 import java.time.LocalDate
@@ -96,12 +99,15 @@ class SoknadValidationTest {
                 navn = "Org",
                 organisasjonsnummer = "917755736",
                 erAnsatt = true,
-                arbeidsforhold = Arbeidsforhold(
-                    jobberNormaltTimer = 40.0,
-                    arbeidIPeriode = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.NEI
+                arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                    normalarbeidstid = NormalArbeidstid(
+                        erLiktHverUke = true,
+                        timerPerUkeISnitt = 37.5
                     ),
-                    harFraværIPeriode = false
+                    arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                        type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                        arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
                 )
             )
         ),

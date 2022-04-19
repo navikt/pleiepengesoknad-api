@@ -15,6 +15,9 @@ import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
 import no.nav.helse.mellomlagring.started
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.domene.arbeid.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
@@ -706,14 +709,14 @@ class ApplicationTest {
         val jpegUrl = engine.jpegUrl(cookie)
 
         val søknad = SøknadUtils.defaultSøknad().copy(
-            fraOgMed = LocalDate.now().minusDays(3),
-            tilOgMed = LocalDate.now().plusDays(4),
+            fraOgMed = LocalDate.parse("2022-01-01"),
+            tilOgMed = LocalDate.parse("2022-01-10"),
             ferieuttakIPerioden = FerieuttakIPerioden(
                 skalTaUtFerieIPerioden = true,
                 ferieuttak = listOf(
                     Ferieuttak(
-                        fraOgMed = LocalDate.now(),
-                        tilOgMed = LocalDate.now().plusDays(2),
+                        fraOgMed = LocalDate.parse("2022-01-01"),
+                        tilOgMed = LocalDate.parse("2022-01-02"),
                     )
                 )
             ),
@@ -882,19 +885,14 @@ class ApplicationTest {
                     harFlereAktiveVirksomheter = true
                 ),
                 arbeidsforhold = Arbeidsforhold(
-                    jobberNormaltTimer = 37.5,
-                    arbeidIPeriode = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = false,
-                        enkeltdager = listOf(
-                            Enkeltdag(
-                                dato = LocalDate.parse("2021-01-01"),
-                                tid = Duration.ofHours(7).plusMinutes(30)
-                            )
-                        ),
-                        fasteDager = null
+                    normalarbeidstid = NormalArbeidstid(
+                        erLiktHverUke = true,
+                        timerPerUkeISnitt = 37.5
                     ),
-                    harFraværIPeriode = true
+                    arbeidIPeriode = ArbeidIPeriode(
+                        type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                        arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
                 )
             )
         )
@@ -943,8 +941,8 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(3),
+                fraOgMed = LocalDate.parse("2022-01-01"),
+                tilOgMed = LocalDate.parse("2022-01-10"),
                 ferieuttakIPerioden = null,
                 selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                     virksomhet = Virksomhet(
@@ -964,19 +962,14 @@ class ApplicationTest {
                         harFlereAktiveVirksomheter = true
                     ),
                     arbeidsforhold = Arbeidsforhold(
-                        jobberNormaltTimer = 40.0,
-                        arbeidIPeriode = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
-                            erLiktHverUke = false,
-                            enkeltdager = listOf(
-                                Enkeltdag(
-                                    dato = LocalDate.parse("2021-01-01"),
-                                    tid = Duration.ofHours(7).plusMinutes(30)
-                                )
-                            ),
-                            fasteDager = null
+                        normalarbeidstid = NormalArbeidstid(
+                            erLiktHverUke = true,
+                            timerPerUkeISnitt = 37.5
                         ),
-                        harFraværIPeriode = true
+                        arbeidIPeriode = ArbeidIPeriode(
+                            type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                            arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                        )
                     )
                 )
             ).somJson()
@@ -1096,170 +1089,11 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(4),
-                ferieuttakIPerioden = FerieuttakIPerioden(
-                    skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(
-                        Ferieuttak(
-                            fraOgMed = LocalDate.now(),
-                            tilOgMed = LocalDate.now().plusDays(2),
-                        )
-                    )
-                ),
+                fraOgMed = LocalDate.parse("2022-01-01"),
+                tilOgMed = LocalDate.parse("2022-01-10"),
+                ferieuttakIPerioden = null,
                 vedlegg = listOf(URL(jpegUrl), URL(finnesIkkeUrl)),
             ).somJson()
-        )
-    }
-
-    @Test
-    fun `Sende soknad med ugylidge parametre gir feil`() {
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedCode = HttpStatusCode.BadRequest,
-            requestEntity =
-            //language=JSON
-            """
-                {
-                    "barn": {
-                        "navn": "",
-                        "fødselsnummer": "2909912345"
-                    },
-                    "fraOgMed": "1990-09-29",
-                    "tilOgMed": "1990-09-28",
-                    "arbeidsgivere" : [
-                      {
-                        "type": "Organisasjon",
-                        "navn" : "  ",
-                        "organisasjonsnummer" : 12345,
-                        "arbeidsforhold" : {
-                            "jobberNormaltTimer": 37.5,
-                            "arbeidIPeriode": {
-                              "jobberIPerioden" : "NEI"
-                            },
-                            "harFraværIPeriode" : true
-                        }
-                      }  
-                    ],
-                    "vedlegg": [
-                        "http://localhost:8080/ikke-vedlegg/123",
-                        null
-                    ],
-                    "medlemskap" : {},
-                    "utenlandsoppholdIPerioden": {
-                        "skalOppholdeSegIUtlandetIPerioden": false,
-                        "opphold": []
-                    },
-                    "harForstattRettigheterOgPlikter": false,
-                    "ferieuttakIPerioden": {
-                        "skalTaUtFerieIPeriode": true,
-                        "ferieuttak": [
-                          {
-                            "fraOgMed": "2020-01-05",
-                            "tilOgMed": "2020-01-07"
-                          }
-                        ]
-                    },
-                    "harVærtEllerErVernepliktig" : true
-                }
-                """.trimIndent(),
-            //language=json
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "barn.fødselsnummer",
-                  "reason": "Ikke gyldig fødselsnummer.",
-                  "invalid_value": "2909912345"
-                },
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere[0].organisasjonsnummer",
-                  "reason": "Ikke gyldig organisasjonsnummer.",
-                  "invalid_value": "12345"
-                },
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere[0].navn",
-                  "reason": "Navnet på organisasjonen kan ikke være tomt eller kun whitespace.",
-                  "invalid_value": "  "
-                },
-                {
-                  "type": "entity",
-                  "name": "fraOgMed",
-                  "reason": "Fra og med må være før eller lik til og med.",
-                  "invalid_value": "1990-09-29"
-                },
-                {
-                  "type": "entity",
-                  "name": "tilOgMed",
-                  "reason": "Til og med må være etter eller lik fra og med.",
-                  "invalid_value": "1990-09-28"
-                },
-                {
-                  "type": "entity",
-                  "name": "vedlegg[0]",
-                  "reason": "Ikke gyldig vedlegg URL.",
-                  "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
-                },
-                {
-                  "type": "entity",
-                  "name": "vedlegg[1]",
-                  "reason": "Ikke gyldig vedlegg URL.",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                  "reason": "medlemskap.harBoddIUtlandetSiste12Mnd kan ikke være null",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                  "reason": "medlemskap.skalBoIUtlandetNeste12Mnd kan ikke være null",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "harMedsøker",
-                  "reason": "harMedsøker kan ikke være null",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "harBekreftetOpplysninger",
-                  "reason": "Opplysningene må bekreftes for å sende inn søknad.",
-                  "invalid_value": false
-                },
-                {
-                  "type": "entity",
-                  "name": "harForstattRettigheterOgPlikter",
-                  "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
-                  "invalid_value": false
-                },
-                    {
-                  "type": "entity",
-                  "name": "ytelse.søknadsperiode.perioder[0]",
-                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
-                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
-                },
-                {
-                  "type": "entity",
-                  "name": "ytelse.arbeidstid.arbeidstakerList[0].organisasjonsnummer.valid",
-                  "reason": "Organisasjonsnummer må være gyldig.",
-                  "invalid_value": "K9-format feilkode: ugyldigOrgNummer"
-                }
-              ]
-            }
-            """.trimIndent()
         )
     }
 

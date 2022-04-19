@@ -22,7 +22,7 @@ class ArbeidsforholdTest {
     }
 
     @Test
-    fun `Jobber som vanlig`(){
+    fun `Jobber som vanlig med normal arbeidstid oppgitt som snitt per uke`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
                 erLiktHverUke = true,
@@ -39,6 +39,35 @@ class ArbeidsforholdTest {
 
         assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
         assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
+    }
+
+    @Test
+    fun `Jobber som vanlig med normal arbeidstid oppgitt som faste dager`(){
+        val arbeidsforhold = Arbeidsforhold(
+            normalarbeidstid = NormalArbeidstid(
+                erLiktHverUke = true,
+                timerFasteDager = PlanUkedager(
+                    mandag = null, tirsdag = syvOgEnHalvTime, onsdag = null, torsdag = syvOgEnHalvTime, fredag = null
+                )
+            ),
+            arbeidIPeriode = ArbeidIPeriode(
+                type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+            )
+        )
+        val k9Arbeid = arbeidsforhold.tilK9ArbeidstidInfo(mandag, fredag)
+        val perioder = k9Arbeid.perioder
+        assertEquals(5, perioder.size)
+
+        listOf(mandag, onsdag, fredag).forEach { dag ->
+            assertEquals(nullTimer, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(nullTimer, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
+        }
+
+        listOf(tirsdag, torsdag).forEach { dag ->
+            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
+        }
     }
 
     @Test

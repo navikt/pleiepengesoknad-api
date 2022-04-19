@@ -71,14 +71,14 @@ internal class SøknadServiceTest{
 
                 søknadService.registrer(
                     søknad = SøknadUtils.defaultSøknad().copy(
-                        fraOgMed = LocalDate.now().minusDays(3),
-                        tilOgMed = LocalDate.now().plusDays(4),
+                        fraOgMed = LocalDate.parse("2022-01-01"),
+                        tilOgMed = LocalDate.parse("2022-01-10"),
                         ferieuttakIPerioden = FerieuttakIPerioden(
                             skalTaUtFerieIPerioden = true,
                             ferieuttak = listOf(
                                 Ferieuttak(
-                                    fraOgMed = LocalDate.now(),
-                                    tilOgMed = LocalDate.now().plusDays(2),
+                                    fraOgMed = LocalDate.parse("2022-01-01"),
+                                    tilOgMed = LocalDate.parse("2022-01-03"),
                                 )
                             )
                         ),

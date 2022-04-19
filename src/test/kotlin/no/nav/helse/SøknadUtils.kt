@@ -42,17 +42,15 @@ class SøknadUtils {
                     navn = "Org",
                     organisasjonsnummer = "917755736",
                     erAnsatt = true,
-                    arbeidsforhold = Arbeidsforhold(
-                        jobberNormaltTimer = 40.0,
-                        arbeidIPeriode = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
+                    arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                        normalarbeidstid = NormalArbeidstid(
                             erLiktHverUke = true,
-                            enkeltdager = null,
-                            fasteDager = PlanUkedager(
-                                mandag = Duration.ofHours(7).plusMinutes(30)
-                            )
+                            timerPerUkeISnitt = 37.5
                         ),
-                        harFraværIPeriode = true
+                        arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                            type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                            arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                        )
                     )
                 ),
                 Arbeidsgiver(
@@ -93,36 +91,34 @@ class SøknadUtils {
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
                     harFlereAktiveVirksomheter = true
                 ),
-                arbeidsforhold = Arbeidsforhold(
-                    jobberNormaltTimer = 40.0,
-                    arbeidIPeriode = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
+                arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                    normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,
-                        enkeltdager = null,
-                        fasteDager = PlanUkedager(
-                            mandag = Duration.ofHours(7).plusMinutes(30)
-                        )
+                        timerPerUkeISnitt = 37.5
                     ),
-                    harFraværIPeriode = true
+                    arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                        type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                        arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
                 erLiktHverUke = false,
                 enkeltdager = listOf(
                     Enkeltdag(
-                        LocalDate.parse("2021-01-01"),
+                        LocalDate.parse("2022-01-01"),
                         Duration.ofHours(4)
                     ),
                     Enkeltdag(
-                        LocalDate.parse("2021-01-02"),
+                        LocalDate.parse("2022-01-02"),
                         Duration.ofHours(4)
                     ),
                     Enkeltdag(
-                        LocalDate.parse("2021-01-03"),
+                        LocalDate.parse("2022-01-03"),
                         Duration.ofHours(4)
                     ),
                     Enkeltdag(
-                        LocalDate.parse("2021-01-04"),
+                        LocalDate.parse("2022-01-04"),
                         Duration.ofHours(4)
                     )
                 )
