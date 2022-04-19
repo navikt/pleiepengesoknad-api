@@ -52,8 +52,8 @@ spec:
         - pleiepengesoknad
     outbound:
       rules:
-        - application: {{app}}-redis
         - application: k9-mellomlagring
+        - application: k9-brukerdialog-cache
       external:
       {{#each externalHosts as |host|}}
           - host: {{host }}
