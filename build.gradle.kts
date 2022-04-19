@@ -13,7 +13,7 @@ val fuelVersion = "2.3.1"
 val lettuceVersion = "6.1.8.RELEASE"
 
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.6.21"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
