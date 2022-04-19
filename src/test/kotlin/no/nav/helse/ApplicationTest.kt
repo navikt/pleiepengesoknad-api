@@ -1,6 +1,5 @@
 package no.nav.helse
 
-import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
@@ -13,7 +12,6 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
-import no.nav.helse.mellomlagring.started
 import no.nav.helse.soknad.ArbeidIPeriode
 import no.nav.helse.soknad.Arbeidsforhold
 import no.nav.helse.soknad.BarnDetaljer
@@ -27,6 +25,7 @@ import no.nav.helse.soknad.SelvstendigNæringsdrivende
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9BrukerdialogCache
 import no.nav.helse.wiremock.stubK9Mellomlagring
 import no.nav.helse.wiremock.stubK9MellomlagringHealth
 import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
@@ -80,6 +79,7 @@ class ApplicationTest {
             .stubK9OppslagArbeidsgivereMedOrgNummer()
             .stubK9OppslagArbeidsgivereMedPrivate()
             .stubK9Mellomlagring()
+            .stubK9BrukerdialogCache()
             .stubSifInnsynApi(
                 k9SakInnsynSøknader = listOf(
                     defaultK9SakInnsynSøknad(
@@ -99,17 +99,13 @@ class ApplicationTest {
         private val kafkaEnvironment = KafkaWrapper.bootstrap()
         private val kafkaKonsumer = kafkaEnvironment.testConsumer()
 
-        val redisServer: RedisServer = RedisServer
-            .newRedisServer().started()
-
         fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(
                 TestConfiguration.asMap(
                     wireMockServer = wireMockServer,
-                    kafkaEnvironment = kafkaEnvironment,
-                    redisServer = redisServer
+                    kafkaEnvironment = kafkaEnvironment
                 )
             )
 
@@ -135,7 +131,6 @@ class ApplicationTest {
         fun tearDown() {
             logger.info("Tearing down")
             wireMockServer.stop()
-            redisServer.stop()
             logger.info("Tear down complete")
         }
     }
@@ -1579,7 +1574,7 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = MELLOMLAGRING_URL,
             cookie = cookie,
-            expectedCode = HttpStatusCode.NoContent,
+            expectedCode = HttpStatusCode.Created,
             expectedResponse = null,
             requestEntity = mellomlagringSøknad
         )
@@ -1588,7 +1583,7 @@ class ApplicationTest {
             httpMethod = HttpMethod.Post,
             path = ENDRINGSMELDING_MELLOMLAGRING_URL,
             cookie = cookie,
-            expectedCode = HttpStatusCode.NoContent,
+            expectedCode = HttpStatusCode.Created,
             expectedResponse = null,
             requestEntity = mellomlagringEndringsmelding
         )

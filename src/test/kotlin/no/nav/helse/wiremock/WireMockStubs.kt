@@ -13,6 +13,7 @@ import org.json.JSONObject
 
 internal const val k9OppslagPath = "/k9-selvbetjening-oppslag-mock"
 private const val k9MellomlagringPath = "/k9-mellomlagring-mock"
+private const val k9BrukerdialogCachePath = "/k9-brukerdialog-cache-mock"
 private const val sifInnsynApiPath = "/sif-innsyn-api-mock"
 
 internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration {
@@ -22,6 +23,7 @@ internal fun WireMockBuilder.pleiepengesoknadApiConfig() = wireMockConfiguration
         .extensions(ArbeidsgivereResponseTransformer())
         .extensions(ArbeidsgivereMedPrivateResponseTransformer())
         .extensions(K9MellomlagringResponseTransformer())
+        .extensions(K9BrukerdialogCacheResponseTransformer())
 }
 
 
@@ -149,6 +151,17 @@ internal fun WireMockServer.stubK9Mellomlagring(): WireMockServer {
     return this
 }
 
+internal fun WireMockServer.stubK9BrukerdialogCache(): WireMockServer {
+    WireMock.stubFor(
+        WireMock.any(WireMock.urlMatching(".*$k9BrukerdialogCachePath/api/cache.*"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withTransformers("K9BrukerdialogCacheResponseTransformer")
+            )
+    )
+    return this
+}
+
 internal fun WireMockServer.stubSifInnsynApi(k9SakInnsynSøknader: List<K9SakInnsynSøknad>): WireMockServer {
     WireMock.stubFor(
         WireMock.any(WireMock.urlMatching(".*$sifInnsynApiPath/innsyn/sak"))
@@ -171,4 +184,5 @@ private fun List<K9SakInnsynSøknad>.somJsonArray(): JSONArray = JSONArray(map {
 
 internal fun WireMockServer.getK9OppslagUrl() = baseUrl() + k9OppslagPath
 internal fun WireMockServer.getK9MellomlagringUrl() = baseUrl() + k9MellomlagringPath
+internal fun WireMockServer.getK9BrukerdialogCacheUrl() = baseUrl() + k9BrukerdialogCachePath
 internal fun WireMockServer.getSifInnsynApiUrl() = baseUrl() + sifInnsynApiPath

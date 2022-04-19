@@ -19,7 +19,7 @@ import no.nav.helse.dusseldorf.ktor.metrics.Operation.Companion.monitored
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.helse.general.CallId
-import no.nav.helse.k9MellomlagringKonfigurert
+import no.nav.helse.pleiepengesøknadKonfigurert
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -34,7 +34,7 @@ class K9BrukerdialogCacheGateway(
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(K9BrukerdialogCacheGateway::class.java)
-        private val objectMapper = jacksonObjectMapper().k9MellomlagringKonfigurert()
+        private val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert()
         private const val LAGRE_CACHE_OPERATION = "lagre-cache"
         private const val HENTE_CACHE_OPERATION = "hente-cache"
         private const val OPPDATERE_CACHE_OPERATION = "oppdatere-cache"
@@ -82,7 +82,7 @@ class K9BrukerdialogCacheGateway(
         val (request, response, result) = monitored(
             app = TJENESTE,
             operation = LAGRE_CACHE_OPERATION,
-            resultResolver = { 200 == it.second.statusCode }
+            resultResolver = { HttpStatusCode.Created.value == it.second.statusCode }
         ) { httpRequest.awaitStringResponseResult() }
 
         return result.fold(
@@ -126,7 +126,7 @@ class K9BrukerdialogCacheGateway(
         val (request, response, result) = monitored(
             app = TJENESTE,
             operation = HENTE_CACHE_OPERATION,
-            resultResolver = { 200 == it.second.statusCode }
+            resultResolver = { HttpStatusCode.OK.value == it.second.statusCode }
         ) { httpRequest.awaitStringResponseResult() }
 
         return result.fold(
@@ -135,7 +135,7 @@ class K9BrukerdialogCacheGateway(
                 objectMapper.readValue<CacheResponseDTO>(success)
             },
             { error ->
-                if (404 == response.statusCode) null
+                if (HttpStatusCode.NotFound.value == response.statusCode) null
                 else {
                     logger.error(
                         "Error response = '${
@@ -178,7 +178,7 @@ class K9BrukerdialogCacheGateway(
         val (request, response, result) = monitored(
             app = TJENESTE,
             operation = OPPDATERE_CACHE_OPERATION,
-            resultResolver = { 200 == it.second.statusCode }
+            resultResolver = { HttpStatusCode.OK.value == it.second.statusCode }
         ) { httpRequest.awaitStringResponseResult() }
 
         return result.fold(
@@ -187,7 +187,7 @@ class K9BrukerdialogCacheGateway(
                 objectMapper.readValue<CacheResponseDTO>(success)
             },
             { error ->
-                if (response.statusCode == 404) throw CacheNotFoundException(cacheRequestDTO.nøkkelPrefiks)
+                if (response.statusCode == HttpStatusCode.NotFound.value) throw CacheNotFoundException(cacheRequestDTO.nøkkelPrefiks)
                 else {
                     logger.error(
                         "Error response = '${
@@ -221,8 +221,8 @@ class K9BrukerdialogCacheGateway(
 
         val (request, response, result) = monitored(
             app = TJENESTE,
-            operation = HENTE_CACHE_OPERATION,
-            resultResolver = { 200 == it.second.statusCode }
+            operation = SLETTE_CACHE_OPERATION,
+            resultResolver = { HttpStatusCode.NoContent.value == it.second.statusCode }
         ) { httpRequest.awaitStringResponseResult() }
 
         return result.fold(
@@ -231,7 +231,7 @@ class K9BrukerdialogCacheGateway(
                 true
             },
             { error ->
-                if (404 == response.statusCode) throw CacheNotFoundException(nøkkelPrefiks)
+                if (HttpStatusCode.NotFound.value == response.statusCode) throw CacheNotFoundException(nøkkelPrefiks)
                 else {
                     logger.error(
                         "Error response = '${

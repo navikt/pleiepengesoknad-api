@@ -1,6 +1,5 @@
 package no.nav.helse
 
-import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.WireMockServer
 import no.nav.common.KafkaEnvironment
 import no.nav.helse.dusseldorf.testsupport.jws.ClientCredentials
@@ -8,6 +7,7 @@ import no.nav.helse.dusseldorf.testsupport.jws.LoginService
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2WellKnownUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getLoginServiceV1WellKnownUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getTokendingsWellKnownUrl
+import no.nav.helse.wiremock.getK9BrukerdialogCacheUrl
 import no.nav.helse.wiremock.getK9MellomlagringUrl
 import no.nav.helse.wiremock.getK9OppslagUrl
 import no.nav.helse.wiremock.getSifInnsynApiUrl
@@ -21,8 +21,8 @@ object TestConfiguration {
         k9OppslagUrl: String? = wireMockServer?.getK9OppslagUrl(),
         sifInnaynApiUrl: String? = wireMockServer?.getSifInnsynApiUrl(),
         k9MellomlagringUrl : String? = wireMockServer?.getK9MellomlagringUrl(),
-        corsAdresses : String = "http://localhost:8080",
-        redisServer: RedisServer
+        k9BrukerdialogCacheUrl : String? = wireMockServer?.getK9BrukerdialogCacheUrl(),
+        corsAdresses : String = "http://localhost:8080"
     ) : Map<String, String> {
         val map = mutableMapOf(
             Pair("ktor.deployment.port", "$port"),
@@ -30,6 +30,7 @@ object TestConfiguration {
             Pair("nav.gateways.k9_oppslag_url", "$k9OppslagUrl"),
             Pair("nav.gateways.sif_innsyn_api_url", "$sifInnaynApiUrl"),
             Pair("nav.gateways.k9_mellomlagring_url", "$k9MellomlagringUrl"),
+            Pair("nav.gateways.k9_brukerdialog_cache_url", "$k9BrukerdialogCacheUrl"),
             Pair("nav.cors.addresses", corsAdresses),
             Pair("NAIS_CLUSTER_NAME", "local")
         )
@@ -56,10 +57,6 @@ object TestConfiguration {
             map["nav.auth.issuers.1.discovery_endpoint"] = wireMockServer.getLoginServiceV1WellKnownUrl()
             map["nav.auth.issuers.1.audience"] = LoginService.V1_0.getAudience()
         }
-
-        map["nav.redis.host"] = "localhost"
-        map["nav.redis.port"] = "${redisServer.bindPort}"
-        map["nav.storage.passphrase"] = "verySecret"
 
         map["nav.mellomlagring.søknad_tid_timer"] = "1"
         map["nav.mellomlagring.endringsmelding_tid_timer"] = "1"
