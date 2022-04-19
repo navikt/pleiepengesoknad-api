@@ -7,6 +7,7 @@ import java.time.DayOfWeek
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class NormalArbeidstidTest {
@@ -53,6 +54,7 @@ class NormalArbeidstidTest {
         )
 
         assertTrue(normalarbeidstid.harOppgittTimerSomSnitt())
+        assertFalse(normalarbeidstid.harOppgittTimerSomFasteDager())
         assertEquals(Duration.ofHours(7).plusMinutes(30), normalarbeidstid.timerPerDagFraSnitt())
     }
 
@@ -65,6 +67,8 @@ class NormalArbeidstidTest {
             timerFasteDager = PlanUkedager(mandag = femTimer, tirsdag = femTimer)
         )
         assertTrue(normalarbeidstid.harOppgittTimerSomFasteDager())
+        assertFalse(normalarbeidstid.harOppgittTimerSomSnitt())
+
         assertEquals(femTimer, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.MONDAY))
         assertEquals(femTimer, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.TUESDAY))
         assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.WEDNESDAY))
