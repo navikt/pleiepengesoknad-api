@@ -91,7 +91,7 @@ class K9BrukerdialogCacheGateway(
                 objectMapper.readValue<CacheResponseDTO>(success)
             },
             { error ->
-                if (409 == response.statusCode) throw CacheConflictException(cacheRequestDTO.nøkkelPrefiks)
+                if (HttpStatusCode.Conflict.value == response.statusCode) throw CacheConflictException(cacheRequestDTO.nøkkelPrefiks)
                 else {
                     logger.error(
                         "Error response = '${
@@ -231,7 +231,7 @@ class K9BrukerdialogCacheGateway(
                 true
             },
             { error ->
-                if (HttpStatusCode.NotFound.value == response.statusCode) throw CacheNotFoundException(nøkkelPrefiks)
+                if (HttpStatusCode.NotFound.value == response.statusCode) true
                 else {
                     logger.error(
                         "Error response = '${

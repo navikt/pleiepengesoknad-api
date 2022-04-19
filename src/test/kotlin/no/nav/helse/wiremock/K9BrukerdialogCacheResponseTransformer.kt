@@ -51,14 +51,20 @@ class K9BrukerdialogCacheResponseTransformer() : ResponseTransformer() {
                 val cache = cacheRequest.somCache(nøkkel)
 
                 logger.info("Lagrer i cache... {}", cache)
-                mellomlagredeVerdierCache[nøkkel] = cache
-                logger.info("Lagret i cache: {}", cache)
-
-                Response.Builder.like(response)
-                    .status(HttpStatusCode.Created.value)
-                    .headers(HttpHeaders(HttpHeader.httpHeader("Content-Type", "application/json")))
-                    .body(cache.somJson())
-                    .build()
+                return if (mellomlagredeVerdierCache.containsKey(nøkkel)) {
+                    logger.warn("Cache med nøkkel: {} eksisterer allerede.", nøkkel)
+                    Response.Builder.like(response)
+                        .status(HttpStatusCode.Conflict.value)
+                        .build()
+                } else {
+                    mellomlagredeVerdierCache[nøkkel] = cache
+                    logger.info("Lagret i cache: {}", cache)
+                    Response.Builder.like(response)
+                        .status(HttpStatusCode.Created.value)
+                        .headers(HttpHeaders(HttpHeader.httpHeader("Content-Type", "application/json")))
+                        .body(cache.somJson())
+                        .build()
+                }
             }
 
             request.erHenteCache() -> {
@@ -143,9 +149,8 @@ class K9BrukerdialogCacheResponseTransformer() : ResponseTransformer() {
     )
 
     private fun Request.fnr(): String {
-        val auth = getHeader(Authorization)
-        logger.info("---> authHeader: $auth")
-        return IdToken(auth.substringAfterLast("Bearer ")).getNorskIdentifikasjonsnummer()
+        val authHeader = getHeader(Authorization)
+        return IdToken(authHeader.substringAfterLast("Bearer ")).getNorskIdentifikasjonsnummer()
     }
 
     private fun Request.erLagreCache() = method == RequestMethod.POST
