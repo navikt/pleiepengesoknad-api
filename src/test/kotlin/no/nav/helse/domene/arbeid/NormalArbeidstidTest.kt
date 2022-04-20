@@ -46,6 +46,16 @@ class NormalArbeidstidTest {
     }
 
     @Test
+    fun `Gir feil ved henting av timer per dag fra snitt dersom timerPerUkeISnitt ikke er satt`(){
+        val normalArbeidstid = NormalArbeidstid(
+            erLiktHverUke = true,
+            timerPerUkeISnitt = null,
+            timerFasteDager = PlanUkedager()
+        )
+        assertThrows<IllegalArgumentException> { normalArbeidstid.timerPerDagFraSnitt() }
+    }
+
+    @Test
     fun `Regner ut riktig timerPerDag fra timerPerUkeISnitt - 37,5 timer per uke gir 7,5 per dag`(){
         val normalarbeidstid = NormalArbeidstid(
             erLiktHverUke = true,
@@ -56,6 +66,16 @@ class NormalArbeidstidTest {
         assertTrue(normalarbeidstid.harOppgittTimerSomSnitt())
         assertFalse(normalarbeidstid.harOppgittTimerSomFasteDager())
         assertEquals(Duration.ofHours(7).plusMinutes(30), normalarbeidstid.timerPerDagFraSnitt())
+    }
+
+    @Test
+    fun `Gir feil ved henting av timer per dag fra fasteDager dersom timerFasteDager ikke er satt`(){
+        val normalArbeidstid = NormalArbeidstid(
+            erLiktHverUke = true,
+            timerPerUkeISnitt = 33.0,
+            timerFasteDager = null
+        )
+        assertThrows<IllegalArgumentException> { normalArbeidstid.timerPerDagFraFasteDager(DayOfWeek.MONDAY) }
     }
 
     @Test

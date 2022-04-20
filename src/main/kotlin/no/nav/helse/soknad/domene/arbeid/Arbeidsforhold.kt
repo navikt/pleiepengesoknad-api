@@ -113,8 +113,6 @@ class Arbeidsforhold(
     }
 
     private fun arbeiderProsentAvNormalt(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        require(normalarbeidstid.harOppgittTimerSomSnitt()) { "Dersom man arbeider prosent av normalt må normalarbeidstid være oppgitt som snitt" }
-
         val normaltimer = normalarbeidstid.timerPerDagFraSnitt()
         val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
             .medJobberNormaltTimerPerDag(normaltimer)
@@ -126,8 +124,6 @@ class Arbeidsforhold(
     }
 
     private fun arbeiderTimerISnittPerUke(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        require(normalarbeidstid.harOppgittTimerSomSnitt()) { "Dersom man arbeider timer i snitt per uke av normalt må normalarbeidstid være oppgitt som snitt" }
-
         val arbeidstidPeriodeInfo =
             ArbeidstidPeriodeInfo()
                 .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraSnitt())
