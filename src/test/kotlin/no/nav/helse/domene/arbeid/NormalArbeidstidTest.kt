@@ -96,5 +96,4 @@ class NormalArbeidstidTest {
             assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(dag))
         }
     }
-
 }
