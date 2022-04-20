@@ -1663,7 +1663,7 @@ class ApplicationTest {
         }
 
         @Test
-        fun `gitt oppdatering av en ikke-eksisterende nøkkel, forvent feil`() {
+        fun `gitt oppdatering av en ikke-eksisterende nøkkel, forvent at det opprettes ny`() {
             val cookie = getAuthCookie(gyldigFodselsnummerD)
 
             val mellomlagringSøknad = """
@@ -1676,17 +1676,9 @@ class ApplicationTest {
                 httpMethod = HttpMethod.Put,
                 path = MELLOMLAGRING_URL,
                 cookie = cookie,
-                expectedCode = HttpStatusCode.NotFound,
+                expectedCode = HttpStatusCode.NoContent,
                 requestEntity = mellomlagringSøknad,
-                expectedResponse = """
-                {
-                  "type": "/problem-details/cache-ikke-funnet",
-                  "title": "cache-ikke-funnet",
-                  "status": 404,
-                  "detail": "Cache ble ikke funnet.",
-                  "instance": "/mellomlagring"
-                }
-            """.trimIndent()
+                expectedResponse = null
             )
         }
 

@@ -42,11 +42,12 @@ class MellomlagringService(
         verdi: String,
         utløpsdato: ZonedDateTime = when (mellomlagringPrefix) {
             MellomlagringPrefix.SØKNAD -> ZonedDateTime.now(UTC).plusHours(søknadMellomlagretTidTimer.toLong())
-            MellomlagringPrefix.ENDRINGSMELDING -> ZonedDateTime.now(UTC).plusHours(endringsmeldingMellomlagretTidTimer.toLong())
+            MellomlagringPrefix.ENDRINGSMELDING -> ZonedDateTime.now(UTC)
+                .plusHours(endringsmeldingMellomlagretTidTimer.toLong())
         },
         idToken: IdToken,
         callId: CallId
-    ): CacheResponseDTO? {
+    ): CacheResponseDTO {
         return k9BrukerdialogCacheGateway.mellomlagreSøknad(
             cacheRequestDTO = CacheRequestDTO(
                 nøkkelPrefiks = mellomlagringPrefix.nøkkelPrefiks(),
@@ -70,19 +71,28 @@ class MellomlagringService(
             nøkkelPrefiks = mellomlagringPrefix.nøkkelPrefiks(),
             idToken = idToken,
             callId = callId
-        ) ?: throw CacheNotFoundException(mellomlagringPrefix.nøkkelPrefiks())
-
-        return k9BrukerdialogCacheGateway.oppdaterMellomlagretSøknad(
-            cacheRequestDTO = CacheRequestDTO(
-                nøkkelPrefiks = mellomlagringPrefix.nøkkelPrefiks(),
-                verdi = verdi,
-                utløpsdato = eksisterendeMellomlagring.utløpsdato,
-                opprettet = eksisterendeMellomlagring.opprettet,
-                endret = ZonedDateTime.now(UTC)
-            ),
-            idToken = idToken,
-            callId = callId
         )
+
+        return if (eksisterendeMellomlagring != null) {
+            k9BrukerdialogCacheGateway.oppdaterMellomlagretSøknad(
+                cacheRequestDTO = CacheRequestDTO(
+                    nøkkelPrefiks = mellomlagringPrefix.nøkkelPrefiks(),
+                    verdi = verdi,
+                    utløpsdato = eksisterendeMellomlagring.utløpsdato,
+                    opprettet = eksisterendeMellomlagring.opprettet,
+                    endret = ZonedDateTime.now(UTC)
+                ),
+                idToken = idToken,
+                callId = callId
+            )
+        } else {
+            setMellomlagring(
+                mellomlagringPrefix = mellomlagringPrefix,
+                verdi = verdi,
+                idToken = idToken,
+                callId = callId
+            )
+        }
     }
 
     suspend fun deleteMellomlagring(
