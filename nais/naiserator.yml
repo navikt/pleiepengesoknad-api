@@ -49,7 +49,7 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - pleiepengesoknad
+        - application: pleiepengesoknad
     outbound:
       rules:
         - application: k9-mellomlagring
