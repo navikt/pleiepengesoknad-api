@@ -12,6 +12,7 @@ class FrilansArbeidsforholdTest {
 
     companion object{
         private val syvOgEnHalvTime = Duration.ofHours(7).plusMinutes(30)
+        private val nullTimer = Duration.ZERO
     }
 
     // TODO: 13/04/2022 Lage tester og håndtering av tilfeller hvor man starter/slutter i søknadsperioden
@@ -37,10 +38,24 @@ class FrilansArbeidsforholdTest {
         )
 
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(søknadsperiode.fraOgMed, søknadsperiode.tilOgMed)
-        val perioder = k9ArbeidstidInfo!!.perioder
+        val perioder = k9ArbeidstidInfo.perioder
         assertEquals(1, perioder.size)
         assertEquals(syvOgEnHalvTime, perioder[søknadsperiode]!!.jobberNormaltTimerPerDag)
         assertEquals(syvOgEnHalvTime, perioder[søknadsperiode]!!.faktiskArbeidTimerPerDag)
+    }
+
+    @Test
+    fun `Frilans uten arbeidsforhold, forventer at hele søknadsperioden fylles med 0-0 timer`(){
+        val søknadsperiode = Periode(LocalDate.parse("2022-01-01"), LocalDate.parse("2022-01-10"))
+        val frilans = Frilans(
+            harInntektSomFrilanser = false
+        )
+
+        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(søknadsperiode.fraOgMed, søknadsperiode.tilOgMed)
+        val perioder = k9ArbeidstidInfo.perioder
+        assertEquals(1, perioder.size)
+        assertEquals(nullTimer, perioder[søknadsperiode]!!.jobberNormaltTimerPerDag)
+        assertEquals(nullTimer, perioder[søknadsperiode]!!.faktiskArbeidTimerPerDag)
     }
 
 }

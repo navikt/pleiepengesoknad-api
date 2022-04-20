@@ -6,7 +6,10 @@ import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import no.nav.k9.søknad.Søknad
+import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
+import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.net.URL
+import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -190,8 +193,20 @@ data class Frilans(
     val erFortsattFrilanser: Boolean? = null,
     val arbeidsforhold: Arbeidsforhold? = null
 ) {
-    fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) =
-        arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
+    companion object{
+        private val NULL_TIMER = Duration.ZERO
+    }
+
+    fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
+        return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
+            ?: ArbeidstidInfo()
+                .medPerioder(
+                    mapOf(no.nav.k9.søknad.felles.type.Periode(fraOgMed, tilOgMed) to
+                            ArbeidstidPeriodeInfo()
+                                .medJobberNormaltTimerPerDag(NULL_TIMER)
+                                .medFaktiskArbeidTimerPerDag(NULL_TIMER))
+                )
+    }
 }
 
 enum class Årsak {
