@@ -80,7 +80,7 @@ class NormalArbeidstidTest {
 
     @Test
     fun `Regner ut riktig timerPerDag fra timerFasteDager`(){
-        val femTimer = Duration.ofHours(5).plusMinutes(45)
+        val femTimer = Duration.ofHours(5)
         val normalarbeidstid = NormalArbeidstid(
             erLiktHverUke = true,
             timerPerUkeISnitt = null,
