@@ -50,5 +50,4 @@ class ArbeidIPeriode(
             && this.timerPerUke == other.timerPerUke
             && this.enkeltdager == other.enkeltdager
 
-
 }

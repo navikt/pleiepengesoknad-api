@@ -218,7 +218,7 @@ internal class SerDesTest {
               "frilans": {
                 "startdato": "2018-01-01",
                 "sluttdato": null,
-                "erFortsattFrilanser": true,
+                "jobberFortsattSomFrilans": true,
                 "harInntektSomFrilanser": true,
                 "arbeidsforhold": {
                   "normalarbeidstid": {
@@ -464,7 +464,7 @@ internal class SerDesTest {
                 "tilleggsinformasjon": "Ikke beredskap"
               },
               "frilans": {
-                  "erFortsattFrilanser": true,
+                  "jobberFortsattSomFrilans": true,
                   "harInntektSomFrilanser": true,
                   "startdato": "2018-01-01",
                   "sluttdato": null,
@@ -670,7 +670,7 @@ internal class SerDesTest {
             ),
             frilans = Frilans(
                 harInntektSomFrilanser = true,
-                erFortsattFrilanser = true,
+                jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(

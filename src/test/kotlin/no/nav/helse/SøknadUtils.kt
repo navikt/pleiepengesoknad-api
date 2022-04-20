@@ -204,7 +204,7 @@ class SøknadUtils {
                 )
             ),
             frilans = Frilans(
-                erFortsattFrilanser = true,
+                jobberFortsattSomFrilans = true,
                 harInntektSomFrilanser = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(

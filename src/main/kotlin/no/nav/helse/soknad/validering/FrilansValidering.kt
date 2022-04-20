@@ -19,13 +19,13 @@ fun Frilans.valider(): MutableSet<Violation> {
             )
         }
 
-        if(erFortsattFrilanser == null){
+        if(jobberFortsattSomFrilans == null){
             feil.add(
                 Violation(
-                    parameterName = "frilans.erFortsattFrilanser",
+                    parameterName = "frilans.jobberFortsattSomFrilans",
                     parameterType = ParameterType.ENTITY,
-                    reason = "erFortsattFrilanser må være satt når man har inntektSomFrilanser.",
-                    invalidValue = "erFortsattFrilanser=$erFortsattFrilanser"
+                    reason = "jobberFortsattSomFrilans må være satt når man har inntektSomFrilanser.",
+                    invalidValue = "jobberFortsattSomFrilans=$jobberFortsattSomFrilans"
                 )
             )
         }

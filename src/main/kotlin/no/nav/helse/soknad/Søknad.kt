@@ -190,7 +190,7 @@ data class Frilans(
     val startdato: LocalDate? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val sluttdato: LocalDate? = null,
-    val erFortsattFrilanser: Boolean? = null,
+    val jobberFortsattSomFrilans: Boolean? = null,
     val arbeidsforhold: Arbeidsforhold? = null
 ) {
     companion object{

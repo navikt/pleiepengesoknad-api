@@ -66,7 +66,7 @@ class Arbeidsforhold(
                 mapOf(Periode(fraOgMed, tilOgMed) to arbeidstidPeriodeInfo)
             )
         } else if(normalarbeidstid.harOppgittTimerSomFasteDager()){
-            fraOgMed.ukedagerTilOgMed(tilOgMed).forEach {ukedagIPerioden ->
+            fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { ukedagIPerioden ->
                 val arbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
                     .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(ukedagIPerioden.dayOfWeek))
                     .medFaktiskArbeidTimerPerDag(NULL_TIMER)
