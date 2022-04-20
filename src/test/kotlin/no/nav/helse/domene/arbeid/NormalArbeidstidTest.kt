@@ -3,7 +3,7 @@ package no.nav.helse.domene.arbeid
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import org.junit.jupiter.api.assertThrows
-import java.time.DayOfWeek
+import java.time.DayOfWeek.*
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -75,7 +75,7 @@ class NormalArbeidstidTest {
             timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
             timerFasteDager = null
         )
-        assertThrows<IllegalArgumentException> { normalArbeidstid.timerPerDagFraFasteDager(DayOfWeek.MONDAY) }
+        assertThrows<IllegalArgumentException> { normalArbeidstid.timerPerDagFraFasteDager(MONDAY) }
     }
 
     @Test
@@ -89,13 +89,12 @@ class NormalArbeidstidTest {
         assertTrue(normalarbeidstid.harOppgittTimerSomFasteDager())
         assertFalse(normalarbeidstid.harOppgittTimerSomSnitt())
 
-        assertEquals(femTimer, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.MONDAY))
-        assertEquals(femTimer, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.TUESDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.WEDNESDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.THURSDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.FRIDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.SATURDAY))
-        assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(DayOfWeek.SUNDAY))
+        assertEquals(femTimer, normalarbeidstid.timerPerDagFraFasteDager(MONDAY))
+        assertEquals(femTimer, normalarbeidstid.timerPerDagFraFasteDager(TUESDAY))
+
+        listOf(WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY).forEach { dag ->
+            assertEquals(Duration.ZERO, normalarbeidstid.timerPerDagFraFasteDager(dag))
+        }
     }
 
 }
