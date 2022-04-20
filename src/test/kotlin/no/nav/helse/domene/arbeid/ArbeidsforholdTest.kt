@@ -26,7 +26,7 @@ class ArbeidsforholdTest {
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
                 erLiktHverUke = true,
-                timerPerUkeISnitt = 37.5
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
                 type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
@@ -75,7 +75,7 @@ class ArbeidsforholdTest {
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
                 erLiktHverUke = true,
-                timerPerUkeISnitt = 37.5
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
                 type = ArbeidIPeriodeType.ARBEIDER_IKKE,
@@ -96,7 +96,7 @@ class ArbeidsforholdTest {
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
                 erLiktHverUke = true,
-                timerPerUkeISnitt = 37.5
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
                 type = ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER,
@@ -182,7 +182,7 @@ class ArbeidsforholdTest {
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
                 erLiktHverUke = true,
-                timerPerUkeISnitt = 37.5
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
                 type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
@@ -204,7 +204,7 @@ class ArbeidsforholdTest {
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
                 erLiktHverUke = true,
-                timerPerUkeISnitt = 37.5
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
                 type = ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE,

@@ -7,6 +7,7 @@ import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
 import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import org.skyscreamer.jsonassert.JSONAssert
+import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -62,7 +63,7 @@ internal class SerDesTest {
                   "arbeidsforhold": {
                   "normalarbeidstid": {
                     "erLiktHverUke": true,
-                    "timerPerUkeISnitt": 37.5,
+                    "timerPerUkeISnitt": "PT37H30M",
                     "timerFasteDager": null
                   },
                   "arbeidIPeriode": {
@@ -141,7 +142,7 @@ internal class SerDesTest {
                 "arbeidsforhold": {
                   "normalarbeidstid": {
                     "erLiktHverUke": true,
-                    "timerPerUkeISnitt": 37.5,
+                    "timerPerUkeISnitt": "PT37H30M",
                     "timerFasteDager": null
                   },
                   "arbeidIPeriode": {
@@ -223,7 +224,7 @@ internal class SerDesTest {
                 "arbeidsforhold": {
                   "normalarbeidstid": {
                     "erLiktHverUke": true,
-                    "timerPerUkeISnitt": 37.5,
+                    "timerPerUkeISnitt": "PT37H30M",
                     "timerFasteDager": null
                   },
                   "arbeidIPeriode": {
@@ -304,7 +305,7 @@ internal class SerDesTest {
                   "arbeidsforhold": {
                       "normalarbeidstid": {
                         "erLiktHverUke": true,
-                        "timerPerUkeISnitt": 37.5,
+                        "timerPerUkeISnitt": "PT37H30M",
                         "timerFasteDager": null
                       },
                       "arbeidIPeriode": {
@@ -374,7 +375,7 @@ internal class SerDesTest {
                 "arbeidsforhold": {
                   "normalarbeidstid": {
                     "erLiktHverUke": true,
-                    "timerPerUkeISnitt": 37.5,
+                    "timerPerUkeISnitt": "PT37H30M",
                     "timerFasteDager": null
                   },
                   "arbeidIPeriode": {
@@ -471,7 +472,7 @@ internal class SerDesTest {
                   "arbeidsforhold": {
                     "normalarbeidstid": {
                       "erLiktHverUke": true,
-                      "timerPerUkeISnitt": 37.5,
+                      "timerPerUkeISnitt": "PT37H30M",
                       "timerFasteDager": null
                     },
                     "arbeidIPeriode": {
@@ -522,7 +523,7 @@ internal class SerDesTest {
                     arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
                             erLiktHverUke = true,
-                            timerPerUkeISnitt = 37.5
+                            timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                         ),
                         arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
                             type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
@@ -566,7 +567,7 @@ internal class SerDesTest {
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,
-                        timerPerUkeISnitt = 37.5
+                        timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
                         type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
@@ -675,7 +676,7 @@ internal class SerDesTest {
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,
-                        timerPerUkeISnitt = 37.5
+                        timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
                         type = ArbeidIPeriodeType.ARBEIDER_VANLIG,

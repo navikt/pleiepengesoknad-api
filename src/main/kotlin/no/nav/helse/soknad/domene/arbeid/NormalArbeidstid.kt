@@ -1,13 +1,12 @@
 package no.nav.helse.soknad.domene.arbeid
 
-import no.nav.helse.k9format.tilDuration
 import no.nav.helse.soknad.PlanUkedager
 import java.time.DayOfWeek
 import java.time.Duration
 
 class NormalArbeidstid (
     val erLiktHverUke: Boolean? = null, //Unngå default false
-    val timerPerUkeISnitt: Double? = null,
+    val timerPerUkeISnitt: Duration? = null,
     val timerFasteDager: PlanUkedager? = null
 ) {
     companion object{
@@ -25,7 +24,7 @@ class NormalArbeidstid (
 
     internal fun timerPerDagFraSnitt(): Duration {
         requireNotNull(timerPerUkeISnitt) { "timerPerUkeISnitt må være satt for å hente timer per dag fra snitt." }
-        return (timerPerUkeISnitt/DAGER_I_EN_UKE).tilDuration()
+        return (timerPerUkeISnitt.dividedBy(DAGER_I_EN_UKE.toLong()))
     }
 
     internal fun timerPerDagFraFasteDager(gjeldeneUkedag: DayOfWeek): Duration {

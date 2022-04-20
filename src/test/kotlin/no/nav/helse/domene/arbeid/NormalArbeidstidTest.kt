@@ -28,7 +28,7 @@ class NormalArbeidstidTest {
         assertThrows<IllegalArgumentException> {
             NormalArbeidstid(
                 erLiktHverUke = true,
-                timerPerUkeISnitt = 37.5,
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
                 timerFasteDager = PlanUkedager()
             )
         }
@@ -39,7 +39,7 @@ class NormalArbeidstidTest {
         assertThrows<IllegalArgumentException> {
             NormalArbeidstid(
                 erLiktHverUke = null,
-                timerPerUkeISnitt = 37.5,
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
                 timerFasteDager = null
             )
         }
@@ -59,7 +59,7 @@ class NormalArbeidstidTest {
     fun `Regner ut riktig timerPerDag fra timerPerUkeISnitt - 37,5 timer per uke gir 7,5 per dag`(){
         val normalarbeidstid = NormalArbeidstid(
             erLiktHverUke = true,
-            timerPerUkeISnitt = 37.5,
+            timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
             timerFasteDager = null
         )
 
@@ -72,7 +72,7 @@ class NormalArbeidstidTest {
     fun `Gir feil ved henting av timer per dag fra fasteDager dersom timerFasteDager ikke er satt`(){
         val normalArbeidstid = NormalArbeidstid(
             erLiktHverUke = true,
-            timerPerUkeISnitt = 33.0,
+            timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
             timerFasteDager = null
         )
         assertThrows<IllegalArgumentException> { normalArbeidstid.timerPerDagFraFasteDager(DayOfWeek.MONDAY) }

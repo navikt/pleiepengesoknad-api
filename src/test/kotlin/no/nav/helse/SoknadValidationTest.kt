@@ -8,6 +8,7 @@ import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import org.junit.jupiter.api.Assertions
 import java.net.URL
+import java.time.Duration
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import kotlin.test.Test
@@ -104,7 +105,7 @@ class SoknadValidationTest {
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,
-                        timerPerUkeISnitt = 37.5
+                        timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
                         type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
