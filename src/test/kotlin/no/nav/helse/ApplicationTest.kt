@@ -56,7 +56,6 @@ import kotlin.test.assertTrue
 class ApplicationTest {
 
     private companion object {
-
         private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
 
         // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
