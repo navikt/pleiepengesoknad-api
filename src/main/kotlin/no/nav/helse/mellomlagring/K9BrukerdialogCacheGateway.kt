@@ -99,7 +99,7 @@ class K9BrukerdialogCacheGateway(
                         }' fra '${request.url}'"
                     )
                     logger.error(error.toString())
-                    throw IllegalStateException("Feil ved henting av mellomlagret søknad.")
+                    throw IllegalStateException("Feil ved mellomlagring av søknad.")
                 }
             }
         )
@@ -183,7 +183,7 @@ class K9BrukerdialogCacheGateway(
 
         return result.fold(
             { success ->
-                logger.info("Suksess ved mellomlagring av søknad")
+                logger.info("Suksess ved oppdatering av mellomlagret søknad")
                 objectMapper.readValue<CacheResponseDTO>(success)
             },
             { error ->
@@ -195,7 +195,7 @@ class K9BrukerdialogCacheGateway(
                         }' fra '${request.url}'"
                     )
                     logger.error(error.toString())
-                    throw IllegalStateException("Feil ved henting av mellomlagret søknad.")
+                    throw IllegalStateException("Feil ved oppdatering av mellomlagret søknad.")
                 }
             }
         )
