@@ -63,7 +63,8 @@ class K9BrukerdialogCacheGateway(
         cacheRequestDTO: CacheRequestDTO,
         idToken: IdToken,
         callId: CallId
-    ): CacheResponseDTO? {
+    ): CacheResponseDTO {
+        logger.info("CacheRequestDTO: {}", cacheRequestDTO) // TODO: fjern før prodsetting
         val body = objectMapper.writeValueAsBytes(cacheRequestDTO)
 
         val exchangeToken = cachedAccessTokenClient.getAccessToken(k9BrukerdialogCacheTokenxAudience, idToken.value)
@@ -155,6 +156,7 @@ class K9BrukerdialogCacheGateway(
         idToken: IdToken,
         callId: CallId
     ): CacheResponseDTO {
+        logger.info("CacheRequestDTO: {}", cacheRequestDTO) // TODO: fjern før prodsetting
         val body = objectMapper.writeValueAsBytes(cacheRequestDTO)
 
         val urlMedId = Url.buildURL(

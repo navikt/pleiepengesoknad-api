@@ -42,8 +42,7 @@ class MellomlagringService(
         verdi: String,
         utløpsdato: ZonedDateTime = when (mellomlagringPrefix) {
             MellomlagringPrefix.SØKNAD -> ZonedDateTime.now(UTC).plusHours(søknadMellomlagretTidTimer.toLong())
-            MellomlagringPrefix.ENDRINGSMELDING -> ZonedDateTime.now()
-                .plusHours(endringsmeldingMellomlagretTidTimer.toLong())
+            MellomlagringPrefix.ENDRINGSMELDING -> ZonedDateTime.now(UTC).plusHours(endringsmeldingMellomlagretTidTimer.toLong())
         },
         idToken: IdToken,
         callId: CallId
