@@ -18,10 +18,8 @@ data class Arbeidsgiver(
     val arbeidsforhold: Arbeidsforhold? = null
 ) {
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        return if(arbeidsforhold != null) {
-            arbeidsforhold.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
-        } else {
-            ArbeidstidInfo()
+        return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
+            ?: ArbeidstidInfo()
                 .medPerioder(
                     mapOf(
                         Periode(fraOgMed, tilOgMed) to ArbeidstidPeriodeInfo()
@@ -29,7 +27,6 @@ data class Arbeidsgiver(
                             .medJobberNormaltTimerPerDag(Duration.ZERO)
                     )
                 )
-        }
     }
 }
 
