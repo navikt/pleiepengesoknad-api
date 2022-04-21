@@ -21,8 +21,6 @@ class FrilansArbeidsforholdTest {
         val fredag = torsdag.plusDays(1)
     }
 
-    // TODO: 13/04/2022 Lage tester og håndtering av tilfeller hvor man starter/slutter i søknadsperioden
-
     @Test
     fun `Frilans jobber som normalt i hele søknadsperioden`(){
         val frilans = Frilans(
