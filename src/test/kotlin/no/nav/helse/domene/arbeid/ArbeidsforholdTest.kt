@@ -13,7 +13,6 @@ class ArbeidsforholdTest {
     companion object{
         val syvOgEnHalvTime = Duration.ofHours(7).plusMinutes(30)
         val femTimer = Duration.ofHours(5)
-        val nullTimer = Duration.ZERO
         val mandag = LocalDate.parse("2022-01-03")
         val tirsdag = mandag.plusDays(1)
         val onsdag = tirsdag.plusDays(1)
@@ -60,8 +59,8 @@ class ArbeidsforholdTest {
         assertEquals(5, perioder.size)
 
         listOf(mandag, onsdag, fredag).forEach { dag ->
-            assertEquals(nullTimer, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
-            assertEquals(nullTimer, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
+            assertEquals(NULL_TIMER, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(NULL_TIMER, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
         }
 
         listOf(tirsdag, torsdag).forEach { dag ->
@@ -88,7 +87,7 @@ class ArbeidsforholdTest {
         assertEquals(1, perioder.size)
 
         assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(nullTimer, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
+        assertEquals(NULL_TIMER, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
     }
 
     @Test
@@ -174,7 +173,7 @@ class ArbeidsforholdTest {
         assertEquals(femTimer, perioder[Periode(tirsdag, tirsdag)]!!.faktiskArbeidTimerPerDag)
 
         assertEquals(syvOgEnHalvTime, perioder[Periode(fredag, fredag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(nullTimer, perioder[Periode(fredag, fredag)]!!.faktiskArbeidTimerPerDag)
+        assertEquals(NULL_TIMER, perioder[Periode(fredag, fredag)]!!.faktiskArbeidTimerPerDag)
     }
 
     @Test

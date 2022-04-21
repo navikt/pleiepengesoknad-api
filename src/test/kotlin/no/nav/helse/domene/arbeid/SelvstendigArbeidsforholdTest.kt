@@ -16,7 +16,6 @@ class SelvstendigArbeidsforholdTest {
 
     companion object{
         private val syvOgEnHalvTime = Duration.ofHours(7).plusMinutes(30)
-        private val nullTimer = Duration.ZERO
         val mandag = LocalDate.parse("2022-01-03")
         val tirsdag = mandag.plusDays(1)
         val onsdag = tirsdag.plusDays(1)
@@ -71,7 +70,7 @@ class SelvstendigArbeidsforholdTest {
         val k9ArbeidstidInfo = selvstendig.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
         assertEquals(1, perioder.size)
-        assertEquals(nullTimer, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(nullTimer, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
+        assertEquals(NULL_TIMER, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
+        assertEquals(NULL_TIMER, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
     }
 }

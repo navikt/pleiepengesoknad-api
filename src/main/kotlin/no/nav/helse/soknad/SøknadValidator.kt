@@ -131,7 +131,7 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
 
     violations.addAll(selvstendigNæringsdrivende.valider())
 
-    frilans?.let { violations.addAll(it.valider()) }
+    violations.addAll(frilans.valider())
 
     omsorgstilbud?.apply { violations.addAll(this.validate()) }
 

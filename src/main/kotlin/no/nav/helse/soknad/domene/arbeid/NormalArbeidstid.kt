@@ -9,10 +9,6 @@ class NormalArbeidstid (
     val timerPerUkeISnitt: Duration? = null,
     val timerFasteDager: PlanUkedager? = null
 ) {
-    companion object{
-        const val DAGER_I_EN_UKE = 5
-    }
-
     init {
         requireNotNull(erLiktHverUke) { "erLiktHverUke må være satt." }
         require(timerFasteDager != null || timerPerUkeISnitt != null) { "Et av feltene må settes" }
@@ -24,7 +20,7 @@ class NormalArbeidstid (
 
     internal fun timerPerDagFraSnitt(): Duration {
         requireNotNull(timerPerUkeISnitt) { "timerPerUkeISnitt må være satt for å hente timer per dag fra snitt." }
-        return (timerPerUkeISnitt.dividedBy(DAGER_I_EN_UKE.toLong()))
+        return (timerPerUkeISnitt.dividedBy(DAGER_PER_UKE))
     }
 
     internal fun timerPerDagFraFasteDager(gjeldeneUkedag: DayOfWeek): Duration {

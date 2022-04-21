@@ -4,18 +4,12 @@ import no.nav.helse.k9format.ukedagerTilOgMed
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
-import java.time.Duration
 import java.time.LocalDate
 
 class Arbeidsforhold(
     val normalarbeidstid: NormalArbeidstid,
     val arbeidIPeriode: ArbeidIPeriode
 ) {
-
-    companion object{
-        private val NULL_TIMER = Duration.ZERO
-    }
-
     fun tilK9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) = when(arbeidIPeriode.type){
         ArbeidIPeriodeType.ARBEIDER_VANLIG -> arbeiderSomVanlig(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_IKKE -> arbeiderIkke(fraOgMed, tilOgMed)

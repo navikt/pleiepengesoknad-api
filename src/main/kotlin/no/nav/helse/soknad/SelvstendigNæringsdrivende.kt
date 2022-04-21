@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NULL_TIMER
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
-import java.time.Duration
 import java.time.LocalDate
 
 data class SelvstendigNæringsdrivende(
@@ -14,9 +14,6 @@ data class SelvstendigNæringsdrivende(
     val virksomhet: Virksomhet? = null,
     val arbeidsforhold: Arbeidsforhold? = null
 ){
-    companion object{
-        private val NULL_TIMER = Duration.ZERO
-    }
 
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)

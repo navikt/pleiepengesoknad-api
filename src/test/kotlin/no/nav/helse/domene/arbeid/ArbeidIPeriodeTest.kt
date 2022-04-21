@@ -13,7 +13,6 @@ class ArbeidIPeriodeTest {
     companion object{
         private val åtteTimer = Duration.ofHours(8)
         private val fireTimer = Duration.ofHours(4)
-        private val nullTimer = Duration.ZERO
     }
 
     @Test
@@ -61,7 +60,7 @@ class ArbeidIPeriodeTest {
             prosentAvNormalt = 50.0
         )
         assertEquals(fireTimer, arbeidIPeriode.timerPerDagFraProsentAvNormalt(åtteTimer))
-        assertEquals(nullTimer, arbeidIPeriode.timerPerDagFraProsentAvNormalt(nullTimer))
+        assertEquals(NULL_TIMER, arbeidIPeriode.timerPerDagFraProsentAvNormalt(NULL_TIMER))
     }
 
     @Test

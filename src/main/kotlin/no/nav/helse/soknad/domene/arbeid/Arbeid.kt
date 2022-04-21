@@ -5,6 +5,9 @@ import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.Duration
 import java.time.LocalDate
 
+internal val NULL_TIMER = Duration.ZERO
+internal const val DAGER_PER_UKE = 5L
+
 class ArbeidstidEnkeltdag(
     val dato: LocalDate,
     val arbeidstimer: Arbeidstimer

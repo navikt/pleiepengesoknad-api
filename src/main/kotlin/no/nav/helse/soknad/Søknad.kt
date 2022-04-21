@@ -5,11 +5,11 @@ import no.nav.fpsak.tidsserie.LocalDateInterval
 import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NULL_TIMER
 import no.nav.k9.søknad.Søknad
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.net.URL
-import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -193,10 +193,6 @@ data class Frilans(
     val jobberFortsattSomFrilans: Boolean? = null,
     val arbeidsforhold: Arbeidsforhold? = null
 ) {
-    companion object{
-        private val NULL_TIMER = Duration.ZERO
-    }
-
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
             ?: ArbeidstidInfo()

@@ -16,10 +16,6 @@ class ArbeidIPeriode(
     val enkeltdager: List<ArbeidstidEnkeltdag>? = null
 ) {
 
-    companion object{
-        private const val DAGER_PER_UKE = 5
-    }
-
     internal fun timerPerDagFraFasteDager(ukedag: DayOfWeek): Duration {
         requireNotNull(fasteDager) { "For å regne ut timer per dag fra faste dager må fasteDager være satt." }
         return fasteDager.timerGittUkedag(ukedag)
@@ -38,7 +34,7 @@ class ArbeidIPeriode(
 
     internal fun timerPerDagFraTimerPerUke(): Duration {
         requireNotNull(timerPerUke) { "For å regne ut timer per dag fra timerPerUke må timerPerUke være satt." }
-        return timerPerUke.dividedBy(DAGER_PER_UKE.toLong())
+        return timerPerUke.dividedBy(DAGER_PER_UKE)
     }
 
     override fun equals(other: Any?) = this === other || other is ArbeidIPeriode && this.equals(other)
