@@ -194,7 +194,7 @@ data class Frilans(
     val arbeidsforhold: Arbeidsforhold? = null
 ) {
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
+        return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed, sluttdato)
             ?: ArbeidstidInfo()
                 .medPerioder(
                     mapOf(no.nav.k9.søknad.felles.type.Periode(fraOgMed, tilOgMed) to
