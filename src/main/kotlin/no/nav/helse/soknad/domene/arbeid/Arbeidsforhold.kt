@@ -104,7 +104,8 @@ class Arbeidsforhold(
         val arbeidstidInfo = ArbeidstidInfo()
 
         arbeidIPeriode.k9ArbeidstidFraEnkeltdager().forEach { (periode, arbeidstidPeriodeInfo) ->
-            if (periode.fraOgMed.erInnenforPerioden(fraOgMed, tilOgMed)) { //Tar høyde for dersom enkeltdager er oppgitt før man startet/etter sluttet.
+            //Tar høyde for at enkeltdager kan være utenfor fraOgMed/tilOgMed som kan være justert pga start/slutt innenfor søknadsperioden
+            if (periode.fraOgMed.erInnenforPerioden(fraOgMed, tilOgMed)) {
                 arbeidstidInfo.leggeTilPeriode(
                     periode,
                     arbeidstidPeriodeInfo
