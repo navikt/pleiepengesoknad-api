@@ -1,9 +1,9 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.Frilans
 import no.nav.helse.soknad.Næringstyper
 import no.nav.helse.soknad.Søknad
 import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.domene.Frilans
 import no.nav.k9.søknad.felles.opptjening.Frilanser
 import no.nav.k9.søknad.felles.opptjening.OpptjeningAktivitet
 import no.nav.k9.søknad.felles.opptjening.SelvstendigNæringsdrivende

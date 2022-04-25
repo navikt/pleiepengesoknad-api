@@ -3,6 +3,7 @@ package no.nav.helse
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
 import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid

@@ -3,9 +3,8 @@ package no.nav.helse
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
-import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
-import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
+import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.arbeid.*
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.Duration
 import java.time.LocalDate
@@ -673,12 +672,12 @@ internal class SerDesTest {
                 harInntektSomFrilanser = true,
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01"),
-                arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
-                    arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
                         arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
                     )

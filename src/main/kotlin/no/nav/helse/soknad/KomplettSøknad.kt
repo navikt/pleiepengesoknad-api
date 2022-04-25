@@ -1,6 +1,7 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
+import no.nav.helse.soknad.domene.Frilans
 import no.nav.k9.søknad.Søknad
 import java.time.LocalDate
 import java.time.ZonedDateTime

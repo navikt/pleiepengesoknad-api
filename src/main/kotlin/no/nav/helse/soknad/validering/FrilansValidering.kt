@@ -2,7 +2,7 @@ package no.nav.helse.soknad.validering
 
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
-import no.nav.helse.soknad.Frilans
+import no.nav.helse.soknad.domene.Frilans
 
 fun Frilans.valider(): MutableSet<Violation> {
     val feil = mutableSetOf<Violation>()
