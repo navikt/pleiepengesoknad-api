@@ -21,7 +21,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans jobber som normalt i hele søknadsperioden`(){
+    fun `Frilans jobber som vanlig i hele søknadsperioden`(){
         val frilans = Frilans(
             startdato = LocalDate.parse("2020-01-01"),
             sluttdato = null,

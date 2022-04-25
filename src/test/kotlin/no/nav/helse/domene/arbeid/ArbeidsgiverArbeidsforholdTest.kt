@@ -20,7 +20,7 @@ class ArbeidsgiverArbeidsforholdTest {
     }
 
     @Test
-    fun `Jobber som normalt i hele søknadsperioden`(){
+    fun `Arbeidstaker jobber som vanlig i hele søknadsperioden`(){
         val arbeidsgiver = Arbeidsgiver(
             navn = "Coop",
             organisasjonsnummer = "977155436",
@@ -45,7 +45,7 @@ class ArbeidsgiverArbeidsforholdTest {
     }
 
     @Test
-    fun `Arbeidsgiver uten arbeidsforhold, forventer at hele søknadsperioden fylles med 0-0 timer`(){
+    fun `Arbeidstaker uten arbeidsforhold, forventer at hele søknadsperioden fylles med 0-0 timer`(){
         val arbeidsgiver = Arbeidsgiver(
             navn = "Coop",
             organisasjonsnummer = "977155436",
