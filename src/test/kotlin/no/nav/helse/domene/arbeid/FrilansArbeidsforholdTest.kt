@@ -18,6 +18,32 @@ class FrilansArbeidsforholdTest {
         val onsdag = tirsdag.plusDays(1)
         val torsdag = onsdag.plusDays(1)
         val fredag = torsdag.plusDays(1)
+        val arbeidsforholdMedNormaltidSomSnittPerUke = Arbeidsforhold(
+            normalarbeidstid = NormalArbeidstid(
+                erLiktHverUke = true,
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
+            ),
+            arbeidIPeriode = ArbeidIPeriode(
+                type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+            )
+        )
+        val arbeidsforholdMedNormaltidSomFasteUkedager = Arbeidsforhold(
+            normalarbeidstid = NormalArbeidstid(
+                erLiktHverUke = true,
+                timerFasteDager = PlanUkedager(
+                    mandag = syvOgEnHalvTime,
+                    tirsdag = syvOgEnHalvTime,
+                    onsdag = syvOgEnHalvTime,
+                    torsdag = syvOgEnHalvTime,
+                    fredag = syvOgEnHalvTime
+                )
+            ),
+            arbeidIPeriode = ArbeidIPeriode(
+                type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+            )
+        )
     }
 
     @Test
@@ -27,16 +53,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = null,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomSnittPerUke
         )
 
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
@@ -66,16 +83,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = torsdag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomSnittPerUke
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -95,16 +103,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = mandag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomSnittPerUke
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -124,16 +123,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = fredag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomSnittPerUke
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -150,16 +140,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = fredag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomSnittPerUke
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, torsdag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -176,22 +157,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = onsdag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerFasteDager = PlanUkedager(
-                        mandag = syvOgEnHalvTime,
-                        tirsdag = syvOgEnHalvTime,
-                        onsdag = syvOgEnHalvTime,
-                        torsdag = syvOgEnHalvTime,
-                        fredag = syvOgEnHalvTime
-                    )
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -213,22 +179,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = mandag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerFasteDager = PlanUkedager(
-                        mandag = syvOgEnHalvTime,
-                        tirsdag = syvOgEnHalvTime,
-                        onsdag = syvOgEnHalvTime,
-                        torsdag = syvOgEnHalvTime,
-                        fredag = syvOgEnHalvTime
-                    )
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -248,22 +199,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = fredag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerFasteDager = PlanUkedager(
-                        mandag = syvOgEnHalvTime,
-                        tirsdag = syvOgEnHalvTime,
-                        onsdag = syvOgEnHalvTime,
-                        torsdag = syvOgEnHalvTime,
-                        fredag = syvOgEnHalvTime
-                    )
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -282,22 +218,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = torsdag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerFasteDager = PlanUkedager(
-                        mandag = syvOgEnHalvTime,
-                        tirsdag = syvOgEnHalvTime,
-                        onsdag = syvOgEnHalvTime,
-                        torsdag = syvOgEnHalvTime,
-                        fredag = syvOgEnHalvTime
-                    )
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -318,16 +239,7 @@ class FrilansArbeidsforholdTest {
             startdato = onsdag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomSnittPerUke
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -346,22 +258,7 @@ class FrilansArbeidsforholdTest {
             startdato = onsdag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerFasteDager = PlanUkedager(
-                        mandag = syvOgEnHalvTime,
-                        tirsdag = syvOgEnHalvTime,
-                        onsdag = syvOgEnHalvTime,
-                        torsdag = syvOgEnHalvTime,
-                        fredag = syvOgEnHalvTime
-                    )
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
@@ -383,16 +280,7 @@ class FrilansArbeidsforholdTest {
             sluttdato = torsdag,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
-            arbeidsforhold = Arbeidsforhold(
-                normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
-                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
-                ),
-                arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-                )
-            )
+            arbeidsforhold = arbeidsforholdMedNormaltidSomSnittPerUke
         )
         val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
         val perioder = k9ArbeidstidInfo.perioder
