@@ -25,7 +25,7 @@ class Arbeidsforhold(
     fun tilK9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) = when(arbeidIPeriode.type){
         ArbeidIPeriodeType.ARBEIDER_VANLIG -> arbeiderVanlig(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_IKKE -> arbeiderIkke(fraOgMed, tilOgMed)
-        ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER -> arbeiderEnkeltdager()
+        ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER -> arbeiderEnkeltdager(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER -> arbeiderFasteUkedager(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT -> arbeiderProsentAvNormalt(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE -> arbeiderTimerISnittPerUke(fraOgMed, tilOgMed)
@@ -100,18 +100,23 @@ class Arbeidsforhold(
         return arbeidstidInfo
     }
 
-    private fun arbeiderEnkeltdager(): ArbeidstidInfo {
+    private fun arbeiderEnkeltdager(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         val arbeidstidInfo = ArbeidstidInfo()
 
         arbeidIPeriode.k9ArbeidstidFraEnkeltdager().forEach { (periode, arbeidstidPeriodeInfo) ->
-            arbeidstidInfo.leggeTilPeriode(
-                periode,
-                arbeidstidPeriodeInfo
-            )
+            if (periode.fraOgMed.erInnenforPerioden(fraOgMed, tilOgMed)) { //Tar høyde for dersom enkeltdager er oppgitt før man startet/etter sluttet.
+                arbeidstidInfo.leggeTilPeriode(
+                    periode,
+                    arbeidstidPeriodeInfo
+                )
+            }
         }
 
         return arbeidstidInfo
     }
+
+    private fun LocalDate.erInnenforPerioden(fraOgMed: LocalDate, tilOgMed: LocalDate)  =
+        this.isEqual(fraOgMed) || this.isEqual(tilOgMed) || (this.isAfter(fraOgMed) && this.isBefore(tilOgMed))
 
     private fun arbeiderFasteUkedager(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         val arbeidstidInfo = ArbeidstidInfo()

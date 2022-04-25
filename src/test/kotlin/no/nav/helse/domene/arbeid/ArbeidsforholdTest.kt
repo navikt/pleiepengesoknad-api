@@ -165,6 +165,51 @@ class ArbeidsforholdTest {
     }
 
     @Test
+    fun `Jobber enkeltdager som går utenfor søknadsperioden, forventer at disse ikke blir mappet opp`(){
+        val arbeidsforhold = Arbeidsforhold(
+            normalarbeidstid = NormalArbeidstid(
+                erLiktHverUke = true,
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
+            ),
+            arbeidIPeriode = ArbeidIPeriode(
+                type = ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER,
+                arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+                enkeltdager = listOf(
+                    ArbeidstidEnkeltdag(
+                        dato = mandag,
+                        arbeidstimer = Arbeidstimer(
+                            normalTimer = syvOgEnHalvTime,
+                            faktiskTimer = femTimer
+                        )
+                    ),
+                    ArbeidstidEnkeltdag(
+                        dato = onsdag,
+                        arbeidstimer = Arbeidstimer(
+                            normalTimer = syvOgEnHalvTime,
+                            faktiskTimer = femTimer
+                        )
+                    ),
+                    ArbeidstidEnkeltdag(
+                        dato = fredag,
+                        arbeidstimer = Arbeidstimer(
+                            normalTimer = syvOgEnHalvTime,
+                            faktiskTimer = femTimer
+                        )
+                    )
+                )
+            )
+        )
+        val k9Arbeid = arbeidsforhold.tilK9ArbeidstidInfo(onsdag, fredag)
+        val perioder = k9Arbeid.perioder
+        assertEquals(2, perioder.size)
+
+        listOf(onsdag, fredag).forEach { dag ->
+            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(femTimer, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
+        }
+    }
+
+    @Test
     fun `Jobber faste ukedager`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
