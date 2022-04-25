@@ -11,6 +11,7 @@ import java.time.Duration
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class SelvstendigArbeidsforholdTest {
 
@@ -55,22 +56,17 @@ class SelvstendigArbeidsforholdTest {
         )
 
         val k9ArbeidstidInfo = selvstendig.k9ArbeidstidInfo(mandag, fredag)
-        val perioder = k9ArbeidstidInfo.perioder
+        val perioder = k9ArbeidstidInfo!!.perioder
         assertEquals(1, perioder.size)
         assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
         assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
     }
 
     @Test
-    fun `Selvstendig næringsdrivende uten arbeidsforhold, forventer at hele søknadsperioden fylles med 0-0 timer`(){
+    fun `Selvstendig næringsdrivende uten arbeidsforhold, forventer null`(){
         val selvstendig = SelvstendigNæringsdrivende(
             harInntektSomSelvstendig = false
         )
-
-        val k9ArbeidstidInfo = selvstendig.k9ArbeidstidInfo(mandag, fredag)
-        val perioder = k9ArbeidstidInfo.perioder
-        assertEquals(1, perioder.size)
-        assertEquals(NULL_TIMER, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(NULL_TIMER, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
+        assertNull(selvstendig.k9ArbeidstidInfo(mandag, fredag))
     }
 }

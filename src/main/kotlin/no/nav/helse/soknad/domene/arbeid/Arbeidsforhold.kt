@@ -10,8 +10,20 @@ class Arbeidsforhold(
     val normalarbeidstid: NormalArbeidstid,
     val arbeidIPeriode: ArbeidIPeriode
 ) {
-    fun tilK9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate, sluttetIPerioden: LocalDate? = null) = when(arbeidIPeriode.type){
-        ArbeidIPeriodeType.ARBEIDER_VANLIG -> arbeiderVanlig(fraOgMed, tilOgMed, sluttetIPerioden)
+
+    companion object{
+        internal fun k9ArbeidstidInfoMedNullTimer(fraOgMed: LocalDate, tilOgMed: LocalDate) = ArbeidstidInfo()
+                .medPerioder(
+                    mapOf(
+                        Periode(fraOgMed, tilOgMed) to ArbeidstidPeriodeInfo()
+                            .medFaktiskArbeidTimerPerDag(NULL_TIMER)
+                            .medJobberNormaltTimerPerDag(NULL_TIMER)
+                    )
+                )
+    }
+
+    fun tilK9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) = when(arbeidIPeriode.type){
+        ArbeidIPeriodeType.ARBEIDER_VANLIG -> arbeiderVanlig(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_IKKE -> arbeiderIkke(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER -> arbeiderEnkeltdager()
         ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER -> arbeiderFasteUkedager(fraOgMed, tilOgMed)
@@ -21,63 +33,41 @@ class Arbeidsforhold(
 
     private fun arbeiderVanlig(
         fraOgMed: LocalDate,
-        tilOgMed: LocalDate,
-        sluttetIPerioden: LocalDate?
+        tilOgMed: LocalDate
     ) = when {
-        normalarbeidstid.harOppgittTimerSomSnitt() -> arbeiderVanligMedNormaltimerSomSnitt(fraOgMed, tilOgMed, sluttetIPerioden)
-        normalarbeidstid.harOppgittTimerSomFasteDager() -> arbeiderVanligMedNormaltimerSomFasteDager(fraOgMed, tilOgMed, sluttetIPerioden)
+        normalarbeidstid.harOppgittTimerSomSnitt() -> arbeiderVanligMedNormaltimerSomSnitt(fraOgMed, tilOgMed)
+        normalarbeidstid.harOppgittTimerSomFasteDager() -> arbeiderVanligMedNormaltimerSomFasteDager(fraOgMed, tilOgMed)
         else -> throw Exception("Klarte ikke mappe opp ARBEIDER_VANLIG fordi normalarbeidstid har oppgitt verken snitt eller fastedager")
     }
 
     private fun arbeiderVanligMedNormaltimerSomFasteDager(
         fraOgMed: LocalDate,
-        tilOgMed: LocalDate,
-        sluttetIPerioden: LocalDate?
+        tilOgMed: LocalDate
     ): ArbeidstidInfo {
         val arbeidstidInfo = ArbeidstidInfo()
         fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { ukedagIPerioden ->
-            if (sluttetIPerioden != null && sluttetIPerioden.isBefore(ukedagIPerioden)) {
-                arbeidstidInfo.leggeTilPeriode(
-                    Periode(ukedagIPerioden, ukedagIPerioden),
-                    arbeidstidPeriodeInfoMedNullTimer()
-                )
-            } else {
-                arbeidstidInfo.leggeTilPeriode(
-                    Periode(ukedagIPerioden, ukedagIPerioden),
-                    ArbeidstidPeriodeInfo()
-                        .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(ukedagIPerioden.dayOfWeek))
-                        .medFaktiskArbeidTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(ukedagIPerioden.dayOfWeek))
-                )
-            }
+            arbeidstidInfo.leggeTilPeriode(
+                Periode(ukedagIPerioden, ukedagIPerioden),
+                ArbeidstidPeriodeInfo()
+                    .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(ukedagIPerioden.dayOfWeek))
+                    .medFaktiskArbeidTimerPerDag(normalarbeidstid.timerPerDagFraFasteDager(ukedagIPerioden.dayOfWeek))
+            )
         }
         return arbeidstidInfo
     }
 
     private fun arbeiderVanligMedNormaltimerSomSnitt(
         fraOgMed: LocalDate,
-        tilOgMed: LocalDate,
-        sluttetIPerioden: LocalDate?
+        tilOgMed: LocalDate
     ): ArbeidstidInfo {
         val arbeidstidInfo = ArbeidstidInfo()
-        val normalTimer = normalarbeidstid.timerPerDagFraSnitt()
-        if(sluttetIPerioden != null && sluttetIPerioden.isBefore(tilOgMed)){
-            arbeidstidInfo.leggeTilPeriode(
-                Periode(fraOgMed, sluttetIPerioden),
-                ArbeidstidPeriodeInfo()
-                    .medJobberNormaltTimerPerDag(normalTimer)
-                    .medFaktiskArbeidTimerPerDag(normalTimer)
+        arbeidstidInfo.medPerioder(
+            mapOf(
+                Periode(fraOgMed, tilOgMed) to ArbeidstidPeriodeInfo()
+                    .medJobberNormaltTimerPerDag(normalarbeidstid.timerPerDagFraSnitt())
+                    .medFaktiskArbeidTimerPerDag(normalarbeidstid.timerPerDagFraSnitt())
             )
-
-            arbeidstidInfo.leggeTilPeriode(
-                Periode(sluttetIPerioden.plusDays(1), tilOgMed), arbeidstidPeriodeInfoMedNullTimer()
-            )
-        } else {
-            arbeidstidInfo.medPerioder(
-                mapOf(Periode(fraOgMed, tilOgMed) to ArbeidstidPeriodeInfo()
-                    .medJobberNormaltTimerPerDag(normalTimer)
-                    .medFaktiskArbeidTimerPerDag(normalTimer))
-            )
-        }
+        )
         return arbeidstidInfo
     }
 

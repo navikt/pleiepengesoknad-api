@@ -5,7 +5,6 @@ import no.nav.fpsak.tidsserie.LocalDateInterval
 import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
-import no.nav.helse.soknad.domene.arbeid.NULL_TIMER
 import no.nav.k9.søknad.Søknad
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
@@ -194,15 +193,37 @@ data class Frilans(
     val arbeidsforhold: Arbeidsforhold? = null
 ) {
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
-        return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed, sluttdato)
-            ?: ArbeidstidInfo()
-                .medPerioder(
-                    mapOf(no.nav.k9.søknad.felles.type.Periode(fraOgMed, tilOgMed) to
-                            ArbeidstidPeriodeInfo()
-                                .medJobberNormaltTimerPerDag(NULL_TIMER)
-                                .medFaktiskArbeidTimerPerDag(NULL_TIMER))
-                )
+        return when{
+            (arbeidsforhold == null) -> Arbeidsforhold.k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
+            sluttetISøknadsperioden(tilOgMed) -> k9ArbeidstidInfoMedSluttIPerioden(fraOgMed, tilOgMed)
+            else -> arbeidsforhold.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
+        }
     }
+
+    private fun k9ArbeidstidInfoMedSluttIPerioden(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
+        requireNotNull(arbeidsforhold)
+        requireNotNull(sluttdato)
+        val arbeidsforholdFørSlutt = arbeidsforhold.tilK9ArbeidstidInfo(fraOgMed, sluttdato)
+        val arbeidsforholdEtterSlutt = Arbeidsforhold.k9ArbeidstidInfoMedNullTimer(sluttdato.plusDays(1), tilOgMed)
+
+        val totalArbeidsforhold = ArbeidstidInfo().apply {
+            arbeidsforholdFørSlutt.perioder.forEach { (periode, arbeidstidPeriodeInfo): Map.Entry<no.nav.k9.søknad.felles.type.Periode, ArbeidstidPeriodeInfo> ->
+                this.leggeTilPeriode(
+                    periode,
+                    arbeidstidPeriodeInfo
+                )
+            }
+            arbeidsforholdEtterSlutt.perioder.forEach { (periode, arbeidstidPeriodeInfo): Map.Entry<no.nav.k9.søknad.felles.type.Periode, ArbeidstidPeriodeInfo> ->
+                this.leggeTilPeriode(
+                    periode,
+                    arbeidstidPeriodeInfo
+                )
+            }
+        }
+        return totalArbeidsforhold
+    }
+
+    private fun sluttetISøknadsperioden(tilOgMed: LocalDate?) = (sluttdato != null && sluttdato.isBefore(tilOgMed))
 }
 
 enum class Årsak {

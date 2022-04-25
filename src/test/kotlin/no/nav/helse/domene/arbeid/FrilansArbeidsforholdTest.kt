@@ -118,7 +118,165 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
+    fun `Frilans som sluttet siste dag i søknadsperioden med normaltid oppgitt som snittPerUke`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+        val frilans = Frilans(
+            startdato = mandag,
+            sluttdato = fredag,
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(
+                    erLiktHverUke = true,
+                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
+                ),
+                arbeidIPeriode = ArbeidIPeriode(
+                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                )
+            )
+        )
+        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
+        val perioder = k9ArbeidstidInfo.perioder
+        assertEquals(1, perioder.size)
+
+        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
+        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
+    }
+
+    @Test
+    fun `Frilans som sluttet etter søknadsperioden med normaltid oppgitt som snittPerUke`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+        val frilans = Frilans(
+            startdato = mandag,
+            sluttdato = fredag,
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(
+                    erLiktHverUke = true,
+                    timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
+                ),
+                arbeidIPeriode = ArbeidIPeriode(
+                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                )
+            )
+        )
+        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, torsdag)
+        val perioder = k9ArbeidstidInfo.perioder
+        assertEquals(1, perioder.size)
+
+        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, torsdag)]!!.jobberNormaltTimerPerDag)
+        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, torsdag)]!!.faktiskArbeidTimerPerDag)
+    }
+
+    @Test
     fun `Frilans som sluttet i søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+        val frilans = Frilans(
+            startdato = mandag,
+            sluttdato = onsdag,
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(
+                    erLiktHverUke = true,
+                    timerFasteDager = PlanUkedager(
+                        mandag = syvOgEnHalvTime,
+                        tirsdag = syvOgEnHalvTime,
+                        onsdag = syvOgEnHalvTime,
+                        torsdag = syvOgEnHalvTime,
+                        fredag = syvOgEnHalvTime
+                    )
+                ),
+                arbeidIPeriode = ArbeidIPeriode(
+                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                )
+            )
+        )
+        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
+        val perioder = k9ArbeidstidInfo.perioder
+        assertEquals(4, perioder.size)
+
+        listOf(mandag, tirsdag, onsdag).forEach { dag ->
+            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
+        }
+
+        assertEquals(NULL_TIMER, perioder[Periode(torsdag, fredag)]!!.jobberNormaltTimerPerDag)
+        assertEquals(NULL_TIMER, perioder[Periode(torsdag, fredag)]!!.faktiskArbeidTimerPerDag)
+    }
+
+    @Test
+    fun `Frilans som sluttet første dag i søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+        val frilans = Frilans(
+            startdato = mandag,
+            sluttdato = mandag,
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(
+                    erLiktHverUke = true,
+                    timerFasteDager = PlanUkedager(
+                        mandag = syvOgEnHalvTime,
+                        tirsdag = syvOgEnHalvTime,
+                        onsdag = syvOgEnHalvTime,
+                        torsdag = syvOgEnHalvTime,
+                        fredag = syvOgEnHalvTime
+                    )
+                ),
+                arbeidIPeriode = ArbeidIPeriode(
+                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                )
+            )
+        )
+        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
+        val perioder = k9ArbeidstidInfo.perioder
+        assertEquals(2, perioder.size)
+
+        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, mandag)]!!.jobberNormaltTimerPerDag)
+        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, mandag)]!!.faktiskArbeidTimerPerDag)
+
+        assertEquals(NULL_TIMER, perioder[Periode(tirsdag, fredag)]!!.jobberNormaltTimerPerDag)
+        assertEquals(NULL_TIMER, perioder[Periode(tirsdag, fredag)]!!.faktiskArbeidTimerPerDag)
+    }
+
+    @Test
+    fun `Frilans som sluttet siste dag i søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+        val frilans = Frilans(
+            startdato = mandag,
+            sluttdato = fredag,
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(
+                    erLiktHverUke = true,
+                    timerFasteDager = PlanUkedager(
+                        mandag = syvOgEnHalvTime,
+                        tirsdag = syvOgEnHalvTime,
+                        onsdag = syvOgEnHalvTime,
+                        torsdag = syvOgEnHalvTime,
+                        fredag = syvOgEnHalvTime
+                    )
+                ),
+                arbeidIPeriode = ArbeidIPeriode(
+                    type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                )
+            )
+        )
+        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
+        val perioder = k9ArbeidstidInfo.perioder
+        assertEquals(5, perioder.size)
+
+        listOf(mandag, tirsdag, onsdag, torsdag, fredag).forEach { dag ->
+            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
+        }
+    }
+
+    @Test
+    fun `Frilans som sluttet etter søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = torsdag,
@@ -153,5 +311,4 @@ class FrilansArbeidsforholdTest {
         assertEquals(NULL_TIMER, perioder[Periode(fredag, fredag)]!!.jobberNormaltTimerPerDag)
         assertEquals(NULL_TIMER, perioder[Periode(fredag, fredag)]!!.faktiskArbeidTimerPerDag)
     }
-
 }
