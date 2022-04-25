@@ -6,7 +6,6 @@ import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.LocalDate
 
-
 data class Frilans(
     val harInntektSomFrilanser: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -19,7 +18,7 @@ data class Frilans(
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         return when{
             (arbeidsforhold == null) -> Arbeidsforhold.k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
-            startOgSluttISøknadsperioden(fraOgMed, tilOgMed) -> k9ArbeidstidInfoMedStartOgSluttIPerioden(fraOgMed, tilOgMed)
+            startetOgSluttetISøknadsperioden(fraOgMed, tilOgMed) -> k9ArbeidstidInfoMedStartOgSluttIPerioden(fraOgMed, tilOgMed)
             sluttetISøknadsperioden(tilOgMed) -> k9ArbeidstidInfoMedSluttIPerioden(fraOgMed, tilOgMed)
             startetISøknadsperioden(fraOgMed) -> k9ArbeidstidInfoMedStartIPerioden(fraOgMed, tilOgMed)
             else -> arbeidsforhold.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
@@ -69,5 +68,5 @@ data class Frilans(
 
     private fun sluttetISøknadsperioden(tilOgMed: LocalDate?) = (sluttdato != null && sluttdato.isBefore(tilOgMed))
     private fun startetISøknadsperioden(fraOgMed: LocalDate) = startdato?.isAfter(fraOgMed) ?: false
-    private fun startOgSluttISøknadsperioden(fraOgMed: LocalDate, tilOgMed: LocalDate?) = sluttetISøknadsperioden(tilOgMed) && startetISøknadsperioden(fraOgMed)
+    private fun startetOgSluttetISøknadsperioden(fraOgMed: LocalDate, tilOgMed: LocalDate?) = sluttetISøknadsperioden(tilOgMed) && startetISøknadsperioden(fraOgMed)
 }
