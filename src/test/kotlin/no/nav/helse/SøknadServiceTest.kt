@@ -7,10 +7,10 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.barn.BarnService
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.dusseldorf.testsupport.jws.Azure
 import no.nav.helse.general.CallId
 import no.nav.helse.general.Metadata
-import no.nav.helse.general.auth.IdToken
 import no.nav.helse.kafka.KafkaProducer
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService

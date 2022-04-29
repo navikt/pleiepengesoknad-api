@@ -4,11 +4,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import io.ktor.http.*
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.dusseldorf.ktor.client.buildURL
 import no.nav.helse.dusseldorf.ktor.core.Retry
 import no.nav.helse.dusseldorf.ktor.metrics.Operation
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.K9OppslagGateway
 import no.nav.helse.general.oppslag.throwable
 import no.nav.helse.k9SelvbetjeningOppslagKonfigurert

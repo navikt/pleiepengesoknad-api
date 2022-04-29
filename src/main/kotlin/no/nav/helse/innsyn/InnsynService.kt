@@ -1,7 +1,7 @@
 package no.nav.helse.innsyn
 
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.IdToken
 
 class InnsynService(
     private val innsynGateway: InnsynGateway

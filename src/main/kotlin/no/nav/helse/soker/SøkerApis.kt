@@ -5,9 +5,9 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.SØKER_URL
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
 import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.respondProblemDetails
-import no.nav.helse.general.auth.IdTokenProvider
 import no.nav.helse.general.getCallId
 import no.nav.helse.general.oppslag.TilgangNektetException
 import org.slf4j.LoggerFactory
