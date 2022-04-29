@@ -7,7 +7,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.helse.ENDRINGSMELDING_MELLOMLAGRING_URL
 import no.nav.helse.MELLOMLAGRING_URL
-import no.nav.helse.general.auth.IdTokenProvider
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
 
 fun Route.mellomlagringApis(
     mellomlagringService: MellomlagringService,
@@ -19,20 +19,20 @@ fun Route.mellomlagringApis(
         post {
             val midlertidigSøknad = call.receive<String>()
             val idToken = idTokenProvider.getIdToken(call)
-            mellomlagringService.setMellomlagring(mellomlagringPrefix, idToken.getSubject()!!, midlertidigSøknad)
+            mellomlagringService.setMellomlagring(mellomlagringPrefix, idToken.getNorskIdentifikasjonsnummer(), midlertidigSøknad)
             call.respond(HttpStatusCode.NoContent)
         }
 
         put {
             val midlertidigSøknad = call.receive<String>()
             val idToken = idTokenProvider.getIdToken(call)
-            mellomlagringService.updateMellomlagring(mellomlagringPrefix, idToken.getSubject()!!, midlertidigSøknad)
+            mellomlagringService.updateMellomlagring(mellomlagringPrefix, idToken.getNorskIdentifikasjonsnummer(), midlertidigSøknad)
             call.respond(HttpStatusCode.NoContent)
         }
 
         get {
             val idToken = idTokenProvider.getIdToken(call)
-            val mellomlagring = mellomlagringService.getMellomlagring(mellomlagringPrefix, idToken.getSubject()!!)
+            val mellomlagring = mellomlagringService.getMellomlagring(mellomlagringPrefix, idToken.getNorskIdentifikasjonsnummer())
             if (mellomlagring != null) {
                 call.respondText(
                     contentType = ContentType.Application.Json,
@@ -50,7 +50,7 @@ fun Route.mellomlagringApis(
 
         delete {
             val idToken = idTokenProvider.getIdToken(call)
-            mellomlagringService.deleteMellomlagring(mellomlagringPrefix, idToken.getSubject()!!)
+            mellomlagringService.deleteMellomlagring(mellomlagringPrefix, idToken.getNorskIdentifikasjonsnummer())
             call.respond(HttpStatusCode.Accepted)
         }
     }
@@ -62,20 +62,20 @@ fun Route.mellomlagringApis(
 
             val midlertidigEndringsmelding = call.receive<String>()
             val idToken = idTokenProvider.getIdToken(call)
-            mellomlagringService.setMellomlagring(mellomlagringPrefix, idToken.getSubject()!!, midlertidigEndringsmelding)
+            mellomlagringService.setMellomlagring(mellomlagringPrefix, idToken.getNorskIdentifikasjonsnummer(), midlertidigEndringsmelding)
             call.respond(HttpStatusCode.NoContent)
         }
 
         put {
             val midlertidigEndringsmelding = call.receive<String>()
             val idToken = idTokenProvider.getIdToken(call)
-            mellomlagringService.updateMellomlagring(mellomlagringPrefix, idToken.getSubject()!!, midlertidigEndringsmelding)
+            mellomlagringService.updateMellomlagring(mellomlagringPrefix, idToken.getNorskIdentifikasjonsnummer(), midlertidigEndringsmelding)
             call.respond(HttpStatusCode.NoContent)
         }
 
         get {
             val idToken = idTokenProvider.getIdToken(call)
-            val mellomlagring = mellomlagringService.getMellomlagring(mellomlagringPrefix, idToken.getSubject()!!)
+            val mellomlagring = mellomlagringService.getMellomlagring(mellomlagringPrefix, idToken.getNorskIdentifikasjonsnummer())
             if (mellomlagring != null) {
                 call.respondText(
                     contentType = ContentType.Application.Json,
@@ -93,7 +93,7 @@ fun Route.mellomlagringApis(
 
         delete {
             val idToken = idTokenProvider.getIdToken(call)
-            mellomlagringService.deleteMellomlagring(mellomlagringPrefix, idToken.getSubject()!!)
+            mellomlagringService.deleteMellomlagring(mellomlagringPrefix, idToken.getNorskIdentifikasjonsnummer())
             call.respond(HttpStatusCode.Accepted)
         }
     }

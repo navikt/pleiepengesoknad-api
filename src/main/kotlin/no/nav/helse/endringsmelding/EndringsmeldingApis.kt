@@ -10,7 +10,7 @@ import no.nav.helse.ENDRINGSMELDING_URL
 import no.nav.helse.ENDRINGSMELDING_VALIDERING_URL
 import no.nav.helse.barn.Barn
 import no.nav.helse.barn.BarnService
-import no.nav.helse.general.auth.IdTokenProvider
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
 import no.nav.helse.general.getMetadata
 import no.nav.helse.innsyn.InnsynService
 import no.nav.helse.innsyn.K9SakInnsynSøknad

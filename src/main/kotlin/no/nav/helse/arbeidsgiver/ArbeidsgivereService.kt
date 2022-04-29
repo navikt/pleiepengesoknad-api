@@ -1,7 +1,7 @@
 package no.nav.helse.arbeidsgiver
 
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.TilgangNektetException
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import org.slf4j.Logger

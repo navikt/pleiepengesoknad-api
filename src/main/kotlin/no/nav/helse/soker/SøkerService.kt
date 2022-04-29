@@ -1,8 +1,7 @@
 package no.nav.helse.soker
 
-import com.auth0.jwt.JWT
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.IdToken
 
 class SøkerService (
     private val søkerGateway: SøkerGateway
@@ -11,8 +10,7 @@ class SøkerService (
         idToken: IdToken,
         callId: CallId
     ): Søker {
-        val ident: String = JWT.decode(idToken.value).subject ?: throw IllegalStateException("Token mangler 'sub' claim.")
-        return søkerGateway.hentSoker(idToken, callId).tilSoker(ident)
+        return søkerGateway.hentSoker(idToken, callId).tilSoker(idToken.getNorskIdentifikasjonsnummer())
     }
 
     private fun  SøkerGateway.SokerOppslagRespons.tilSoker(fodselsnummer: String) = Søker(
