@@ -1,8 +1,8 @@
 package no.nav.helse.barn
 
 import com.github.benmanes.caffeine.cache.Cache
+import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.general.CallId
-import no.nav.helse.general.auth.IdToken
 import no.nav.helse.general.oppslag.TilgangNektetException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,7 +19,7 @@ class BarnService(
         idToken: IdToken,
         callId: CallId
     ): List<Barn>{
-        var listeOverBarn = cache.getIfPresent(idToken.getSubject().toString())
+        var listeOverBarn = cache.getIfPresent(idToken.getNorskIdentifikasjonsnummer())
         if(listeOverBarn != null) return listeOverBarn
 
         return try {
@@ -27,7 +27,7 @@ class BarnService(
                 idToken = idToken,
                 callId = callId)
                 .map{ it.tilBarn() }
-            cache.put(idToken.getSubject().toString(), barn)
+            cache.put(idToken.getNorskIdentifikasjonsnummer(), barn)
             barn
         } catch (cause: Throwable) {
             when(cause) {
