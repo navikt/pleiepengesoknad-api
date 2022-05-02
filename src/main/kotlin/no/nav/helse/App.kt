@@ -274,3 +274,34 @@ fun ObjectMapper.k9SelvbetjeningOppslagKonfigurert(): ObjectMapper {
         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
     }
 }
+
+
+fun StatusPages.Configuration.DefaultStatusPages() {
+
+    exception<Throwblem> { cause ->
+        call.respondProblemDetails(cause.getProblemDetails(), logger)
+    }
+
+    exception<Throwable> { cause ->
+        when (cause) {
+            is Problem -> call.respondProblemDetails(cause.getProblemDetails(), logger)
+            is IllegalArgumentException -> {
+                call.respondProblemDetails(DefaultProblemDetails(
+                    title = "IllegalArgumentException",
+                    status = 403,
+                    detail = "${cause.message}"
+                ), logger)
+            }
+            else -> {
+                logger.error("Uhåndtert feil", cause)
+                call.respondProblemDetails(UNHANDLED_PROBLEM_MESSAGE, logger)
+            }
+        }
+    }
+}
+
+private val UNHANDLED_PROBLEM_MESSAGE = DefaultProblemDetails(
+    title = "unhandled-error",
+    status = 500,
+    detail = "En uhåndtert feil har oppstått."
+)
