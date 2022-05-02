@@ -1,9 +1,7 @@
 package no.nav.helse
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategies
-import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.*
@@ -28,7 +26,6 @@ import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
-import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
@@ -104,7 +101,7 @@ fun Application.pleiepengesoknadapi() {
 
     install(StatusPages) {
         DefaultStatusPages()
-        JacksonStatusPages()
+        JacksonStatusPages2()
         IdTokenStatusPages()
     }
 
@@ -275,33 +272,47 @@ fun ObjectMapper.k9SelvbetjeningOppslagKonfigurert(): ObjectMapper {
     }
 }
 
-
-fun StatusPages.Configuration.DefaultStatusPages() {
-
-    exception<Throwblem> { cause ->
-        call.respondProblemDetails(cause.getProblemDetails(), logger)
-    }
-
-    exception<Throwable> { cause ->
-        when (cause) {
-            is Problem -> call.respondProblemDetails(cause.getProblemDetails(), logger)
-            is IllegalArgumentException -> {
-                call.respondProblemDetails(DefaultProblemDetails(
+fun StatusPages.Configuration.JacksonStatusPages2() {
+    exception<JsonMappingException> { cause ->
+        if (cause.cause is IllegalArgumentException) {
+            call.respondProblemDetails(
+                DefaultProblemDetails(
                     title = "IllegalArgumentException",
-                    status = 403,
-                    detail = "${cause.message}"
-                ), logger)
+                    status = 400,
+                    detail = "$cause"
+                ),
+                logger
+            )
+        } else {
+
+            val violations = mutableSetOf<Violation>()
+            cause.path.filter { it.fieldName != null }.forEach {
+                violations.add(
+                    Violation(
+                        parameterType = ParameterType.ENTITY,
+                        parameterName = it.fieldName,
+                        reason = "Må være satt.",
+                        invalidValue = null
+
+                    )
+                )
             }
-            else -> {
-                logger.error("Uhåndtert feil", cause)
-                call.respondProblemDetails(UNHANDLED_PROBLEM_MESSAGE, logger)
-            }
+
+            val problemDetails = ValidationProblemDetails(violations)
+
+            logger.debug("Feil ved mapping av JSON", cause)
+            call.respondProblemDetails(problemDetails, logger)
         }
     }
-}
 
-private val UNHANDLED_PROBLEM_MESSAGE = DefaultProblemDetails(
-    title = "unhandled-error",
-    status = 500,
-    detail = "En uhåndtert feil har oppstått."
-)
+    exception<JsonProcessingException> { cause ->
+
+        val problemDetails = DefaultProblemDetails(
+            title = "invalid-json-entity",
+            status = 400,
+            detail = "Request entityen inneholder ugyldig JSON."
+        )
+        logger.debug("Feil ved prosessering av JSON", cause)
+        call.respondProblemDetails(problemDetails, logger)
+    }
+}
