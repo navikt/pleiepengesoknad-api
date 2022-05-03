@@ -279,7 +279,7 @@ fun StatusPages.Configuration.JacksonStatusPages2() {
                 DefaultProblemDetails(
                     title = "IllegalArgumentException",
                     status = 400,
-                    detail = "$cause"
+                    detail = "${cause.cause as IllegalArgumentException} -> ${cause.path}"
                 ),
                 logger
             )
