@@ -1,7 +1,9 @@
 package no.nav.helse
 
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.*
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategies
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.*
@@ -26,6 +28,7 @@ import no.nav.helse.dusseldorf.ktor.core.*
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
+import no.nav.helse.dusseldorf.ktor.jackson.JacksonStatusPages
 import no.nav.helse.dusseldorf.ktor.jackson.dusseldorfConfigured
 import no.nav.helse.dusseldorf.ktor.metrics.MetricsRoute
 import no.nav.helse.dusseldorf.ktor.metrics.init
@@ -101,7 +104,7 @@ fun Application.pleiepengesoknadapi() {
 
     install(StatusPages) {
         DefaultStatusPages()
-        JacksonStatusPages2()
+        JacksonStatusPages()
         IdTokenStatusPages()
     }
 
@@ -269,50 +272,5 @@ fun ObjectMapper.k9SelvbetjeningOppslagKonfigurert(): ObjectMapper {
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         registerModule(JavaTimeModule())
         propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
-    }
-}
-
-fun StatusPages.Configuration.JacksonStatusPages2() {
-    exception<JsonMappingException> { cause ->
-        if (cause.cause is IllegalArgumentException) {
-            call.respondProblemDetails(
-                DefaultProblemDetails(
-                    title = "IllegalArgumentException",
-                    status = 400,
-                    detail = "${cause.cause as IllegalArgumentException} -> ${cause.path}"
-                ),
-                logger
-            )
-        } else {
-
-            val violations = mutableSetOf<Violation>()
-            cause.path.filter { it.fieldName != null }.forEach {
-                violations.add(
-                    Violation(
-                        parameterType = ParameterType.ENTITY,
-                        parameterName = it.fieldName,
-                        reason = "Må være satt.",
-                        invalidValue = null
-
-                    )
-                )
-            }
-
-            val problemDetails = ValidationProblemDetails(violations)
-
-            logger.debug("Feil ved mapping av JSON", cause)
-            call.respondProblemDetails(problemDetails, logger)
-        }
-    }
-
-    exception<JsonProcessingException> { cause ->
-
-        val problemDetails = DefaultProblemDetails(
-            title = "invalid-json-entity",
-            status = 400,
-            detail = "Request entityen inneholder ugyldig JSON."
-        )
-        logger.debug("Feil ved prosessering av JSON", cause)
-        call.respondProblemDetails(problemDetails, logger)
     }
 }
