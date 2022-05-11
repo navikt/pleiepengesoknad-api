@@ -92,6 +92,17 @@ class FrilansTest {
     }
 
     @Test
+    fun `Frilans hvor sluttdato er etter startdato skal ikke gi valideringsfeil`(){
+        Frilans(
+            startdato = LocalDate.parse("2020-01-01"),
+            sluttdato = LocalDate.parse("2021-01-01"),
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = null
+        ).valider("test").validerIngenFeil()
+    }
+
+    @Test
     fun `Frilans hvor harInntektSomFrilanser er true med startdato og jobberFortsattSomFrilans som null gir feil`(){
         Frilans(
             startdato = null,
