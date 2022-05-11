@@ -11,12 +11,9 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.VirksomhetType
-import java.time.Duration
 import java.time.LocalDate
 
-fun Double.tilFaktiskTimerPerUke(prosent: Double) = this.times(prosent.div(100))
 fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
-fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 internal fun Søknad.byggK9OpptjeningAktivitet(): OpptjeningAktivitet {
     val opptjeningAktivitet = OpptjeningAktivitet()
