@@ -1,7 +1,5 @@
 package no.nav.helse.soker
 
-import com.auth0.jwt.JWT
-import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.dusseldorf.ktor.auth.IdToken
 import no.nav.helse.general.CallId
 
