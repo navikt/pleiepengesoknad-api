@@ -9,7 +9,6 @@ import no.nav.helse.kafka.KafkaProducer
 import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.validate
-import no.nav.helse.somJson
 import no.nav.helse.vedlegg.DokumentEier
 import no.nav.helse.vedlegg.Vedlegg.Companion.validerVedlegg
 import no.nav.helse.vedlegg.VedleggService
@@ -59,7 +58,6 @@ class SøknadService(
         }
 
         val komplettSøknad = søknad.tilKomplettSøknad(k9FormatSøknad, søker)
-        logger.info("KomplettSøknad: ${komplettSøknad.somJson()}") // TODO: 19/04/2022 FJERNES FØR PRODSETTING
         try {
             kafkaProducer.produserPleiepengerMelding(komplettSøknad, metadata)
         } catch (exception: Exception) {
