@@ -1,6 +1,5 @@
 package no.nav.helse
 
-import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
@@ -13,13 +12,34 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
-import no.nav.helse.mellomlagring.started
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.ArbeidIPeriode
+import no.nav.helse.soknad.Arbeidsforhold
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.JobberIPeriodeSvar
+import no.nav.helse.soknad.Næringstyper
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.domene.arbeid.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9BrukerdialogCache
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubSifInnsynApi
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Nested
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import org.slf4j.Logger
@@ -37,11 +57,13 @@ import kotlin.test.assertTrue
 class ApplicationTest {
 
     private companion object {
-
         private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
 
         // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
         private val gyldigFodselsnummerA = "02119970078"
+        private val gyldigFodselsnummerB = "02119970079"
+        private val gyldigFodselsnummerC = "02119970080"
+        private val gyldigFodselsnummerD = "02119970081"
         private val fnrMedToArbeidsforhold = "19116812889"
         private val fnr = "26104500284"
         private val ikkeMyndigFnr = "12125012345"
@@ -50,6 +72,7 @@ class ApplicationTest {
         val wireMockServer = WireMockBuilder()
             .withAzureSupport()
             .withLoginServiceSupport()
+            .withTokendingsSupport()
             .pleiepengesoknadApiConfig()
             .build()
             .stubK9MellomlagringHealth()
@@ -60,6 +83,7 @@ class ApplicationTest {
             .stubK9OppslagArbeidsgivereMedOrgNummer()
             .stubK9OppslagArbeidsgivereMedPrivate()
             .stubK9Mellomlagring()
+            .stubK9BrukerdialogCache()
             .stubSifInnsynApi(
                 k9SakInnsynSøknader = listOf(
                     defaultK9SakInnsynSøknad(
@@ -79,17 +103,13 @@ class ApplicationTest {
         private val kafkaEnvironment = KafkaWrapper.bootstrap()
         private val kafkaKonsumer = kafkaEnvironment.testConsumer()
 
-        val redisServer: RedisServer = RedisServer
-            .newRedisServer().started()
-
         fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(
                 TestConfiguration.asMap(
                     wireMockServer = wireMockServer,
-                    kafkaEnvironment = kafkaEnvironment,
-                    redisServer = redisServer
+                    kafkaEnvironment = kafkaEnvironment
                 )
             )
 
@@ -115,7 +135,6 @@ class ApplicationTest {
         fun tearDown() {
             logger.info("Tearing down")
             wireMockServer.stop()
-            redisServer.stop()
             logger.info("Tear down complete")
         }
     }
@@ -204,7 +223,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Dersom bruker har flere arbeidsforhold per arbeidsgiver skal man kun få tilbake et arbeidsforhold per arbeidsgiver`(){
+    fun `Dersom bruker har flere arbeidsforhold per arbeidsgiver skal man kun få tilbake et arbeidsforhold per arbeidsgiver`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
@@ -1384,56 +1403,151 @@ class ApplicationTest {
         )
     }
 
-    @Test
-    fun `gitt to mellomlagrede verdier på samme person, fovent at begge mellomlagres, og de de ikke overskriver hverandre`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+    @Nested
+    inner class MellomlagringApisTest {
+        @Test
+        fun `gitt to mellomlagrede verdier på samme person, fovent at begge mellomlagres, og de ikke overskriver hverandre`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerA)
 
-        val mellomlagringSøknad = """
+            val mellomlagringSøknad = """
                 {
                     "mellomlagring": "soknad"
                 }
             """.trimIndent()
 
 
-        val mellomlagringEndringsmelding = """
+            val mellomlagringEndringsmelding = """
                 {
                     "mellomlagring": "endringsmelding"
                 }
             """.trimIndent()
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = MELLOMLAGRING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.NoContent,
-            expectedResponse = null,
-            requestEntity = mellomlagringSøknad
-        )
+            requestAndAssert(
+                httpMethod = HttpMethod.Post,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Created,
+                expectedResponse = null,
+                requestEntity = mellomlagringSøknad
+            )
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = ENDRINGSMELDING_MELLOMLAGRING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.NoContent,
-            expectedResponse = null,
-            requestEntity = mellomlagringEndringsmelding
-        )
+            requestAndAssert(
+                httpMethod = HttpMethod.Post,
+                path = ENDRINGSMELDING_MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Created,
+                expectedResponse = null,
+                requestEntity = mellomlagringEndringsmelding
+            )
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Get,
-            path = MELLOMLAGRING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.OK,
-            expectedResponse = mellomlagringSøknad
-        )
+            requestAndAssert(
+                httpMethod = HttpMethod.Get,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.OK,
+                expectedResponse = mellomlagringSøknad
+            )
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Get,
-            path = ENDRINGSMELDING_MELLOMLAGRING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.OK,
-            expectedResponse = mellomlagringEndringsmelding
-        )
+            requestAndAssert(
+                httpMethod = HttpMethod.Get,
+                path = ENDRINGSMELDING_MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.OK,
+                expectedResponse = mellomlagringEndringsmelding
+            )
+        }
+
+        @Test
+        fun `gitt mellomlagring ikke eksisterer, forvent tomt objekt`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerB)
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Get,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.OK,
+                expectedResponse = """
+                {}
+            """.trimIndent()
+            )
+        }
+
+        @Test
+        fun `gitt det mellomlagres på en eksisterende nøkkel, forvent konfliktfeil`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerC)
+
+            val mellomlagringSøknad = """
+                {
+                    "mellomlagring": "soknad"
+                }
+            """.trimIndent()
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Post,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Created,
+                expectedResponse = null,
+                requestEntity = mellomlagringSøknad
+            )
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Post,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Conflict,
+                requestEntity = mellomlagringSøknad,
+                expectedResponse = """
+                {
+                  "type": "/problem-details/cache-conflict",
+                  "title": "cache-conflict",
+                  "status": 409,
+                  "detail": "Konflikt ved mellomlagring. Nøkkel eksisterer allerede.",
+                  "instance": "/mellomlagring"
+                }
+            """.trimIndent()
+            )
+        }
+
+        @Test
+        fun `gitt oppdatering av en ikke-eksisterende nøkkel, forvent at det opprettes ny`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerD)
+
+            val mellomlagringSøknad = """
+                {
+                    "mellomlagring": "soknad"
+                }
+            """.trimIndent()
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Put,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.NoContent,
+                requestEntity = mellomlagringSøknad,
+                expectedResponse = null
+            )
+        }
+
+        @Test
+        fun `gitt sletting av en ikke-eksisterende nøkkel, forvent ingen feil`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerD)
+
+            val mellomlagringSøknad = """
+                {
+                    "mellomlagring": "soknad"
+                }
+            """.trimIndent()
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Delete,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Accepted,
+                requestEntity = mellomlagringSøknad,
+                expectedResponse = null
+            )
+        }
     }
 
     private fun hentOgAsserEndringsmelding(forventenEndringsmelding: String, endringsmelding: JSONObject) {
@@ -1478,7 +1592,7 @@ class ApplicationTest {
         return respons
     }
 
-    private fun hentOgAssertSøknad(søknad: JSONObject){
+    private fun hentOgAssertSøknad(søknad: JSONObject) {
         val hentet = kafkaKonsumer.hentSøknad(søknad.getString("søknadId"))
         assertGyldigSøknad(søknad, hentet.data)
     }
@@ -1496,8 +1610,11 @@ class ApplicationTest {
 
         assertEquals(søknadSendtInn.getString("søknadId"), søknadFraTopic.getString("søknadId"))
 
-        if(søknadSendtInn.has("vedleggUrls") && !søknadSendtInn.getJSONArray("vedleggUrls").isEmpty){
-            assertEquals(søknadSendtInn.getJSONArray("vedleggUrls").length(),søknadFraTopic.getJSONArray("vedleggUrls").length())
+        if (søknadSendtInn.has("vedleggUrls") && !søknadSendtInn.getJSONArray("vedleggUrls").isEmpty) {
+            assertEquals(
+                søknadSendtInn.getJSONArray("vedleggUrls").length(),
+                søknadFraTopic.getJSONArray("vedleggUrls").length()
+            )
         }
     }
 }

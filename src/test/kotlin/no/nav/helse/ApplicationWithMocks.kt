@@ -1,11 +1,15 @@
 package no.nav.helse
 
-import com.github.fppt.jedismock.RedisServer
 import io.ktor.server.testing.*
 import no.nav.helse.dusseldorf.testsupport.asArguments
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
-import no.nav.helse.mellomlagring.started
-import no.nav.helse.wiremock.*
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubOppslagHealth
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -30,14 +34,9 @@ class ApplicationWithMocks {
                 .stubK9OppslagBarn()
                 .stubK9OppslagArbeidsgivere()
 
-            val redisServer: RedisServer = RedisServer
-                .newRedisServer()
-                .started()
-
             val testArgs = TestConfiguration.asMap(
                 port = 8082,
-                wireMockServer = wireMockServer,
-                redisServer = redisServer
+                wireMockServer = wireMockServer
             ).asArguments()
 
             Runtime.getRuntime().addShutdownHook(object : Thread() {
