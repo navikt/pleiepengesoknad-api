@@ -1,4 +1,4 @@
-package no.nav.helse.domene.arbeid
+package no.nav.helse.domene
 
 import no.nav.helse.TestUtils.Companion.validerFeil
 import no.nav.helse.soknad.PlanUkedager
