@@ -1,5 +1,6 @@
 package no.nav.helse.domene.arbeid
 
+import no.nav.helse.TestUtils.Companion.validerFeil
 import no.nav.helse.soknad.Arbeidsgiver
 import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.k9.søknad.felles.type.Periode
@@ -8,7 +9,7 @@ import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ArbeidsgiverArbeidsforholdTest {
+class ArbeidsgiverTest {
 
     companion object{
         private val syvOgEnHalvTime = Duration.ofHours(7).plusMinutes(30)
@@ -17,6 +18,26 @@ class ArbeidsgiverArbeidsforholdTest {
         val onsdag = tirsdag.plusDays(1)
         val torsdag = onsdag.plusDays(1)
         val fredag = torsdag.plusDays(1)
+    }
+
+    @Test
+    fun `Arbeidstaker med valideringsfeil i arbeidsforhold`(){
+        Arbeidsgiver(
+            navn = "Coop",
+            organisasjonsnummer = "977155436",
+            erAnsatt = true,
+            arbeidsforhold = Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(
+                    erLiktHverUke = null,
+                    timerPerUkeISnitt = null
+                ),
+                arbeidIPeriode = ArbeidIPeriode(
+                    type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG,
+                    fasteDager = null
+                )
+            )
+        ).valider("test").validerFeil(3)
     }
 
     @Test
@@ -59,6 +80,26 @@ class ArbeidsgiverArbeidsforholdTest {
         assertEquals(1, perioder.size)
         assertEquals(NULL_TIMER, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
         assertEquals(NULL_TIMER, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
+    }
+
+    @Test
+    fun `Arbeidsgiver uten navn gir feil`(){
+        Arbeidsgiver(
+            navn = " ",
+            organisasjonsnummer = "977155436",
+            erAnsatt = false,
+            arbeidsforhold = null
+        ).valider("test").validerFeil(1)
+    }
+
+    @Test
+    fun `Arbeidsgiver uten gyldig organisasjonsnummer gir feil`(){
+        Arbeidsgiver(
+            navn = "Kiwi AS",
+            organisasjonsnummer = "IKKE GYLDIG",
+            erAnsatt = false,
+            arbeidsforhold = null
+        ).valider("test").validerFeil(1)
     }
 
 }

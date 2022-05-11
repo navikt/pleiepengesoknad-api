@@ -1,6 +1,8 @@
 package no.nav.helse.soknad.domene.arbeid
 
+import no.nav.helse.general.kreverIkkeNull
 import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.*
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.DayOfWeek
@@ -15,6 +17,15 @@ class ArbeidIPeriode(
     val timerPerUke: Duration? = null,
     val enkeltdager: List<ArbeidstidEnkeltdag>? = null
 ) {
+
+    internal fun valider(felt: String) = mutableListOf<String>().apply {
+        when(type){
+            ARBEIDER_ENKELTDAGER -> kreverIkkeNull(enkeltdager, "$felt.enkeltdager må være satt dersom type=ARBEIDER_ENKELTDAGER")
+            ARBEIDER_FASTE_UKEDAGER -> kreverIkkeNull(fasteDager, "$felt.fasteDager må være satt dersom type=ARBEIDER_FASTE_UKEDAGER")
+            ARBEIDER_PROSENT_AV_NORMALT -> kreverIkkeNull(prosentAvNormalt, "$felt.prosentAvNormalt må være satt dersom type=ARBEIDER_PROSENT_AV_NORMALT")
+            ARBEIDER_TIMER_I_SNITT_PER_UKE -> kreverIkkeNull(timerPerUke, "$felt.timerPerUke må være satt dersom type=ARBEIDER_TIMER_I_SNITT_PER_UKE")
+        }
+    }
 
     internal fun timerPerDagFraFasteDager(ukedag: DayOfWeek): Duration {
         requireNotNull(fasteDager) { "For å regne ut timer per dag fra faste dager må fasteDager være satt." }

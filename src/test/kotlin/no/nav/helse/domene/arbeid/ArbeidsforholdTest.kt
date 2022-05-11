@@ -1,5 +1,6 @@
 package no.nav.helse.domene.arbeid
 
+import no.nav.helse.TestUtils.Companion.validerFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.k9.søknad.felles.type.Periode
@@ -18,6 +19,36 @@ class ArbeidsforholdTest {
         val onsdag = tirsdag.plusDays(1)
         val torsdag = onsdag.plusDays(1)
         val fredag = torsdag.plusDays(1)
+    }
+
+    @Test
+    fun `Skal gi valideringsfeil dersom normalarbeidstid er feil`(){
+        Arbeidsforhold(
+            normalarbeidstid = NormalArbeidstid(
+                erLiktHverUke = null,
+                timerPerUkeISnitt = null,
+                timerFasteDager = null
+            ),
+            arbeidIPeriode = ArbeidIPeriode(
+                type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+            )
+        ).valider("test").validerFeil(2)
+    }
+
+    @Test
+    fun `Skal gi valideringsfeil dersom arbeidIPeriode er feil`(){
+        Arbeidsforhold(
+            normalarbeidstid = NormalArbeidstid(
+                erLiktHverUke = true,
+                timerPerUkeISnitt = Duration.ofHours(32)
+            ),
+            arbeidIPeriode = ArbeidIPeriode(
+                type = ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER,
+                arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG,
+                enkeltdager = null
+            )
+        ).valider("test").validerFeil(1)
     }
 
     @Test

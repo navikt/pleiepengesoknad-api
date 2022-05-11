@@ -1,5 +1,6 @@
 package no.nav.helse.domene.arbeid
 
+import no.nav.helse.TestUtils.Companion.validerFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.arbeid.*
 import java.time.DayOfWeek
@@ -13,6 +14,42 @@ class ArbeidIPeriodeTest {
     companion object{
         private val åtteTimer = Duration.ofHours(8)
         private val fireTimer = Duration.ofHours(4)
+    }
+
+    @Test
+    fun `Skal gi feil dersom type=ARBEIDER_ENKELTDAGER og fasteDager er null`(){
+        ArbeidIPeriode(
+            type = ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER,
+            arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+            enkeltdager = null
+        ).valider("test").validerFeil(1)
+    }
+
+    @Test
+    fun `Skal gi feil dersom type=ARBEIDER_FASTE_UKEDAGER og fasteDager er null`(){
+        ArbeidIPeriode(
+            type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+            arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+            fasteDager = null
+        ).valider("test").validerFeil(1)
+    }
+
+    @Test
+    fun `Skal gi feil dersom type=ARBEIDER_PROSENT_AV_NORMALT og prosentAvNormalt er null`(){
+        ArbeidIPeriode(
+            type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
+            arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+            prosentAvNormalt = null
+        ).valider("test").validerFeil(1)
+    }
+
+    @Test
+    fun `Skal gi feil dersom type=ARBEIDER_TIMER_I_SNITT_PER_UKE og timerPerUke er null`(){
+        ArbeidIPeriode(
+            type = ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE,
+            arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+            timerPerUke = null
+        ).valider("test").validerFeil(1)
     }
 
     @Test

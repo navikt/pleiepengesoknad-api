@@ -4,7 +4,7 @@ import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
-import no.nav.helse.soknad.validering.valider
+import no.nav.helse.general.somViolation
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -121,17 +121,18 @@ internal fun SelvstendigNæringsdrivende.valider(): Set<Violation> {
     }
 
     virksomhet?.let { violations.addAll(it.validate()) }
+    arbeidsforhold?.let { violations.addAll(arbeidsforhold.valider("selvstendigNæringsdrivende").somViolation()) }
     return violations
 }
 
-internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
+internal fun Søknad.validate() {
     val violations = barn.validate()
 
     violations.addAll(arbeidsgivere.validate())
 
     violations.addAll(selvstendigNæringsdrivende.valider())
 
-    violations.addAll(frilans.valider())
+    violations.addAll(frilans.valider("frilans").somViolation())
 
     omsorgstilbud?.apply { violations.addAll(this.validate()) }
 
@@ -238,16 +239,13 @@ internal fun Søknad.validate(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
         }
     }
 
-    violations.addAll(validerK9Format(k9FormatSøknad))
-
     if (violations.isNotEmpty()) {
         throw Throwblem(ValidationProblemDetails(violations))
     }
 }
 
-private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): MutableSet<Violation> {
-
-    return PleiepengerSyktBarnSøknadValidator().valider(k9FormatSøknad).map {
+internal fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad) {
+    val feil = PleiepengerSyktBarnSøknadValidator().valider(k9FormatSøknad).map {
         Violation(
             parameterName = it.felt,
             parameterType = ParameterType.ENTITY,
@@ -255,6 +253,10 @@ private fun validerK9Format(k9FormatSøknad: no.nav.k9.søknad.Søknad): Mutable
             invalidValue = "K9-format feilkode: ${it.feilkode}"
         )
     }.sortedBy { it.reason }.toMutableSet()
+
+    if (feil.isNotEmpty()) {
+        throw Throwblem(ValidationProblemDetails(feil))
+    }
 }
 
 private fun validerBosted(list: List<Bosted>): MutableSet<Violation> {

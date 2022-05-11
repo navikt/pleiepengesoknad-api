@@ -1,7 +1,6 @@
 package no.nav.helse
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.helse.k9format.tilK9Format
 import no.nav.helse.soknad.*
 import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Assertions
 import java.net.URL
 import java.time.Duration
 import java.time.LocalDate
-import java.time.ZonedDateTime
 import kotlin.test.Test
 
 class SoknadValidationTest {
@@ -32,8 +30,7 @@ class SoknadValidationTest {
                     )
                 )
             )
-            val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
-            søknad.validate(k9Format)
+            søknad.validate()
         }
     }
 
@@ -53,8 +50,7 @@ class SoknadValidationTest {
                     )
                 )
             )
-            val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
-            søknad.validate(k9Format)
+            søknad.validate()
         }
     }
 
@@ -67,9 +63,8 @@ class SoknadValidationTest {
                 barnRelasjon = BarnRelasjon.ANNET,
                 barnRelasjonBeskrivelse = null
             )
-            val k9Format = søknad.tilK9Format(ZonedDateTime.now(), SøknadUtils.søker)
 
-            søknad.validate(k9Format)
+            søknad.validate()
         }
     }
 

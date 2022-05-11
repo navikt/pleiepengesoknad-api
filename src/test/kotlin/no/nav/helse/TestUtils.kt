@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.http.Cookie
 import com.github.tomakehurst.wiremock.http.Request
 import io.ktor.http.*
 import no.nav.helse.dusseldorf.testsupport.jws.LoginService
+import org.junit.Assert
 
 class TestUtils {
     companion object {
@@ -25,6 +26,14 @@ class TestUtils {
 
             val jwt = LoginService.V1_0.generateJwt(fnr = fnr, level = level, overridingClaims = overridingClaims)
             return Cookie(listOf(String.format("%s=%s", cookieName, jwt), "Path=/", "Domain=localhost"))
+        }
+
+        internal fun MutableList<String>.validerFeil(antallFeil: Int) {
+            Assert.assertEquals(antallFeil, this.size)
+        }
+
+        internal fun MutableList<String>.validerIngenFeil() {
+            Assert.assertTrue(this.isEmpty())
         }
     }
 }

@@ -1,8 +1,9 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
+import no.nav.helse.general.krever
+import no.nav.helse.general.somViolation
 import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
@@ -28,34 +29,16 @@ data class Arbeidsgiver(
                     )
                 )
     }
+
+    internal fun valider(felt: String) = mutableListOf<String>().apply {
+        if(arbeidsforhold != null) addAll(arbeidsforhold.valider("$felt.arbeidsforhold"))
+        krever(organisasjonsnummer.erGyldigOrganisasjonsnummer(), "$felt.organisasjonsnummer må være gyldig")
+        krever(!navn.isNullOrBlank(), "$felt.navn kan ikke være tomt eller kun whitespace")
+    }
 }
 
-internal fun List<Arbeidsgiver>.validate(): MutableSet<Violation> {
-    val violations = mutableSetOf<Violation>()
-
-    this.mapIndexed { index, arbeidsgiver ->
-        if (!arbeidsgiver.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere[$index].organisasjonsnummer",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Ikke gyldig organisasjonsnummer.",
-                    invalidValue = arbeidsgiver.organisasjonsnummer
-                )
-            )
-        }
-
-        if (arbeidsgiver.navn.isNullOrBlank()) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere[$index].navn",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Navnet på organisasjonen kan ikke være tomt eller kun whitespace.",
-                    invalidValue = arbeidsgiver.navn
-                )
-            )
-        }
+internal fun List<Arbeidsgiver>.validate() = mutableSetOf<Violation>().apply {
+    this@validate.mapIndexed { index, arbeidsgiver ->
+        addAll(arbeidsgiver.valider("arbeidsgiver[$index]").somViolation())
     }
-
-    return violations
 }

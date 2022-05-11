@@ -11,15 +11,20 @@ class Arbeidsforhold(
     val arbeidIPeriode: ArbeidIPeriode
 ) {
 
-    companion object{
+    companion object {
         internal fun k9ArbeidstidInfoMedNullTimer(fraOgMed: LocalDate, tilOgMed: LocalDate) = ArbeidstidInfo()
-                .medPerioder(
-                    mapOf(
-                        Periode(fraOgMed, tilOgMed) to ArbeidstidPeriodeInfo()
-                            .medFaktiskArbeidTimerPerDag(NULL_TIMER)
-                            .medJobberNormaltTimerPerDag(NULL_TIMER)
-                    )
+            .medPerioder(
+                mapOf(
+                    Periode(fraOgMed, tilOgMed) to ArbeidstidPeriodeInfo()
+                        .medFaktiskArbeidTimerPerDag(NULL_TIMER)
+                        .medJobberNormaltTimerPerDag(NULL_TIMER)
                 )
+            )
+    }
+
+    internal fun valider(felt: String) = mutableListOf<String>().apply {
+        addAll(normalarbeidstid.valider("$felt.normalarbeidstid"))
+        addAll(arbeidIPeriode.valider("$felt.arbeidIPeriode"))
     }
 
     fun tilK9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) = when(arbeidIPeriode.type){

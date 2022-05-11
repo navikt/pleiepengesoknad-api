@@ -61,8 +61,10 @@ fun Route.soknadApis(
         val listeOverBarnMedFnr = barnService.hentNaaverendeBarn(idTokenProvider.getIdToken(call), call.getCallId())
         søknad.oppdaterBarnMedFnr(listeOverBarnMedFnr)
 
-        val k9FormatSøknad = søknad.tilK9Format(mottatt, søker)
-        søknad.validate(k9FormatSøknad)
+        søknad.validate()
+        søknad.tilK9Format(mottatt, søker).apply {
+            validerK9Format(this)
+        }
 
         val vedlegg = vedleggService.hentVedlegg(
             idToken = idToken,

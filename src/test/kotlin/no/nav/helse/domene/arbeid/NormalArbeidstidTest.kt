@@ -1,5 +1,6 @@
 package no.nav.helse.domene.arbeid
 
+import no.nav.helse.TestUtils.Companion.validerFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import org.junit.jupiter.api.assertThrows
@@ -13,36 +14,30 @@ import kotlin.test.assertTrue
 class NormalArbeidstidTest {
 
     @Test
-    fun `Gir feil dersom verken timerPerUkeISnitt eller timerFasteDager er satt`(){
-        assertThrows<IllegalArgumentException> {
-            NormalArbeidstid(
-                erLiktHverUke = true,
-                timerPerUkeISnitt = null,
-                timerFasteDager = null
-            )
-        }
+    fun `Gir feil dersom verken timerPerUkeISnitt eller timerFasteDager er satt`() {
+        NormalArbeidstid(
+            erLiktHverUke = true,
+            timerPerUkeISnitt = null,
+            timerFasteDager = null
+        ).valider("test").validerFeil(1)
     }
 
     @Test
     fun `Gir feil dersom timerPerUkeISnitt og timerFasteDager er satt`(){
-        assertThrows<IllegalArgumentException> {
             NormalArbeidstid(
                 erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
                 timerFasteDager = PlanUkedager()
-            )
-        }
+            ).valider("test").validerFeil(1)
     }
 
     @Test
-    fun `Gir feil dersom erLiktHverUke er null`(){
-        assertThrows<IllegalArgumentException> {
-            NormalArbeidstid(
-                erLiktHverUke = null,
-                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
-                timerFasteDager = null
-            )
-        }
+    fun `Gir feil dersom erLiktHverUke er null`() {
+        NormalArbeidstid(
+            erLiktHverUke = null,
+            timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
+            timerFasteDager = null
+        ).valider("test").validerFeil(1)
     }
 
     @Test

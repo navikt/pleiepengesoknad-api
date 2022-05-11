@@ -1,5 +1,6 @@
 package no.nav.helse.domene.arbeid
 
+import no.nav.helse.TestUtils.Companion.validerFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.arbeid.*
@@ -9,7 +10,7 @@ import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class FrilansArbeidsforholdTest {
+class FrilansTest {
 
     companion object{
         private val syvOgEnHalvTime = Duration.ofHours(7).plusMinutes(30)
@@ -47,6 +48,49 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
+    fun `Frilans med valideringsfeil i arbeidsforhold`(){
+        Frilans(
+            startdato = LocalDate.parse("2020-01-01"),
+            sluttdato = null,
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(
+                    erLiktHverUke = null,
+                    timerPerUkeISnitt = null
+                ),
+                arbeidIPeriode = ArbeidIPeriode(
+                    type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                    arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG,
+                    fasteDager = null
+                )
+            )
+        ).valider("test").validerFeil(3)
+    }
+
+    @Test
+    fun `Frilans hvor startdato er før sluttdato skal gi valideringsfeil`(){
+        Frilans(
+            startdato = LocalDate.parse("2020-01-01"),
+            sluttdato = LocalDate.parse("2029-01-01"),
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = null
+        ).valider("test").validerFeil(1)
+    }
+
+    @Test
+    fun `Frilans hvor harInntektSomFrilanser er true med startdato og jobberFortsattSomFrilans som null gir feil`(){
+        Frilans(
+            startdato = null,
+            sluttdato = LocalDate.parse("2029-01-01"),
+            jobberFortsattSomFrilans = null,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = null
+        ).valider("test").validerFeil(2)
+    }
+
+    @Test
     fun `Frilans jobber som vanlig i hele søknadsperioden`(){
         val frilans = Frilans(
             startdato = LocalDate.parse("2020-01-01"),
@@ -77,7 +121,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som sluttet i søknadsperioden med normaltid oppgitt som snittPerUke`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som sluttet i søknadsperioden med normaltid oppgitt som snittPerUke`(){
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = torsdag,
@@ -97,7 +141,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som sluttet første dag i søknadsperioden med normaltid oppgitt som snittPerUke`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som sluttet første dag i søknadsperioden med normaltid oppgitt som snittPerUke`(){
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = mandag,
@@ -117,7 +161,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som sluttet siste dag i søknadsperioden med normaltid oppgitt som snittPerUke`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som sluttet siste dag i søknadsperioden med normaltid oppgitt som snittPerUke`(){
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = fredag,
@@ -134,7 +178,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som sluttet etter søknadsperioden med normaltid oppgitt som snittPerUke`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som sluttet etter søknadsperioden med normaltid oppgitt som snittPerUke`(){
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = fredag,
@@ -151,7 +195,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som sluttet i søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som sluttet i søknadsperioden med normaltid oppgitt som faste ukedager`(){
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = onsdag,
@@ -173,7 +217,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som sluttet første dag i søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som sluttet første dag i søknadsperioden med normaltid oppgitt som faste ukedager`(){
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = mandag,
@@ -193,7 +237,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som sluttet siste dag i søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som sluttet siste dag i søknadsperioden med normaltid oppgitt som faste ukedager`(){
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = fredag,
@@ -212,7 +256,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som sluttet etter søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som sluttet etter søknadsperioden med normaltid oppgitt som faste ukedager`(){
         val frilans = Frilans(
             startdato = mandag,
             sluttdato = torsdag,
@@ -234,7 +278,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som startet etter søknadsperioden startet med normaltid oppgitt som snittPerUke`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som startet etter søknadsperioden startet med normaltid oppgitt som snittPerUke`(){
         val frilans = Frilans(
             startdato = onsdag,
             jobberFortsattSomFrilans = true,
@@ -253,7 +297,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som startet etter søknadsperioden startet med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som startet etter søknadsperioden startet med normaltid oppgitt som faste ukedager`(){
         val frilans = Frilans(
             startdato = onsdag,
             jobberFortsattSomFrilans = true,
@@ -274,7 +318,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som startet og sluttet i søknadsperioden med normaltid oppgitt som snittPerUke`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som startet og sluttet i søknadsperioden med normaltid oppgitt som snittPerUke`(){
         val frilans = Frilans(
             startdato = tirsdag,
             sluttdato = torsdag,
@@ -296,7 +340,7 @@ class FrilansArbeidsforholdTest {
     }
 
     @Test
-    fun `Frilans som startet og sluttet i søknadsperioden med normaltid oppgitt som faste ukedager`(){ // TODO: 20/04/2022 Må sjekke opp hva som er riktig her mtp K9
+    fun `Frilans som startet og sluttet i søknadsperioden med normaltid oppgitt som faste ukedager`(){
         val frilans = Frilans(
             startdato = tirsdag,
             sluttdato = torsdag,
@@ -317,5 +361,4 @@ class FrilansArbeidsforholdTest {
             assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
         }
     }
-
 }

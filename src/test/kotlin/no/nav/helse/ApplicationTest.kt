@@ -907,7 +907,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med selvstendig næringsvirksomhet som ikke er gyldig, mangler registrertILand`() {
+    fun `Sende søknad med selvstendig næringsvirksomhet som ikke er gyldig, mangler registrertILand og ugyldig arbeidsforhold`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
 
         requestAndAssert(
@@ -930,9 +930,15 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "ytelse.opptjeningAktivitet.selvstendigNæringsdrivende[0].organisasjonsnummer.valid",
-                  "reason": "Organisasjonsnummer må være gyldig.",
-                  "invalid_value": "K9-format feilkode: ugyldigOrgNummer"
+                  "name": "valideringsfeil",
+                  "reason": "selvstendigNæringsdrivende.normalarbeidstid.timerFasteDager eller timerPerUkeISnitt må være satt.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "valideringsfeil",
+                  "reason": "selvstendigNæringsdrivende.arbeidIPeriode.fasteDager må være satt dersom type=ARBEIDER_FASTE_UKEDAGER",
+                  "invalid_value": null
                 }
               ]
             }
@@ -964,11 +970,12 @@ class ApplicationTest {
                     arbeidsforhold = Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
                             erLiktHverUke = true,
-                            timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
+                            timerPerUkeISnitt = null
                         ),
                         arbeidIPeriode = ArbeidIPeriode(
-                            type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                            arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                            type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                            arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+                            fasteDager = null
                         )
                     )
                 )

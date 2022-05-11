@@ -1,5 +1,7 @@
 package no.nav.helse.soknad.domene.arbeid
 
+import no.nav.helse.general.krever
+import no.nav.helse.general.kreverIkkeNull
 import no.nav.helse.soknad.PlanUkedager
 import java.time.DayOfWeek
 import java.time.Duration
@@ -9,10 +11,11 @@ class NormalArbeidstid (
     val timerPerUkeISnitt: Duration? = null,
     val timerFasteDager: PlanUkedager? = null
 ) {
-    init {
-        requireNotNull(erLiktHverUke) { "erLiktHverUke må være satt." }
-        require(timerFasteDager != null || timerPerUkeISnitt != null) { "Et av feltene må settes" }
-        require(timerFasteDager == null || timerPerUkeISnitt == null) { "Et av feltene må være null" }
+
+    internal fun valider(felt: String) = mutableListOf<String>().apply {
+        kreverIkkeNull(erLiktHverUke, "$felt.erLiktHverUke må være satt")
+        krever(timerFasteDager != null || timerPerUkeISnitt != null, "$felt.timerFasteDager eller timerPerUkeISnitt må være satt.")
+        krever(timerFasteDager == null || timerPerUkeISnitt == null, "$felt.timerFasteDager eller timerPerUkeISnitt må være null")
     }
 
     internal fun harOppgittTimerSomSnitt() = timerPerUkeISnitt != null

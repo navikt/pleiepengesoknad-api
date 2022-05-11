@@ -1,6 +1,8 @@
 package no.nav.helse.soknad.domene
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import no.nav.helse.general.krever
+import no.nav.helse.general.kreverIkkeNull
 import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
@@ -15,6 +17,18 @@ data class Frilans(
     val jobberFortsattSomFrilans: Boolean? = null,
     val arbeidsforhold: Arbeidsforhold? = null
 ) {
+
+    internal fun valider(felt: String) = mutableListOf<String>().apply {
+        if(arbeidsforhold != null) addAll(arbeidsforhold.valider("$felt.arbeidsforhold"))
+        if(sluttdato != null && startdato != null){
+            krever(!sluttdato.isAfter(startdato), "$felt.sluttdato kan ikke være etter startdato")
+        }
+        if(harInntektSomFrilanser){
+            kreverIkkeNull(startdato, "$felt.startdao kan ikke være null dersom harInntektSomFrilanser=true")
+            kreverIkkeNull(jobberFortsattSomFrilans, "$felt.jobberFortsattSomFrilans kan ikke være null dersom harInntektSomFrilanser=true")
+        }
+    }
+
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         return when{
             (arbeidsforhold == null) -> Arbeidsforhold.k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
