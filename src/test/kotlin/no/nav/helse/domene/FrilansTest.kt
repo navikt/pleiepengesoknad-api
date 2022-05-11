@@ -1,6 +1,7 @@
 package no.nav.helse.domene
 
 import no.nav.helse.TestUtils.Companion.validerFeil
+import no.nav.helse.TestUtils.Companion.validerIngenFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.arbeid.*
@@ -69,14 +70,25 @@ class FrilansTest {
     }
 
     @Test
-    fun `Frilans hvor startdato er før sluttdato skal gi valideringsfeil`(){
+    fun `Frilans hvor sluttdato er før startdato skal gi valideringsfeil`(){
         Frilans(
             startdato = LocalDate.parse("2020-01-01"),
-            sluttdato = LocalDate.parse("2029-01-01"),
+            sluttdato = LocalDate.parse("2019-01-01"),
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
         ).valider("test").validerFeil(1)
+    }
+
+    @Test
+    fun `Frilans hvor sluttdato og startdato er lik skal ikke gi valideringsfeil`(){
+        Frilans(
+            startdato = LocalDate.parse("2020-01-01"),
+            sluttdato = LocalDate.parse("2020-01-01"),
+            jobberFortsattSomFrilans = true,
+            harInntektSomFrilanser = true,
+            arbeidsforhold = null
+        ).valider("test").validerIngenFeil()
     }
 
     @Test
