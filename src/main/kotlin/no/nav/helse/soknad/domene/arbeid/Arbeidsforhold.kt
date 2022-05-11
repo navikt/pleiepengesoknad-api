@@ -162,10 +162,6 @@ class Arbeidsforhold(
         )
     }
 
-    private fun arbeidstidPeriodeInfoMedNullTimer() = ArbeidstidPeriodeInfo()
-        .medJobberNormaltTimerPerDag(NULL_TIMER)
-        .medFaktiskArbeidTimerPerDag(NULL_TIMER)
-
     override fun equals(other: Any?) = other === this || other is Arbeidsforhold && this.equals(other)
     private fun equals(other: Arbeidsforhold) = this.normalarbeidstid == other.normalarbeidstid && this.arbeidIPeriode == other.arbeidIPeriode
 }

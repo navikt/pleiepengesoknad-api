@@ -5,10 +5,8 @@ import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
 import no.nav.helse.general.krever
 import no.nav.helse.general.somViolation
 import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
-import no.nav.k9.søknad.felles.type.Periode
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold.Companion.k9ArbeidstidInfoMedNullTimer
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
-import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
-import java.time.Duration
 import java.time.LocalDate
 
 data class Arbeidsgiver(
@@ -20,14 +18,7 @@ data class Arbeidsgiver(
 ) {
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
-            ?: ArbeidstidInfo()
-                .medPerioder(
-                    mapOf(
-                        Periode(fraOgMed, tilOgMed) to ArbeidstidPeriodeInfo()
-                            .medFaktiskArbeidTimerPerDag(Duration.ZERO)
-                            .medJobberNormaltTimerPerDag(Duration.ZERO)
-                    )
-                )
+            ?: k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
     }
 
     internal fun valider(felt: String) = mutableListOf<String>().apply {
