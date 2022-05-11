@@ -21,7 +21,7 @@ data class Frilans(
     internal fun valider(felt: String) = mutableListOf<String>().apply {
         if(arbeidsforhold != null) addAll(arbeidsforhold.valider("$felt.arbeidsforhold"))
         if(sluttdato != null && startdato != null){
-            krever(!startdato.isAfter(sluttdato), "$felt.sluttdato kan ikke være etter startdato")
+            krever(startdato.isBefore(sluttdato) || startdato.isEqual(sluttdato), "$felt.sluttdato kan ikke være etter startdato")
         }
         if(harInntektSomFrilanser){
             kreverIkkeNull(startdato, "$felt.startdao kan ikke være null dersom harInntektSomFrilanser=true")
