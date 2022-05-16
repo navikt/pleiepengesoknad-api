@@ -26,7 +26,7 @@
     "K9_MELLOMLAGRING_INGRESS": "https://k9-mellomlagring.dev.intern.nav.no/v1/dokument",
     "K9_MELLOMLAGRING_CLIENT_ID": "8d0460bd-ea81-4b08-b524-cf04874a794c/.default",
     "SIF_INNSYN_API_URL": "https://sif-innsyn-api.dev.nav.no",
-    "K9_BRUKERDIALOG_CACHE_URL": "https://k9-brukerdialog-cache.dev.nav.no",
+    "K9_BRUKERDIALOG_CACHE_URL": "http://k9-brukerdialog-cache",
     "K9_BRUKERDIALOG_CACHE_TOKENX_AUDIENCE": "dev-gcp:dusseldorf:k9-brukerdialog-cache"
   },
   "slack-channel": "sif-alerts-dev",
