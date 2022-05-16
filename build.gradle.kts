@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val dusseldorfKtorVersion = "3.1.6.8-403f37e"
 val ktorVersion = ext.get("ktorVersion").toString()
-val k9FormatVersion = "5.8.5"
+val k9FormatVersion = "5.8.8"
 val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
 val kafkaVersion = ext.get("kafkaVersion").toString() // Alligned med version fra kafka-embedded-env
 
@@ -13,7 +13,7 @@ val fuelVersion = "2.3.1"
 val lettuceVersion = "6.1.8.RELEASE"
 
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.6.21"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -55,7 +55,7 @@ dependencies {
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
-    testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation("io.mockk:mockk:1.12.4")
 }
 
 repositories {
@@ -77,16 +77,16 @@ repositories {
 
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "17"
 }
 
 tasks.named<KotlinCompile>("compileTestKotlin") {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "17"
 }
 
 tasks.withType<ShadowJar> {
@@ -102,7 +102,7 @@ tasks.withType<ShadowJar> {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "7.2"
+    gradleVersion = "7.4.2"
 }
 
 tasks.withType<Test> {
