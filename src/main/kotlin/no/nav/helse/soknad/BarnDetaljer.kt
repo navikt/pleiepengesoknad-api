@@ -3,6 +3,7 @@ package no.nav.helse.soknad
 import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.helse.dusseldorf.ktor.core.erGyldigFodselsnummer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDate
@@ -62,7 +63,7 @@ internal fun BarnDetaljer.validate(): MutableSet<Violation> {
         }
     }
 
-    if (fødselsnummer != null && !fødselsnummer!!.erGyldigNorskIdentifikator()) {
+    if (fødselsnummer != null && !fødselsnummer!!.erGyldigFodselsnummer()) {
         violations.add(
             Violation(
                 parameterName = "barn.fødselsnummer",

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.fpsak.tidsserie.LocalDateInterval
 import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
+import no.nav.helse.soknad.domene.Frilans
 import no.nav.k9.søknad.Søknad
 import java.net.URL
 import java.time.LocalDate
@@ -35,8 +36,8 @@ data class Søknad(
     val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
-    val frilans: Frilans? = null,
-    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende? = null,
+    val frilans: Frilans,
+    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
     val harVærtEllerErVernepliktig: Boolean? = null
@@ -179,15 +180,6 @@ data class Ferieuttak(
         return "Ferieuttak(fraOgMed=$fraOgMed, tilOgMed=$tilOgMed)"
     }
 }
-
-data class Frilans(
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    val startdato: LocalDate,
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    val sluttdato: LocalDate? = null,
-    val jobberFortsattSomFrilans: Boolean,
-    val arbeidsforhold: Arbeidsforhold? = null
-)
 
 enum class Årsak {
     BARNET_INNLAGT_I_HELSEINSTITUSJON_FOR_NORSK_OFFENTLIG_REGNING,

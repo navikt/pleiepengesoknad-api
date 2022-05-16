@@ -1,6 +1,5 @@
 package no.nav.helse
 
-import com.github.fppt.jedismock.RedisServer
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
@@ -13,12 +12,13 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
-import no.nav.helse.mellomlagring.started
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.helse.wiremock.*
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Nested
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import org.slf4j.Logger
@@ -36,11 +36,13 @@ import kotlin.test.assertTrue
 class ApplicationTest {
 
     private companion object {
-
         private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
 
         // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
         private val gyldigFodselsnummerA = "02119970078"
+        private val gyldigFodselsnummerB = "02119970079"
+        private val gyldigFodselsnummerC = "02119970080"
+        private val gyldigFodselsnummerD = "02119970081"
         private val fnrMedToArbeidsforhold = "19116812889"
         private val fnr = "26104500284"
         private val ikkeMyndigFnr = "12125012345"
@@ -49,6 +51,7 @@ class ApplicationTest {
         val wireMockServer = WireMockBuilder()
             .withAzureSupport()
             .withLoginServiceSupport()
+            .withTokendingsSupport()
             .pleiepengesoknadApiConfig()
             .build()
             .stubK9MellomlagringHealth()
@@ -59,6 +62,7 @@ class ApplicationTest {
             .stubK9OppslagArbeidsgivereMedOrgNummer()
             .stubK9OppslagArbeidsgivereMedPrivate()
             .stubK9Mellomlagring()
+            .stubK9BrukerdialogCache()
             .stubSifInnsynApi(
                 k9SakInnsynSøknader = listOf(
                     defaultK9SakInnsynSøknad(
@@ -78,17 +82,13 @@ class ApplicationTest {
         private val kafkaEnvironment = KafkaWrapper.bootstrap()
         private val kafkaKonsumer = kafkaEnvironment.testConsumer()
 
-        val redisServer: RedisServer = RedisServer
-            .newRedisServer().started()
-
         fun getConfig(): ApplicationConfig {
 
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(
                 TestConfiguration.asMap(
                     wireMockServer = wireMockServer,
-                    kafkaEnvironment = kafkaEnvironment,
-                    redisServer = redisServer
+                    kafkaEnvironment = kafkaEnvironment
                 )
             )
 
@@ -114,7 +114,6 @@ class ApplicationTest {
         fun tearDown() {
             logger.info("Tearing down")
             wireMockServer.stop()
-            redisServer.stop()
             logger.info("Tear down complete")
         }
     }
@@ -203,7 +202,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Dersom bruker har flere arbeidsforhold per arbeidsgiver skal man kun få tilbake et arbeidsforhold per arbeidsgiver`(){
+    fun `Dersom bruker har flere arbeidsforhold per arbeidsgiver skal man kun få tilbake et arbeidsforhold per arbeidsgiver`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30",
@@ -706,14 +705,14 @@ class ApplicationTest {
         val jpegUrl = engine.jpegUrl(cookie)
 
         val søknad = SøknadUtils.defaultSøknad().copy(
-            fraOgMed = LocalDate.now().minusDays(3),
-            tilOgMed = LocalDate.now().plusDays(4),
+            fraOgMed = LocalDate.parse("2022-01-01"),
+            tilOgMed = LocalDate.parse("2022-01-10"),
             ferieuttakIPerioden = FerieuttakIPerioden(
                 skalTaUtFerieIPerioden = true,
                 ferieuttak = listOf(
                     Ferieuttak(
-                        fraOgMed = LocalDate.now(),
-                        tilOgMed = LocalDate.now().plusDays(2),
+                        fraOgMed = LocalDate.parse("2022-01-01"),
+                        tilOgMed = LocalDate.parse("2022-01-02"),
                     )
                 )
             ),
@@ -822,7 +821,7 @@ class ApplicationTest {
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.now().minusDays(3),
             tilOgMed = LocalDate.now().plusDays(4),
-            selvstendigNæringsdrivende = null,
+            selvstendigNæringsdrivende = SelvstendigNæringsdrivende(harInntektSomSelvstendig = false),
             omsorgstilbud = null,
             vedlegg = listOf(URL(jpegUrl)),
             ferieuttakIPerioden = FerieuttakIPerioden(
@@ -865,6 +864,7 @@ class ApplicationTest {
             tilOgMed = LocalDate.now().plusDays(4),
             vedlegg = listOf(URL(jpegUrl)),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                harInntektSomSelvstendig = true,
                 Virksomhet(
                     næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                     fiskerErPåBladB = false,
@@ -882,19 +882,14 @@ class ApplicationTest {
                     harFlereAktiveVirksomheter = true
                 ),
                 arbeidsforhold = Arbeidsforhold(
-                    jobberNormaltTimer = 37.5,
-                    arbeidIPeriode = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        erLiktHverUke = false,
-                        enkeltdager = listOf(
-                            Enkeltdag(
-                                dato = LocalDate.parse("2021-01-01"),
-                                tid = Duration.ofHours(7).plusMinutes(30)
-                            )
-                        ),
-                        fasteDager = null
+                    normalarbeidstid = NormalArbeidstid(
+                        erLiktHverUke = true,
+                        timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
-                    harFraværIPeriode = true
+                    arbeidIPeriode = ArbeidIPeriode(
+                        type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                        arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
                 )
             )
         )
@@ -910,7 +905,7 @@ class ApplicationTest {
     }
 
     @Test
-    fun `Sende søknad med selvstendig næringsvirksomhet som ikke er gyldig, mangler registrertILand`() {
+    fun `Sende søknad med selvstendig næringsvirksomhet som ikke er gyldig, mangler registrertILand og ugyldig arbeidsforhold`() {
         val cookie = getAuthCookie(gyldigFodselsnummerA)
 
         requestAndAssert(
@@ -933,9 +928,15 @@ class ApplicationTest {
                 },
                 {
                   "type": "entity",
-                  "name": "ytelse.opptjeningAktivitet.selvstendigNæringsdrivende[0].organisasjonsnummer.valid",
-                  "reason": "Organisasjonsnummer må være gyldig.",
-                  "invalid_value": "K9-format feilkode: ugyldigOrgNummer"
+                  "name": "valideringsfeil",
+                  "reason": "selvstendigNæringsdrivende.normalarbeidstid.timerFasteDager eller timerPerUkeISnitt må være satt.",
+                  "invalid_value": null
+                },
+                {
+                  "type": "entity",
+                  "name": "valideringsfeil",
+                  "reason": "selvstendigNæringsdrivende.arbeidIPeriode.fasteDager må være satt dersom type=ARBEIDER_FASTE_UKEDAGER",
+                  "invalid_value": null
                 }
               ]
             }
@@ -943,10 +944,11 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(3),
+                fraOgMed = LocalDate.parse("2022-01-01"),
+                tilOgMed = LocalDate.parse("2022-01-10"),
                 ferieuttakIPerioden = null,
                 selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                    harInntektSomSelvstendig = true,
                     virksomhet = Virksomhet(
                         næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
                         fiskerErPåBladB = false,
@@ -964,19 +966,15 @@ class ApplicationTest {
                         harFlereAktiveVirksomheter = true
                     ),
                     arbeidsforhold = Arbeidsforhold(
-                        jobberNormaltTimer = 40.0,
-                        arbeidIPeriode = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.JA,
-                            erLiktHverUke = false,
-                            enkeltdager = listOf(
-                                Enkeltdag(
-                                    dato = LocalDate.parse("2021-01-01"),
-                                    tid = Duration.ofHours(7).plusMinutes(30)
-                                )
-                            ),
-                            fasteDager = null
+                        normalarbeidstid = NormalArbeidstid(
+                            erLiktHverUke = true,
+                            timerPerUkeISnitt = null
                         ),
-                        harFraværIPeriode = true
+                        arbeidIPeriode = ArbeidIPeriode(
+                            type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                            arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+                            fasteDager = null
+                        )
                     )
                 )
             ).somJson()
@@ -1023,6 +1021,12 @@ class ApplicationTest {
                     "fodselsdato": null
                   },
                   "arbeidsgivere" : [],
+                  "frilans" : {
+                    "harInntektSomFrilans": false
+                  },
+                  "selvstendigNæringsdrivende": {
+                    "harInntektSomSelvstendig": false
+                  },
                   "medlemskap": {
                     "harBoddIUtlandetSiste12Mnd": false,
                     "skalBoIUtlandetNeste12Mnd": false,
@@ -1096,170 +1100,11 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.now().minusDays(3),
-                tilOgMed = LocalDate.now().plusDays(4),
-                ferieuttakIPerioden = FerieuttakIPerioden(
-                    skalTaUtFerieIPerioden = true,
-                    ferieuttak = listOf(
-                        Ferieuttak(
-                            fraOgMed = LocalDate.now(),
-                            tilOgMed = LocalDate.now().plusDays(2),
-                        )
-                    )
-                ),
+                fraOgMed = LocalDate.parse("2022-01-01"),
+                tilOgMed = LocalDate.parse("2022-01-10"),
+                ferieuttakIPerioden = null,
                 vedlegg = listOf(URL(jpegUrl), URL(finnesIkkeUrl)),
             ).somJson()
-        )
-    }
-
-    @Test
-    fun `Sende soknad med ugylidge parametre gir feil`() {
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = SØKNAD_URL,
-            expectedCode = HttpStatusCode.BadRequest,
-            requestEntity =
-            //language=JSON
-            """
-                {
-                    "barn": {
-                        "navn": "",
-                        "fødselsnummer": "2909912345"
-                    },
-                    "fraOgMed": "1990-09-29",
-                    "tilOgMed": "1990-09-28",
-                    "arbeidsgivere" : [
-                      {
-                        "type": "Organisasjon",
-                        "navn" : "  ",
-                        "organisasjonsnummer" : 12345,
-                        "arbeidsforhold" : {
-                            "jobberNormaltTimer": 37.5,
-                            "arbeidIPeriode": {
-                              "jobberIPerioden" : "NEI"
-                            },
-                            "harFraværIPeriode" : true
-                        }
-                      }  
-                    ],
-                    "vedlegg": [
-                        "http://localhost:8080/ikke-vedlegg/123",
-                        null
-                    ],
-                    "medlemskap" : {},
-                    "utenlandsoppholdIPerioden": {
-                        "skalOppholdeSegIUtlandetIPerioden": false,
-                        "opphold": []
-                    },
-                    "harForstattRettigheterOgPlikter": false,
-                    "ferieuttakIPerioden": {
-                        "skalTaUtFerieIPeriode": true,
-                        "ferieuttak": [
-                          {
-                            "fraOgMed": "2020-01-05",
-                            "tilOgMed": "2020-01-07"
-                          }
-                        ]
-                    },
-                    "harVærtEllerErVernepliktig" : true
-                }
-                """.trimIndent(),
-            //language=json
-            expectedResponse = """
-            {
-              "type": "/problem-details/invalid-request-parameters",
-              "title": "invalid-request-parameters",
-              "status": 400,
-              "detail": "Requesten inneholder ugyldige paramtere.",
-              "instance": "about:blank",
-              "invalid_parameters": [
-                {
-                  "type": "entity",
-                  "name": "barn.fødselsnummer",
-                  "reason": "Ikke gyldig fødselsnummer.",
-                  "invalid_value": "2909912345"
-                },
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere[0].organisasjonsnummer",
-                  "reason": "Ikke gyldig organisasjonsnummer.",
-                  "invalid_value": "12345"
-                },
-                {
-                  "type": "entity",
-                  "name": "arbeidsgivere[0].navn",
-                  "reason": "Navnet på organisasjonen kan ikke være tomt eller kun whitespace.",
-                  "invalid_value": "  "
-                },
-                {
-                  "type": "entity",
-                  "name": "fraOgMed",
-                  "reason": "Fra og med må være før eller lik til og med.",
-                  "invalid_value": "1990-09-29"
-                },
-                {
-                  "type": "entity",
-                  "name": "tilOgMed",
-                  "reason": "Til og med må være etter eller lik fra og med.",
-                  "invalid_value": "1990-09-28"
-                },
-                {
-                  "type": "entity",
-                  "name": "vedlegg[0]",
-                  "reason": "Ikke gyldig vedlegg URL.",
-                  "invalid_value": "http://localhost:8080/ikke-vedlegg/123"
-                },
-                {
-                  "type": "entity",
-                  "name": "vedlegg[1]",
-                  "reason": "Ikke gyldig vedlegg URL.",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "medlemskap.harBoddIUtlandetSiste12Mnd",
-                  "reason": "medlemskap.harBoddIUtlandetSiste12Mnd kan ikke være null",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "medlemskap.skalBoIUtlandetNeste12Mnd",
-                  "reason": "medlemskap.skalBoIUtlandetNeste12Mnd kan ikke være null",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "harMedsøker",
-                  "reason": "harMedsøker kan ikke være null",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "harBekreftetOpplysninger",
-                  "reason": "Opplysningene må bekreftes for å sende inn søknad.",
-                  "invalid_value": false
-                },
-                {
-                  "type": "entity",
-                  "name": "harForstattRettigheterOgPlikter",
-                  "reason": "Må ha forstått rettigheter og plikter for å sende inn søknad.",
-                  "invalid_value": false
-                },
-                    {
-                  "type": "entity",
-                  "name": "ytelse.søknadsperiode.perioder[0]",
-                  "reason": "Fra og med (FOM) må være før eller lik til og med (TOM).",
-                  "invalid_value": "K9-format feilkode: ugyldigPeriode"
-                },
-                {
-                  "type": "entity",
-                  "name": "ytelse.arbeidstid.arbeidstakerList[0].organisasjonsnummer.valid",
-                  "reason": "Organisasjonsnummer må være gyldig.",
-                  "invalid_value": "K9-format feilkode: ugyldigOrgNummer"
-                }
-              ]
-            }
-            """.trimIndent()
         )
     }
 
@@ -1537,56 +1382,151 @@ class ApplicationTest {
         )
     }
 
-    @Test
-    fun `gitt to mellomlagrede verdier på samme person, fovent at begge mellomlagres, og de de ikke overskriver hverandre`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
+    @Nested
+    inner class MellomlagringApisTest {
+        @Test
+        fun `gitt to mellomlagrede verdier på samme person, fovent at begge mellomlagres, og de ikke overskriver hverandre`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerA)
 
-        val mellomlagringSøknad = """
+            val mellomlagringSøknad = """
                 {
                     "mellomlagring": "soknad"
                 }
             """.trimIndent()
 
 
-        val mellomlagringEndringsmelding = """
+            val mellomlagringEndringsmelding = """
                 {
                     "mellomlagring": "endringsmelding"
                 }
             """.trimIndent()
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = MELLOMLAGRING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.NoContent,
-            expectedResponse = null,
-            requestEntity = mellomlagringSøknad
-        )
+            requestAndAssert(
+                httpMethod = HttpMethod.Post,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Created,
+                expectedResponse = null,
+                requestEntity = mellomlagringSøknad
+            )
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Post,
-            path = ENDRINGSMELDING_MELLOMLAGRING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.NoContent,
-            expectedResponse = null,
-            requestEntity = mellomlagringEndringsmelding
-        )
+            requestAndAssert(
+                httpMethod = HttpMethod.Post,
+                path = ENDRINGSMELDING_MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Created,
+                expectedResponse = null,
+                requestEntity = mellomlagringEndringsmelding
+            )
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Get,
-            path = MELLOMLAGRING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.OK,
-            expectedResponse = mellomlagringSøknad
-        )
+            requestAndAssert(
+                httpMethod = HttpMethod.Get,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.OK,
+                expectedResponse = mellomlagringSøknad
+            )
 
-        requestAndAssert(
-            httpMethod = HttpMethod.Get,
-            path = ENDRINGSMELDING_MELLOMLAGRING_URL,
-            cookie = cookie,
-            expectedCode = HttpStatusCode.OK,
-            expectedResponse = mellomlagringEndringsmelding
-        )
+            requestAndAssert(
+                httpMethod = HttpMethod.Get,
+                path = ENDRINGSMELDING_MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.OK,
+                expectedResponse = mellomlagringEndringsmelding
+            )
+        }
+
+        @Test
+        fun `gitt mellomlagring ikke eksisterer, forvent tomt objekt`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerB)
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Get,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.OK,
+                expectedResponse = """
+                {}
+            """.trimIndent()
+            )
+        }
+
+        @Test
+        fun `gitt det mellomlagres på en eksisterende nøkkel, forvent konfliktfeil`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerC)
+
+            val mellomlagringSøknad = """
+                {
+                    "mellomlagring": "soknad"
+                }
+            """.trimIndent()
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Post,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Created,
+                expectedResponse = null,
+                requestEntity = mellomlagringSøknad
+            )
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Post,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Conflict,
+                requestEntity = mellomlagringSøknad,
+                expectedResponse = """
+                {
+                  "type": "/problem-details/cache-conflict",
+                  "title": "cache-conflict",
+                  "status": 409,
+                  "detail": "Konflikt ved mellomlagring. Nøkkel eksisterer allerede.",
+                  "instance": "/mellomlagring"
+                }
+            """.trimIndent()
+            )
+        }
+
+        @Test
+        fun `gitt oppdatering av en ikke-eksisterende nøkkel, forvent at det opprettes ny`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerD)
+
+            val mellomlagringSøknad = """
+                {
+                    "mellomlagring": "soknad"
+                }
+            """.trimIndent()
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Put,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.NoContent,
+                requestEntity = mellomlagringSøknad,
+                expectedResponse = null
+            )
+        }
+
+        @Test
+        fun `gitt sletting av en ikke-eksisterende nøkkel, forvent ingen feil`() {
+            val cookie = getAuthCookie(gyldigFodselsnummerD)
+
+            val mellomlagringSøknad = """
+                {
+                    "mellomlagring": "soknad"
+                }
+            """.trimIndent()
+
+            requestAndAssert(
+                httpMethod = HttpMethod.Delete,
+                path = MELLOMLAGRING_URL,
+                cookie = cookie,
+                expectedCode = HttpStatusCode.Accepted,
+                requestEntity = mellomlagringSøknad,
+                expectedResponse = null
+            )
+        }
     }
 
     private fun hentOgAsserEndringsmelding(forventenEndringsmelding: String, endringsmelding: JSONObject) {
@@ -1631,7 +1571,7 @@ class ApplicationTest {
         return respons
     }
 
-    private fun hentOgAssertSøknad(søknad: JSONObject){
+    private fun hentOgAssertSøknad(søknad: JSONObject) {
         val hentet = kafkaKonsumer.hentSøknad(søknad.getString("søknadId"))
         assertGyldigSøknad(søknad, hentet.data)
     }
@@ -1649,8 +1589,11 @@ class ApplicationTest {
 
         assertEquals(søknadSendtInn.getString("søknadId"), søknadFraTopic.getString("søknadId"))
 
-        if(søknadSendtInn.has("vedleggUrls") && !søknadSendtInn.getJSONArray("vedleggUrls").isEmpty){
-            assertEquals(søknadSendtInn.getJSONArray("vedleggUrls").length(),søknadFraTopic.getJSONArray("vedleggUrls").length())
+        if (søknadSendtInn.has("vedleggUrls") && !søknadSendtInn.getJSONArray("vedleggUrls").isEmpty) {
+            assertEquals(
+                søknadSendtInn.getJSONArray("vedleggUrls").length(),
+                søknadFraTopic.getJSONArray("vedleggUrls").length()
+            )
         }
     }
 }

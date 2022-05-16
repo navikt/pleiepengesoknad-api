@@ -57,14 +57,10 @@ data class Configuration(val config: ApplicationConfig) {
     internal fun getK9MellomlagringUrl() = URI(config.getRequiredString("nav.gateways.k9_mellomlagring_url", secret = false))
     internal fun getK9MellomlagringScopes() = getScopesFor("k9-mellomlagring-scope")
 
+    internal fun getK9BrukerdialogCacheUrl() = URI(config.getRequiredString("nav.gateways.k9_brukerdialog_cache_url", secret = false))
+    internal fun getK9BrukerdialogCacheTokenxAudience() = getScopesFor("k9-brukerdialog-cache-tokenx-audience")
+
     private fun getScopesFor(operation: String) = config.getRequiredList("nav.auth.scopes.$operation", secret = false, builder = { it }).toSet()
-
-    internal fun getRedisPort() = config.getRequiredString("nav.redis.port", secret = false).toInt()
-    internal fun getRedisHost() = config.getRequiredString("nav.redis.host", secret = false)
-
-    internal fun getStoragePassphrase(): String {
-        return config.getRequiredString("nav.storage.passphrase", secret = true)
-    }
 
     internal fun<K, V>cache(
         expiry: Duration = Duration.ofMinutes(config.getRequiredString("nav.cache.barn.expiry_in_minutes", secret = false).toLong())

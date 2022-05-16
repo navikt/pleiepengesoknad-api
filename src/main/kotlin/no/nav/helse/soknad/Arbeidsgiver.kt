@@ -1,9 +1,13 @@
 package no.nav.helse.soknad
 
-import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.dusseldorf.ktor.core.erGyldigOrganisasjonsnummer
-import no.nav.helse.soknad.validering.valider
+import no.nav.helse.general.krever
+import no.nav.helse.general.somViolation
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold.Companion.k9ArbeidstidInfoMedNullTimer
+import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
+import java.time.LocalDate
 
 data class Arbeidsgiver(
     val navn: String? = null,
@@ -11,38 +15,21 @@ data class Arbeidsgiver(
     val erAnsatt: Boolean,
     val sluttetFørSøknadsperiode: Boolean? = null,
     val arbeidsforhold: Arbeidsforhold? = null
-)
-
-internal fun List<Arbeidsgiver>.validate(): MutableSet<Violation> {
-    val violations = mutableSetOf<Violation>()
-
-    this.mapIndexed { index, arbeidsgiver ->
-        arbeidsgiver.arbeidsforhold?.let {
-            violations.addAll(it.valider("arbeidsgiver[$index]"))
-        }
-
-        if (!arbeidsgiver.organisasjonsnummer.erGyldigOrganisasjonsnummer()) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere[$index].organisasjonsnummer",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Ikke gyldig organisasjonsnummer.",
-                    invalidValue = arbeidsgiver.organisasjonsnummer
-                )
-            )
-        }
-
-        if (arbeidsgiver.navn.isNullOrBlank()) {
-            violations.add(
-                Violation(
-                    parameterName = "arbeidsgivere[$index].navn",
-                    parameterType = ParameterType.ENTITY,
-                    reason = "Navnet på organisasjonen kan ikke være tomt eller kun whitespace.",
-                    invalidValue = arbeidsgiver.navn
-                )
-            )
-        }
+) {
+    fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
+        return arbeidsforhold?.tilK9ArbeidstidInfo(fraOgMed, tilOgMed)
+            ?: k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
     }
 
-    return violations
+    internal fun valider(felt: String) = mutableListOf<String>().apply {
+        if(arbeidsforhold != null) addAll(arbeidsforhold.valider("$felt.arbeidsforhold"))
+        krever(organisasjonsnummer.erGyldigOrganisasjonsnummer(), "$felt.organisasjonsnummer må være gyldig")
+        krever(!navn.isNullOrBlank(), "$felt.navn kan ikke være tomt eller kun whitespace")
+    }
+}
+
+internal fun List<Arbeidsgiver>.validate() = mutableSetOf<Violation>().apply {
+    this@validate.mapIndexed { index, arbeidsgiver ->
+        addAll(arbeidsgiver.valider("arbeidsgiver[$index]").somViolation())
+    }
 }

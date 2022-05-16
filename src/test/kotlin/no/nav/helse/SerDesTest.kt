@@ -3,7 +3,10 @@ package no.nav.helse
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.arbeid.*
 import org.skyscreamer.jsonassert.JSONAssert
+import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -17,7 +20,6 @@ internal class SerDesTest {
         val søknadId = UUID.randomUUID().toString()
         val søknad = SøknadUtils.defaultSøknad(søknadId)
         val søknadJson = søknadJson(søknadId)
-
         JSONAssert.assertEquals(søknadJson, søknad.somJson(), true)
         assertEquals(søknad, SøknadUtils.objectMapper.readValue(søknadJson))
     }
@@ -58,22 +60,21 @@ internal class SerDesTest {
                   "erAnsatt": true,
                   "sluttetFørSøknadsperiode": null,
                   "arbeidsforhold": {
-                    "jobberNormaltTimer": 40.0,
-                    "harFraværIPeriode": true,
-                    "arbeidIPeriode": {
-                      "jobberIPerioden": "JA",
-                      "jobberProsent": null,
-                      "erLiktHverUke": true,
-                      "enkeltdager": null,
-                      "fasteDager": {
-                          "mandag": "PT7H30M",
-                          "tirsdag": null,
-                          "onsdag": null,
-                          "torsdag": null,
-                          "fredag": null
-                        }
-                    }
+                  "normalarbeidstid": {
+                    "erLiktHverUke": true,
+                    "timerPerUkeISnitt": "PT37H30M",
+                    "timerFasteDager": null
+                  },
+                  "arbeidIPeriode": {
+                    "type": "ARBEIDER_VANLIG",
+                    "arbeiderIPerioden": "SOM_VANLIG",
+                    "erLiktHverUke": null,
+                    "fasteDager": null,
+                    "prosentAvNormalt": null,
+                    "timerPerUke": null,
+                    "enkeltdager": null
                   }
+                }
                 },
                 {
                   "navn": "JobberIkkeHerLenger",
@@ -107,6 +108,7 @@ internal class SerDesTest {
                 ]
               },
               "selvstendigNæringsdrivende": {
+                "harInntektSomSelvstendig": true,
                 "virksomhet": {
                   "næringstyper": [
                     "ANNEN"
@@ -137,20 +139,19 @@ internal class SerDesTest {
                   "harFlereAktiveVirksomheter": true
                 },
                 "arbeidsforhold": {
-                  "jobberNormaltTimer": 40.0,
-                  "harFraværIPeriode": true,
-                  "arbeidIPeriode": {
-                    "jobberIPerioden": "JA",
-                    "jobberProsent": null,
+                  "normalarbeidstid": {
                     "erLiktHverUke": true,
-                    "enkeltdager": null,
-                    "fasteDager": {
-                      "mandag": "PT7H30M",
-                      "tirsdag": null,
-                      "onsdag": null,
-                      "torsdag": null,
-                      "fredag": null
-                    }
+                    "timerPerUkeISnitt": "PT37H30M",
+                    "timerFasteDager": null
+                  },
+                  "arbeidIPeriode": {
+                    "type": "ARBEIDER_VANLIG",
+                    "arbeiderIPerioden": "SOM_VANLIG",
+                    "erLiktHverUke": null,
+                    "fasteDager": null,
+                    "prosentAvNormalt": null,
+                    "timerPerUke": null,
+                    "enkeltdager": null
                   }
                 }
               },
@@ -218,21 +219,21 @@ internal class SerDesTest {
                 "startdato": "2018-01-01",
                 "sluttdato": null,
                 "jobberFortsattSomFrilans": true,
+                "harInntektSomFrilanser": true,
                 "arbeidsforhold": {
-                  "jobberNormaltTimer": 40.0,
-                  "harFraværIPeriode": true,
-                  "arbeidIPeriode": {
-                    "jobberIPerioden": "JA",
-                    "jobberProsent": null,
+                  "normalarbeidstid": {
                     "erLiktHverUke": true,
-                    "enkeltdager": null,
-                    "fasteDager": {
-                      "mandag": "PT7H30M",
-                      "tirsdag": null,
-                      "onsdag": null,
-                      "torsdag": null,
-                      "fredag": null
-                    }
+                    "timerPerUkeISnitt": "PT37H30M",
+                    "timerFasteDager": null
+                  },
+                  "arbeidIPeriode": {
+                    "type": "ARBEIDER_VANLIG",
+                    "arbeiderIPerioden": "SOM_VANLIG",
+                    "erLiktHverUke": null,
+                    "fasteDager": null,
+                    "prosentAvNormalt": null,
+                    "timerPerUke": null,
+                    "enkeltdager": null
                   }
                 }
               },
@@ -245,19 +246,19 @@ internal class SerDesTest {
                 "ukedager" : null,
                 "enkeltdager" : [
                       {
-                        "dato": "2021-01-01",
+                        "dato": "2022-01-01",
                         "tid": "PT4H"
                       },
                       {
-                        "dato": "2021-01-02",
+                        "dato": "2022-01-02",
                         "tid": "PT4H"
                       },
                       {
-                        "dato": "2021-01-03",
+                        "dato": "2022-01-03",
                         "tid": "PT4H"
                       },
                       {
-                        "dato": "2021-01-04",
+                        "dato": "2022-01-04",
                         "tid": "PT4H"
                       }
                     ]
@@ -301,16 +302,21 @@ internal class SerDesTest {
                   "erAnsatt": true,
                   "sluttetFørSøknadsperiode" : null,
                   "arbeidsforhold": {
-                    "jobberNormaltTimer": 30.0,
-                    "harFraværIPeriode": true,
-                    "arbeidIPeriode": {
-                      "jobberIPerioden": "NEI",
-                      "jobberProsent": null,
-                      "erLiktHverUke": null,
-                      "enkeltdager": null,
-                      "fasteDager": null
+                      "normalarbeidstid": {
+                        "erLiktHverUke": true,
+                        "timerPerUkeISnitt": "PT37H30M",
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_VANLIG",
+                        "arbeiderIPerioden": "SOM_VANLIG",
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "prosentAvNormalt": null,
+                        "timerPerUke": null,
+                        "enkeltdager": null
+                      }
                     }
-                  }
                 }
               ],
               "vedleggId": [],
@@ -335,6 +341,7 @@ internal class SerDesTest {
                 ]
               },
               "selvstendigNæringsdrivende": {
+                "harInntektSomSelvstendig": true,
                 "virksomhet": {
                   "næringstyper": [
                     "ANNEN"
@@ -365,14 +372,19 @@ internal class SerDesTest {
                   "harFlereAktiveVirksomheter": true
                 },
                 "arbeidsforhold": {
-                  "jobberNormaltTimer": 40.0,
-                  "harFraværIPeriode": true,
+                  "normalarbeidstid": {
+                    "erLiktHverUke": true,
+                    "timerPerUkeISnitt": "PT37H30M",
+                    "timerFasteDager": null
+                  },
                   "arbeidIPeriode": {
-                    "jobberIPerioden": "NEI",
-                    "jobberProsent": null,
+                    "type": "ARBEIDER_VANLIG",
+                    "arbeiderIPerioden": "SOM_VANLIG",
                     "erLiktHverUke": null,
-                    "enkeltdager": null,
-                    "fasteDager": null
+                    "fasteDager": null,
+                    "prosentAvNormalt": null,
+                    "timerPerUke": null,
+                    "enkeltdager": null
                   }
                 }
               },
@@ -453,20 +465,26 @@ internal class SerDesTest {
               },
               "frilans": {
                   "jobberFortsattSomFrilans": true,
+                  "harInntektSomFrilanser": true,
                   "startdato": "2018-01-01",
                   "sluttdato": null,
                   "arbeidsforhold": {
-                    "jobberNormaltTimer": 40.0,
-                    "harFraværIPeriode": true,
-                    "arbeidIPeriode": {
-                      "jobberProsent": 50.0,
-                      "enkeltdager": [],
+                    "normalarbeidstid": {
                       "erLiktHverUke": true,
+                      "timerPerUkeISnitt": "PT37H30M",
+                      "timerFasteDager": null
+                    },
+                    "arbeidIPeriode": {
+                      "type": "ARBEIDER_VANLIG",
+                      "arbeiderIPerioden": "SOM_VANLIG",
+                      "erLiktHverUke": null,
                       "fasteDager": null,
-                      "jobberIPerioden": "JA"
+                      "prosentAvNormalt": null,
+                      "timerPerUke": null,
+                      "enkeltdager": null
                     }
                   }
-              },
+                },
               "nattevåk": {
                 "harNattevåk": true,
                 "tilleggsinformasjon": "Har nattevåk"
@@ -501,12 +519,15 @@ internal class SerDesTest {
                     navn = "Org",
                     organisasjonsnummer = "917755736",
                     erAnsatt = true,
-                    arbeidsforhold = Arbeidsforhold(
-                        jobberNormaltTimer = 30.0,
-                        arbeidIPeriode = ArbeidIPeriode(
-                            jobberIPerioden = JobberIPeriodeSvar.NEI
+                    arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                        normalarbeidstid = NormalArbeidstid(
+                            erLiktHverUke = true,
+                            timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                         ),
-                        harFraværIPeriode = true
+                        arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                            type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                            arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                        )
                     )
                 )
             ),
@@ -518,6 +539,7 @@ internal class SerDesTest {
                 tilleggsinformasjon = "Har nattevåk"
             ),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
+                harInntektSomSelvstendig = true,
                 virksomhet = Virksomhet(
                     næringstyper = listOf(Næringstyper.ANNEN),
                     fiskerErPåBladB = false,
@@ -541,12 +563,15 @@ internal class SerDesTest {
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
                     harFlereAktiveVirksomheter = true
                 ),
-                arbeidsforhold = Arbeidsforhold(
-                    jobberNormaltTimer = 40.0,
-                    arbeidIPeriode = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.NEI
+                arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                    normalarbeidstid = NormalArbeidstid(
+                        erLiktHverUke = true,
+                        timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
-                    harFraværIPeriode = true
+                    arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                        type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                        arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
                 )
             ),
             medlemskap = Medlemskap(
@@ -644,18 +669,18 @@ internal class SerDesTest {
                 )
             ),
             frilans = Frilans(
+                harInntektSomFrilanser = true,
                 jobberFortsattSomFrilans = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
-                    jobberNormaltTimer = 40.0,
-                    arbeidIPeriode = ArbeidIPeriode(
-                        jobberIPerioden = JobberIPeriodeSvar.JA,
-                        jobberProsent = 50.0,
+                    normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,
-                        enkeltdager = listOf(),
-                        fasteDager = null
+                        timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
-                    harFraværIPeriode = true
+                    arbeidIPeriode = ArbeidIPeriode(
+                        type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
+                        arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
                 )
             ),
             harVærtEllerErVernepliktig = true,

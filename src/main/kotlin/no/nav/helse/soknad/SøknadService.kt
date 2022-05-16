@@ -42,8 +42,10 @@ class SøknadService(
         val listeOverBarnMedFnr = barnService.hentNaaverendeBarn(idToken, callId)
         søknad.oppdaterBarnMedFnr(listeOverBarnMedFnr)
 
-        val k9FormatSøknad = søknad.tilK9Format(søknad.mottatt, søker)
-        søknad.validate(k9FormatSøknad)
+        søknad.validate()
+        val k9FormatSøknad = søknad.tilK9Format(søknad.mottatt, søker).apply {
+            validerK9Format(this)
+        }
 
         if(søknad.vedlegg.isNotEmpty()){
             val dokumentEier = DokumentEier(søker.fødselsnummer)
@@ -56,7 +58,6 @@ class SøknadService(
         }
 
         val komplettSøknad = søknad.tilKomplettSøknad(k9FormatSøknad, søker)
-
         try {
             kafkaProducer.produserPleiepengerMelding(komplettSøknad, metadata)
         } catch (exception: Exception) {

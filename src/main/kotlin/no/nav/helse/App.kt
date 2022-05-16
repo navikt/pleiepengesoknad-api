@@ -21,6 +21,11 @@ import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
 import no.nav.helse.dusseldorf.ktor.auth.*
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
+import no.nav.helse.dusseldorf.ktor.auth.IdTokenStatusPages
+import no.nav.helse.dusseldorf.ktor.auth.allIssuers
+import no.nav.helse.dusseldorf.ktor.auth.clients
+import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.client.buildURL
@@ -38,10 +43,9 @@ import no.nav.helse.general.systemauth.AccessTokenClientResolver
 import no.nav.helse.innsyn.InnsynGateway
 import no.nav.helse.innsyn.InnsynService
 import no.nav.helse.kafka.KafkaProducer
+import no.nav.helse.mellomlagring.K9BrukerdialogCacheGateway
 import no.nav.helse.mellomlagring.MellomlagringService
 import no.nav.helse.mellomlagring.mellomlagringApis
-import no.nav.helse.redis.RedisConfig
-import no.nav.helse.redis.RedisStore
 import no.nav.helse.soker.SøkerGateway
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.søkerApis
@@ -156,15 +160,13 @@ fun Application.pleiepengesoknadapi() {
 
             mellomlagringApis(
                 mellomlagringService = MellomlagringService(
-                    søknadMellomlagretTidTimer = configuration.getSoknadMellomlagringTidTimer(),
-                    endringsmeldingMellomlagretTidTimer = configuration.getEndringsmeldingMellomlagringTidTimer(),
-                    redisStore = RedisStore(
-                        redisClient = RedisConfig.redisClient(
-                            redisHost = configuration.getRedisHost(),
-                            redisPort = configuration.getRedisPort()
-                        )
+                    k9BrukerdialogCacheGateway = K9BrukerdialogCacheGateway(
+                        baseUrl = configuration.getK9BrukerdialogCacheUrl(),
+                        tokenxClient = accessTokenClientResolver.tokenxClient(),
+                        k9BrukerdialogCacheTokenxAudience = configuration.getK9BrukerdialogCacheTokenxAudience()
                     ),
-                    passphrase = configuration.getStoragePassphrase(),
+                    søknadMellomlagretTidTimer = configuration.getSoknadMellomlagringTidTimer(),
+                    endringsmeldingMellomlagretTidTimer = configuration.getEndringsmeldingMellomlagringTidTimer()
                 ),
                 idTokenProvider = idTokenProvider
             )

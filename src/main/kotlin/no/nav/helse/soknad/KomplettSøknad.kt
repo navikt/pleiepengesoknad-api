@@ -1,6 +1,7 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
+import no.nav.helse.soknad.domene.Frilans
 import no.nav.k9.søknad.Søknad
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -25,8 +26,8 @@ data class KomplettSøknad(
     val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
-    val frilans: Frilans? = null,
-    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende? = null,
+    val frilans: Frilans,
+    val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
     val harVærtEllerErVernepliktig: Boolean? = null,

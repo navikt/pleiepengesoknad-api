@@ -1,9 +1,9 @@
 package no.nav.helse.k9format
 
-import no.nav.helse.soknad.Frilans
 import no.nav.helse.soknad.Næringstyper
 import no.nav.helse.soknad.Søknad
 import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.domene.Frilans
 import no.nav.k9.søknad.felles.opptjening.Frilanser
 import no.nav.k9.søknad.felles.opptjening.OpptjeningAktivitet
 import no.nav.k9.søknad.felles.opptjening.SelvstendigNæringsdrivende
@@ -11,17 +11,18 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.VirksomhetType
-import java.time.Duration
 import java.time.LocalDate
 
-fun Double.tilFaktiskTimerPerUke(prosent: Double) = this.times(prosent.div(100))
 fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
-fun Double.tilDuration() = Duration.ofMinutes((this * 60).toLong())
 
 internal fun Søknad.byggK9OpptjeningAktivitet(): OpptjeningAktivitet {
     val opptjeningAktivitet = OpptjeningAktivitet()
-    selvstendigNæringsdrivende?.let { opptjeningAktivitet.medSelvstendigNæringsdrivende(it.tilK9SelvstendigNæringsdrivende()) }
-    frilans?.let { opptjeningAktivitet.medFrilanser(it.tilK9Frilanser()) }
+    if(selvstendigNæringsdrivende.harInntektSomSelvstendig){
+        opptjeningAktivitet.medSelvstendigNæringsdrivende(selvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende())
+    }
+    if(frilans.harInntektSomFrilanser){
+        opptjeningAktivitet.medFrilanser(frilans.tilK9Frilanser())
+    }
     return opptjeningAktivitet
 }
 
@@ -33,7 +34,7 @@ internal fun Frilans.tilK9Frilanser(): Frilanser {
 }
 
 fun no.nav.helse.soknad.SelvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende(): List<SelvstendigNæringsdrivende> {
-
+    requireNotNull(virksomhet)
     return listOf(
         SelvstendigNæringsdrivende()
             .medVirksomhetNavn(virksomhet.navnPåVirksomheten)
