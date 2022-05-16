@@ -35,7 +35,7 @@ fun defaultK9FormatPSB(
     PleiepengerSyktBarn()
         .medSøknadsperiode(søknadsPeriode)
         .medSøknadInfo(DataBruktTilUtledning(true, true, true, true, true))
-        .medBarn(Barn(NorskIdentitetsnummer.of("10987654321"), null))
+        .medBarn(Barn().medNorskIdentitetsnummer(NorskIdentitetsnummer.of("10987654321")))
         .medTilsynsordning(
             Tilsynsordning().medPerioder(
                 mapOf(
@@ -53,21 +53,26 @@ fun defaultK9FormatPSB(
         .medArbeidstid(
             Arbeidstid().medArbeidstaker(
                 listOf(
-                    Arbeidstaker(
-                        NorskIdentitetsnummer.of("12345678910"),
-                        Organisasjonsnummer.of("926032925"),
-                        ArbeidstidInfo(
-                            mapOf(
-                                Periode(
-                                    LocalDate.parse("2018-01-01"),
-                                    LocalDate.parse("2020-01-05")
-                                ) to ArbeidstidPeriodeInfo(Duration.ofHours(8), Duration.ofHours(4)),
-                                Periode(
-                                    LocalDate.parse("2020-01-06"),
-                                    LocalDate.parse("2020-01-10")
-                                ) to ArbeidstidPeriodeInfo(Duration.ofHours(8), Duration.ofHours(2))
+                    Arbeidstaker()
+                        .medNorskIdentitetsnummer(NorskIdentitetsnummer.of("12345678910"))
+                        .medOrganisasjonsnummer(Organisasjonsnummer.of("926032925"))
+                        .medArbeidstidInfo(
+                            ArbeidstidInfo(
+                                mapOf(
+                                    Periode(
+                                        LocalDate.parse("2018-01-01"),
+                                        LocalDate.parse("2020-01-05")
+                                    ) to ArbeidstidPeriodeInfo()
+                                        .medJobberNormaltTimerPerDag(Duration.ofHours(8))
+                                        .medFaktiskArbeidTimerPerDag(Duration.ofHours(4)),
+                                    Periode(
+                                        LocalDate.parse("2020-01-06"),
+                                        LocalDate.parse("2020-01-10")
+                                    ) to ArbeidstidPeriodeInfo()
+                                        .medJobberNormaltTimerPerDag(Duration.ofHours(8))
+                                        .medFaktiskArbeidTimerPerDag(Duration.ofHours(2))
+                                )
                             )
-                        )
                     )
                 )
             )
