@@ -69,7 +69,7 @@ internal fun BarnDetaljer.validate(): MutableSet<Violation> {
                 parameterName = "barn.fødselsnummer",
                 parameterType = ParameterType.ENTITY,
                 reason = "Ikke gyldig fødselsnummer.",
-                invalidValue = "${fødselsnummer?.take(6)}*****"
+                invalidValue = fødselsnummer?.let {"${it.take(6)}*****"}
             )
         )
     }
