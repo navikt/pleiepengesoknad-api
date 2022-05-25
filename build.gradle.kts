@@ -6,11 +6,13 @@ val ktorVersion = ext.get("ktorVersion").toString()
 val k9FormatVersion = "5.8.8"
 val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
 val kafkaVersion = ext.get("kafkaVersion").toString() // Alligned med version fra kafka-embedded-env
+val fuelVersion = "2.3.1"
+val lettuceVersion = "6.1.8.RELEASE"
+val tokenSupportVersion = "2.0.20"
+val mockOauth2ServerVersion = "0.4.6"
 
 val mainClass = "no.nav.helse.AppKt"
 
-val fuelVersion = "2.3.1"
-val lettuceVersion = "6.1.8.RELEASE"
 
 plugins {
     kotlin("jvm") version "1.6.21"
@@ -40,11 +42,15 @@ dependencies {
     // kafka
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
 
+    // NAV
+    implementation ("no.nav.security:token-validation-ktor:$tokenSupportVersion")
+
     // Client
     implementation ( "no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
     implementation ( "no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
 
     // Test
+    testImplementation ("no.nav.security:mock-oauth2-server:$mockOauth2ServerVersion")
     testImplementation ( "no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
     testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion") {
