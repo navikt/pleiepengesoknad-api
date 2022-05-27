@@ -1,10 +1,9 @@
 package no.nav.helse
 
 import com.auth0.jwt.JWT
-import com.github.tomakehurst.wiremock.http.Cookie
 import com.github.tomakehurst.wiremock.http.Request
 import io.ktor.http.*
-import no.nav.helse.dusseldorf.testsupport.jws.LoginService
+import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.junit.Assert
 
 class TestUtils {
@@ -14,18 +13,20 @@ class TestUtils {
             return JWT.decode(idToken).subject ?: throw IllegalStateException("Token mangler 'sub' claim.")
         }
 
-        fun getAuthCookie(
+        fun MockOAuth2Server.issueToken(
             fnr: String,
-            level: Int = 4,
-            cookieName: String = "localhost-idtoken",
-            expiry: Long? = null) : Cookie {
-
-            val overridingClaims : Map<String, Any> = if (expiry == null) emptyMap() else mapOf(
-                "exp" to expiry
-            )
-
-            val jwt = LoginService.V1_0.generateJwt(fnr = fnr, level = level, overridingClaims = overridingClaims)
-            return Cookie(listOf(String.format("%s=%s", cookieName, jwt), "Path=/", "Domain=localhost"))
+            issuerId: String = "tokendings",
+            audience: String = "dev-gcp:dusseldorf:pleiepengesoknad-api",
+            claims: Map<String, String> = mapOf("acr" to "Level4"),
+            cookieName: String = "selvbetjening-idtoken",
+            somCookie: Boolean = false,
+        ): String {
+            val jwtToken =
+                issueToken(issuerId = issuerId, subject = fnr, audience = audience, claims = claims, expiry = 36000).serialize()
+            return when (somCookie) {
+                false -> jwtToken
+                true -> "$cookieName=$jwtToken"
+            }
         }
 
         internal fun MutableList<String>.validerFeil(antallFeil: Int) {

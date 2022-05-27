@@ -1,25 +1,26 @@
 package no.nav.helse
 
-import com.github.tomakehurst.wiremock.http.Cookie
 import io.ktor.http.*
-import io.ktor.http.content.PartData
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.setBody
-import io.ktor.utils.io.streams.asInput
+import io.ktor.http.content.*
+import io.ktor.server.testing.*
+import io.ktor.utils.io.streams.*
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-fun TestApplicationEngine.handleRequestUploadImage(cookie: Cookie,
-                                                   vedlegg: ByteArray = "vedlegg/iPhone_6.jpg".fromResources().readBytes(),
-                                                   fileName: String = "iPhone_6.jpg",
-                                                   contentType: String = "image/jpeg",
-                                                   expectedCode: HttpStatusCode = HttpStatusCode.Created) : String {
+fun TestApplicationEngine.handleRequestUploadImage(
+    cookie: String? = null,
+    jwtToken: String? = null,
+    vedlegg: ByteArray = "vedlegg/iPhone_6.jpg".fromResources().readBytes(),
+    fileName: String = "iPhone_6.jpg",
+    contentType: String = "image/jpeg",
+    expectedCode: HttpStatusCode = HttpStatusCode.Created
+): String {
     val boundary = "***vedlegg***"
 
     handleRequest(HttpMethod.Post, "/vedlegg") {
-        addHeader("Cookie", cookie.toString())
+        cookie?.let { addHeader("Cookie", cookie) }
+        jwtToken?.let { addHeader("Authorization", "Bearer $jwtToken") }
         addHeader(
             HttpHeaders.ContentType,
             ContentType.MultiPart.FormData.withParameter("boundary", boundary).toString()
@@ -57,10 +58,12 @@ fun TestApplicationEngine.handleRequestUploadImage(cookie: Cookie,
 }
 
 fun TestApplicationEngine.jpegUrl(
-    cookie: Cookie
-) : String {
+    cookie: String? = null,
+    jwtToken: String? = null
+): String {
     return handleRequestUploadImage(
         cookie = cookie,
+        jwtToken = jwtToken,
         vedlegg = "vedlegg/nav-logo.png".fromResources().readBytes(),
         fileName = "nav-logo.png",
         contentType = "image/png"
@@ -68,10 +71,12 @@ fun TestApplicationEngine.jpegUrl(
 }
 
 fun TestApplicationEngine.pdUrl(
-    cookie: Cookie
-) : String {
+    cookie: String? = null,
+    jwtToken: String? = null,
+): String {
     return handleRequestUploadImage(
         cookie = cookie,
+        jwtToken = jwtToken,
         vedlegg = "vedlegg/test.pdf".fromResources().readBytes(),
         fileName = "test.pdf",
         contentType = "application/pdf"

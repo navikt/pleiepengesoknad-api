@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory
 import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import no.nav.helse.TestUtils.Companion.getAuthCookie
+import no.nav.helse.TestUtils.Companion.issueToken
 import no.nav.helse.arbeidsgiver.orgQueryName
 import no.nav.helse.dusseldorf.ktor.core.fromResources
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
@@ -15,6 +15,7 @@ import no.nav.helse.k9format.defaultK9SakInnsynSøknad
 import no.nav.helse.soknad.*
 import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.helse.wiremock.*
+import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -37,16 +38,19 @@ class ApplicationTest {
 
     private companion object {
         private val logger: Logger = LoggerFactory.getLogger(ApplicationTest::class.java)
-
+        private val mockOAuth2Server = MockOAuth2Server().apply { start() }
         // Se https://github.com/navikt/dusseldorf-ktor#f%C3%B8dselsnummer
         private val gyldigFodselsnummerA = "02119970078"
-        private val gyldigFodselsnummerB = "02119970079"
-        private val gyldigFodselsnummerC = "02119970080"
-        private val gyldigFodselsnummerD = "02119970081"
+        private val fnrMedBarn = "26104500284"
         private val fnrMedToArbeidsforhold = "19116812889"
-        private val fnr = "26104500284"
         private val ikkeMyndigFnr = "12125012345"
-        private val oneMinuteInMillis = Duration.ofMinutes(1).toMillis()
+        private val cookie = mockOAuth2Server.issueToken(
+            issuerId = "login-service-v2",
+            fnr = gyldigFodselsnummerA,
+            somCookie = true
+        )
+
+        private val tokenXToken = mockOAuth2Server.issueToken(fnr = gyldigFodselsnummerA)
 
         val wireMockServer = WireMockBuilder()
             .withAzureSupport()
@@ -83,12 +87,12 @@ class ApplicationTest {
         private val kafkaKonsumer = kafkaEnvironment.testConsumer()
 
         fun getConfig(): ApplicationConfig {
-
             val fileConfig = ConfigFactory.load()
             val testConfig = ConfigFactory.parseMap(
                 TestConfiguration.asMap(
                     wireMockServer = wireMockServer,
-                    kafkaEnvironment = kafkaEnvironment
+                    kafkaEnvironment = kafkaEnvironment,
+                    mockOAuth2Server = mockOAuth2Server
                 )
             )
 
@@ -114,6 +118,7 @@ class ApplicationTest {
         fun tearDown() {
             logger.info("Tearing down")
             wireMockServer.stop()
+            mockOAuth2Server.shutdown()
             logger.info("Tear down complete")
         }
     }
@@ -164,7 +169,7 @@ class ApplicationTest {
 
             }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
     }
 
@@ -197,7 +202,7 @@ class ApplicationTest {
 
             }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
     }
 
@@ -223,7 +228,7 @@ class ApplicationTest {
               "frilansoppdrag": null
             }
             """.trimIndent(),
-            cookie = getAuthCookie(fnrMedToArbeidsforhold)
+            jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedToArbeidsforhold)
         )
     }
 
@@ -276,7 +281,7 @@ class ApplicationTest {
               ]
             }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
     }
 
@@ -296,7 +301,7 @@ class ApplicationTest {
 
             }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
     }
 
@@ -322,7 +327,7 @@ class ApplicationTest {
                 "frilansoppdrag": null
             }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
     }
 
@@ -350,7 +355,7 @@ class ApplicationTest {
                     }]
                 }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
     }
 
@@ -378,7 +383,7 @@ class ApplicationTest {
                     }]
                 }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
     }
 
@@ -397,7 +402,7 @@ class ApplicationTest {
                 
             }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
         wireMockServer.stubK9OppslagArbeidsgivere()
     }
@@ -409,7 +414,7 @@ class ApplicationTest {
             path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
-            leggTilCookie = false
+            cookie = null
         )
     }
 
@@ -418,9 +423,14 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
-            expectedCode = HttpStatusCode.Forbidden,
+            expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
-            cookie = getAuthCookie(fnr = gyldigFodselsnummerA, level = 3)
+            cookie = mockOAuth2Server.issueToken(
+                issuerId = "login-service-v2",
+                fnr = gyldigFodselsnummerA,
+                somCookie = true,
+                claims = mapOf("acr" to "Level3"),
+            )
         )
     }
 
@@ -431,18 +441,7 @@ class ApplicationTest {
             path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
             expectedCode = HttpStatusCode.Unauthorized,
             expectedResponse = null,
-            cookie = Cookie(listOf("localhost-idtoken=ikkeJwt", "Path=/", "Domain=localhost"))
-        )
-    }
-
-    @Test
-    fun `Hente arbeidsgivere med en utloept cookie`() {
-        requestAndAssert(
-            httpMethod = HttpMethod.Get,
-            path = "$ARBEIDSGIVER_URL?fra_og_med=2019-01-01&til_og_med=2019-01-30&private_arbeidsgivere=true",
-            expectedCode = HttpStatusCode.Unauthorized,
-            expectedResponse = null,
-            cookie = getAuthCookie(gyldigFodselsnummerA, expiry = -(oneMinuteInMillis))
+            cookie = Cookie(listOf("localhost-idtoken=ikkeJwt", "Path=/", "Domain=localhost")).toString()
         )
     }
 
@@ -451,6 +450,7 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
             path = "$ARBEIDSGIVER_URL?fra_og_med=heisann&til_og_med=hadet",
+            jwtToken = tokenXToken,
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse = """
                 {
@@ -479,6 +479,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere uten til og fra satt`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
+            jwtToken = tokenXToken,
             path = "$ARBEIDSGIVER_URL",
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse = """
@@ -508,6 +509,7 @@ class ApplicationTest {
     fun `Hente arbeidsgivere hvor fra_og_med er etter til_og_med`() {
         requestAndAssert(
             httpMethod = HttpMethod.Get,
+            jwtToken = tokenXToken,
             path = "$ARBEIDSGIVER_URL?fra_og_med=2020-01-10&til_og_med=2020-01-01",
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse = """
@@ -541,6 +543,7 @@ class ApplicationTest {
 
         val respons = requestAndAssert(
             httpMethod = HttpMethod.Get,
+            jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn),
             path = BARN_URL,
             expectedCode = HttpStatusCode.OK,
             //language=json
@@ -599,7 +602,7 @@ class ApplicationTest {
                 }]
             }
             """.trimIndent(),
-            cookie = getAuthCookie(fnr)
+            jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn)
         )
     }
 
@@ -614,7 +617,7 @@ class ApplicationTest {
                 "barn": []
             }
             """.trimIndent(),
-            cookie = getAuthCookie("07077712345")
+            cookie = cookie
         )
     }
 
@@ -630,7 +633,7 @@ class ApplicationTest {
                 "barn": []
             }
             """.trimIndent(),
-            cookie = getAuthCookie(gyldigFodselsnummerA)
+            cookie = cookie
         )
         wireMockServer.stubK9OppslagBarn()
     }
@@ -657,7 +660,8 @@ class ApplicationTest {
             httpMethod = HttpMethod.Get,
             path = SØKER_URL,
             expectedCode = HttpStatusCode.OK,
-            expectedResponse = expectedGetSokerJson(fnr)
+            expectedResponse = expectedGetSokerJson(fnrMedBarn),
+            jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn)
         )
     }
 
@@ -693,7 +697,7 @@ class ApplicationTest {
                 "detail": "Tilgang nektet."
             }
             """.trimIndent(),
-            cookie = getAuthCookie(ikkeMyndigFnr)
+            jwtToken = mockOAuth2Server.issueToken(fnr = ikkeMyndigFnr)
         )
 
         wireMockServer.stubK9OppslagSoker() // reset til default mapping
@@ -701,8 +705,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende søknad`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
+        val jpegUrl = engine.jpegUrl(cookie = cookie)
 
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.parse("2022-01-01"),
@@ -733,9 +736,8 @@ class ApplicationTest {
 
     @Test
     fun `Validerer vedlegg hvor et ikke finnes`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val vedlegg1 = engine.jpegUrl(cookie)
-        val vedlegg2 = engine.pdUrl(cookie)
+        val vedlegg1 = engine.jpegUrl(cookie = cookie)
+        val vedlegg2 = engine.pdUrl(cookie = cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -763,9 +765,8 @@ class ApplicationTest {
 
     @Test
     fun `Validerer vedlegg hvor alle finnes`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val vedlegg1 = engine.jpegUrl(cookie)
-        val vedlegg2 = engine.pdUrl(cookie)
+        val vedlegg1 = engine.jpegUrl(cookie = cookie)
+        val vedlegg2 = engine.pdUrl(cookie = cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -790,8 +791,8 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad ikke myndig`() {
-        val cookie = getAuthCookie(ikkeMyndigFnr)
-        val jpegUrl = engine.jpegUrl(cookie)
+        val tokenIkkeMyndig = mockOAuth2Server.issueToken(fnr = ikkeMyndigFnr)
+        val jpegUrl = engine.jpegUrl(jwtToken = tokenIkkeMyndig)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -806,7 +807,7 @@ class ApplicationTest {
                 }
             """.trimIndent(),
             expectedCode = HttpStatusCode.Forbidden,
-            cookie = cookie,
+            jwtToken = tokenIkkeMyndig,
             requestEntity = SøknadUtils.defaultSøknad().copy(
                 vedlegg = listOf(URL(jpegUrl)),
             ).somJson()
@@ -816,8 +817,8 @@ class ApplicationTest {
 
     @Test
     fun `Sende søknad med AktørID som ID på barnet`() {
-        val cookie = getAuthCookie("26104500284")
-        val jpegUrl = engine.jpegUrl(cookie)
+        val jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn)
+        val jpegUrl = engine.jpegUrl(jwtToken = jwtToken)
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.now().minusDays(3),
             tilOgMed = LocalDate.now().plusDays(4),
@@ -846,7 +847,7 @@ class ApplicationTest {
             path = SØKNAD_URL,
             expectedResponse = null,
             expectedCode = HttpStatusCode.Accepted,
-            cookie = cookie,
+            jwtToken = jwtToken,
             requestEntity = søknad.somJson()
         )
 
@@ -855,8 +856,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende søknad med selvstendig næringsvirksomhet som har regnskapsfører`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
+        val jpegUrl = engine.jpegUrl(cookie = cookie)
         val søknad = SøknadUtils.defaultSøknad().copy(
             omsorgstilbud = null,
             ferieuttakIPerioden = null,
@@ -906,8 +906,6 @@ class ApplicationTest {
 
     @Test
     fun `Sende søknad med selvstendig næringsvirksomhet som ikke er gyldig, mangler registrertILand og ugyldig arbeidsforhold`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = SØKNAD_URL,
@@ -983,8 +981,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad som har satt erBarnetInnlagt til true men har ikke oppgitt noen perioder i perioderBarnetErInnlagt`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
+        val jpegUrl = engine.jpegUrl(cookie = cookie)
 
         requestAndAssert(
             httpMethod = HttpMethod.Post,
@@ -1075,8 +1072,7 @@ class ApplicationTest {
 
     @Test
     fun `Sende soknad hvor et av vedleggene peker på et ikke eksisterende vedlegg`() {
-        val cookie = getAuthCookie(gyldigFodselsnummerA)
-        val jpegUrl = engine.jpegUrl(cookie)
+        val jpegUrl = engine.jpegUrl(cookie = cookie)
         val finnesIkkeUrl = jpegUrl.substringBeforeLast("/").plus("/").plus(UUID.randomUUID().toString())
 
         requestAndAssert(
@@ -1110,7 +1106,6 @@ class ApplicationTest {
 
     @Test
     fun `Test haandtering av vedlegg`() {
-        val cookie = getAuthCookie(fnr)
         val jpeg = "vedlegg/iPhone_6.jpg".fromResources().readBytes()
 
         with(engine) {
@@ -1122,18 +1117,18 @@ class ApplicationTest {
             val path = Url(url).fullPath
             // HENTER OPPLASTET VEDLEGG
             handleRequest(HttpMethod.Get, path) {
-                addHeader("Cookie", cookie.toString())
+                addHeader("Cookie", cookie)
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(Arrays.equals(jpeg, response.byteContent))
                 // SLETTER OPPLASTET VEDLEGG
                 handleRequest(HttpMethod.Delete, path) {
-                    addHeader("Cookie", cookie.toString())
+                    addHeader("Cookie", cookie)
                 }.apply {
                     assertEquals(HttpStatusCode.NoContent, response.status())
                     // VERIFISERER AT VEDLEGG ER SLETTET
                     handleRequest(HttpMethod.Get, path) {
-                        addHeader("Cookie", cookie.toString())
+                        addHeader("Cookie", cookie)
                     }.apply {
                         assertEquals(HttpStatusCode.NotFound, response.status())
                     }
@@ -1145,7 +1140,7 @@ class ApplicationTest {
     @Test
     fun `Test opplasting av ikke stottet vedleggformat`() {
         engine.handleRequestUploadImage(
-            cookie = getAuthCookie(gyldigFodselsnummerA),
+            cookie = cookie,
             vedlegg = "jwkset.json".fromResources().readBytes(),
             contentType = "application/json",
             fileName = "jwkset.json",
@@ -1156,7 +1151,7 @@ class ApplicationTest {
     @Test
     fun `Test opplasting av for stort vedlegg`() {
         engine.handleRequestUploadImage(
-            cookie = getAuthCookie(gyldigFodselsnummerA),
+            cookie = cookie,
             vedlegg = ByteArray(8 * 1024 * 1024 + 10),
             contentType = "image/png",
             fileName = "big_picture.png",
@@ -1166,7 +1161,6 @@ class ApplicationTest {
 
     @Test
     fun `endringsmelding - endringer innefor gyldighetsperiode`() {
-        val cookie = getAuthCookie(fnr)
         val søknadId = UUID.randomUUID().toString()
         val mottattDato = ZonedDateTime.parse("2021-11-03T07:12:05.530Z")
 
@@ -1182,7 +1176,7 @@ class ApplicationTest {
               "ytelse": {
                 "type": "PLEIEPENGER_SYKT_BARN",
                 "barn": {
-                  "norskIdentitetsnummer": "02119970078"
+                  "norskIdentitetsnummer": "11886596652"
                 },
                 "arbeidstid": {
                   "arbeidstakerList": [
@@ -1213,7 +1207,7 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = ENDRINGSMELDING_URL,
-            cookie = cookie,
+            jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn),
             expectedCode = HttpStatusCode.Accepted,
             expectedResponse = null,
             requestEntity = endringsmelding
@@ -1248,7 +1242,7 @@ class ApplicationTest {
                  "endringsperiode": [],
                  "trekkKravPerioder": [],
                  "barn": {
-                   "norskIdentitetsnummer": "02119970078",
+                   "norskIdentitetsnummer": "11886596652",
                    "fødselsdato": null
                  },
                  "tilsynsordning": {
@@ -1319,7 +1313,6 @@ class ApplicationTest {
 
     @Test
     fun `endringsmelding - endringer utenfor gyldighetsperiode`() {
-        val cookie = getAuthCookie(fnr)
         val søknadId = UUID.randomUUID().toString()
         val mottattDato = ZonedDateTime.parse("2021-11-03T07:12:05.530Z")
 
@@ -1334,7 +1327,7 @@ class ApplicationTest {
                   "ytelse": {
                     "type": "PLEIEPENGER_SYKT_BARN",
                     "barn": {
-                      "norskIdentitetsnummer": "02119970078"
+                      "norskIdentitetsnummer": "11886596652"
                     },
                     "arbeidstid": {
                       "arbeidstakerList": [
@@ -1357,7 +1350,7 @@ class ApplicationTest {
         requestAndAssert(
             httpMethod = HttpMethod.Post,
             path = ENDRINGSMELDING_URL,
-            cookie = cookie,
+            jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn),
             expectedCode = HttpStatusCode.BadRequest,
             expectedResponse =
             //language=json
@@ -1386,7 +1379,6 @@ class ApplicationTest {
     inner class MellomlagringApisTest {
         @Test
         fun `gitt to mellomlagrede verdier på samme person, fovent at begge mellomlagres, og de ikke overskriver hverandre`() {
-            val cookie = getAuthCookie(gyldigFodselsnummerA)
 
             val mellomlagringSøknad = """
                 {
@@ -1438,23 +1430,19 @@ class ApplicationTest {
 
         @Test
         fun `gitt mellomlagring ikke eksisterer, forvent tomt objekt`() {
-            val cookie = getAuthCookie(gyldigFodselsnummerB)
-
             requestAndAssert(
                 httpMethod = HttpMethod.Get,
                 path = MELLOMLAGRING_URL,
-                cookie = cookie,
+                jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn),
                 expectedCode = HttpStatusCode.OK,
                 expectedResponse = """
-                {}
-            """.trimIndent()
+                    {}
+                """.trimIndent()
             )
         }
 
         @Test
         fun `gitt det mellomlagres på en eksisterende nøkkel, forvent konfliktfeil`() {
-            val cookie = getAuthCookie(gyldigFodselsnummerC)
-
             val mellomlagringSøknad = """
                 {
                     "mellomlagring": "soknad"
@@ -1490,8 +1478,6 @@ class ApplicationTest {
 
         @Test
         fun `gitt oppdatering av en ikke-eksisterende nøkkel, forvent at det opprettes ny`() {
-            val cookie = getAuthCookie(gyldigFodselsnummerD)
-
             val mellomlagringSøknad = """
                 {
                     "mellomlagring": "soknad"
@@ -1510,8 +1496,6 @@ class ApplicationTest {
 
         @Test
         fun `gitt sletting av en ikke-eksisterende nøkkel, forvent ingen feil`() {
-            val cookie = getAuthCookie(gyldigFodselsnummerD)
-
             val mellomlagringSøknad = """
                 {
                     "mellomlagring": "soknad"
@@ -1543,15 +1527,16 @@ class ApplicationTest {
         httpMethod: HttpMethod,
         path: String,
         requestEntity: String? = null,
-        expectedResponse: String?,
+        expectedResponse: String? = null,
         expectedCode: HttpStatusCode,
-        leggTilCookie: Boolean = true,
-        cookie: Cookie = getAuthCookie(fnr)
+        jwtToken: String? = null,
+        cookie: String? = null
     ): String? {
         val respons: String?
         with(engine) {
             handleRequest(httpMethod, path) {
-                if (leggTilCookie) addHeader(HttpHeaders.Cookie, cookie.toString())
+                if (cookie != null) addHeader(HttpHeaders.Cookie, cookie)
+                if (jwtToken != null) addHeader(HttpHeaders.Authorization, "Bearer $jwtToken")
                 logger.info("Request Entity = $requestEntity")
                 addHeader(HttpHeaders.Accept, "application/json")
                 if (requestEntity != null) addHeader(HttpHeaders.ContentType, "application/json")

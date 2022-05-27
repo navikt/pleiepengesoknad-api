@@ -20,12 +20,9 @@ import no.nav.helse.arbeidsgiver.arbeidsgiverApis
 import no.nav.helse.barn.BarnGateway
 import no.nav.helse.barn.BarnService
 import no.nav.helse.barn.barnApis
-import no.nav.helse.dusseldorf.ktor.auth.*
 import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
 import no.nav.helse.dusseldorf.ktor.auth.IdTokenStatusPages
-import no.nav.helse.dusseldorf.ktor.auth.allIssuers
 import no.nav.helse.dusseldorf.ktor.auth.clients
-import no.nav.helse.dusseldorf.ktor.auth.multipleJwtIssuers
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthCheck
 import no.nav.helse.dusseldorf.ktor.client.HttpRequestHealthConfig
 import no.nav.helse.dusseldorf.ktor.client.buildURL
@@ -54,22 +51,28 @@ import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.K9MellomlagringGateway
 import no.nav.helse.vedlegg.VedleggService
 import no.nav.helse.vedlegg.vedleggApis
+import no.nav.security.token.support.ktor.RequiredClaims
+import no.nav.security.token.support.ktor.asIssuerProps
+import no.nav.security.token.support.ktor.tokenValidationSupport
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Duration
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-private val logger: Logger = LoggerFactory.getLogger("no.nav.helse.AppKt.pleiepengesoknadapi")
 
 fun Application.pleiepengesoknadapi() {
     val appId = environment.config.id()
+    val logger: Logger = LoggerFactory.getLogger("no.nav.helse.AppKt.pleiepengesoknadapi")
     logProxyProperties()
     DefaultExports.initialize()
 
     System.setProperty("dusseldorf.ktor.serializeProblemDetailsWithContentNegotiation", "true")
 
     val configuration = Configuration(environment.config)
+    val config = this.environment.config
+    val idTokenProvider = IdTokenProvider(cookieName = configuration.getCookieName())
+    val allIssuers = config.asIssuerProps().keys
     val accessTokenClientResolver = AccessTokenClientResolver(environment.config.clients())
 
     install(ContentNegotiation) {
@@ -93,17 +96,18 @@ fun Application.pleiepengesoknadapi() {
         }
     }
 
-    val idTokenProvider = IdTokenProvider(cookieName = configuration.getCookieName())
-    val issuers = configuration.issuers()
 
     install(Authentication) {
-        multipleJwtIssuers(
-            issuers = issuers,
-            extractHttpAuthHeader = { call ->
-                idTokenProvider.getIdToken(call)
-                    .somHttpAuthHeader()
-            }
-        )
+        allIssuers.forEach { issuer: String ->
+            tokenValidationSupport(
+                name = issuer,
+                config = config,
+                requiredClaims = RequiredClaims(
+                    issuer = issuer,
+                    claimMap = arrayOf("acr=Level4")
+                )
+            )
+        }
     }
 
     install(StatusPages) {
@@ -139,7 +143,7 @@ fun Application.pleiepengesoknadapi() {
             logger.info("Kafka Producer Stoppet.")
         }
 
-        authenticate(*issuers.allIssuers()) {
+        authenticate(*allIssuers.toTypedArray()) {
             søkerApis(
                 søkerService = søkerService,
                 idTokenProvider = idTokenProvider
@@ -248,7 +252,9 @@ fun Application.pleiepengesoknadapi() {
         logRequests()
         mdc("id_token_jti") { call ->
             try {
-                idTokenProvider.getIdToken(call).getId()
+                val idToken = idTokenProvider.getIdToken(call)
+                logger.info("Issuer [{}]", idToken.issuer())
+                idToken.getId()
             } catch (cause: Throwable) {
                 null
             }
