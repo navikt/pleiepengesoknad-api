@@ -5,6 +5,7 @@ import no.nav.fpsak.tidsserie.LocalDateInterval
 import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.k9.søknad.Søknad
 import java.net.URL
 import java.time.LocalDate
@@ -29,6 +30,7 @@ data class Søknad(
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
+    val opptjeningIUtlandet: List<OpptjeningIUtlandet> = listOf(),
     val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
@@ -63,6 +65,7 @@ data class Søknad(
         arbeidsgivere = arbeidsgivere,
         medlemskap = medlemskap,
         ferieuttakIPerioden = ferieuttakIPerioden,
+        opptjeningIUtlandet = opptjeningIUtlandet,
         utenlandsoppholdIPerioden = utenlandsoppholdIPerioden,
         harMedsøker = harMedsøker!!,
         samtidigHjemme = samtidigHjemme,

@@ -3,6 +3,8 @@ package no.nav.helse
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.soknad.*
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.OpptjeningIUtlandet
+import no.nav.helse.soknad.domene.OpptjeningType
 import no.nav.helse.soknad.domene.arbeid.*
 import java.net.URL
 import java.time.Duration
@@ -41,12 +43,12 @@ class SøknadUtils {
                     navn = "Org",
                     organisasjonsnummer = "917755736",
                     erAnsatt = true,
-                    arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                    arbeidsforhold = Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
                             erLiktHverUke = true,
                             timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                         ),
-                        arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                        arbeidIPeriode = ArbeidIPeriode(
                             type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
                             arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
                         )
@@ -91,12 +93,12 @@ class SøknadUtils {
                     yrkesaktivSisteTreFerdigliknedeÅrene = YrkesaktivSisteTreFerdigliknedeÅrene(LocalDate.parse("2018-01-01")),
                     harFlereAktiveVirksomheter = true
                 ),
-                arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
+                arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
-                    arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
+                    arbeidIPeriode = ArbeidIPeriode(
                         type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
                         arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
                     )
@@ -215,6 +217,18 @@ class SøknadUtils {
                         type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
                         arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
                     )
+                )
+            ),
+            opptjeningIUtlandet = listOf(
+                OpptjeningIUtlandet(
+                    navn = "Kiwi AS",
+                    opptjeningType = OpptjeningType.ARBEIDSTAKER,
+                    land = Land(
+                        landkode = "BEL",
+                        landnavn = "Belgia",
+                    ),
+                    fraOgMed = LocalDate.parse("2022-01-01"),
+                    tilOgMed = LocalDate.parse("2022-01-10")
                 )
             ),
             harVærtEllerErVernepliktig = true

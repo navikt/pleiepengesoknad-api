@@ -4,6 +4,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.OpptjeningIUtlandet
+import no.nav.helse.soknad.domene.OpptjeningType
 import no.nav.helse.soknad.domene.arbeid.*
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.Duration
@@ -199,6 +201,18 @@ internal class SerDesTest {
                   }
                 ]
               },
+              "opptjeningIUtlandet": [
+                {
+                  "navn": "Kiwi AS",
+                  "opptjeningType": "ARBEIDSTAKER",
+                  "land": {
+                    "landkode": "BEL",
+                    "landnavn": "Belgia"
+                  },
+                  "fraOgMed": "2022-01-01",
+                  "tilOgMed": "2022-01-10"
+                }
+              ],
               "harMedsøker": true,
               "harBekreftetOpplysninger": true,
               "harForståttRettigheterOgPlikter": true,
@@ -447,6 +461,18 @@ internal class SerDesTest {
                   }
                 ]
               },
+              "opptjeningIUtlandet": [
+                {
+                  "navn": "Kiwi AS",
+                  "opptjeningType": "ARBEIDSTAKER",
+                  "land": {
+                    "landkode": "BEL",
+                    "landnavn": "Belgia"
+                  },
+                  "fraOgMed": "2022-01-01",
+                  "tilOgMed": "2022-01-10"
+                }
+              ],
               "harMedsøker": true,
               "harBekreftetOpplysninger": true,
               "harForståttRettigheterOgPlikter": true,
@@ -602,6 +628,18 @@ internal class SerDesTest {
             samtidigHjemme = true,
             harBekreftetOpplysninger = true,
             harForståttRettigheterOgPlikter = true,
+            opptjeningIUtlandet = listOf(
+                OpptjeningIUtlandet(
+                    navn = "Kiwi AS",
+                    opptjeningType = OpptjeningType.ARBEIDSTAKER,
+                    land = Land(
+                        landkode = "BEL",
+                        landnavn = "Belgia",
+                    ),
+                    fraOgMed = LocalDate.parse("2022-01-01"),
+                    tilOgMed = LocalDate.parse("2022-01-10")
+                )
+            ),
             utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(
                 skalOppholdeSegIUtlandetIPerioden = true, opphold = listOf(
                     Utenlandsopphold(
