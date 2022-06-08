@@ -2,6 +2,7 @@ package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.k9.søknad.Søknad
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -18,6 +19,7 @@ data class KomplettSøknad(
     var vedleggId : List<String> = listOf(),
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
+    val opptjeningIUtlandet: List<OpptjeningIUtlandet>? = null,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
     val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean?,

@@ -5,6 +5,7 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.general.somViolation
+import no.nav.helse.soknad.domene.valider
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -127,6 +128,8 @@ internal fun SelvstendigNæringsdrivende.valider(): Set<Violation> {
 
 internal fun Søknad.validate() {
     val violations = barn.validate()
+
+    opptjeningIUtlandet?.let { violations.addAll(opptjeningIUtlandet.valider()) }
 
     violations.addAll(arbeidsgivere.validate())
 

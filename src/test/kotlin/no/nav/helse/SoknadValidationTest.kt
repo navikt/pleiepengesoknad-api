@@ -3,6 +3,8 @@ package no.nav.helse
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.soknad.*
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.OpptjeningIUtlandet
+import no.nav.helse.soknad.domene.OpptjeningType
 import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
 import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
@@ -93,6 +95,18 @@ class SoknadValidationTest {
         ),
         frilans = Frilans(harInntektSomFrilanser = false),
         selvstendigNæringsdrivende = SelvstendigNæringsdrivende(harInntektSomSelvstendig = false),
+        opptjeningIUtlandet = listOf(
+            OpptjeningIUtlandet(
+                navn = "Kiwi AS",
+                opptjeningType = OpptjeningType.ARBEIDSTAKER,
+                land = Land(
+                    landkode = "BEL",
+                    landnavn = "Belgia",
+                ),
+                fraOgMed = LocalDate.parse("2022-01-01"),
+                tilOgMed = LocalDate.parse("2022-01-10")
+            )
+        ),
         arbeidsgivere = listOf(
             Arbeidsgiver(
                 navn = "Org",

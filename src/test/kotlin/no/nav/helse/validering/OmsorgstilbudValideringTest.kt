@@ -108,11 +108,11 @@ class OmsorgstilbudValideringTest {
 
 }
 
-private fun MutableSet<Violation>.assertIngenFeil() {
+internal fun MutableSet<Violation>.assertIngenFeil() {
     assertTrue(size == 0)
 }
 
-private fun MutableSet<Violation>.assertFeilPå(reason: List<String> = emptyList()) {
+internal fun MutableSet<Violation>.assertFeilPå(reason: List<String> = emptyList()) {
     println(this)
     assertEquals(size, reason.size)
 
