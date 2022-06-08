@@ -19,7 +19,7 @@ data class KomplettSøknad(
     var vedleggId : List<String> = listOf(),
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
-    val opptjeningIUtlandet: List<OpptjeningIUtlandet>,
+    val opptjeningIUtlandet: List<OpptjeningIUtlandet>? = null,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
     val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean?,
