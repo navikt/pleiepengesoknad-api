@@ -129,7 +129,7 @@ internal fun SelvstendigNæringsdrivende.valider(): Set<Violation> {
 internal fun Søknad.validate() {
     val violations = barn.validate()
 
-    opptjeningIUtlandet?.let { violations.addAll(opptjeningIUtlandet.valider()) }
+    violations.addAll(opptjeningIUtlandet.valider())
 
     violations.addAll(arbeidsgivere.validate())
 
