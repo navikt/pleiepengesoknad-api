@@ -11,7 +11,7 @@ internal fun MutableList<String>.kreverIkkeNull(verdi: Any?, feilmelding: String
     if (verdi == null) this.add(feilmelding)
 }
 
-internal fun MutableList<String>.somViolation(): Set<Violation> = this.map {
+internal fun List<String>.somViolation(): Set<Violation> = this.map {
     Violation(
         parameterName = "valideringsfeil",
         parameterType = ParameterType.ENTITY,

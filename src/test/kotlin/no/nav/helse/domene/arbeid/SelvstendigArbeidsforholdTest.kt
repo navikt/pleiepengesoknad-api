@@ -1,10 +1,10 @@
 package no.nav.helse.domene.arbeid
 
-import no.nav.helse.soknad.Næringstyper.JORDBRUK_SKOGBRUK
 import no.nav.helse.soknad.Regnskapsfører
 import no.nav.helse.soknad.SelvstendigNæringsdrivende
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.domene.Næringstyper.JORDBRUK_SKOGBRUK
 import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.k9.søknad.felles.type.Periode
 import java.time.Duration

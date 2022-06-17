@@ -1,6 +1,6 @@
 package no.nav.helse.domene.arbeid
 
-import no.nav.helse.TestUtils.Companion.validerFeil
+import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import org.junit.jupiter.api.assertThrows
@@ -19,7 +19,7 @@ class NormalArbeidstidTest {
             erLiktHverUke = true,
             timerPerUkeISnitt = null,
             timerFasteDager = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -28,7 +28,7 @@ class NormalArbeidstidTest {
                 erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
                 timerFasteDager = PlanUkedager()
-            ).valider("test").validerFeil(1)
+            ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -37,7 +37,7 @@ class NormalArbeidstidTest {
             erLiktHverUke = null,
             timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
             timerFasteDager = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test

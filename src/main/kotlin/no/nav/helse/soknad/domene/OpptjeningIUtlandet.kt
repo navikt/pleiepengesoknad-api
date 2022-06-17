@@ -2,7 +2,6 @@ package no.nav.helse.soknad.domene
 
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.Land
-import no.nav.helse.soknad.valider
 import java.time.LocalDate
 
 data class OpptjeningIUtlandet(

@@ -13,6 +13,7 @@ import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.domene.Næringstyper
 import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.helse.wiremock.*
 import no.nav.security.mock.oauth2.MockOAuth2Server

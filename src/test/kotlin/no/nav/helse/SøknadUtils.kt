@@ -3,6 +3,7 @@ package no.nav.helse
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import no.nav.helse.soknad.*
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.Næringstyper
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.OpptjeningType
 import no.nav.helse.soknad.domene.arbeid.*

@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.http.Request
 import io.ktor.http.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.junit.Assert
+import kotlin.test.assertContains
 
 class TestUtils {
     companion object {
@@ -29,11 +30,15 @@ class TestUtils {
             }
         }
 
-        internal fun MutableList<String>.validerFeil(antallFeil: Int) {
+        internal fun List<String>.verifiserFeil(antallFeil: Int, valideringsfeil: List<String> = listOf()) {
             Assert.assertEquals(antallFeil, this.size)
+
+            valideringsfeil.forEach {
+                assertContains(this, it)
+            }
         }
 
-        internal fun MutableList<String>.validerIngenFeil() {
+        internal fun List<String>.verifiserIngenFeil() {
             Assert.assertTrue(this.isEmpty())
         }
     }

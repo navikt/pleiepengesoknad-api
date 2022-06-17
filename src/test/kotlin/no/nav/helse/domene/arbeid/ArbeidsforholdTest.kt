@@ -1,6 +1,6 @@
 package no.nav.helse.domene.arbeid
 
-import no.nav.helse.TestUtils.Companion.validerFeil
+import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.k9.søknad.felles.type.Periode
@@ -33,7 +33,7 @@ class ArbeidsforholdTest {
                 type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
                 arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
             )
-        ).valider("test").validerFeil(2)
+        ).valider("test").verifiserFeil(2)
     }
 
     @Test
@@ -48,7 +48,7 @@ class ArbeidsforholdTest {
                 arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG,
                 enkeltdager = null
             )
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
