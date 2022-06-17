@@ -136,7 +136,7 @@ internal fun Søknad.validate() {
 
     violations.addAll(selvstendigNæringsdrivende.valider())
 
-    violations.addAll(utenlandskNæring.valider("utenlandskNæring").somViolation())
+    utenlandskNæring?.let { violations.addAll(utenlandskNæring.valider("utenlandskNæring").somViolation()) }
 
     violations.addAll(frilans.valider("frilans").somViolation())
 
