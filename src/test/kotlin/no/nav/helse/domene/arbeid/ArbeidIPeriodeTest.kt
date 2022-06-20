@@ -1,6 +1,6 @@
 package no.nav.helse.domene.arbeid
 
-import no.nav.helse.TestUtils.Companion.validerFeil
+import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.arbeid.*
 import java.time.DayOfWeek
@@ -22,7 +22,7 @@ class ArbeidIPeriodeTest {
             type = ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
             enkeltdager = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -31,7 +31,7 @@ class ArbeidIPeriodeTest {
             type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
             fasteDager = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -40,7 +40,7 @@ class ArbeidIPeriodeTest {
             type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
             prosentAvNormalt = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -49,7 +49,7 @@ class ArbeidIPeriodeTest {
             type = ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
             timerPerUke = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test

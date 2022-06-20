@@ -3,9 +3,7 @@ package no.nav.helse
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
-import no.nav.helse.soknad.domene.Frilans
-import no.nav.helse.soknad.domene.OpptjeningIUtlandet
-import no.nav.helse.soknad.domene.OpptjeningType
+import no.nav.helse.soknad.domene.*
 import no.nav.helse.soknad.domene.arbeid.*
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.Duration
@@ -213,6 +211,7 @@ internal class SerDesTest {
                   "tilOgMed": "2022-01-10"
                 }
               ],
+              "utenlandskNæring" : null,
               "harMedsøker": true,
               "harBekreftetOpplysninger": true,
               "harForståttRettigheterOgPlikter": true,
@@ -485,6 +484,19 @@ internal class SerDesTest {
                   }
                 ]
               },
+              "utenlandskNæring" : [
+                {
+                  "næringstype" : "JORDBRUK_SKOGBRUK",
+                  "navnPåVirksomheten" : "Flush AS",
+                  "land" : {
+                    "landkode" : "NLD",
+                    "landnavn" : "Nederland"
+                  },
+                  "identifikasjonsnummer" : "123ABC",
+                  "fraOgMed" : "2022-01-05",
+                  "tilOgMed" : null
+                }
+              ],
               "beredskap": {
                 "beredskap": true,
                 "tilleggsinformasjon": "Ikke beredskap"
@@ -638,6 +650,15 @@ internal class SerDesTest {
                     ),
                     fraOgMed = LocalDate.parse("2022-01-01"),
                     tilOgMed = LocalDate.parse("2022-01-10")
+                )
+            ),
+            utenlandskNæring = listOf(
+                UtenlandskNæring(
+                    næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
+                    navnPåVirksomheten = "Flush AS",
+                    land = Land("NLD", "Nederland"),
+                    identifikasjonsnummer = "123ABC",
+                    fraOgMed = LocalDate.parse("2022-01-05")
                 )
             ),
             utenlandsoppholdIPerioden = UtenlandsoppholdIPerioden(

@@ -1,7 +1,11 @@
 package no.nav.helse
 
 import no.nav.helse.dusseldorf.ktor.core.Violation
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Land
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.domene.Næringstyper
+import no.nav.helse.soknad.validate
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals

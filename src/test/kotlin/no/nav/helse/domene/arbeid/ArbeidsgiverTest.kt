@@ -1,6 +1,6 @@
 package no.nav.helse.domene.arbeid
 
-import no.nav.helse.TestUtils.Companion.validerFeil
+import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.soknad.Arbeidsgiver
 import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.k9.søknad.felles.type.Periode
@@ -37,7 +37,7 @@ class ArbeidsgiverTest {
                     fasteDager = null
                 )
             )
-        ).valider("test").validerFeil(3)
+        ).valider("test").verifiserFeil(3)
     }
 
     @Test
@@ -89,7 +89,7 @@ class ArbeidsgiverTest {
             organisasjonsnummer = "977155436",
             erAnsatt = false,
             arbeidsforhold = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -99,7 +99,7 @@ class ArbeidsgiverTest {
             organisasjonsnummer = "IKKE GYLDIG",
             erAnsatt = false,
             arbeidsforhold = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
 }

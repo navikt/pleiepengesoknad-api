@@ -6,6 +6,7 @@ import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
+import no.nav.helse.soknad.domene.UtenlandskNæring
 import no.nav.k9.søknad.Søknad
 import java.net.URL
 import java.time.LocalDate
@@ -31,6 +32,7 @@ data class Søknad(
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
     val opptjeningIUtlandet: List<OpptjeningIUtlandet> = listOf(),
+    val utenlandskNæring: List<UtenlandskNæring>? = null, // TODO: 17/06/2022 Fjerne nullable når frontend er prodsatt
     val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,
@@ -66,6 +68,7 @@ data class Søknad(
         medlemskap = medlemskap,
         ferieuttakIPerioden = ferieuttakIPerioden,
         opptjeningIUtlandet = opptjeningIUtlandet,
+        utenlandskNæring = utenlandskNæring,
         utenlandsoppholdIPerioden = utenlandsoppholdIPerioden,
         harMedsøker = harMedsøker!!,
         samtidigHjemme = samtidigHjemme,
@@ -89,12 +92,12 @@ private fun List<Barn>.hentIdentitetsnummerForBarn(aktørId: String?): String? {
     return this.firstOrNull(){ it.aktørId == aktørId}?.identitetsnummer
 }
 
-enum class BarnRelasjon(val utskriftsvennlig: String) {
-    MOR("MOR"),
-    MEDMOR("MEDMOR"),
-    FAR("FAR"),
-    FOSTERFORELDER("FOSTERFORELDER"),
-    ANNET("ANNET")
+enum class BarnRelasjon {
+    MOR,
+    MEDMOR,
+    FAR,
+    FOSTERFORELDER,
+    ANNET
 }
 
 data class Medlemskap(

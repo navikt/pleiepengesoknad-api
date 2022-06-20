@@ -3,6 +3,7 @@ package no.nav.helse.soknad
 import com.fasterxml.jackson.annotation.JsonFormat
 import no.nav.helse.dusseldorf.ktor.core.ParameterType
 import no.nav.helse.dusseldorf.ktor.core.Violation
+import no.nav.helse.soknad.domene.Næringstyper
 import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidInfo
 import java.time.LocalDate
@@ -38,13 +39,6 @@ data class Virksomhet(
 data class YrkesaktivSisteTreFerdigliknedeÅrene(
     val oppstartsdato: LocalDate
 )
-
-enum class Næringstyper {
-    FISKE,
-    JORDBRUK_SKOGBRUK,
-    DAGMAMMA,
-    ANNEN
-}
 
 data class VarigEndring(
     @JsonFormat(pattern = "yyyy-MM-dd")

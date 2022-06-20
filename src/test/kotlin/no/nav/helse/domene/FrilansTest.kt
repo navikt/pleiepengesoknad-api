@@ -1,7 +1,7 @@
 package no.nav.helse.domene
 
-import no.nav.helse.TestUtils.Companion.validerFeil
-import no.nav.helse.TestUtils.Companion.validerIngenFeil
+import no.nav.helse.TestUtils.Companion.verifiserFeil
+import no.nav.helse.TestUtils.Companion.verifiserIngenFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.arbeid.*
@@ -66,7 +66,7 @@ class FrilansTest {
                     fasteDager = null
                 )
             )
-        ).valider("test").validerFeil(3)
+        ).valider("test").verifiserFeil(3)
     }
 
     @Test
@@ -77,7 +77,7 @@ class FrilansTest {
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
-        ).valider("test").validerFeil(1)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -88,7 +88,7 @@ class FrilansTest {
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
-        ).valider("test").validerIngenFeil()
+        ).valider("test").verifiserIngenFeil()
     }
 
     @Test
@@ -99,7 +99,7 @@ class FrilansTest {
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
-        ).valider("test").validerIngenFeil()
+        ).valider("test").verifiserIngenFeil()
     }
 
     @Test
@@ -110,7 +110,7 @@ class FrilansTest {
             jobberFortsattSomFrilans = null,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
-        ).valider("test").validerFeil(2)
+        ).valider("test").verifiserFeil(2)
     }
 
     @Test

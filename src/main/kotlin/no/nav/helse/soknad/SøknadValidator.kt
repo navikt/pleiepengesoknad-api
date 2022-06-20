@@ -5,6 +5,7 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.general.somViolation
+import no.nav.helse.soknad.domene.UtenlandskNæring.Companion.valider
 import no.nav.helse.soknad.domene.valider
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
 import java.time.LocalDate
@@ -134,6 +135,8 @@ internal fun Søknad.validate() {
     violations.addAll(arbeidsgivere.validate())
 
     violations.addAll(selvstendigNæringsdrivende.valider())
+
+    utenlandskNæring?.let { violations.addAll(utenlandskNæring.valider("utenlandskNæring").somViolation()) }
 
     violations.addAll(frilans.valider("frilans").somViolation())
 
