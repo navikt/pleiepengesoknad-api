@@ -2,8 +2,8 @@ package no.nav.helse
 
 import com.github.tomakehurst.wiremock.http.Cookie
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.*
 import io.ktor.http.*
+import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import no.nav.helse.TestUtils.Companion.issueToken
 import no.nav.helse.arbeidsgiver.orgQueryName
@@ -12,14 +12,36 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.domene.Næringstyper
-import no.nav.helse.soknad.domene.arbeid.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
+import no.nav.helse.wiremock.K9BrukerdialogCacheResponseTransformer
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9BrukerdialogCache
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubSifInnsynApi
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -1378,6 +1400,11 @@ class ApplicationTest {
 
     @Nested
     inner class MellomlagringApisTest {
+
+        @BeforeEach
+        fun beforeEeach(){
+            K9BrukerdialogCacheResponseTransformer.mellomlagredeVerdierCache.clear()
+        }
         @Test
         fun `gitt to mellomlagrede verdier på samme person, fovent at begge mellomlagres, og de ikke overskriver hverandre`() {
 

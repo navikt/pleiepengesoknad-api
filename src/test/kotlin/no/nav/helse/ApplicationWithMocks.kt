@@ -3,7 +3,13 @@ package no.nav.helse
 import io.ktor.server.testing.*
 import no.nav.helse.dusseldorf.testsupport.asArguments
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
-import no.nav.helse.wiremock.*
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubOppslagHealth
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -45,7 +51,7 @@ class ApplicationWithMocks {
                 }
             })
 
-            withApplication { no.nav.helse.main(testArgs) }
+            testApplication { no.nav.helse.main(testArgs) }
         }
     }
 }

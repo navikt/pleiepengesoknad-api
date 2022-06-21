@@ -226,7 +226,7 @@ class K9BrukerdialogCacheGateway(
         ) { httpRequest.awaitStringResponseResult() }
 
         return result.fold(
-            { success ->
+            { _ ->
                 logger.info("Suksess ved sletting av mellomlagret søknad")
                 true
             },

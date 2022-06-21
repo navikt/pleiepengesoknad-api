@@ -1,16 +1,17 @@
 package no.nav.helse.mellomlagring
 
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import no.nav.helse.ENDRINGSMELDING_MELLOMLAGRING_URL
 import no.nav.helse.MELLOMLAGRING_URL
 import no.nav.helse.dusseldorf.ktor.auth.IdTokenProvider
 import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.respondProblemDetails
 import no.nav.helse.soknad.hentIdTokenOgCallId
+import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.net.URI
 
@@ -45,12 +46,12 @@ fun Route.mellomlagringApis(
         val mellomlagringPrefix = MellomlagringPrefix.SØKNAD
 
         post {
-            val midlertidigSøknad = call.receive<String>()
+            val midlertidigSøknad = call.receive<Map<*, *>>()
             val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
             try {
                 mellomlagringService.setMellomlagring(
                     mellomlagringPrefix = mellomlagringPrefix,
-                    verdi = midlertidigSøknad,
+                    verdi = JSONObject(midlertidigSøknad).toString(),
                     idToken = idToken,
                     callId = callId
                 )
@@ -61,14 +62,14 @@ fun Route.mellomlagringApis(
         }
 
         put {
-            val midlertidigSøknad = call.receive<String>()
+            val midlertidigSøknad = call.receive<Map<*, *>>()
             val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
             try {
                 mellomlagringService.updateMellomlagring(
                     mellomlagringPrefix = mellomlagringPrefix,
                     idToken = idToken,
                     callId = callId,
-                    verdi = midlertidigSøknad
+                    verdi = JSONObject(midlertidigSøknad).toString()
                 )
                 call.respond(HttpStatusCode.NoContent)
             } catch (e: CacheNotFoundException) {
@@ -114,12 +115,12 @@ fun Route.mellomlagringApis(
 
         post {
 
-            val midlertidigEndringsmelding = call.receive<String>()
+            val midlertidigEndringsmelding = call.receive<Map<*, *>>()
             val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
             try {
                 mellomlagringService.setMellomlagring(
                     mellomlagringPrefix = mellomlagringPrefix,
-                    verdi = midlertidigEndringsmelding,
+                    verdi = JSONObject(midlertidigEndringsmelding).toString(),
                     idToken = idToken,
                     callId = callId
                 )
@@ -131,13 +132,13 @@ fun Route.mellomlagringApis(
         }
 
         put {
-            val midlertidigEndringsmelding = call.receive<String>()
+            val midlertidigEndringsmelding = call.receive<Map<*, *>>()
             val (idToken, callId) = call.hentIdTokenOgCallId(idTokenProvider)
             mellomlagringService.updateMellomlagring(
                 mellomlagringPrefix = mellomlagringPrefix,
                 idToken = idToken,
                 callId = callId,
-                verdi = midlertidigEndringsmelding
+                verdi = JSONObject(midlertidigEndringsmelding).toString()
             )
             call.respond(HttpStatusCode.NoContent)
         }

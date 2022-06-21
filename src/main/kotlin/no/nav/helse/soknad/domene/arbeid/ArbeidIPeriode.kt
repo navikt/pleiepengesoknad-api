@@ -2,7 +2,10 @@ package no.nav.helse.soknad.domene.arbeid
 
 import no.nav.helse.general.kreverIkkeNull
 import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.DayOfWeek
@@ -24,6 +27,7 @@ class ArbeidIPeriode(
             ARBEIDER_FASTE_UKEDAGER -> kreverIkkeNull(fasteDager, "$felt.fasteDager må være satt dersom type=ARBEIDER_FASTE_UKEDAGER")
             ARBEIDER_PROSENT_AV_NORMALT -> kreverIkkeNull(prosentAvNormalt, "$felt.prosentAvNormalt må være satt dersom type=ARBEIDER_PROSENT_AV_NORMALT")
             ARBEIDER_TIMER_I_SNITT_PER_UKE -> kreverIkkeNull(timerPerUke, "$felt.timerPerUke må være satt dersom type=ARBEIDER_TIMER_I_SNITT_PER_UKE")
+            else -> {}
         }
     }
 
