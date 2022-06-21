@@ -21,7 +21,7 @@ import java.time.ZonedDateTime
 
 class K9BrukerdialogCacheResponseTransformer() : ResponseTransformer() {
 
-    private companion object {
+    companion object {
         private val logger = LoggerFactory.getLogger(K9BrukerdialogCacheResponseTransformer::class.java)
         val mellomlagredeVerdierCache = mutableMapOf<String, Cache>()
         val objectMapper = jacksonObjectMapper().pleiepengesøknadKonfigurert()
