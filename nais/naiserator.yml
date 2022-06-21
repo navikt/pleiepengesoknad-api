@@ -55,6 +55,7 @@ spec:
         - application: k9-mellomlagring
         - application: k9-brukerdialog-cache
         - application: k9-selvbetjening-oppslag
+        - application: sif-innsyn-api
       external:
       {{#each externalHosts as |host|}}
           - host: {{host }}
