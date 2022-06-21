@@ -17,7 +17,6 @@ import no.nav.helse.soker.Søker
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soknad.hentIdTokenOgCallId
 import no.nav.helse.soknad.vedleggId
-import no.nav.helse.somJson
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -121,8 +120,7 @@ fun Route.vedleggApis(
         }
 
         if(vedleggSomIkkeFinnes.size > 0) logger.info("Fant ikke ${vedleggSomIkkeFinnes.size} vedlegg")
-        val somJson = VedleggListe(vedleggSomIkkeFinnes).somJson()
-        call.respondBytes(somJson.toByteArray(), contentType = ContentType.Application.Json, HttpStatusCode.OK)
+        call.respond(VedleggListe(vedleggSomIkkeFinnes))
     }
 }
 
