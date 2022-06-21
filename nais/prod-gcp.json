@@ -15,14 +15,11 @@
     "login.microsoftonline.com"
   ],
   "env": {
-    "REDIS_HOST": "pleiepengesoknad-api-redis",
     "CORS_ADDRESSES": "https://pleiepengesoknad.nav.no,https://www.nav.no",
-    "LOGIN_SERVICE_V1_DISCOVERY_ENDPOINT": "https://login.microsoftonline.com/navnob2c.onmicrosoft.com/discovery/v2.0/.well-known/openid-configuration?p=b2c_1a_idporten",
     "COOKIE_NAME": "selvbetjening-idtoken",
     "K9_OPPSLAG_REGISTER_URL": "http://k9-selvbetjening-oppslag",
-    "SIF_INNSYN_API_URL": "https://sif-innsyn-api.nav.no",
+    "SIF_INNSYN_API_URL": "http://sif-innsyn-api",
     "K9_MELLOMLAGRING_SERVICE_DISCOVERY": "http://k9-mellomlagring",
-    "K9_MELLOMLAGRING_INGRESS": "https://k9-mellomlagring.intern.nav.no/v1/dokument",
     "K9_MELLOMLAGRING_CLIENT_ID": "19aaf0b2-f40a-4a64-bf7f-fd2dd62f0552/.default",
     "K9_BRUKERDIALOG_CACHE_URL": "http://k9-brukerdialog-cache",
     "K9_BRUKERDIALOG_CACHE_TOKENX_AUDIENCE": "prod-gcp:dusseldorf:k9-brukerdialog-cache"
