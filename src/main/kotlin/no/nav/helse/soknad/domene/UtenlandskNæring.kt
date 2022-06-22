@@ -13,8 +13,8 @@ class UtenlandskNæring(
     val tilOgMed: LocalDate? = null
 ) {
     companion object {
-        internal fun List<UtenlandskNæring>.valider(felt: String) = this.flatMapIndexed { index, bosted ->
-            bosted.valider("$felt[$index]")
+        internal fun List<UtenlandskNæring>.valider(felt: String) = this.flatMapIndexed { index, utenlandskNæring ->
+            utenlandskNæring.valider("$felt[$index]")
         }
     }
 
