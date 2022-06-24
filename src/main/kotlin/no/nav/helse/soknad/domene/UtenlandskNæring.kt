@@ -8,7 +8,7 @@ class UtenlandskNæring(
     val næringstype: Næringstyper,
     val navnPåVirksomheten: String,
     val land: Land,
-    val identifikasjonsnummer: String,
+    val organisasjonsnummer: String,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate? = null
 ) {
@@ -24,7 +24,7 @@ class UtenlandskNæring(
     }
 
     override fun equals(other: Any?) = other === this || other is UtenlandskNæring && this.equals(other)
-    private fun equals(other: UtenlandskNæring) = this.identifikasjonsnummer == other.identifikasjonsnummer && this.navnPåVirksomheten == other.navnPåVirksomheten
+    private fun equals(other: UtenlandskNæring) = this.organisasjonsnummer == other.organisasjonsnummer && this.navnPåVirksomheten == other.navnPåVirksomheten
 }
 
 internal fun LocalDate.erLikEllerEtter(tilOgMedDato: LocalDate) = this.isEqual(tilOgMedDato) || this.isAfter(tilOgMedDato)

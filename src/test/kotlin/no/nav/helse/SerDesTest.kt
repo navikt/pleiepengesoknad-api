@@ -492,7 +492,7 @@ internal class SerDesTest {
                     "landkode" : "NLD",
                     "landnavn" : "Nederland"
                   },
-                  "identifikasjonsnummer" : "123ABC",
+                  "organisasjonsnummer" : "123ABC",
                   "fraOgMed" : "2022-01-05",
                   "tilOgMed" : null
                 }
@@ -657,7 +657,7 @@ internal class SerDesTest {
                     næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
                     navnPåVirksomheten = "Flush AS",
                     land = Land("NLD", "Nederland"),
-                    identifikasjonsnummer = "123ABC",
+                    organisasjonsnummer = "123ABC",
                     fraOgMed = LocalDate.parse("2022-01-05")
                 )
             ),

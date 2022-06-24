@@ -17,7 +17,7 @@ class UtenlandskNæringTest {
             næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
             navnPåVirksomheten = "Flush AS",
             land = Land("NLD", "Nederland"),
-            identifikasjonsnummer = "123ABC",
+            organisasjonsnummer = "123ABC",
             fraOgMed = LocalDate.parse("2022-01-01"),
             tilOgMed = LocalDate.parse("2022-03-01")
         ).valider("utenlandskNæring[0]").verifiserIngenFeil()
@@ -29,7 +29,7 @@ class UtenlandskNæringTest {
             næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
             navnPåVirksomheten = "Flush AS",
             land = Land("ABC", " "),
-            identifikasjonsnummer = "123ABC",
+            organisasjonsnummer = "123ABC",
             fraOgMed = LocalDate.parse("2022-01-01"),
             tilOgMed = LocalDate.parse("2022-03-01")
         ).valider("utenlandskNæring[0]").verifiserFeil(2,
@@ -46,7 +46,7 @@ class UtenlandskNæringTest {
             næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
             navnPåVirksomheten = "Flush AS",
             land = Land("NLD", "Nederland"),
-            identifikasjonsnummer = "123ABC",
+            organisasjonsnummer = "123ABC",
             fraOgMed = LocalDate.parse("2022-01-05"),
             tilOgMed = LocalDate.parse("2022-01-01")
         ).valider("utenlandskNæring[0]").verifiserFeil(1,
@@ -61,7 +61,7 @@ class UtenlandskNæringTest {
                 næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
                 navnPåVirksomheten = "Flush AS",
                 land = Land("CBA", "Nederland"),
-                identifikasjonsnummer = "123ABC",
+                organisasjonsnummer = "123ABC",
                 fraOgMed = LocalDate.parse("2022-01-01"),
                 tilOgMed = LocalDate.parse("2022-01-03")
             ),
@@ -69,7 +69,7 @@ class UtenlandskNæringTest {
                 næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
                 navnPåVirksomheten = "Flush AS",
                 land = Land("ABC", "Nederland"),
-                identifikasjonsnummer = "123ABC",
+                organisasjonsnummer = "123ABC",
                 fraOgMed = LocalDate.parse("2022-01-05")
             )
         ).valider("utenlandskNæring").verifiserFeil(2,
