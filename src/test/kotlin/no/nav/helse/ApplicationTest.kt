@@ -12,31 +12,10 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
-import no.nav.helse.soknad.BarnDetaljer
-import no.nav.helse.soknad.Ferieuttak
-import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.Regnskapsfører
-import no.nav.helse.soknad.SelvstendigNæringsdrivende
-import no.nav.helse.soknad.Virksomhet
-import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.*
 import no.nav.helse.soknad.domene.Næringstyper
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
-import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
-import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
-import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
-import no.nav.helse.wiremock.K9BrukerdialogCacheResponseTransformer
-import no.nav.helse.wiremock.pleiepengesoknadApiConfig
-import no.nav.helse.wiremock.stubK9BrukerdialogCache
-import no.nav.helse.wiremock.stubK9Mellomlagring
-import no.nav.helse.wiremock.stubK9MellomlagringHealth
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
-import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
-import no.nav.helse.wiremock.stubK9OppslagBarn
-import no.nav.helse.wiremock.stubK9OppslagSoker
-import no.nav.helse.wiremock.stubOppslagHealth
-import no.nav.helse.wiremock.stubSifInnsynApi
+import no.nav.helse.soknad.domene.arbeid.*
+import no.nav.helse.wiremock.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
@@ -1063,6 +1042,8 @@ class ApplicationTest {
                     "$jpegUrl"
                   ],
                   "harMedsøker": false,
+                  "opptjeningIUtlandet": [],
+                  "utenlandskNæring": [],
                   "harBekreftetOpplysninger": true,
                   "harForståttRettigheterOgPlikter": true,
                   "utenlandsoppholdIPerioden" : 

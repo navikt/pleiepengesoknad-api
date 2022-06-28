@@ -31,8 +31,8 @@ data class Søknad(
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
     val ferieuttakIPerioden: FerieuttakIPerioden?,
-    val opptjeningIUtlandet: List<OpptjeningIUtlandet> = listOf(),
-    val utenlandskNæring: List<UtenlandskNæring>? = null, // TODO: 17/06/2022 Fjerne nullable når frontend er prodsatt
+    val opptjeningIUtlandet: List<OpptjeningIUtlandet>,
+    val utenlandskNæring: List<UtenlandskNæring>,
     val harMedsøker: Boolean? = null,
     val samtidigHjemme: Boolean? = null,
     val harForståttRettigheterOgPlikter: Boolean,

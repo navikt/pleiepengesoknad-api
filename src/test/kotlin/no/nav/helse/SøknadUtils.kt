@@ -232,6 +232,7 @@ class SøknadUtils {
                     tilOgMed = LocalDate.parse("2022-01-10")
                 )
             ),
+            utenlandskNæring = listOf(),
             harVærtEllerErVernepliktig = true
         )
     }
