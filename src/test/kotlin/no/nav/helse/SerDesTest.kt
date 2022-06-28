@@ -211,7 +211,7 @@ internal class SerDesTest {
                   "tilOgMed": "2022-01-10"
                 }
               ],
-              "utenlandskNæring" : null,
+              "utenlandskNæring" : [],
               "harMedsøker": true,
               "harBekreftetOpplysninger": true,
               "harForståttRettigheterOgPlikter": true,

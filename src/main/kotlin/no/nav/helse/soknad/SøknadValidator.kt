@@ -130,14 +130,10 @@ internal fun SelvstendigNæringsdrivende.valider(): Set<Violation> {
 internal fun Søknad.validate() {
     val violations = barn.validate()
 
-    violations.addAll(opptjeningIUtlandet.valider())
-
     violations.addAll(arbeidsgivere.validate())
-
     violations.addAll(selvstendigNæringsdrivende.valider())
-
-    utenlandskNæring?.let { violations.addAll(utenlandskNæring.valider("utenlandskNæring").somViolation()) }
-
+    violations.addAll(opptjeningIUtlandet.valider())
+    violations.addAll(utenlandskNæring.valider("utenlandskNæring").somViolation())
     violations.addAll(frilans.valider("frilans").somViolation())
 
     omsorgstilbud?.apply { violations.addAll(this.validate()) }

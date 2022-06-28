@@ -107,6 +107,7 @@ class SoknadValidationTest {
                 tilOgMed = LocalDate.parse("2022-01-10")
             )
         ),
+        utenlandskNæring = listOf(),
         arbeidsgivere = listOf(
             Arbeidsgiver(
                 navn = "Org",
