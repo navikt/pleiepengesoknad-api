@@ -110,9 +110,7 @@ internal class SerDesTest {
               "selvstendigNæringsdrivende": {
                 "harInntektSomSelvstendig": true,
                 "virksomhet": {
-                  "næringstyper": [
-                    "ANNEN"
-                  ],
+                  "næringstype":"ANNEN",
                   "fiskerErPåBladB": false,
                   "fraOgMed": "2020-01-01",
                   "tilOgMed": null,
@@ -356,9 +354,7 @@ internal class SerDesTest {
               "selvstendigNæringsdrivende": {
                 "harInntektSomSelvstendig": true,
                 "virksomhet": {
-                  "næringstyper": [
-                    "ANNEN"
-                  ],
+                  "næringstype": "ANNEN",
                   "fiskerErPåBladB": false,
                   "fraOgMed": "2020-01-01",
                   "tilOgMed": null,
@@ -579,7 +575,7 @@ internal class SerDesTest {
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                 harInntektSomSelvstendig = true,
                 virksomhet = Virksomhet(
-                    næringstyper = listOf(Næringstyper.ANNEN),
+                    næringstype = Næringstyper.ANNEN,
                     fiskerErPåBladB = false,
                     fraOgMed = LocalDate.parse("2020-01-01"),
                     næringsinntekt = 1111,

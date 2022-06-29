@@ -20,7 +20,7 @@ data class SelvstendigNæringsdrivende(
 }
 
 data class Virksomhet(
-    val næringstyper: List<Næringstyper> = listOf(),
+    val næringstype: Næringstyper,
     val fiskerErPåBladB: Boolean,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,

@@ -3,14 +3,12 @@ package no.nav.helse.k9format
 import no.nav.helse.soknad.Søknad
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.domene.Frilans
-import no.nav.helse.soknad.domene.Næringstyper
 import no.nav.k9.søknad.felles.opptjening.Frilanser
 import no.nav.k9.søknad.felles.opptjening.OpptjeningAktivitet
 import no.nav.k9.søknad.felles.opptjening.SelvstendigNæringsdrivende
 import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.Organisasjonsnummer
 import no.nav.k9.søknad.felles.type.Periode
-import no.nav.k9.søknad.felles.type.VirksomhetType
 import java.time.LocalDate
 
 fun Double.tilTimerPerDag() = this.div(DAGER_PER_UKE)
@@ -53,7 +51,7 @@ fun no.nav.helse.soknad.SelvstendigNæringsdrivende.tilK9SelvstendigNæringsdriv
 internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo {
     val infoBuilder = SelvstendigNæringsdrivende.SelvstendigNæringsdrivendePeriodeInfo()
     infoBuilder
-        .medVirksomhetstyper(næringstyper.tilK9VirksomhetType())
+        .medVirksomhetstyper(listOf(næringstype.tilK9VirksomhetType()))
 
     if (registrertINorge) {
         infoBuilder
@@ -98,15 +96,4 @@ internal fun Virksomhet.tilK9SelvstendingNæringsdrivendeInfo(): SelvstendigNær
     return infoBuilder
 }
 
-private fun Virksomhet.erEldreEnn3År() =
-    fraOgMed.isBefore(LocalDate.now().minusYears(3)) || fraOgMed.isEqual(LocalDate.now().minusYears(3))
-
-
-internal fun List<Næringstyper>.tilK9VirksomhetType(): List<VirksomhetType> = map {
-    when (it) {
-        Næringstyper.FISKE -> VirksomhetType.FISKE
-        Næringstyper.JORDBRUK_SKOGBRUK -> VirksomhetType.JORDBRUK_SKOGBRUK
-        Næringstyper.DAGMAMMA -> VirksomhetType.DAGMAMMA
-        Næringstyper.ANNEN -> VirksomhetType.ANNEN
-    }
-}
+private fun Virksomhet.erEldreEnn3År() = fraOgMed.isBefore(LocalDate.now().minusYears(3)) || fraOgMed.isEqual(LocalDate.now().minusYears(3))

@@ -81,9 +81,7 @@ POST @ /soknad -> 202 Response
   },
   "selvstendigVirksomheter": [
     {
-      "næringstyper": [
-        "ANNEN"
-      ],
+      "næringstype": "ANNEN",
       "fiskerErPåBladB": false,
       "organisasjonsnummer": null,
       "fraOgMed": "2020-01-01",

@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 class VirksomhetTest {
 
     val gyldigVirksomhet = Virksomhet(
-        næringstyper = listOf(Næringstyper.ANNEN),
+        næringstype = Næringstyper.ANNEN,
         fiskerErPåBladB = false,
         fraOgMed = LocalDate.now().minusDays(1),
         tilOgMed = LocalDate.now(),

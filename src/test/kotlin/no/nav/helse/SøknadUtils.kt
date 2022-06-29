@@ -72,7 +72,7 @@ class SøknadUtils {
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                 harInntektSomSelvstendig = true,
                 virksomhet = Virksomhet(
-                    næringstyper = listOf(Næringstyper.ANNEN),
+                    næringstype = Næringstyper.ANNEN,
                     fiskerErPåBladB = false,
                     fraOgMed = LocalDate.parse("2020-01-01"),
                     næringsinntekt = 1111,

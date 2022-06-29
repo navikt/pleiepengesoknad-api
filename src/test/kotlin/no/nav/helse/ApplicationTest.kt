@@ -868,7 +868,7 @@ class ApplicationTest {
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                 harInntektSomSelvstendig = true,
                 Virksomhet(
-                    næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
+                    næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
                     fiskerErPåBladB = false,
                     fraOgMed = LocalDate.now().minusDays(1),
                     tilOgMed = LocalDate.now(),
@@ -950,7 +950,7 @@ class ApplicationTest {
                 selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                     harInntektSomSelvstendig = true,
                     virksomhet = Virksomhet(
-                        næringstyper = listOf(Næringstyper.JORDBRUK_SKOGBRUK),
+                        næringstype = Næringstyper.JORDBRUK_SKOGBRUK,
                         fiskerErPåBladB = false,
                         fraOgMed = LocalDate.parse("2021-02-07"),
                         tilOgMed = LocalDate.parse("2021-02-08"),

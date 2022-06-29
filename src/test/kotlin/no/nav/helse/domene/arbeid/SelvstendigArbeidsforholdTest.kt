@@ -29,7 +29,7 @@ class SelvstendigArbeidsforholdTest {
         val selvstendig = SelvstendigNæringsdrivende(
             harInntektSomSelvstendig = true,
             virksomhet = Virksomhet(
-                næringstyper = listOf(JORDBRUK_SKOGBRUK),
+                næringstype = JORDBRUK_SKOGBRUK,
                 fiskerErPåBladB = false,
                 fraOgMed = LocalDate.parse("2021-02-07"),
                 næringsinntekt = 1233123,
