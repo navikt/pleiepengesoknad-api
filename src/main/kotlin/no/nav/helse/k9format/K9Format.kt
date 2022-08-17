@@ -46,9 +46,13 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
     beredskap?.let { if (it.beredskap) psb.medBeredskap(beredskap.tilK9Beredskap(søknadsperiode)) }
     nattevåk?.let { if (it.harNattevåk == true) psb.medNattevåk(nattevåk.tilK9Nattevåk(søknadsperiode)) }
 
-    when {
-        omsorgstilbud != null -> psb.medTilsynsordning(omsorgstilbud.tilK9Tilsynsordning(søknadsperiode))
-        else -> psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
+    if (omsorgstilbud?.svar != null) { // TODO: 17/08/2022 Refaktor etter at svar er prodsatt i frontend.
+        psb.medTilsynsordning(omsorgstilbud.tilK9Tilsynsordning(søknadsperiode))
+    } else {
+        when {
+            omsorgstilbud != null -> psb.medTilsynsordning(omsorgstilbud.tilK9Tilsynsordning(søknadsperiode))
+            else -> psb.medTilsynsordning(tilK9Tilsynsordning0Timer(søknadsperiode))
+        }
     }
 
     ferieuttakIPerioden?.let {
