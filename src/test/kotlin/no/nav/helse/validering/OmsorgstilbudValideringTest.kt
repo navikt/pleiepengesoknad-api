@@ -3,6 +3,7 @@ package no.nav.helse.validering
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.Enkeltdag
 import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.OmsorgstilbudSvar.JA
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.validate
 import java.time.Duration
@@ -13,6 +14,7 @@ import kotlin.test.assertTrue
 
 class OmsorgstilbudValideringTest {
     val gyldigOmsorgstilbud = Omsorgstilbud(
+        svar = JA,
         erLiktHverUke = true,
         ukedager = PlanUkedager(
             mandag = Duration.ofHours(3)
