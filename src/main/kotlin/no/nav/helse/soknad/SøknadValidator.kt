@@ -5,6 +5,7 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.general.somViolation
+import no.nav.helse.soknad.OmsorgstilbudSvar.JA
 import no.nav.helse.soknad.domene.UtenlandskNæring.Companion.valider
 import no.nav.helse.soknad.domene.valider
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
@@ -376,22 +377,23 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
 }
 
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
+    if(svar != null){
+        if(svar == JA && ukedager == null && enkeltdager == null){
+            add(
+                Violation(
+                    parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ved svar=JA kan ikke både enkeltdager og ukedager være null."
+                )
+            )
+        }
+    }
     if (!enkeltdager.isNullOrEmpty() && ukedager != null){
         add(
             Violation(
                 parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
                 parameterType = ParameterType.ENTITY,
                 reason = "Kan ikke ha både enkeltdager og ukedager satt, må velge en av de."
-            )
-        )
-    }
-
-    if (enkeltdager == null && ukedager == null ){
-        add(
-            Violation(
-                parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
-                parameterType = ParameterType.ENTITY,
-                reason = "Kan ikke ha både enkeldager og ukedager som null, en må være satt."
             )
         )
     }

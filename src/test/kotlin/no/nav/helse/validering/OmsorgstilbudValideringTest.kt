@@ -4,6 +4,7 @@ import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.Enkeltdag
 import no.nav.helse.soknad.Omsorgstilbud
 import no.nav.helse.soknad.OmsorgstilbudSvar.JA
+import no.nav.helse.soknad.OmsorgstilbudSvar.USIKKER
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.validate
 import java.time.Duration
@@ -28,6 +29,20 @@ class OmsorgstilbudValideringTest {
     }
 
     @Test
+    fun `Skal gi feil dersom svar=JA og både ukedager og enkeldager er null`() {
+        gyldigOmsorgstilbud.copy(
+            svar = JA,
+            ukedager = null,
+            enkeltdager = null
+        ).validate().assertFeilPå(
+            listOf(
+                "Ved svar=JA kan ikke både enkeltdager og ukedager være null.",
+                "Hvis erLiktHverUke er true må ukedager være satt."
+            )
+        )
+    }
+
+    @Test
     fun `Skal gi feil dersom både ukedager og enkeldager er satt`() {
         gyldigOmsorgstilbud.copy(
             ukedager = PlanUkedager(
@@ -43,28 +58,15 @@ class OmsorgstilbudValideringTest {
     }
 
     @Test
-    fun `Skal gi feil dersom både ukedager og enkeldager er null`() {
-        gyldigOmsorgstilbud.copy(
-            ukedager = null,
-            enkeltdager = null
-        ).validate().assertFeilPå(
-            listOf(
-                "Kan ikke ha både enkeldager og ukedager som null, en må være satt.",
-                "Hvis erLiktHverUke er true må ukedager være satt."
-            )
-        )
-    }
-
-    @Test
     fun `Skal gi feil dersom erLiktHverUke er true og ukedager er null`() {
         gyldigOmsorgstilbud.copy(
+            svar = USIKKER,
             erLiktHverUke = true,
             ukedager = null,
             enkeltdager = null
         ).validate().assertFeilPå(
             listOf(
-                "Hvis erLiktHverUke er true må ukedager være satt.",
-                "Kan ikke ha både enkeldager og ukedager som null, en må være satt."
+                "Hvis erLiktHverUke er true må ukedager være satt."
             )
         )
     }
