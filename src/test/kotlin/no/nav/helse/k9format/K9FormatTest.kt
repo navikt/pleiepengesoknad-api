@@ -3,6 +3,7 @@ package no.nav.helse.k9format
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
+import no.nav.helse.soknad.OmsorgstilbudSvar.JA
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -259,6 +260,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
+            svar = JA,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(5),

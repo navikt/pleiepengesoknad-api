@@ -378,7 +378,7 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
 
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
     if(svar != null){
-        if(svar == JA && ukedager == null && enkeltdager == null){
+        if(svar == JA && ukedager == null && enkeltdager.isNullOrEmpty()){
             add(
                 Violation(
                     parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
