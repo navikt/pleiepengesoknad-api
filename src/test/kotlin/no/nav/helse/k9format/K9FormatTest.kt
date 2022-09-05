@@ -3,7 +3,6 @@ package no.nav.helse.k9format
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.*
-import no.nav.helse.soknad.OmsorgstilbudSvar.JA
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -35,6 +34,7 @@ class K9FormatTest {
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
+                svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
                 enkeltdager = null,
                 erLiktHverUke = true,
                 ukedager = PlanUkedager(
@@ -260,7 +260,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            svar = JA,
+            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(5),
@@ -304,6 +304,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
         val k9Tilsynsordning = Omsorgstilbud(
+            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(5),
@@ -344,6 +345,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
+            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(5),
@@ -405,6 +407,7 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
         val k9Tilsynsordning = Omsorgstilbud(
+            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(10),
@@ -448,6 +451,7 @@ class K9FormatTest {
     @Test
     fun `gitt omsorgstilbud med 4 enkeltdager, forvent riktig mapping`() {
         val tilsynsordning = Omsorgstilbud(
+            svar = OmsorgstilbudSvar.DELVIS_FAST_OG_REGELMESSIG,
             erLiktHverUke = false,
             enkeltdager = listOf(
                 Enkeltdag(
@@ -475,6 +479,7 @@ class K9FormatTest {
     @Test
     fun `Omsorgstilbud med ukedager blir som forventet k9format`(){
         val tilsynsordning = Omsorgstilbud(
+            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
             erLiktHverUke = true,
             enkeltdager = null,
             ukedager = PlanUkedager(

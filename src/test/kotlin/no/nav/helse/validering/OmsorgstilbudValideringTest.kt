@@ -3,8 +3,7 @@ package no.nav.helse.validering
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.soknad.Enkeltdag
 import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.OmsorgstilbudSvar.JA
-import no.nav.helse.soknad.OmsorgstilbudSvar.USIKKER
+import no.nav.helse.soknad.OmsorgstilbudSvar.FAST_OG_REGELMESSIG
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.validate
 import java.time.Duration
@@ -15,7 +14,7 @@ import kotlin.test.assertTrue
 
 class OmsorgstilbudValideringTest {
     val gyldigOmsorgstilbud = Omsorgstilbud(
-        svar = JA,
+        svar = FAST_OG_REGELMESSIG,
         erLiktHverUke = true,
         ukedager = PlanUkedager(
             mandag = Duration.ofHours(3)
@@ -29,14 +28,14 @@ class OmsorgstilbudValideringTest {
     }
 
     @Test
-    fun `Skal gi feil dersom svar=JA og både ukedager og enkeldager er null`() {
+    fun `Skal gi feil dersom svar=FAST_OG_REGELMESSIG og både ukedager og enkeldager er null`() {
         gyldigOmsorgstilbud.copy(
-            svar = JA,
+            svar = FAST_OG_REGELMESSIG,
             ukedager = null,
             enkeltdager = null
         ).validate().assertFeilPå(
             listOf(
-                "Ved svar=JA kan ikke både enkeltdager og ukedager være null.",
+                "Ved svar=FAST_OG_REGELMESSIG/DELVIS_FAST_OG_REGELMESSIG kan ikke både enkeltdager og ukedager være null.",
                 "Hvis erLiktHverUke er true må ukedager være satt."
             )
         )
@@ -60,13 +59,14 @@ class OmsorgstilbudValideringTest {
     @Test
     fun `Skal gi feil dersom erLiktHverUke er true og ukedager er null`() {
         gyldigOmsorgstilbud.copy(
-            svar = USIKKER,
+            svar = FAST_OG_REGELMESSIG,
             erLiktHverUke = true,
             ukedager = null,
             enkeltdager = null
         ).validate().assertFeilPå(
             listOf(
-                "Hvis erLiktHverUke er true må ukedager være satt."
+                "Hvis erLiktHverUke er true må ukedager være satt.",
+                "Ved svar=FAST_OG_REGELMESSIG/DELVIS_FAST_OG_REGELMESSIG kan ikke både enkeltdager og ukedager være null."
             )
         )
     }

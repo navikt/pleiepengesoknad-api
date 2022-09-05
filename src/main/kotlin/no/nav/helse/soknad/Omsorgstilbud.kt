@@ -13,7 +13,7 @@ data class Omsorgstilbud(
 )
 
 enum class OmsorgstilbudSvar {
-    JA, NEI, USIKKER
+    FAST_OG_REGELMESSIG, DELVIS_FAST_OG_REGELMESSIG, IKKE_FAST_OG_REGELMESSIG, IKKE_OMSORGSTILBUD
 }
 
 data class Enkeltdag(
