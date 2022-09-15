@@ -5,8 +5,6 @@ import no.nav.helse.dusseldorf.ktor.core.Throwblem
 import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
 import no.nav.helse.dusseldorf.ktor.core.Violation
 import no.nav.helse.general.somViolation
-import no.nav.helse.soknad.OmsorgstilbudSvar.DELVIS_FAST_OG_REGELMESSIG
-import no.nav.helse.soknad.OmsorgstilbudSvar.FAST_OG_REGELMESSIG
 import no.nav.helse.soknad.domene.UtenlandskNæring.Companion.valider
 import no.nav.helse.soknad.domene.valider
 import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarnSøknadValidator
@@ -378,13 +376,25 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
 }
 
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
-    if(svar != null){
-        if((svar == FAST_OG_REGELMESSIG || svar == DELVIS_FAST_OG_REGELMESSIG) && ukedager == null && enkeltdager.isNullOrEmpty()){
+    if(svarFortid != null && svarFortid == OmsorgstilbudSvarFortid.JA){
+        if(ukedager == null && enkeltdager.isNullOrEmpty()){
             add(
                 Violation(
                     parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
                     parameterType = ParameterType.ENTITY,
-                    reason = "Ved svar=FAST_OG_REGELMESSIG/DELVIS_FAST_OG_REGELMESSIG kan ikke både enkeltdager og ukedager være null."
+                    reason = "Ved svarFortid=JA kan ikke både enkeltdager og ukedager være null."
+                )
+            )
+        }
+    }
+
+    if(svarFremtid != null && svarFremtid == OmsorgstilbudSvarFremtid.JA){
+        if(ukedager == null && enkeltdager.isNullOrEmpty()){
+            add(
+                Violation(
+                    parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ved svarFremtid=JA kan ikke både enkeltdager og ukedager være null."
                 )
             )
         }

@@ -34,7 +34,8 @@ class K9FormatTest {
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
-                svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
+                svarFortid = OmsorgstilbudSvarFortid.JA,
+                svarFremtid = null,
                 enkeltdager = null,
                 erLiktHverUke = true,
                 ukedager = PlanUkedager(
@@ -52,7 +53,6 @@ class K9FormatTest {
             fødselsnummer = "123456789"
         )
         val k9Format = søknad.tilK9Format(mottatt, søker)
-
         val forventetK9FormatJsonV2 =
             //language=json
             """
@@ -174,8 +174,14 @@ class K9FormatTest {
                     "2021-01-04/2021-01-04": {
                       "etablertTilsynTimerPerDag": "PT4H"
                     },
+                    "2021-01-05/2021-01-05": {
+                      "etablertTilsynTimerPerDag": "PT0S"
+                    },
                     "2021-01-06/2021-01-06": {
                       "etablertTilsynTimerPerDag": "PT2H"
+                    },
+                    "2021-01-07/2021-01-07": {
+                      "etablertTilsynTimerPerDag": "PT0S"
                     },
                     "2021-01-08/2021-01-08": {
                       "etablertTilsynTimerPerDag": "PT5H"
@@ -257,10 +263,13 @@ class K9FormatTest {
         JSONAssert.assertEquals(forventetK9FormatJsonV2, JsonUtils.toString(k9Format), true)
     }
 
+
+    // TODO: 15/09/2022 Trekke ut til egen omsorgstilbud test og teste alle varianter hvor søknadsperioden kun er fortid, kun fremtid osv. 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
+            svarFortid = OmsorgstilbudSvarFortid.JA,
+            svarFremtid = null,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(5),
@@ -304,7 +313,8 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode ons-man, tilsyn alle dager, forvent 4 perioder med lør-søn ekskludert`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
+            svarFortid = OmsorgstilbudSvarFortid.JA,
+            svarFremtid = null,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(5),
@@ -343,9 +353,10 @@ class K9FormatTest {
     }
 
     @Test
-    fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder`() {
+    fun `gitt søknadsperiode man-fre, tilsyn man-ons og fre, forvent 4 perioder med tilsyn og 1 uten`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
+            svarFortid = OmsorgstilbudSvarFortid.JA,
+            svarFremtid = null,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(5),
@@ -358,7 +369,7 @@ class K9FormatTest {
             periode = Periode(LocalDate.parse("2021-01-04"), LocalDate.parse("2021-01-08"))
         )
 
-        assertEquals(4, k9Tilsynsordning.perioder.size)
+        assertEquals(5, k9Tilsynsordning.perioder.size)
 
         JSONAssert.assertEquals(
             //language=json
@@ -373,6 +384,9 @@ class K9FormatTest {
                 },
                 "2021-01-06/2021-01-06" : {
                   "etablertTilsynTimerPerDag" : "PT5H"
+                },
+                "2021-01-07/2021-01-07" : {
+                  "etablertTilsynTimerPerDag" : "PT0S"
                 },
                 "2021-01-08/2021-01-08" : {
                   "etablertTilsynTimerPerDag" : "PT5H"
@@ -407,7 +421,8 @@ class K9FormatTest {
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn 10t alle dager, forvent 5 perioder med 7t 30m`() {
         val k9Tilsynsordning = Omsorgstilbud(
-            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
+            svarFortid = OmsorgstilbudSvarFortid.JA,
+            svarFremtid = null,
             erLiktHverUke = true,
             ukedager = PlanUkedager(
                 mandag = Duration.ofHours(10),
@@ -451,7 +466,8 @@ class K9FormatTest {
     @Test
     fun `gitt omsorgstilbud med 4 enkeltdager, forvent riktig mapping`() {
         val tilsynsordning = Omsorgstilbud(
-            svar = OmsorgstilbudSvar.DELVIS_FAST_OG_REGELMESSIG,
+            svarFortid = OmsorgstilbudSvarFortid.JA,
+            svarFremtid = OmsorgstilbudSvarFremtid.NEI,
             erLiktHverUke = false,
             enkeltdager = listOf(
                 Enkeltdag(
@@ -479,7 +495,8 @@ class K9FormatTest {
     @Test
     fun `Omsorgstilbud med ukedager blir som forventet k9format`(){
         val tilsynsordning = Omsorgstilbud(
-            svar = OmsorgstilbudSvar.FAST_OG_REGELMESSIG,
+            svarFortid = OmsorgstilbudSvarFortid.JA,
+            svarFremtid = null,
             erLiktHverUke = true,
             enkeltdager = null,
             ukedager = PlanUkedager(

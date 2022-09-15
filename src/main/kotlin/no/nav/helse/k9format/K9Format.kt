@@ -17,10 +17,8 @@ import no.nav.k9.søknad.ytelse.psb.v1.*
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap.BeredskapPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
-import java.time.DayOfWeek
 import java.time.Duration
 import java.time.ZonedDateTime
-import kotlin.streams.toList
 import no.nav.k9.søknad.Søknad as K9Søknad
 import no.nav.k9.søknad.felles.personopplysninger.Barn as K9Barn
 import no.nav.k9.søknad.felles.personopplysninger.Søker as K9Søker
@@ -122,46 +120,6 @@ fun tilK9Tilsynsordning0Timer(periode: Periode) = K9Tilsynsordning().apply {
         )
     )
 }
-
-fun Omsorgstilbud.tilK9Tilsynsordning(periode: Periode): K9Tilsynsordning =
-    K9Tilsynsordning().apply {
-
-        if (enkeltdager == null && ukedager == null) return tilK9Tilsynsordning0Timer(periode)
-
-        enkeltdager?.forEach { enkeltdag ->
-            leggeTilPeriode(
-                Periode(enkeltdag.dato, enkeltdag.dato),
-                TilsynPeriodeInfo().medEtablertTilsynTimerPerDag(
-                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(enkeltdag.tid)
-                )
-            )
-        }
-
-        ukedager?.let { ukedager ->
-            periode.fraOgMed.datesUntil(periode.tilOgMed.plusDays(1))
-                .toList()
-                .forEach { dato ->
-                    val tilsynslengde = when (dato.dayOfWeek) {
-                        DayOfWeek.MONDAY -> ukedager.mandag
-                        DayOfWeek.TUESDAY -> ukedager.tirsdag
-                        DayOfWeek.WEDNESDAY -> ukedager.onsdag
-                        DayOfWeek.THURSDAY -> ukedager.torsdag
-                        DayOfWeek.FRIDAY -> ukedager.fredag
-                        else -> null
-                    }
-
-                    tilsynslengde?.let {
-                        leggeTilPeriode(
-                            Periode(dato, dato),
-                            TilsynPeriodeInfo()
-                                .medEtablertTilsynTimerPerDag(
-                                    Duration.ZERO.plusOmIkkeNullOgAvkortTilNormalArbeidsdag(it)
-                                )
-                        )
-                    }
-                }
-        }
-    }
 
 fun Søknad.byggK9Uttak(periode: Periode): Uttak? {
     val perioder = mutableMapOf<Periode, Uttak.UttakPeriodeInfo>()

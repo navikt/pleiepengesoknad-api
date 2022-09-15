@@ -1,11 +1,7 @@
 package no.nav.helse.validering
 
 import no.nav.helse.dusseldorf.ktor.core.Violation
-import no.nav.helse.soknad.Enkeltdag
-import no.nav.helse.soknad.Omsorgstilbud
-import no.nav.helse.soknad.OmsorgstilbudSvar.FAST_OG_REGELMESSIG
-import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.validate
+import no.nav.helse.soknad.*
 import java.time.Duration
 import java.time.LocalDate
 import kotlin.test.Test
@@ -14,7 +10,8 @@ import kotlin.test.assertTrue
 
 class OmsorgstilbudValideringTest {
     val gyldigOmsorgstilbud = Omsorgstilbud(
-        svar = FAST_OG_REGELMESSIG,
+        svarFortid = OmsorgstilbudSvarFortid.JA,
+        svarFremtid = OmsorgstilbudSvarFremtid.JA,
         erLiktHverUke = true,
         ukedager = PlanUkedager(
             mandag = Duration.ofHours(3)
@@ -28,14 +25,16 @@ class OmsorgstilbudValideringTest {
     }
 
     @Test
-    fun `Skal gi feil dersom svar=FAST_OG_REGELMESSIG og både ukedager og enkeldager er null`() {
+    fun `Skal gi feil dersom svarFortid=JA, svarFremtid=JA og både ukedager og enkeldager er null`() {
         gyldigOmsorgstilbud.copy(
-            svar = FAST_OG_REGELMESSIG,
+            svarFortid = OmsorgstilbudSvarFortid.JA,
+            svarFremtid = OmsorgstilbudSvarFremtid.JA,
             ukedager = null,
             enkeltdager = null
         ).validate().assertFeilPå(
             listOf(
-                "Ved svar=FAST_OG_REGELMESSIG/DELVIS_FAST_OG_REGELMESSIG kan ikke både enkeltdager og ukedager være null.",
+                "Ved svarFortid=JA kan ikke både enkeltdager og ukedager være null.",
+                "Ved svarFremtid=JA kan ikke både enkeltdager og ukedager være null.",
                 "Hvis erLiktHverUke er true må ukedager være satt."
             )
         )
@@ -59,14 +58,15 @@ class OmsorgstilbudValideringTest {
     @Test
     fun `Skal gi feil dersom erLiktHverUke er true og ukedager er null`() {
         gyldigOmsorgstilbud.copy(
-            svar = FAST_OG_REGELMESSIG,
+            svarFortid = OmsorgstilbudSvarFortid.JA,
+            svarFremtid = OmsorgstilbudSvarFremtid.NEI,
             erLiktHverUke = true,
             ukedager = null,
-            enkeltdager = null
+            enkeltdager = listOf(Enkeltdag(LocalDate.now(), Duration.ofHours(3)))
         ).validate().assertFeilPå(
             listOf(
                 "Hvis erLiktHverUke er true må ukedager være satt.",
-                "Ved svar=FAST_OG_REGELMESSIG/DELVIS_FAST_OG_REGELMESSIG kan ikke både enkeltdager og ukedager være null."
+                "Hvis erLiktHverUke er true må enkeldager være null."
             )
         )
     }
