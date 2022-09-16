@@ -27,7 +27,7 @@ data class KomplettSøknad(
     val samtidigHjemme: Boolean?,
     val harForståttRettigheterOgPlikter: Boolean,
     val harBekreftetOpplysninger: Boolean,
-    val omsorgstilbud: Omsorgstilbud? = null, // TODO: 17/08/2022 Sette som påbudt etter at frontend er prodsatt med omsorgstilbud.svar
+    val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
     val frilans: Frilans,
