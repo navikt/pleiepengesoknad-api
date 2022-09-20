@@ -263,8 +263,6 @@ class K9FormatTest {
         JSONAssert.assertEquals(forventetK9FormatJsonV2, JsonUtils.toString(k9Format), true)
     }
 
-
-    // TODO: 15/09/2022 Trekke ut til egen omsorgstilbud test og teste alle varianter hvor søknadsperioden kun er fortid, kun fremtid osv. 
     @Test
     fun `gitt søknadsperiode man-fre, tilsyn alle dager, forvent 5 perioder`() {
         val k9Tilsynsordning = Omsorgstilbud(

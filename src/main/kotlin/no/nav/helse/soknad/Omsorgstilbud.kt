@@ -21,7 +21,6 @@ data class Omsorgstilbud(
 
     internal fun tilK9Tilsynsordning(
         periode: Periode,
-        iGår: LocalDate = LocalDate.now().minusDays(1),
         iDag: LocalDate = LocalDate.now()
     ): Tilsynsordning {
         val tilsynsordning = Tilsynsordning()
@@ -30,7 +29,7 @@ data class Omsorgstilbud(
 
         enkeltdager?.let { beregnEnkeltdager(tilsynsordning) }
 
-        if(ukedager != null && svarFortid != null) beregnUkedagerFortid(tilsynsordning, periode, iGår)
+        if(ukedager != null && svarFortid != null) beregnUkedagerFortid(tilsynsordning, periode, iDag.minusDays(1))
         if(ukedager != null && svarFremtid != null) beregnUkedagerFremtid(tilsynsordning, periode, iDag)
 
         return tilsynsordning
