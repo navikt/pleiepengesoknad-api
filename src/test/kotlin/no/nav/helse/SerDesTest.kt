@@ -231,6 +231,8 @@ internal class SerDesTest {
                 "sluttdato": null,
                 "jobberFortsattSomFrilans": true,
                 "harInntektSomFrilanser": true,
+                "mottarFosterhjemsgodtgjørelse": true,
+                "harAndreOppdragEnnFosterhjemsgodtgjørelse" : true,
                 "arbeidsforhold": {
                   "normalarbeidstid": {
                     "erLiktHverUke": true,
@@ -502,6 +504,8 @@ internal class SerDesTest {
                   "harInntektSomFrilanser": true,
                   "startdato": "2018-01-01",
                   "sluttdato": null,
+                  "mottarFosterhjemsgodtgjørelse": true,
+                  "harAndreOppdragEnnFosterhjemsgodtgjørelse" : true,
                   "arbeidsforhold": {
                     "normalarbeidstid": {
                       "erLiktHverUke": true,
@@ -726,6 +730,8 @@ internal class SerDesTest {
             frilans = Frilans(
                 harInntektSomFrilanser = true,
                 jobberFortsattSomFrilans = true,
+                mottarFosterhjemsgodtgjørelse = true,
+                harAndreOppdragEnnFosterhjemsgodtgjørelse = true,
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(

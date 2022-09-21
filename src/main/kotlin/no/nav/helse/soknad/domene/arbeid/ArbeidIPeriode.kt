@@ -2,10 +2,7 @@ package no.nav.helse.soknad.domene.arbeid
 
 import no.nav.helse.general.kreverIkkeNull
 import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT
-import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType.*
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.DayOfWeek
@@ -13,7 +10,7 @@ import java.time.Duration
 
 class ArbeidIPeriode(
     val type: ArbeidIPeriodeType,
-    val arbeiderIPerioden: ArbeiderIPeriodenSvar,
+    val arbeiderIPerioden: ArbeiderIPeriodenSvar? = null,
     val erLiktHverUke: Boolean? = null,
     val fasteDager: PlanUkedager? = null,
     val prosentAvNormalt: Double? = null,

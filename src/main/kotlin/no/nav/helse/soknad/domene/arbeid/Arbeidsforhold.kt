@@ -28,27 +28,24 @@ class Arbeidsforhold(
     }
 
     fun tilK9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) = when(arbeidIPeriode.type){
-        ArbeidIPeriodeType.ARBEIDER_VANLIG -> arbeiderVanlig(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_IKKE -> arbeiderIkke(fraOgMed, tilOgMed)
+        ArbeidIPeriodeType.ARBEIDER_VANLIG -> arbeiderVanlig(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER -> arbeiderEnkeltdager(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER -> arbeiderFasteUkedager(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT -> arbeiderProsentAvNormalt(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE -> arbeiderTimerISnittPerUke(fraOgMed, tilOgMed)
+        ArbeidIPeriodeType.ARBEIDER_KUN_SMÅOPPDRAG -> arbeiderKunSmåoppdrag(fraOgMed, tilOgMed)
     }
 
-    private fun arbeiderVanlig(
-        fraOgMed: LocalDate,
-        tilOgMed: LocalDate
-    ) = when {
+    private fun arbeiderKunSmåoppdrag(fraOgMed: LocalDate, tilOgMed: LocalDate) = k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
+
+    private fun arbeiderVanlig(fraOgMed: LocalDate, tilOgMed: LocalDate) = when {
         normalarbeidstid.harOppgittTimerSomSnitt() -> arbeiderVanligMedNormaltimerSomSnitt(fraOgMed, tilOgMed)
         normalarbeidstid.harOppgittTimerSomFasteDager() -> arbeiderVanligMedNormaltimerSomFasteDager(fraOgMed, tilOgMed)
         else -> throw Exception("Klarte ikke mappe opp ARBEIDER_VANLIG fordi normalarbeidstid har oppgitt verken snitt eller fastedager")
     }
 
-    private fun arbeiderVanligMedNormaltimerSomFasteDager(
-        fraOgMed: LocalDate,
-        tilOgMed: LocalDate
-    ): ArbeidstidInfo {
+    private fun arbeiderVanligMedNormaltimerSomFasteDager(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         val arbeidstidInfo = ArbeidstidInfo()
         fraOgMed.ukedagerTilOgMed(tilOgMed).forEach { ukedagIPerioden ->
             arbeidstidInfo.leggeTilPeriode(
@@ -61,10 +58,7 @@ class Arbeidsforhold(
         return arbeidstidInfo
     }
 
-    private fun arbeiderVanligMedNormaltimerSomSnitt(
-        fraOgMed: LocalDate,
-        tilOgMed: LocalDate
-    ): ArbeidstidInfo {
+    private fun arbeiderVanligMedNormaltimerSomSnitt(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         val arbeidstidInfo = ArbeidstidInfo()
         arbeidstidInfo.medPerioder(
             mapOf(
