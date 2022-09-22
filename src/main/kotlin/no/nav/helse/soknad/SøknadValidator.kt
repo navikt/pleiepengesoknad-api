@@ -376,22 +376,36 @@ private fun validerFerieuttakIPerioden(ferieuttakIPerioden: FerieuttakIPerioden?
 }
 
 fun Omsorgstilbud.validate() = mutableSetOf<Violation>().apply {
+    if(svarFortid != null && svarFortid == OmsorgstilbudSvarFortid.JA){
+        if(ukedager == null && enkeltdager.isNullOrEmpty()){
+            add(
+                Violation(
+                    parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ved svarFortid=JA kan ikke både enkeltdager og ukedager være null."
+                )
+            )
+        }
+    }
+
+    if(svarFremtid != null && svarFremtid == OmsorgstilbudSvarFremtid.JA){
+        if(ukedager == null && enkeltdager.isNullOrEmpty()){
+            add(
+                Violation(
+                    parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
+                    parameterType = ParameterType.ENTITY,
+                    reason = "Ved svarFremtid=JA kan ikke både enkeltdager og ukedager være null."
+                )
+            )
+        }
+    }
+
     if (!enkeltdager.isNullOrEmpty() && ukedager != null){
         add(
             Violation(
                 parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
                 parameterType = ParameterType.ENTITY,
                 reason = "Kan ikke ha både enkeltdager og ukedager satt, må velge en av de."
-            )
-        )
-    }
-
-    if (enkeltdager == null && ukedager == null ){
-        add(
-            Violation(
-                parameterName = "omsorgstilbud.ukedager og omsorgstilbud.enkeltdager",
-                parameterType = ParameterType.ENTITY,
-                reason = "Kan ikke ha både enkeldager og ukedager som null, en må være satt."
             )
         )
     }

@@ -253,6 +253,8 @@ internal class SerDesTest {
                 "tilleggsinformasjon": "Har nattevåk"
               },
               "omsorgstilbud": {
+                "svarFortid": "JA",
+                "svarFremtid": null,
                 "erLiktHverUke": false,
                 "ukedager" : null,
                 "enkeltdager" : [
