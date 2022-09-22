@@ -106,6 +106,7 @@ class SøknadUtils {
                 )
             ),
             omsorgstilbud = Omsorgstilbud(
+                svarFortid = OmsorgstilbudSvarFortid.JA,
                 erLiktHverUke = false,
                 enkeltdager = listOf(
                     Enkeltdag(
