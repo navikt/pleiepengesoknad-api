@@ -210,6 +210,8 @@ class SøknadUtils {
                 jobberFortsattSomFrilans = true,
                 harInntektSomFrilanser = true,
                 startdato = LocalDate.parse("2018-01-01"),
+                mottarFosterhjemsgodtgjørelse = true,
+                harAndreOppdragEnnFosterhjemsgodtgjørelse = true,
                 arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
                         erLiktHverUke = true,

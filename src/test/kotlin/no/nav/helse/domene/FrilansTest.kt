@@ -53,6 +53,7 @@ class FrilansTest {
         Frilans(
             startdato = LocalDate.parse("2020-01-01"),
             sluttdato = null,
+            mottarFosterhjemsgodtgjørelse = false,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
             arbeidsforhold = Arbeidsforhold(
@@ -74,6 +75,7 @@ class FrilansTest {
         Frilans(
             startdato = LocalDate.parse("2020-01-01"),
             sluttdato = LocalDate.parse("2019-01-01"),
+            mottarFosterhjemsgodtgjørelse = false,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
@@ -85,6 +87,7 @@ class FrilansTest {
         Frilans(
             startdato = LocalDate.parse("2020-01-01"),
             sluttdato = LocalDate.parse("2020-01-01"),
+            mottarFosterhjemsgodtgjørelse = false,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
@@ -96,6 +99,7 @@ class FrilansTest {
         Frilans(
             startdato = LocalDate.parse("2020-01-01"),
             sluttdato = LocalDate.parse("2021-01-01"),
+            mottarFosterhjemsgodtgjørelse = false,
             jobberFortsattSomFrilans = true,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
@@ -107,6 +111,7 @@ class FrilansTest {
         Frilans(
             startdato = null,
             sluttdato = LocalDate.parse("2029-01-01"),
+            mottarFosterhjemsgodtgjørelse = false,
             jobberFortsattSomFrilans = null,
             harInntektSomFrilanser = true,
             arbeidsforhold = null
@@ -382,6 +387,37 @@ class FrilansTest {
         listOf(tirsdag, onsdag, torsdag).forEach { dag ->
             assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
             assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
+        }
+    }
+
+    @Test
+    fun `mottarFosterhjemsgodtgjørelse=true og harAndreOppdragEnnFosterhjemsgodtgjørelse=false skal gi 0 og 0 timer i k9ArbeidstidInfo`(){
+        Frilans(
+            startdato = mandag,
+            harInntektSomFrilanser = true,
+            jobberFortsattSomFrilans = true,
+            mottarFosterhjemsgodtgjørelse = true,
+            harAndreOppdragEnnFosterhjemsgodtgjørelse = false
+        ).k9ArbeidstidInfo(mandag, fredag).also {
+            assertEquals(NULL_TIMER, it.perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(NULL_TIMER, it.perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
+        }
+    }
+
+    @Test
+    fun `Dersom type=ARBEIDER_KUN_SMÅOPPDRAG skal det settes 0-0 i k9ArbeidstidInfo`(){
+        Frilans(
+            startdato = mandag,
+            harInntektSomFrilanser = true,
+            jobberFortsattSomFrilans = true,
+            mottarFosterhjemsgodtgjørelse = true,
+            arbeidsforhold = Arbeidsforhold(
+                normalarbeidstid = NormalArbeidstid(timerPerUkeISnitt = Duration.ofHours(4)),
+                arbeidIPeriode = ArbeidIPeriode(type = ArbeidIPeriodeType.ARBEIDER_KUN_SMÅOPPDRAG)
+            )
+        ).k9ArbeidstidInfo(mandag, fredag).also {
+            assertEquals(NULL_TIMER, it.perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
+            assertEquals(NULL_TIMER, it.perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
         }
     }
 }

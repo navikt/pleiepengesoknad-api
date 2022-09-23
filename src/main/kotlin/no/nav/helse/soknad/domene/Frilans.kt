@@ -10,6 +10,8 @@ import java.time.LocalDate
 
 data class Frilans(
     val harInntektSomFrilanser: Boolean,
+    val mottarFosterhjemsgodtgjørelse: Boolean? = null,
+    val harAndreOppdragEnnFosterhjemsgodtgjørelse: Boolean? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
     val startdato: LocalDate? = null,
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -27,6 +29,7 @@ data class Frilans(
             kreverIkkeNull(startdato, "$felt.startdao kan ikke være null dersom harInntektSomFrilanser=true")
             kreverIkkeNull(jobberFortsattSomFrilans, "$felt.jobberFortsattSomFrilans kan ikke være null dersom harInntektSomFrilanser=true")
         }
+        // kreverIkkeNull(mottarFosterhjemsgodtgjørelse, "$felt.mottarFosterhjemsgodtgjørelse kan ikke være null.") TODO Sette etter prodsetting av feltet i frontend.
     }
 
     fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
