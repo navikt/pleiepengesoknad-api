@@ -8,14 +8,14 @@ val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
 val kafkaVersion = ext.get("kafkaVersion").toString() // Alligned med version fra kafka-embedded-env
 val fuelVersion = "2.3.1"
 val lettuceVersion = "6.1.8.RELEASE"
-val tokenSupportVersion = "2.1.1"
+val tokenSupportVersion = "2.1.4"
 val mockOauth2ServerVersion = "0.5.1"
 
 val mainClass = "no.nav.helse.AppKt"
 
 
 plugins {
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -58,11 +58,11 @@ dependencies {
         exclude(group = "org.eclipse.jetty")
     }
 
-    testImplementation ("org.skyscreamer:jsonassert:1.5.0")
+    testImplementation ("org.skyscreamer:jsonassert:1.5.1")
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
-    testImplementation("io.mockk:mockk:1.12.4")
+    testImplementation("io.mockk:mockk:1.12.8")
 }
 
 repositories {
