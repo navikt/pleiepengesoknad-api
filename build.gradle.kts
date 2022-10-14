@@ -1,11 +1,11 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val dusseldorfKtorVersion = "3.2.0.2-259fbf4"
-val ktorVersion = ext.get("ktorVersion").toString()
-val k9FormatVersion = "5.8.8"
-val kafkaEmbeddedEnvVersion = ext.get("kafkaEmbeddedEnvVersion").toString()
-val kafkaVersion = ext.get("kafkaVersion").toString() // Alligned med version fra kafka-embedded-env
+val dusseldorfKtorVersion = "3.2.1.2-ce40a5b"
+val ktorVersion = "2.1.2"
+val k9FormatVersion = "7.0.1"
+val kafkaEmbeddedEnvVersion = "3.2.1"
+val kafkaVersion = "3.2.3"
 val fuelVersion = "2.3.1"
 val lettuceVersion = "6.1.8.RELEASE"
 val tokenSupportVersion = "2.1.1"
@@ -15,12 +15,8 @@ val mainClass = "no.nav.helse.AppKt"
 
 
 plugins {
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm") version "1.7.20"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-}
-
-buildscript {
-    apply("https://raw.githubusercontent.com/navikt/dusseldorf-ktor/259fbf471e456e6de8ca226cf9e05f1185d71855/gradle/dusseldorf-ktor.gradle.kts")
 }
 
 dependencies {
@@ -38,7 +34,6 @@ dependencies {
 
     //K9-format
     implementation("no.nav.k9:soknad:$k9FormatVersion")
-    implementation ( "org.glassfish:jakarta.el:3.0.4")
 
     // kafka
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
@@ -53,16 +48,18 @@ dependencies {
     // Test
     testImplementation ("no.nav.security:mock-oauth2-server:$mockOauth2ServerVersion")
     testImplementation ( "no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
-    testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
+    testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion") {
+        exclude(group = "org.apache.kafka", module = "kafka_2.13")
+    }
     testImplementation ("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
 
-    testImplementation ("org.skyscreamer:jsonassert:1.5.0")
+    testImplementation ("org.skyscreamer:jsonassert:1.5.1")
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
-    testImplementation("io.mockk:mockk:1.12.4")
+    testImplementation("io.mockk:mockk:1.13.1")
 }
 
 repositories {
@@ -107,7 +104,7 @@ tasks.withType<ShadowJar> {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "7.4.2"
+    gradleVersion = "7.5.1"
 }
 
 tasks.withType<Test> {
