@@ -7,9 +7,8 @@ val k9FormatVersion = "7.0.2"
 val kafkaEmbeddedEnvVersion = "3.2.1"
 val kafkaVersion = "3.2.3"
 val fuelVersion = "2.3.1"
-val lettuceVersion = "6.1.8.RELEASE"
 val tokenSupportVersion = "2.1.1"
-val mockOauth2ServerVersion = "0.5.1"
+val mockOauth2ServerVersion = "0.5.4"
 
 val mainClass = "no.nav.helse.AppKt"
 
@@ -59,7 +58,9 @@ dependencies {
     testImplementation("org.skyscreamer:jsonassert:1.5.1")
     testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion")
+    testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion") {
+        exclude(group="org.apache.kafka", module="kafka-clients")
+    }
     testImplementation("io.mockk:mockk:1.13.1")
 }
 
