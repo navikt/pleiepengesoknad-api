@@ -115,7 +115,7 @@ internal class SerDesTest {
               "vedlegg": [
                 "http://localhost:8080/vedlegg/1"
               ],
-              "opplastetIdVedleggId": [
+              "opplastetIdVedleggUrls": [
                 "http://localhost:8080/vedlegg/2"
               ],
               "medlemskap": {
