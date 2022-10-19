@@ -12,10 +12,31 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.innsyn.InnsynBarn
 import no.nav.helse.k9format.defaultK9FormatPSB
 import no.nav.helse.k9format.defaultK9SakInnsynSøknad
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.domene.Næringstyper
-import no.nav.helse.soknad.domene.arbeid.*
-import no.nav.helse.wiremock.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
+import no.nav.helse.wiremock.K9BrukerdialogCacheResponseTransformer
+import no.nav.helse.wiremock.pleiepengesoknadApiConfig
+import no.nav.helse.wiremock.stubK9BrukerdialogCache
+import no.nav.helse.wiremock.stubK9Mellomlagring
+import no.nav.helse.wiremock.stubK9MellomlagringHealth
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivere
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedOrgNummer
+import no.nav.helse.wiremock.stubK9OppslagArbeidsgivereMedPrivate
+import no.nav.helse.wiremock.stubK9OppslagBarn
+import no.nav.helse.wiremock.stubK9OppslagSoker
+import no.nav.helse.wiremock.stubOppslagHealth
+import no.nav.helse.wiremock.stubSifInnsynApi
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
@@ -708,6 +729,7 @@ class ApplicationTest {
     @Test
     fun `Sende søknad`() {
         val jpegUrl = engine.jpegUrl(cookie = cookie)
+        val opplastetIdVedlegg = engine.jpegUrl(cookie = cookie)
 
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.parse("2022-01-01"),
@@ -721,7 +743,8 @@ class ApplicationTest {
                     )
                 )
             ),
-            vedlegg = listOf(URL(jpegUrl))
+            vedlegg = listOf(URL(jpegUrl)),
+            opplastetIdVedleggUrls = listOf(URL(opplastetIdVedlegg))
         )
 
         requestAndAssert(
@@ -821,12 +844,14 @@ class ApplicationTest {
     fun `Sende søknad med AktørID som ID på barnet`() {
         val jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn)
         val jpegUrl = engine.jpegUrl(jwtToken = jwtToken)
+        val opplastetIdVedlegg = engine.jpegUrl(cookie = cookie)
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.now().minusDays(3),
             tilOgMed = LocalDate.now().plusDays(4),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(harInntektSomSelvstendig = false),
             omsorgstilbud = null,
             vedlegg = listOf(URL(jpegUrl)),
+            opplastetIdVedleggUrls = listOf(URL(opplastetIdVedlegg)),
             ferieuttakIPerioden = FerieuttakIPerioden(
                 skalTaUtFerieIPerioden = true,
                 ferieuttak = listOf(
@@ -859,12 +884,14 @@ class ApplicationTest {
     @Test
     fun `Sende søknad med selvstendig næringsvirksomhet som har regnskapsfører`() {
         val jpegUrl = engine.jpegUrl(cookie = cookie)
+        val opplastetIdVedlegg = engine.jpegUrl(cookie = cookie)
         val søknad = SøknadUtils.defaultSøknad().copy(
             omsorgstilbud = null,
             ferieuttakIPerioden = null,
             fraOgMed = LocalDate.now().minusDays(3),
             tilOgMed = LocalDate.now().plusDays(4),
             vedlegg = listOf(URL(jpegUrl)),
+            opplastetIdVedleggUrls = listOf(URL(opplastetIdVedlegg)),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                 harInntektSomSelvstendig = true,
                 Virksomhet(

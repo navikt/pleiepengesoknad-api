@@ -51,10 +51,23 @@ class SøknadService(
             val dokumentEier = DokumentEier(søker.fødselsnummer)
             logger.info("Validerer ${søknad.vedlegg.size} vedlegg")
             val vedleggHentet = vedleggService.hentVedlegg(søknad.vedlegg, idToken, callId, dokumentEier)
-            vedleggHentet.validerVedlegg(søknad.vedlegg)
+            vedleggHentet.validerVedlegg(søknad.vedlegg, "vedlegg")
 
             logger.info("Persisterer vedlegg")
             vedleggService.persisterVedlegg(søknad.vedlegg, callId, dokumentEier)
+        }
+
+        if(!søknad.opplastetIdVedleggUrls.isNullOrEmpty()){
+            val dokumentEier = DokumentEier(søker.fødselsnummer)
+            logger.info("Validerer ${søknad.opplastetIdVedleggUrls.size} opplastetIdVedlegg")
+            val vedleggHentet = vedleggService.hentVedlegg(søknad.opplastetIdVedleggUrls, idToken, callId, dokumentEier)
+            vedleggHentet.validerVedlegg(søknad.opplastetIdVedleggUrls, "opplastetIdVedleggUrls")
+
+            logger.info("Persisterer vedlegg")
+            vedleggService.persisterVedlegg(søknad.vedlegg, callId, dokumentEier)
+
+            logger.info("Persisterer opplastetIdVedleggUrls")
+            vedleggService.persisterVedlegg(søknad.opplastetIdVedleggUrls, callId, dokumentEier)
         }
 
         val komplettSøknad = søknad.tilKomplettSøknad(k9FormatSøknad, søker)
@@ -65,6 +78,10 @@ class SøknadService(
             if(komplettSøknad.vedleggId.isNotEmpty()){
                 logger.info("Fjerner hold på persisterte vedlegg")
                 vedleggService.fjernHoldPåPersistertVedlegg(komplettSøknad.vedleggId, callId, DokumentEier(søker.fødselsnummer))
+            }
+            if(komplettSøknad.opplastetIdVedleggId.isNotEmpty()){
+                logger.info("Fjerner hold på persisterte opplastetIdVedleggId")
+                vedleggService.fjernHoldPåPersistertVedlegg(komplettSøknad.opplastetIdVedleggId, callId, DokumentEier(søker.fødselsnummer))
             }
             throw MeldingRegistreringFeiletException("Feilet ved å legge melding på Kafka")
         }
