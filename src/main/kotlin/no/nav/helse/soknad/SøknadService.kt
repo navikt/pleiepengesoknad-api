@@ -57,17 +57,17 @@ class SøknadService(
             vedleggService.persisterVedlegg(søknad.vedlegg, callId, dokumentEier)
         }
 
-        if(!søknad.opplastetIdVedleggUrls.isNullOrEmpty()){
+        if(!søknad.fødselsattestVedleggUrls.isNullOrEmpty()){
             val dokumentEier = DokumentEier(søker.fødselsnummer)
-            logger.info("Validerer ${søknad.opplastetIdVedleggUrls.size} opplastetIdVedlegg")
-            val vedleggHentet = vedleggService.hentVedlegg(søknad.opplastetIdVedleggUrls, idToken, callId, dokumentEier)
-            vedleggHentet.validerVedlegg(søknad.opplastetIdVedleggUrls, "opplastetIdVedleggUrls")
+            logger.info("Validerer ${søknad.fødselsattestVedleggUrls.size} opplastetIdVedlegg")
+            val vedleggHentet = vedleggService.hentVedlegg(søknad.fødselsattestVedleggUrls, idToken, callId, dokumentEier)
+            vedleggHentet.validerVedlegg(søknad.fødselsattestVedleggUrls, "opplastetIdVedleggUrls")
 
             logger.info("Persisterer vedlegg")
             vedleggService.persisterVedlegg(søknad.vedlegg, callId, dokumentEier)
 
             logger.info("Persisterer opplastetIdVedleggUrls")
-            vedleggService.persisterVedlegg(søknad.opplastetIdVedleggUrls, callId, dokumentEier)
+            vedleggService.persisterVedlegg(søknad.fødselsattestVedleggUrls, callId, dokumentEier)
         }
 
         val komplettSøknad = søknad.tilKomplettSøknad(k9FormatSøknad, søker)
@@ -79,9 +79,9 @@ class SøknadService(
                 logger.info("Fjerner hold på persisterte vedlegg")
                 vedleggService.fjernHoldPåPersistertVedlegg(komplettSøknad.vedleggId, callId, DokumentEier(søker.fødselsnummer))
             }
-            if(komplettSøknad.opplastetIdVedleggId.isNotEmpty()){
+            if(komplettSøknad.fødselsattestVedleggId.isNotEmpty()){
                 logger.info("Fjerner hold på persisterte opplastetIdVedleggId")
-                vedleggService.fjernHoldPåPersistertVedlegg(komplettSøknad.opplastetIdVedleggId, callId, DokumentEier(søker.fødselsnummer))
+                vedleggService.fjernHoldPåPersistertVedlegg(komplettSøknad.fødselsattestVedleggId, callId, DokumentEier(søker.fødselsnummer))
             }
             throw MeldingRegistreringFeiletException("Feilet ved å legge melding på Kafka")
         }

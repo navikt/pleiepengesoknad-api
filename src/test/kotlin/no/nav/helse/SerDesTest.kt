@@ -115,7 +115,7 @@ internal class SerDesTest {
               "vedlegg": [
                 "http://localhost:8080/vedlegg/1"
               ],
-              "opplastetIdVedleggUrls": [
+              "fødselsattestVedleggUrls": [
                 "http://localhost:8080/vedlegg/2"
               ],
               "medlemskap": {
@@ -364,7 +364,7 @@ internal class SerDesTest {
                 }
               ],
               "vedleggId": [],
-              "opplastetIdVedleggId": [],
+              "fødselsattestVedleggId": [],
               "medlemskap": {
                 "harBoddIUtlandetSiste12Mnd": true,
                 "skalBoIUtlandetNeste12Mnd": true,
@@ -600,7 +600,7 @@ internal class SerDesTest {
                 )
             ),
             vedleggId = listOf(),
-            opplastetIdVedleggId = listOf(),
+            fødselsattestVedleggId = listOf(),
             fraOgMed = LocalDate.parse("2020-01-01"),
             tilOgMed = LocalDate.parse("2020-02-01"),
             nattevåk = Nattevåk(

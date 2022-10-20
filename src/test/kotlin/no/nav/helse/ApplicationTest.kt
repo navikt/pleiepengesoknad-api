@@ -744,7 +744,7 @@ class ApplicationTest {
                 )
             ),
             vedlegg = listOf(URL(jpegUrl)),
-            opplastetIdVedleggUrls = listOf(URL(opplastetIdVedlegg))
+            fødselsattestVedleggUrls = listOf(URL(opplastetIdVedlegg))
         )
 
         requestAndAssert(
@@ -851,7 +851,7 @@ class ApplicationTest {
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(harInntektSomSelvstendig = false),
             omsorgstilbud = null,
             vedlegg = listOf(URL(jpegUrl)),
-            opplastetIdVedleggUrls = listOf(URL(opplastetIdVedlegg)),
+            fødselsattestVedleggUrls = listOf(URL(opplastetIdVedlegg)),
             ferieuttakIPerioden = FerieuttakIPerioden(
                 skalTaUtFerieIPerioden = true,
                 ferieuttak = listOf(
@@ -891,7 +891,7 @@ class ApplicationTest {
             fraOgMed = LocalDate.now().minusDays(3),
             tilOgMed = LocalDate.now().plusDays(4),
             vedlegg = listOf(URL(jpegUrl)),
-            opplastetIdVedleggUrls = listOf(URL(opplastetIdVedlegg)),
+            fødselsattestVedleggUrls = listOf(URL(opplastetIdVedlegg)),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                 harInntektSomSelvstendig = true,
                 Virksomhet(
