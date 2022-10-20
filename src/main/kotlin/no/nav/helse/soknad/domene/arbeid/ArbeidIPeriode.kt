@@ -18,7 +18,8 @@ class ArbeidIPeriode(
     val fasteDager: PlanUkedager? = null,
     val prosentAvNormalt: Double? = null,
     val timerPerUke: Duration? = null,
-    val enkeltdager: List<ArbeidstidEnkeltdag>? = null
+    val enkeltdager: List<ArbeidstidEnkeltdag>? = null,
+    val arbeidsuker: List<ArbeidsUker>? = null
 ) {
 
     internal fun valider(felt: String) = mutableListOf<String>().apply {

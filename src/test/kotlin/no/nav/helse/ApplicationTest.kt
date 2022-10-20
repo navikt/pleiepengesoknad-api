@@ -17,6 +17,7 @@ import no.nav.helse.soknad.domene.Næringstyper
 import no.nav.helse.soknad.domene.arbeid.*
 import no.nav.helse.wiremock.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
+import org.intellij.lang.annotations.Language
 import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll

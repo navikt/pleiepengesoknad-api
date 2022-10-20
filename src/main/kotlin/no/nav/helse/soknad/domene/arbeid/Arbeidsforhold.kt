@@ -34,6 +34,7 @@ class Arbeidsforhold(
         ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER -> arbeiderFasteUkedager(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT -> arbeiderProsentAvNormalt(fraOgMed, tilOgMed)
         ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE -> arbeiderTimerISnittPerUke(fraOgMed, tilOgMed)
+        ArbeidIPeriodeType.ARBEIDER_ULIKE_UKER_TIMER -> arbeiderEnkeltdager(fraOgMed, tilOgMed)
     }
 
     private fun arbeiderVanlig(
