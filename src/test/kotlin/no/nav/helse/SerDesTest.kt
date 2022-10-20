@@ -72,7 +72,8 @@ internal class SerDesTest {
                     "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null
+                    "enkeltdager": null,
+                    "arbeidsuker": null
                   }
                 }
                 },
@@ -149,7 +150,8 @@ internal class SerDesTest {
                     "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null
+                    "enkeltdager": null,
+                    "arbeidsuker": null
                   }
                 }
               },
@@ -244,7 +246,8 @@ internal class SerDesTest {
                     "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null
+                    "enkeltdager": null,
+                    "arbeidsuker": null
                   }
                 }
               },
@@ -327,7 +330,8 @@ internal class SerDesTest {
                         "fasteDager": null,
                         "prosentAvNormalt": null,
                         "timerPerUke": null,
-                        "enkeltdager": null
+                        "enkeltdager": null,
+                        "arbeidsuker": null
                       }
                     }
                 }
@@ -395,7 +399,8 @@ internal class SerDesTest {
                     "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null
+                    "enkeltdager": null,
+                    "arbeidsuker": null
                   }
                 }
               },
@@ -517,7 +522,8 @@ internal class SerDesTest {
                       "fasteDager": null,
                       "prosentAvNormalt": null,
                       "timerPerUke": null,
-                      "enkeltdager": null
+                      "enkeltdager": null,
+                      "arbeidsuker": null
                     }
                   }
                 },
