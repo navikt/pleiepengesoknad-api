@@ -61,12 +61,12 @@ class SøknadService(
             val dokumentEier = DokumentEier(søker.fødselsnummer)
             logger.info("Validerer ${søknad.fødselsattestVedleggUrls.size} opplastetIdVedlegg")
             val vedleggHentet = vedleggService.hentVedlegg(søknad.fødselsattestVedleggUrls, idToken, callId, dokumentEier)
-            vedleggHentet.validerVedlegg(søknad.fødselsattestVedleggUrls, "opplastetIdVedleggUrls")
+            vedleggHentet.validerVedlegg(søknad.fødselsattestVedleggUrls, "fødselsattestVedleggUrls")
 
             logger.info("Persisterer vedlegg")
             vedleggService.persisterVedlegg(søknad.vedlegg, callId, dokumentEier)
 
-            logger.info("Persisterer opplastetIdVedleggUrls")
+            logger.info("Persisterer fødselsattestVedleggUrls")
             vedleggService.persisterVedlegg(søknad.fødselsattestVedleggUrls, callId, dokumentEier)
         }
 

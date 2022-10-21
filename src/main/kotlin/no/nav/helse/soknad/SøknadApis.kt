@@ -75,13 +75,13 @@ fun Route.soknadApis(
         vedlegg.validerVedlegg(søknad.vedlegg, "vedlegg")
 
         if (søknad.fødselsattestVedleggUrls != null) {
-            val opplastetIdVedlegg = vedleggService.hentVedlegg(
+            val fødselsattestVedlegg = vedleggService.hentVedlegg(
                 idToken = idToken,
                 vedleggUrls = søknad.fødselsattestVedleggUrls,
                 callId = callId,
                 eier = DokumentEier(søker.fødselsnummer)
             )
-            opplastetIdVedlegg.validerVedlegg(søknad.fødselsattestVedleggUrls, "opplastetIdVedleggUrls")
+            fødselsattestVedlegg.validerVedlegg(søknad.fødselsattestVedleggUrls, "fødselsattestVedleggUrls")
         }
 
         logger.trace("Validering Ok.")
