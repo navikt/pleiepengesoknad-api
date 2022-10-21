@@ -19,7 +19,7 @@ class ArbeidIPeriode(
     val prosentAvNormalt: Double? = null,
     val timerPerUke: Duration? = null,
     val enkeltdager: List<ArbeidstidEnkeltdag>? = null,
-    val arbeidsuker: List<ArbeidsUker>? = null
+    val arbeidsuker: List<ArbeidsUke>? = null
 ) {
 
     internal fun valider(felt: String) = mutableListOf<String>().apply {
@@ -40,6 +40,11 @@ class ArbeidIPeriode(
     internal fun k9ArbeidstidFraEnkeltdager(): List<Pair<Periode, ArbeidstidPeriodeInfo>> {
         requireNotNull(enkeltdager) { "For å regne ut arbeid fra enkeltdager må enkeltdager være satt." }
         return enkeltdager.map { it.somK9Arbeidstid() }
+    }
+
+    internal fun k9ArbeidstidFraArbeidsuker(): List<Pair<Periode, ArbeidstidPeriodeInfo>> {
+        requireNotNull(arbeidsuker) { "For å regne ut arbeid fra arbeidsuker må den være satt." }
+        return arbeidsuker.map { it.somK9Arbeidstid() }
     }
 
     internal fun timerPerDagFraProsentAvNormalt(normaltimer: Duration): Duration {

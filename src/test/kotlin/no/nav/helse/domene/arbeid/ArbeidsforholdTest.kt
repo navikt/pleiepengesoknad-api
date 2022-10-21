@@ -2,7 +2,15 @@ package no.nav.helse.domene.arbeid
 
 import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.soknad.PlanUkedager
-import no.nav.helse.soknad.domene.arbeid.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.ArbeidsUke
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.ArbeidstidEnkeltdag
+import no.nav.helse.soknad.domene.arbeid.Arbeidstimer
+import no.nav.helse.soknad.domene.arbeid.NULL_TIMER
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import no.nav.k9.søknad.felles.type.Periode
 import java.time.Duration
 import java.time.LocalDate
@@ -14,11 +22,14 @@ class ArbeidsforholdTest {
     companion object{
         val syvOgEnHalvTime = Duration.ofHours(7).plusMinutes(30)
         val femTimer = Duration.ofHours(5)
+        val halvArbeidsdag = Duration.ofHours(3).plusMinutes(45)
         val mandag = LocalDate.parse("2022-01-03")
         val tirsdag = mandag.plusDays(1)
         val onsdag = tirsdag.plusDays(1)
         val torsdag = onsdag.plusDays(1)
         val fredag = torsdag.plusDays(1)
+        val lørdag = fredag.plusDays(1)
+        val søndag = lørdag.plusDays(1)
     }
 
     @Test
@@ -323,5 +334,33 @@ class ArbeidsforholdTest {
 
         assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
         assertEquals(femTimer, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
+    }
+
+    @Test
+    fun `Jobber ulike timer per uke`(){
+        val arbeidsforhold = Arbeidsforhold(
+            normalarbeidstid = NormalArbeidstid(
+                erLiktHverUke = null,
+                timerPerUkeISnitt = null,
+                timerFasteDager = null
+            ), arbeidIPeriode = ArbeidIPeriode(
+                type = ArbeidIPeriodeType.ARBEIDER_ULIKE_UKER_TIMER,
+                arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+                arbeidsuker = listOf(
+                    ArbeidsUke(
+                        periode = no.nav.helse.soknad.Periode(mandag, søndag),
+                        timer = Duration.ofHours(37).plusMinutes(30),
+                        prosentAvNormalt = 50.0
+                    )
+                )
+            )
+        )
+
+        val k9Arbeid = arbeidsforhold.tilK9ArbeidstidInfo(mandag, fredag)
+        val perioder = k9Arbeid.perioder
+        assertEquals(1, perioder.size)
+
+        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, fredag)]!!.jobberNormaltTimerPerDag)
+        assertEquals(halvArbeidsdag, perioder[Periode(mandag, fredag)]!!.faktiskArbeidTimerPerDag)
     }
 }
