@@ -18,6 +18,7 @@ data class KomplettSøknad(
     val barn: BarnDetaljer,
     val arbeidsgivere: List<Arbeidsgiver>,
     var vedleggId : List<String> = listOf(),
+    val fødselsattestVedleggId: List<String>,
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
     val opptjeningIUtlandet: List<OpptjeningIUtlandet>,

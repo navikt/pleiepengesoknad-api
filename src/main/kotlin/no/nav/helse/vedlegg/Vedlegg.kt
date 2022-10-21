@@ -1,6 +1,10 @@
 package no.nav.helse.vedlegg
 
-import no.nav.helse.dusseldorf.ktor.core.*
+import no.nav.helse.dusseldorf.ktor.core.DefaultProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.ParameterType
+import no.nav.helse.dusseldorf.ktor.core.Throwblem
+import no.nav.helse.dusseldorf.ktor.core.ValidationProblemDetails
+import no.nav.helse.dusseldorf.ktor.core.Violation
 import java.net.URL
 
 data class VedleggId(val value: String)
@@ -25,13 +29,13 @@ data class Vedlegg(
             detail = "Totale størreslsen på alle vedlegg overstiger maks på 24 MB."
         )
 
-        fun List<Vedlegg>.validerVedlegg(vedleggUrler: List<URL>) {
+        fun List<Vedlegg>.validerVedlegg(vedleggUrler: List<URL>, felt: String) {
             if (size != vedleggUrler.size) {
                 throw Throwblem(
                     ValidationProblemDetails(
                         violations = setOf(
                             Violation(
-                                parameterName = "vedlegg",
+                                parameterName = felt,
                                 parameterType = ParameterType.ENTITY,
                                 reason = "Mottok referanse til ${vedleggUrler.size} vedlegg, men fant kun $size vedlegg.",
                                 invalidValue = vedleggUrler

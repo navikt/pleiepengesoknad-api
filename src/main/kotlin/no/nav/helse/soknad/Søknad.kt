@@ -24,6 +24,7 @@ data class Søknad(
     val barn: BarnDetaljer,
     val arbeidsgivere: List<Arbeidsgiver>,
     val vedlegg: List<URL> = listOf(), // TODO: Fjern listof() når krav om legeerklæring er påkrevd igjen.
+    val fødselsattestVedleggUrls: List<URL>? = listOf(),
     @JsonFormat(pattern = "yyyy-MM-dd")
     val fraOgMed: LocalDate,
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -64,6 +65,7 @@ data class Søknad(
         søker = søker,
         barn = barn,
         vedleggId = vedlegg.map { it.vedleggId() },
+        fødselsattestVedleggId = fødselsattestVedleggUrls?.map { it.vedleggId() } ?: listOf(),
         arbeidsgivere = arbeidsgivere,
         medlemskap = medlemskap,
         ferieuttakIPerioden = ferieuttakIPerioden,
