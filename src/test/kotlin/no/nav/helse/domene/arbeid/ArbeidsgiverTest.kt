@@ -2,7 +2,12 @@ package no.nav.helse.domene.arbeid
 
 import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.soknad.Arbeidsgiver
-import no.nav.helse.soknad.domene.arbeid.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NULL_TIMER
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import no.nav.k9.søknad.felles.type.Periode
 import java.time.Duration
 import java.time.LocalDate
@@ -37,7 +42,7 @@ class ArbeidsgiverTest {
                     fasteDager = null
                 )
             )
-        ).valider("test").verifiserFeil(3)
+        ).valider("test").verifiserFeil(2)
     }
 
     @Test

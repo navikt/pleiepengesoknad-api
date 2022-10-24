@@ -4,7 +4,13 @@ import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import org.junit.jupiter.api.assertThrows
-import java.time.DayOfWeek.*
+import java.time.DayOfWeek.FRIDAY
+import java.time.DayOfWeek.MONDAY
+import java.time.DayOfWeek.SATURDAY
+import java.time.DayOfWeek.SUNDAY
+import java.time.DayOfWeek.THURSDAY
+import java.time.DayOfWeek.TUESDAY
+import java.time.DayOfWeek.WEDNESDAY
 import java.time.Duration
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,15 +35,6 @@ class NormalArbeidstidTest {
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
                 timerFasteDager = PlanUkedager()
             ).valider("test").verifiserFeil(1)
-    }
-
-    @Test
-    fun `Gir feil dersom erLiktHverUke er null`() {
-        NormalArbeidstid(
-            erLiktHverUke = null,
-            timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
-            timerFasteDager = null
-        ).valider("test").verifiserFeil(1)
     }
 
     @Test

@@ -44,7 +44,7 @@ class ArbeidsforholdTest {
                 type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
                 arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
             )
-        ).valider("test").verifiserFeil(2)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test

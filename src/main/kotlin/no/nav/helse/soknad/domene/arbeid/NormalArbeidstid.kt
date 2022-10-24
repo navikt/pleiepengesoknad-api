@@ -1,7 +1,6 @@
 package no.nav.helse.soknad.domene.arbeid
 
 import no.nav.helse.general.krever
-import no.nav.helse.general.kreverIkkeNull
 import no.nav.helse.soknad.PlanUkedager
 import java.time.DayOfWeek
 import java.time.Duration
@@ -13,7 +12,6 @@ class NormalArbeidstid (
 ) {
 
     internal fun valider(felt: String) = mutableListOf<String>().apply {
-        kreverIkkeNull(erLiktHverUke, "$felt.erLiktHverUke må være satt")
         krever(timerFasteDager != null || timerPerUkeISnitt != null, "$felt.timerFasteDager eller timerPerUkeISnitt må være satt.")
         krever(timerFasteDager == null || timerPerUkeISnitt == null, "$felt.timerFasteDager eller timerPerUkeISnitt må være null")
     }
