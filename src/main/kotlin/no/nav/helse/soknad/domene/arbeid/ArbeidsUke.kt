@@ -5,6 +5,7 @@ import no.nav.helse.soknad.Periode
 import no.nav.helse.utils.ikkeErHelg
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.Duration
+import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
 import no.nav.k9.søknad.felles.type.Periode as K9Periode
 
@@ -44,10 +45,10 @@ data class ArbeidsUke(
             }
 
             prosentAvNormalt != null -> {
-                val faktiskArbeidstimerPerDag = Duration.ofHours(normaltArbeidstimerPerDag.toKotlinDuration()
+                val faktiskArbeidstimerPerDag = normaltArbeidstimerPerDag.toKotlinDuration()
                     .div(100)
                     .times(prosentAvNormalt)
-                    .inWholeHours)
+                    .toJavaDuration()
 
                 Pair(
                     k9Periode,
