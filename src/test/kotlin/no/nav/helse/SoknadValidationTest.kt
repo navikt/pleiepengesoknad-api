@@ -1,13 +1,24 @@
 package no.nav.helse
 
 import no.nav.helse.dusseldorf.ktor.core.Throwblem
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Arbeidsgiver
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.BarnRelasjon
+import no.nav.helse.soknad.Bosted
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.Land
+import no.nav.helse.soknad.Medlemskap
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Språk
+import no.nav.helse.soknad.Søknad
+import no.nav.helse.soknad.UtenlandsoppholdIPerioden
 import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.OpptjeningType
 import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
 import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
 import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
+import no.nav.helse.soknad.validate
 import org.junit.jupiter.api.Assertions
 import java.net.URL
 import java.time.Duration
@@ -115,7 +126,6 @@ class SoknadValidationTest {
                 erAnsatt = true,
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(

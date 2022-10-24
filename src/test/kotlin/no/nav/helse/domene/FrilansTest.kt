@@ -27,7 +27,6 @@ class FrilansTest {
         val fredag = torsdag.plusDays(1)
         val arbeidsforholdMedNormaltidSomSnittPerUke = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
@@ -37,7 +36,6 @@ class FrilansTest {
         )
         val arbeidsforholdMedNormaltidSomFasteUkedager = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerFasteDager = PlanUkedager(
                     mandag = syvOgEnHalvTime,
                     tirsdag = syvOgEnHalvTime,
@@ -62,7 +60,6 @@ class FrilansTest {
             harInntektSomFrilanser = true,
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = null,
                     timerPerUkeISnitt = null
                 ),
                 arbeidIPeriode = ArbeidIPeriode(

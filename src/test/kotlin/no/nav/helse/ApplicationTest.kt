@@ -907,7 +907,6 @@ class ApplicationTest {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = ArbeidIPeriode(
@@ -989,7 +988,6 @@ class ApplicationTest {
                     ),
                     arbeidsforhold = Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
-                            erLiktHverUke = true,
                             timerPerUkeISnitt = null
                         ),
                         arbeidIPeriode = ArbeidIPeriode(

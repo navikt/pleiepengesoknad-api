@@ -33,7 +33,6 @@ class ArbeidsgiverTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = null,
                     timerPerUkeISnitt = null
                 ),
                 arbeidIPeriode = ArbeidIPeriode(
@@ -53,7 +52,6 @@ class ArbeidsgiverTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
                     timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                 ),
                 arbeidIPeriode = ArbeidIPeriode(

@@ -2,9 +2,37 @@ package no.nav.helse
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.*
-import no.nav.helse.soknad.domene.*
-import no.nav.helse.soknad.domene.arbeid.*
+import no.nav.helse.soknad.Arbeidsgiver
+import no.nav.helse.soknad.BarnDetaljer
+import no.nav.helse.soknad.Beredskap
+import no.nav.helse.soknad.Bosted
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.KomplettSøknad
+import no.nav.helse.soknad.Land
+import no.nav.helse.soknad.Medlemskap
+import no.nav.helse.soknad.Nattevåk
+import no.nav.helse.soknad.Periode
+import no.nav.helse.soknad.Regnskapsfører
+import no.nav.helse.soknad.SelvstendigNæringsdrivende
+import no.nav.helse.soknad.Språk
+import no.nav.helse.soknad.Søknad
+import no.nav.helse.soknad.Utenlandsopphold
+import no.nav.helse.soknad.UtenlandsoppholdIPerioden
+import no.nav.helse.soknad.VarigEndring
+import no.nav.helse.soknad.Virksomhet
+import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
+import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.Næringstyper
+import no.nav.helse.soknad.domene.OpptjeningIUtlandet
+import no.nav.helse.soknad.domene.OpptjeningType
+import no.nav.helse.soknad.domene.UtenlandskNæring
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
+import no.nav.helse.soknad.Årsak
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.Duration
 import java.time.LocalDate
@@ -61,7 +89,6 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode": null,
                   "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "erLiktHverUke": true,
                     "timerPerUkeISnitt": "PT37H30M",
                     "timerFasteDager": null
                   },
@@ -139,7 +166,6 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "erLiktHverUke": true,
                     "timerPerUkeISnitt": "PT37H30M",
                     "timerFasteDager": null
                   },
@@ -235,7 +261,6 @@ internal class SerDesTest {
                 "harInntektSomFrilanser": true,
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "erLiktHverUke": true,
                     "timerPerUkeISnitt": "PT37H30M",
                     "timerFasteDager": null
                   },
@@ -319,7 +344,6 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode" : null,
                   "arbeidsforhold": {
                       "normalarbeidstid": {
-                        "erLiktHverUke": true,
                         "timerPerUkeISnitt": "PT37H30M",
                         "timerFasteDager": null
                       },
@@ -388,7 +412,6 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "erLiktHverUke": true,
                     "timerPerUkeISnitt": "PT37H30M",
                     "timerFasteDager": null
                   },
@@ -511,7 +534,6 @@ internal class SerDesTest {
                   "sluttdato": null,
                   "arbeidsforhold": {
                     "normalarbeidstid": {
-                      "erLiktHverUke": true,
                       "timerPerUkeISnitt": "PT37H30M",
                       "timerFasteDager": null
                     },
@@ -563,7 +585,6 @@ internal class SerDesTest {
                     erAnsatt = true,
                     arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
-                            erLiktHverUke = true,
                             timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                         ),
                         arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
@@ -607,7 +628,6 @@ internal class SerDesTest {
                 ),
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
@@ -737,7 +757,6 @@ internal class SerDesTest {
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = ArbeidIPeriode(

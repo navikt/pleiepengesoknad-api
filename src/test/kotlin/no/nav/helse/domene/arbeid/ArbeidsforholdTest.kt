@@ -36,7 +36,6 @@ class ArbeidsforholdTest {
     fun `Skal gi valideringsfeil dersom normalarbeidstid er feil`(){
         Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = null,
                 timerPerUkeISnitt = null,
                 timerFasteDager = null
             ),
@@ -51,7 +50,6 @@ class ArbeidsforholdTest {
     fun `Skal gi valideringsfeil dersom arbeidIPeriode er feil`(){
         Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(32)
             ),
             arbeidIPeriode = ArbeidIPeriode(
@@ -66,7 +64,6 @@ class ArbeidsforholdTest {
     fun `Jobber som vanlig med normal arbeidstid oppgitt som snitt per uke`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
@@ -86,7 +83,6 @@ class ArbeidsforholdTest {
     fun `Jobber som vanlig med normal arbeidstid oppgitt som faste dager`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerFasteDager = PlanUkedager(
                     mandag = null, tirsdag = syvOgEnHalvTime, onsdag = null, torsdag = syvOgEnHalvTime, fredag = null
                 )
@@ -115,7 +111,6 @@ class ArbeidsforholdTest {
     fun `Jobber ikke med normal arbeidstid oppgitt som snitt per uke`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
@@ -136,7 +131,6 @@ class ArbeidsforholdTest {
     fun `Jobber ikke med normal arbeidstid oppgitt som faste dager`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerFasteDager = PlanUkedager(
                     mandag = null, tirsdag = syvOgEnHalvTime, onsdag = null, torsdag = syvOgEnHalvTime, fredag = null
                 )
@@ -165,7 +159,6 @@ class ArbeidsforholdTest {
     fun `Jobber enkeltdager`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
@@ -210,7 +203,6 @@ class ArbeidsforholdTest {
     fun `Jobber enkeltdager som går utenfor søknadsperioden, forventer at disse ikke blir mappet opp`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
@@ -255,7 +247,6 @@ class ArbeidsforholdTest {
     fun `Jobber faste ukedager`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerFasteDager = PlanUkedager(
                     mandag = syvOgEnHalvTime,
                     tirsdag = syvOgEnHalvTime,
@@ -296,7 +287,6 @@ class ArbeidsforholdTest {
     fun `Jobber prosent av normalt`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
@@ -318,7 +308,6 @@ class ArbeidsforholdTest {
     fun `Jobber timer i snitt per uke`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ),
             arbeidIPeriode = ArbeidIPeriode(
@@ -340,7 +329,6 @@ class ArbeidsforholdTest {
     fun `Jobber ulike timer per uke`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                erLiktHverUke = null,
                 timerPerUkeISnitt = null,
                 timerFasteDager = null
             ), arbeidIPeriode = ArbeidIPeriode(

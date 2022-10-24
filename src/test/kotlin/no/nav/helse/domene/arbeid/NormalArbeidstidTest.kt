@@ -22,7 +22,6 @@ class NormalArbeidstidTest {
     @Test
     fun `Gir feil dersom verken timerPerUkeISnitt eller timerFasteDager er satt`() {
         NormalArbeidstid(
-            erLiktHverUke = true,
             timerPerUkeISnitt = null,
             timerFasteDager = null
         ).valider("test").verifiserFeil(1)
@@ -31,7 +30,6 @@ class NormalArbeidstidTest {
     @Test
     fun `Gir feil dersom timerPerUkeISnitt og timerFasteDager er satt`(){
             NormalArbeidstid(
-                erLiktHverUke = true,
                 timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
                 timerFasteDager = PlanUkedager()
             ).valider("test").verifiserFeil(1)
@@ -40,7 +38,6 @@ class NormalArbeidstidTest {
     @Test
     fun `Gir feil ved henting av timer per dag fra snitt dersom timerPerUkeISnitt ikke er satt`(){
         val normalArbeidstid = NormalArbeidstid(
-            erLiktHverUke = true,
             timerPerUkeISnitt = null,
             timerFasteDager = PlanUkedager()
         )
@@ -50,7 +47,6 @@ class NormalArbeidstidTest {
     @Test
     fun `Regner ut riktig timerPerDag fra timerPerUkeISnitt - 37,5 timer per uke gir 7,5 per dag`(){
         val normalarbeidstid = NormalArbeidstid(
-            erLiktHverUke = true,
             timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
             timerFasteDager = null
         )
@@ -63,7 +59,6 @@ class NormalArbeidstidTest {
     @Test
     fun `Gir feil ved henting av timer per dag fra fasteDager dersom timerFasteDager ikke er satt`(){
         val normalArbeidstid = NormalArbeidstid(
-            erLiktHverUke = true,
             timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30),
             timerFasteDager = null
         )
@@ -74,7 +69,6 @@ class NormalArbeidstidTest {
     fun `Regner ut riktig timerPerDag fra timerFasteDager`(){
         val femTimer = Duration.ofHours(5)
         val normalarbeidstid = NormalArbeidstid(
-            erLiktHverUke = true,
             timerPerUkeISnitt = null,
             timerFasteDager = PlanUkedager(mandag = femTimer, tirsdag = femTimer)
         )

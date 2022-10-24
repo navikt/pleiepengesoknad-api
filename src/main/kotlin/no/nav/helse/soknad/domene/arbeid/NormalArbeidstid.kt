@@ -6,7 +6,6 @@ import java.time.DayOfWeek
 import java.time.Duration
 
 class NormalArbeidstid (
-    val erLiktHverUke: Boolean? = null, //Unngå default false
     val timerPerUkeISnitt: Duration? = null,
     val timerFasteDager: PlanUkedager? = null
 ) {
@@ -30,7 +29,6 @@ class NormalArbeidstid (
     }
 
     override fun equals(other: Any?) = this === other || other is NormalArbeidstid && this.equals(other)
-    private fun equals(other: NormalArbeidstid) = this.erLiktHverUke == other.erLiktHverUke
-            && this.timerPerUkeISnitt == other.timerPerUkeISnitt
+    private fun equals(other: NormalArbeidstid) = this.timerPerUkeISnitt == other.timerPerUkeISnitt
             && this.timerFasteDager == other.timerFasteDager
 }
