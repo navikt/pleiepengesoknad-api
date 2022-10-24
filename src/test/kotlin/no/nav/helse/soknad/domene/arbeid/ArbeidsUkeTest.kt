@@ -30,4 +30,24 @@ internal class ArbeidsUkeTest {
         assertEquals(forventetArbeidstidPeriodeInfo.jobberNormaltTimerPerDag, arbeidstidPeriodeInfo.jobberNormaltTimerPerDag)
         assertEquals(forventetArbeidstidPeriodeInfo.faktiskArbeidTimerPerDag, arbeidstidPeriodeInfo.faktiskArbeidTimerPerDag)
     }
+    @Test
+    internal fun `en arbeidsuke med en arbeidsdag, skal ikke feile`() {
+        val (periode: K9Periode, arbeidstidPeriodeInfo) = ArbeidsUke(
+            periode = Periode(
+                fraOgMed = LocalDate.parse("2022-10-10"),
+                tilOgMed = LocalDate.parse("2022-10-10")
+            ),
+            timer = Duration.ofHours(40),
+            prosentAvNormalt = 50.0
+        ).somK9Arbeidstid()
+
+        val forventetPeriode = K9Periode(LocalDate.parse("2022-10-10"), LocalDate.parse("2022-10-10"))
+        val forventetArbeidstidPeriodeInfo = ArbeidstidPeriodeInfo()
+            .medJobberNormaltTimerPerDag(Duration.ofHours(8))
+            .medFaktiskArbeidTimerPerDag(Duration.ofHours(4))
+
+        assertEquals(forventetPeriode, periode)
+        assertEquals(forventetArbeidstidPeriodeInfo.jobberNormaltTimerPerDag, arbeidstidPeriodeInfo.jobberNormaltTimerPerDag)
+        assertEquals(forventetArbeidstidPeriodeInfo.faktiskArbeidTimerPerDag, arbeidstidPeriodeInfo.faktiskArbeidTimerPerDag)
+    }
 }
