@@ -24,7 +24,7 @@ class Arbeidsforhold(
 
     internal fun valider(felt: String) = mutableListOf<String>().apply {
         addAll(normalarbeidstid.valider("$felt.normalarbeidstid"))
-        addAll(arbeidIPeriode.valider("$felt.arbeidIPeriode"))
+        addAll(arbeidIPeriode.valider("$felt.arbeidIPeriode", normalarbeidstid))
     }
 
     fun tilK9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate) = when(arbeidIPeriode.type){
@@ -125,7 +125,7 @@ class Arbeidsforhold(
     private fun arbeidsuker(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
         val arbeidstidInfo = ArbeidstidInfo()
 
-        arbeidIPeriode.k9ArbeidstidFraArbeidsuker().forEach { (periode, arbeidstidPeriodeInfo) ->
+        arbeidIPeriode.k9ArbeidstidFraArbeidsuker(normalarbeidstid).forEach { (periode, arbeidstidPeriodeInfo) ->
             //Tar høyde for at enkeltdager kan være utenfor fraOgMed/tilOgMed som kan være justert pga start/slutt innenfor søknadsperioden
             if (periode.fraOgMed.erInnenforPerioden(fraOgMed, tilOgMed)) {
                 arbeidstidInfo.leggeTilPeriode(periode, arbeidstidPeriodeInfo)

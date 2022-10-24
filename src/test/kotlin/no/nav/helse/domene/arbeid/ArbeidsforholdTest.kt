@@ -329,16 +329,14 @@ class ArbeidsforholdTest {
     fun `Jobber ulike timer per uke`(){
         val arbeidsforhold = Arbeidsforhold(
             normalarbeidstid = NormalArbeidstid(
-                timerPerUkeISnitt = null,
-                timerFasteDager = null
+                timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
             ), arbeidIPeriode = ArbeidIPeriode(
                 type = ArbeidIPeriodeType.ARBEIDER_ULIKE_UKER_TIMER,
                 arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
                 arbeidsuker = listOf(
                     ArbeidsUke(
                         periode = no.nav.helse.soknad.Periode(mandag, søndag),
-                        timer = Duration.ofHours(37).plusMinutes(30),
-                        prosentAvNormalt = 50.0
+                        timer = Duration.ofHours(18).plusMinutes(45), // 50% av normal arbeidstid.
                     )
                 )
             )
