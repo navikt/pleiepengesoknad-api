@@ -24,7 +24,7 @@ data class ArbeidsUke(
         )
     }
 
-    private fun periodeUtenHelg() = periode.fraOgMed.datesUntil(periode.tilOgMed)
+    private fun periodeUtenHelg() = periode.fraOgMed.datesUntil(periode.tilOgMed.plusDays(1))
         .filter { it.ikkeErHelg() }
         .toList()
         .toSortedSet()
