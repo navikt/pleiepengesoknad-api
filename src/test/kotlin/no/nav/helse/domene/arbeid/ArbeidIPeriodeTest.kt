@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 
 class ArbeidIPeriodeTest {
 
-    companion object{
+    companion object {
         private val åtteTimer = Duration.ofHours(8)
         private val fireTimer = Duration.ofHours(4)
 
@@ -27,7 +27,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Skal gi feil dersom type=ARBEIDER_ENKELTDAGER og fasteDager er null`(){
+    fun `Skal gi feil dersom type=ARBEIDER_ENKELTDAGER og fasteDager er null`() {
         ArbeidIPeriode(
             type = ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
@@ -36,7 +36,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Skal gi feil dersom type=ARBEIDER_FASTE_UKEDAGER og fasteDager er null`(){
+    fun `Skal gi feil dersom type=ARBEIDER_FASTE_UKEDAGER og fasteDager er null`() {
         ArbeidIPeriode(
             type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
@@ -45,7 +45,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Skal gi feil dersom type=ARBEIDER_PROSENT_AV_NORMALT og prosentAvNormalt er null`(){
+    fun `Skal gi feil dersom type=ARBEIDER_PROSENT_AV_NORMALT og prosentAvNormalt er null`() {
         ArbeidIPeriode(
             type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
@@ -54,7 +54,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Skal gi feil dersom type=ARBEIDER_TIMER_I_SNITT_PER_UKE og timerPerUke er null`(){
+    fun `Skal gi feil dersom type=ARBEIDER_TIMER_I_SNITT_PER_UKE og timerPerUke er null`() {
         ArbeidIPeriode(
             type = ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
@@ -63,7 +63,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Arbeid oppgitt som faste ukedager gir riktig svar per gitt dag`(){
+    fun `Arbeid oppgitt som faste ukedager gir riktig svar per gitt dag`() {
         val arbeidIPeriode = ArbeidIPeriode(
             type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
@@ -79,7 +79,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Arbeid oppgitt som enkeltdager`(){
+    fun `Arbeid oppgitt som enkeltdager`() {
         val arbeidIPeriode = ArbeidIPeriode(
             type = ArbeidIPeriodeType.ARBEIDER_ENKELTDAGER,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
@@ -100,7 +100,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Arbeid oppgitt som arbeidsuker`(){
+    fun `Arbeid oppgitt som arbeidsuker`() {
         val normalArbeidstid = NormalArbeidstid(timerPerUkeISnitt = Duration.ofHours(40))
 
         val arbeidIPeriode = ArbeidIPeriode(
@@ -123,7 +123,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Arbeid oppgitt som prosent av normalt gir riktig svar`(){
+    fun `Arbeid oppgitt som prosent av normalt gir riktig svar`() {
         val arbeidIPeriode = ArbeidIPeriode(
             type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
@@ -134,7 +134,7 @@ class ArbeidIPeriodeTest {
     }
 
     @Test
-    fun `Ved 20 timer arbeid snitt per uke er timer per dag 4`(){
+    fun `Ved 20 timer arbeid snitt per uke er timer per dag 4`() {
         val arbeidIPeriode = ArbeidIPeriode(
             type = ArbeidIPeriodeType.ARBEIDER_TIMER_I_SNITT_PER_UKE,
             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,

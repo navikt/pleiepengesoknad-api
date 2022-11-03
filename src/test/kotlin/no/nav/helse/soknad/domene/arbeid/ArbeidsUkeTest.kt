@@ -60,7 +60,7 @@ internal class ArbeidsUkeTest {
                 fraOgMed = LocalDate.parse("2022-10-10"),
                 tilOgMed = LocalDate.parse("2022-10-10")
             ),
-            timer = Duration.ofHours(20),
+            timer = Duration.ofHours(4),
         ).somK9Arbeidstid(normalArbeidstid)
 
         val forventetPeriode = K9Periode(LocalDate.parse("2022-10-10"), LocalDate.parse("2022-10-10"))

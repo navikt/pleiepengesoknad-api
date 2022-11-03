@@ -5,6 +5,8 @@ import no.nav.helse.soknad.Periode
 import no.nav.helse.utils.ikkeErHelg
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.ArbeidstidPeriodeInfo
 import java.time.Duration
+import java.time.LocalDate
+import java.util.*
 import kotlin.time.toJavaDuration
 import kotlin.time.toKotlinDuration
 import no.nav.k9.søknad.felles.type.Periode as K9Periode
@@ -28,13 +30,14 @@ data class ArbeidsUke(
 
     internal fun somK9Arbeidstid(normalarbeidstid: NormalArbeidstid): Pair<K9Periode, ArbeidstidPeriodeInfo> {
         requireNotNull(normalarbeidstid.timerPerUkeISnitt) { "normalarbeidstid.timerPerUkeISnitt må være satt." }
-        val periodeUtenHelg = periodeUtenHelg()
+        val periodeUtenHelg: SortedSet<LocalDate> = periodeUtenHelg()
+        val ukedager = periodeUtenHelg.size.toLong()
         val k9Periode = K9Periode(periodeUtenHelg.first(), periodeUtenHelg.last())
         val normaltArbeidstimerPerDag = normalarbeidstid.timerPerUkeISnitt.dividedBy(DAGER_PER_UKE)
 
         return when {
             timer != null -> {
-                val faktiskArbeidstimerPerDag = timer.dividedBy(DAGER_PER_UKE)
+                val faktiskArbeidstimerPerDag = timer.dividedBy(ukedager)
 
                 Pair(
                     k9Periode,
