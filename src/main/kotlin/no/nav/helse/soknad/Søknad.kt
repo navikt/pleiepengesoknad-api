@@ -18,6 +18,7 @@ enum class Språk { nb, nn }
 
 data class Søknad(
     val newVersion: Boolean?,
+    val apiDataVersjon: String? = null,
     val søknadId: String = UUID.randomUUID().toString(),
     val mottatt: ZonedDateTime = ZonedDateTime.now(ZoneOffset.UTC),
     val språk: Språk? = null,

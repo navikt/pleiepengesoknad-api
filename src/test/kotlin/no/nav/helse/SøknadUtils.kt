@@ -55,6 +55,7 @@ class SøknadUtils {
 
         fun defaultSøknad(søknadId: String = UUID.randomUUID().toString()) = Søknad(
             newVersion = null,
+            apiDataVersjon = "1.0.0",
             søknadId = søknadId,
             mottatt = ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
             språk = Språk.nb,
