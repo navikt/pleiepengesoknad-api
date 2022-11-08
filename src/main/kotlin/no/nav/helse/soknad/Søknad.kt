@@ -7,6 +7,7 @@ import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.UtenlandskNæring
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
 import no.nav.k9.søknad.Søknad
 import java.net.URL
 import java.time.LocalDate
@@ -43,6 +44,7 @@ data class Søknad(
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans,
+    val frilanserOppdrag: List<FrilanserV2>? = null,
     val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
@@ -88,6 +90,28 @@ data class Søknad(
         k9FormatSøknad = k9FormatSøknad
     )
 }
+
+data class FrilanserV2(
+    val harInntektSomFrilanser: Boolean,
+    val oppdrag: List<FrilanserOppdrag>
+)
+
+data class FrilanserOppdrag(
+    val navn: String? = null,
+    val organisasjonsnummer: String? = null,
+    val offentligIdent: String? = null,
+    val manuellOppføring: Boolean,
+    val oppdragType: FrilanserOppdragType? = null,
+    val harOppdragIPerioden: FrilanserOppdragIPerioden,
+    @JsonFormat(pattern = "yyyy-MM-dd") val ansattFom: LocalDate? = null,
+    @JsonFormat(pattern = "yyyy-MM-dd") val ansattTom: LocalDate? = null,
+    val styremedlemHeleInntekt: Boolean? = null,
+    val omsorgslønnTimerPerUke: Double? = null,
+    val arbeidsforhold: Arbeidsforhold? = null
+)
+
+enum class FrilanserOppdragIPerioden { JA, JA_MEN_AVSLUTTES_I_PERIODEN, NEI }
+enum class FrilanserOppdragType { STYREMELEM_ELLER_VERV, FOSTERFORELDER, FRILANSER, OMSORGSSTØNAD }
 
 fun URL.vedleggId() = this.toString().substringAfterLast("/")
 
