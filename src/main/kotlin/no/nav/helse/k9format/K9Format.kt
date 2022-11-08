@@ -13,9 +13,13 @@ import no.nav.k9.søknad.felles.type.Landkode
 import no.nav.k9.søknad.felles.type.NorskIdentitetsnummer
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.felles.type.SøknadId
-import no.nav.k9.søknad.ytelse.psb.v1.*
 import no.nav.k9.søknad.ytelse.psb.v1.Beredskap.BeredskapPeriodeInfo
+import no.nav.k9.søknad.ytelse.psb.v1.DataBruktTilUtledning
+import no.nav.k9.søknad.ytelse.psb.v1.LovbestemtFerie
 import no.nav.k9.søknad.ytelse.psb.v1.Nattevåk.NattevåkPeriodeInfo
+import no.nav.k9.søknad.ytelse.psb.v1.Omsorg
+import no.nav.k9.søknad.ytelse.psb.v1.PleiepengerSyktBarn
+import no.nav.k9.søknad.ytelse.psb.v1.Uttak
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
 import java.time.Duration
 import java.time.ZonedDateTime
@@ -64,14 +68,10 @@ fun Søknad.tilK9Format(mottatt: ZonedDateTime, søker: Søker): K9Søknad {
 
 fun Søker.tilK9Søker(): K9Søker = K9Søker(NorskIdentitetsnummer.of(fødselsnummer))
 
-fun BarnDetaljer.tilK9Barn(): K9Barn {
-    val k9Barn = K9Barn()
-
-    if(this.fødselsnummer != null){
-        k9Barn.medNorskIdentitetsnummer(NorskIdentitetsnummer.of(this.fødselsnummer))
-    } else k9Barn.medFødselsdato(this.fødselsdato)
-
-    return k9Barn
+fun BarnDetaljer.tilK9Barn(): K9Barn = when {
+    fødselsnummer != null -> K9Barn().medNorskIdentitetsnummer(NorskIdentitetsnummer.of(fødselsnummer))
+    fødselsdato != null -> K9Barn().medFødselsdato(fødselsdato)
+    else -> K9Barn()
 }
 
 fun Søknad.byggK9DataBruktTilUtledning(): DataBruktTilUtledning = DataBruktTilUtledning(

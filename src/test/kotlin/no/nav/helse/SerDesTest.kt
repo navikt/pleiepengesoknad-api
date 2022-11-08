@@ -68,6 +68,7 @@ internal class SerDesTest {
             """
             {
               "newVersion": null,
+              "apiDataVersjon": "1.0.0",
               "søknadId" : "$søknadsId",
               "mottatt" : "2021-01-10T03:04:05.000000006Z",
               "språk": "nb",
@@ -114,6 +115,9 @@ internal class SerDesTest {
               ],
               "vedlegg": [
                 "http://localhost:8080/vedlegg/1"
+              ],
+              "fødselsattestVedleggUrls": [
+                "http://localhost:8080/vedlegg/2"
               ],
               "medlemskap": {
                 "harBoddIUtlandetSiste12Mnd": true,
@@ -316,6 +320,7 @@ internal class SerDesTest {
         {
               "mottatt": "2020-05-05T00:00:00Z",
               "språk": "nb",
+              "apiDataVersjon": "1.0.0",
               "søknadId" : "$søknadsId",
               "søker": {
                 "aktørId": "12345",
@@ -361,6 +366,7 @@ internal class SerDesTest {
                 }
               ],
               "vedleggId": [],
+              "fødselsattestVedleggId": [],
               "medlemskap": {
                 "harBoddIUtlandetSiste12Mnd": true,
                 "skalBoIUtlandetNeste12Mnd": true,
@@ -564,6 +570,7 @@ internal class SerDesTest {
         fun komplettSøknad(søknadId: String = UUID.randomUUID().toString()) = KomplettSøknad(
             mottatt = LocalDate.parse("2020-05-05").atStartOfDay(ZoneId.of("UTC")),
             språk = Språk.nb,
+            apiDataVersjon = "1.0.0",
             søknadId = "$søknadId",
             barn = BarnDetaljer(
                 aktørId = "12345",
@@ -595,6 +602,7 @@ internal class SerDesTest {
                 )
             ),
             vedleggId = listOf(),
+            fødselsattestVedleggId = listOf(),
             fraOgMed = LocalDate.parse("2020-01-01"),
             tilOgMed = LocalDate.parse("2020-02-01"),
             nattevåk = Nattevåk(

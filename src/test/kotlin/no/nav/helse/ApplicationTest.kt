@@ -730,6 +730,7 @@ class ApplicationTest {
     @Test
     fun `Sende søknad`() {
         val jpegUrl = engine.jpegUrl(cookie = cookie)
+        val opplastetIdVedlegg = engine.jpegUrl(cookie = cookie)
 
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.parse("2022-01-01"),
@@ -743,7 +744,8 @@ class ApplicationTest {
                     )
                 )
             ),
-            vedlegg = listOf(URL(jpegUrl))
+            vedlegg = listOf(URL(jpegUrl)),
+            fødselsattestVedleggUrls = listOf(URL(opplastetIdVedlegg))
         )
 
         requestAndAssert(
@@ -843,12 +845,14 @@ class ApplicationTest {
     fun `Sende søknad med AktørID som ID på barnet`() {
         val jwtToken = mockOAuth2Server.issueToken(fnr = fnrMedBarn)
         val jpegUrl = engine.jpegUrl(jwtToken = jwtToken)
+        val opplastetIdVedlegg = engine.jpegUrl(cookie = cookie)
         val søknad = SøknadUtils.defaultSøknad().copy(
             fraOgMed = LocalDate.now().minusDays(3),
             tilOgMed = LocalDate.now().plusDays(4),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(harInntektSomSelvstendig = false),
             omsorgstilbud = null,
             vedlegg = listOf(URL(jpegUrl)),
+            fødselsattestVedleggUrls = listOf(URL(opplastetIdVedlegg)),
             ferieuttakIPerioden = FerieuttakIPerioden(
                 skalTaUtFerieIPerioden = true,
                 ferieuttak = listOf(
@@ -881,12 +885,14 @@ class ApplicationTest {
     @Test
     fun `Sende søknad med selvstendig næringsvirksomhet som har regnskapsfører`() {
         val jpegUrl = engine.jpegUrl(cookie = cookie)
+        val opplastetIdVedlegg = engine.jpegUrl(cookie = cookie)
         val søknad = SøknadUtils.defaultSøknad().copy(
             omsorgstilbud = null,
             ferieuttakIPerioden = null,
             fraOgMed = LocalDate.now().minusDays(3),
             tilOgMed = LocalDate.now().plusDays(4),
             vedlegg = listOf(URL(jpegUrl)),
+            fødselsattestVedleggUrls = listOf(URL(opplastetIdVedlegg)),
             selvstendigNæringsdrivende = SelvstendigNæringsdrivende(
                 harInntektSomSelvstendig = true,
                 Virksomhet(

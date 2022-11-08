@@ -9,6 +9,7 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 
 data class KomplettSøknad(
+    val apiDataVersjon: String? = null,
     val språk: Språk? = null,
     val søknadId: String,
     val mottatt: ZonedDateTime,
@@ -18,6 +19,7 @@ data class KomplettSøknad(
     val barn: BarnDetaljer,
     val arbeidsgivere: List<Arbeidsgiver>,
     var vedleggId : List<String> = listOf(),
+    val fødselsattestVedleggId: List<String>,
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
     val opptjeningIUtlandet: List<OpptjeningIUtlandet>,

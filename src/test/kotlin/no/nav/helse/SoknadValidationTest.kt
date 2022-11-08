@@ -136,6 +136,7 @@ class SoknadValidationTest {
             )
         ),
         vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
+        fødselsattestVedleggUrls = listOf(URL("http://localhost:8080/vedlegg/2")),
         fraOgMed = LocalDate.now(),
         tilOgMed = LocalDate.now(),
         medlemskap = medlemskap,

@@ -55,6 +55,7 @@ class SøknadUtils {
 
         fun defaultSøknad(søknadId: String = UUID.randomUUID().toString()) = Søknad(
             newVersion = null,
+            apiDataVersjon = "1.0.0",
             søknadId = søknadId,
             mottatt = ZonedDateTime.of(2021, 1, 10, 3, 4, 5, 6, ZoneId.of("UTC")),
             språk = Språk.nb,
@@ -89,6 +90,7 @@ class SøknadUtils {
                 )
             ),
             vedlegg = listOf(URL("http://localhost:8080/vedlegg/1")),
+            fødselsattestVedleggUrls = listOf(URL("http://localhost:8080/vedlegg/2")),
             fraOgMed = LocalDate.parse("2021-01-01"),
             tilOgMed = LocalDate.parse("2021-10-01"),
             nattevåk = Nattevåk(

@@ -65,7 +65,9 @@ internal class SøknadServiceTest{
                     fødselsnummer = "02119970078"
                 )
 
-                coEvery {vedleggService.hentVedlegg(vedleggUrls = any(), any(), any(), any()) } returns listOf(Vedlegg("bytearray".toByteArray(), "vedlegg", "vedlegg", DokumentEier("290990123456")))
+                coEvery {vedleggService.hentVedlegg(vedleggUrls = any(), any(), any(), any()) } returns
+                        listOf(Vedlegg("bytearray".toByteArray(), "vedlegg", "vedlegg", DokumentEier("290990123456")))
+                        listOf(Vedlegg("bytearray".toByteArray(), "opplastetIdVedleggId", "opplastetIdVedleggId", DokumentEier("290990123456")))
 
                 every { kafkaProducer.produserPleiepengerMelding(any(), any()) } throws Exception("Mocket feil ved kafkaProducer")
 
@@ -93,6 +95,6 @@ internal class SøknadServiceTest{
             }
         }
 
-        coVerify(exactly = 1) { vedleggService.fjernHoldPåPersistertVedlegg(any(), any(), any()) }
+        coVerify(exactly = 2) { vedleggService.fjernHoldPåPersistertVedlegg(any(), any(), any()) }
     }
 }
