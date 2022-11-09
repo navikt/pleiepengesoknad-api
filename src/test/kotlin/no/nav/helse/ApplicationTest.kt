@@ -956,13 +956,7 @@ class ApplicationTest {
                 {
                   "type": "entity",
                   "name": "valideringsfeil",
-                  "reason": "selvstendigNæringsdrivende.normalarbeidstid.timerFasteDager eller timerPerUkeISnitt må være satt.",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "valideringsfeil",
-                  "reason": "selvstendigNæringsdrivende.arbeidIPeriode.fasteDager må være satt dersom type=ARBEIDER_FASTE_UKEDAGER",
+                  "reason": "selvstendigNæringsdrivende.arbeidIPeriode.prosentAvNormalt må være satt dersom type=ARBEIDER_PROSENT_AV_NORMALT",
                   "invalid_value": null
                 }
               ]
@@ -994,12 +988,12 @@ class ApplicationTest {
                     ),
                     arbeidsforhold = Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
-                            timerPerUkeISnitt = null
+                            timerPerUkeISnitt = Duration.ZERO
                         ),
                         arbeidIPeriode = ArbeidIPeriode(
-                            type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                            type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
                             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
-                            fasteDager = null
+                            prosentAvNormalt = null
                         )
                     )
                 )

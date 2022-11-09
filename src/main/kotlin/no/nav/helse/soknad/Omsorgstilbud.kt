@@ -1,12 +1,20 @@
 package no.nav.helse.soknad
 
 import no.nav.helse.k9format.ukedagerTilOgMed
-import no.nav.helse.soknad.OmsorgstilbudSvarFremtid.*
+import no.nav.helse.soknad.OmsorgstilbudSvarFremtid.JA
+import no.nav.helse.soknad.OmsorgstilbudSvarFremtid.NEI
+import no.nav.helse.soknad.OmsorgstilbudSvarFremtid.USIKKER
 import no.nav.k9.søknad.felles.type.Periode
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.TilsynPeriodeInfo
 import no.nav.k9.søknad.ytelse.psb.v1.tilsyn.Tilsynsordning
 import java.time.DayOfWeek
-import java.time.DayOfWeek.*
+import java.time.DayOfWeek.FRIDAY
+import java.time.DayOfWeek.MONDAY
+import java.time.DayOfWeek.SATURDAY
+import java.time.DayOfWeek.SUNDAY
+import java.time.DayOfWeek.THURSDAY
+import java.time.DayOfWeek.TUESDAY
+import java.time.DayOfWeek.WEDNESDAY
 import java.time.Duration
 import java.time.Duration.ZERO
 import java.time.LocalDate
@@ -42,7 +50,7 @@ data class Omsorgstilbud(
         when(svarFortid){
             OmsorgstilbudSvarFortid.JA -> beregnFraPlanUkedager(tilsynsordning, periode.fraOgMed, gjeldendeTilOgMed)
             OmsorgstilbudSvarFortid.NEI -> tilsynsordning.medNullTimer(Periode(periode.fraOgMed, gjeldendeTilOgMed))
-            null -> null
+            null -> {}
         }
     }
 
@@ -53,7 +61,7 @@ data class Omsorgstilbud(
         when(svarFremtid){
             JA -> beregnFraPlanUkedager(tilsynsordning, gjeldendeFraOgMed, periode.tilOgMed)
             NEI, USIKKER -> tilsynsordning.medNullTimer(Periode(gjeldendeFraOgMed, periode.tilOgMed))
-            null -> null
+            null -> {}
         }
     }
 

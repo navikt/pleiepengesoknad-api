@@ -33,15 +33,15 @@ class ArbeidsgiverTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
-                    timerPerUkeISnitt = null
+                    timerPerUkeISnitt = syvOgEnHalvTime
                 ),
                 arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                    type = ArbeidIPeriodeType.ARBEIDER_ULIKE_UKER_TIMER,
                     arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG,
-                    fasteDager = null
+                    arbeidsuker = null
                 )
             )
-        ).valider("test").verifiserFeil(2)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test

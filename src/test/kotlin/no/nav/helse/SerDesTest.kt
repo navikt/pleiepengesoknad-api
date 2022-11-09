@@ -90,17 +90,13 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode": null,
                   "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "timerPerUkeISnitt": "PT37H30M",
-                    "timerFasteDager": null
+                    "timerPerUkeISnitt": "PT37H30M"
                   },
                   "arbeidIPeriode": {
                     "type": "ARBEIDER_VANLIG",
                     "arbeiderIPerioden": "SOM_VANLIG",
-                    "erLiktHverUke": null,
-                    "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null,
                     "arbeidsuker": null
                   }
                 }
@@ -170,17 +166,13 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "timerPerUkeISnitt": "PT37H30M",
-                    "timerFasteDager": null
+                    "timerPerUkeISnitt": "PT37H30M"
                   },
                   "arbeidIPeriode": {
                     "type": "ARBEIDER_VANLIG",
                     "arbeiderIPerioden": "SOM_VANLIG",
-                    "erLiktHverUke": null,
-                    "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null,
                     "arbeidsuker": null
                   }
                 }
@@ -265,17 +257,13 @@ internal class SerDesTest {
                 "harInntektSomFrilanser": true,
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "timerPerUkeISnitt": "PT37H30M",
-                    "timerFasteDager": null
+                    "timerPerUkeISnitt": "PT37H30M"
                   },
                   "arbeidIPeriode": {
                     "type": "ARBEIDER_VANLIG",
                     "arbeiderIPerioden": "SOM_VANLIG",
-                    "erLiktHverUke": null,
-                    "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null,
                     "arbeidsuker": null
                   }
                 }
@@ -349,17 +337,13 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode" : null,
                   "arbeidsforhold": {
                       "normalarbeidstid": {
-                        "timerPerUkeISnitt": "PT37H30M",
-                        "timerFasteDager": null
+                        "timerPerUkeISnitt": "PT37H30M"
                       },
                       "arbeidIPeriode": {
                         "type": "ARBEIDER_VANLIG",
                         "arbeiderIPerioden": "SOM_VANLIG",
-                        "erLiktHverUke": null,
-                        "fasteDager": null,
                         "prosentAvNormalt": null,
                         "timerPerUke": null,
-                        "enkeltdager": null,
                         "arbeidsuker": null
                       }
                     }
@@ -418,17 +402,13 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "timerPerUkeISnitt": "PT37H30M",
-                    "timerFasteDager": null
+                    "timerPerUkeISnitt": "PT37H30M"
                   },
                   "arbeidIPeriode": {
                     "type": "ARBEIDER_VANLIG",
                     "arbeiderIPerioden": "SOM_VANLIG",
-                    "erLiktHverUke": null,
-                    "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null,
                     "arbeidsuker": null
                   }
                 }
@@ -540,17 +520,13 @@ internal class SerDesTest {
                   "sluttdato": null,
                   "arbeidsforhold": {
                     "normalarbeidstid": {
-                      "timerPerUkeISnitt": "PT37H30M",
-                      "timerFasteDager": null
+                      "timerPerUkeISnitt": "PT37H30M"
                     },
                     "arbeidIPeriode": {
                       "type": "ARBEIDER_VANLIG",
                       "arbeiderIPerioden": "SOM_VANLIG",
-                      "erLiktHverUke": null,
-                      "fasteDager": null,
                       "prosentAvNormalt": null,
                       "timerPerUke": null,
-                      "enkeltdager": null,
                       "arbeidsuker": null
                     }
                   }

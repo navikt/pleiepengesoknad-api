@@ -2,7 +2,6 @@ package no.nav.helse.domene
 
 import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.TestUtils.Companion.verifiserIngenFeil
-import no.nav.helse.soknad.PlanUkedager
 import no.nav.helse.soknad.domene.Frilans
 import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
 import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
@@ -34,21 +33,6 @@ class FrilansTest {
                 arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
             )
         )
-        val arbeidsforholdMedNormaltidSomFasteUkedager = Arbeidsforhold(
-            normalarbeidstid = NormalArbeidstid(
-                timerFasteDager = PlanUkedager(
-                    mandag = syvOgEnHalvTime,
-                    tirsdag = syvOgEnHalvTime,
-                    onsdag = syvOgEnHalvTime,
-                    torsdag = syvOgEnHalvTime,
-                    fredag = syvOgEnHalvTime
-                )
-            ),
-            arbeidIPeriode = ArbeidIPeriode(
-                type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
-                arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
-            )
-        )
     }
 
     @Test
@@ -60,15 +44,15 @@ class FrilansTest {
             harInntektSomFrilanser = true,
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
-                    timerPerUkeISnitt = null
+                    timerPerUkeISnitt = syvOgEnHalvTime
                 ),
                 arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                    type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
                     arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG,
-                    fasteDager = null
+                   prosentAvNormalt = null
                 )
             )
-        ).valider("test").verifiserFeil(2)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -220,89 +204,6 @@ class FrilansTest {
     }
 
     @Test
-    fun `Frilans som sluttet i søknadsperioden med normaltid oppgitt som faste ukedager`(){
-        val frilans = Frilans(
-            startdato = mandag,
-            sluttdato = onsdag,
-            jobberFortsattSomFrilans = true,
-            harInntektSomFrilanser = true,
-            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
-        )
-        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
-        val perioder = k9ArbeidstidInfo.perioder
-        assertEquals(4, perioder.size)
-
-        listOf(mandag, tirsdag, onsdag).forEach { dag ->
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
-        }
-
-        assertEquals(NULL_TIMER, perioder[Periode(torsdag, fredag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(NULL_TIMER, perioder[Periode(torsdag, fredag)]!!.faktiskArbeidTimerPerDag)
-    }
-
-    @Test
-    fun `Frilans som sluttet første dag i søknadsperioden med normaltid oppgitt som faste ukedager`(){
-        val frilans = Frilans(
-            startdato = mandag,
-            sluttdato = mandag,
-            jobberFortsattSomFrilans = true,
-            harInntektSomFrilanser = true,
-            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
-        )
-        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
-        val perioder = k9ArbeidstidInfo.perioder
-        assertEquals(2, perioder.size)
-
-        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, mandag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(syvOgEnHalvTime, perioder[Periode(mandag, mandag)]!!.faktiskArbeidTimerPerDag)
-
-        assertEquals(NULL_TIMER, perioder[Periode(tirsdag, fredag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(NULL_TIMER, perioder[Periode(tirsdag, fredag)]!!.faktiskArbeidTimerPerDag)
-    }
-
-    @Test
-    fun `Frilans som sluttet siste dag i søknadsperioden med normaltid oppgitt som faste ukedager`(){
-        val frilans = Frilans(
-            startdato = mandag,
-            sluttdato = fredag,
-            jobberFortsattSomFrilans = true,
-            harInntektSomFrilanser = true,
-            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
-        )
-        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
-        val perioder = k9ArbeidstidInfo.perioder
-        assertEquals(5, perioder.size)
-
-        listOf(mandag, tirsdag, onsdag, torsdag, fredag).forEach { dag ->
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
-        }
-    }
-
-    @Test
-    fun `Frilans som sluttet etter søknadsperioden med normaltid oppgitt som faste ukedager`(){
-        val frilans = Frilans(
-            startdato = mandag,
-            sluttdato = torsdag,
-            jobberFortsattSomFrilans = true,
-            harInntektSomFrilanser = true,
-            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
-        )
-        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
-        val perioder = k9ArbeidstidInfo.perioder
-        assertEquals(5, perioder.size)
-
-        listOf(mandag, tirsdag, onsdag, torsdag).forEach { dag ->
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
-        }
-
-        assertEquals(NULL_TIMER, perioder[Periode(fredag, fredag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(NULL_TIMER, perioder[Periode(fredag, fredag)]!!.faktiskArbeidTimerPerDag)
-    }
-
-    @Test
     fun `Frilans som startet etter søknadsperioden startet med normaltid oppgitt som snittPerUke`(){
         val frilans = Frilans(
             startdato = onsdag,
@@ -319,27 +220,6 @@ class FrilansTest {
 
         assertEquals(syvOgEnHalvTime, perioder[Periode(onsdag, fredag )]!!.jobberNormaltTimerPerDag)
         assertEquals(syvOgEnHalvTime, perioder[Periode(onsdag, fredag)]!!.faktiskArbeidTimerPerDag)
-    }
-
-    @Test
-    fun `Frilans som startet etter søknadsperioden startet med normaltid oppgitt som faste ukedager`(){
-        val frilans = Frilans(
-            startdato = onsdag,
-            jobberFortsattSomFrilans = true,
-            harInntektSomFrilanser = true,
-            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
-        )
-        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
-        val perioder = k9ArbeidstidInfo.perioder
-        assertEquals(4, perioder.size)
-
-        assertEquals(NULL_TIMER, perioder[Periode(mandag, tirsdag)]!!.jobberNormaltTimerPerDag)
-        assertEquals(NULL_TIMER, perioder[Periode(mandag, tirsdag)]!!.faktiskArbeidTimerPerDag)
-
-        listOf(onsdag, torsdag, fredag).forEach{ dag ->
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag )]!!.jobberNormaltTimerPerDag)
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
-        }
     }
 
     @Test
@@ -362,28 +242,5 @@ class FrilansTest {
 
         assertEquals(syvOgEnHalvTime, perioder[Periode(tirsdag, torsdag)]!!.jobberNormaltTimerPerDag)
         assertEquals(syvOgEnHalvTime, perioder[Periode(tirsdag, torsdag)]!!.faktiskArbeidTimerPerDag)
-    }
-
-    @Test
-    fun `Frilans som startet og sluttet i søknadsperioden med normaltid oppgitt som faste ukedager`(){
-        val frilans = Frilans(
-            startdato = tirsdag,
-            sluttdato = torsdag,
-            jobberFortsattSomFrilans = true,
-            harInntektSomFrilanser = true,
-            arbeidsforhold = arbeidsforholdMedNormaltidSomFasteUkedager
-        )
-        val k9ArbeidstidInfo = frilans.k9ArbeidstidInfo(mandag, fredag)
-        val perioder = k9ArbeidstidInfo.perioder
-        assertEquals(5, perioder.size)
-
-        listOf(mandag, fredag).forEach { dag ->
-            assertEquals(NULL_TIMER, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
-            assertEquals(NULL_TIMER, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
-        }
-        listOf(tirsdag, onsdag, torsdag).forEach { dag ->
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.jobberNormaltTimerPerDag)
-            assertEquals(syvOgEnHalvTime, perioder[Periode(dag, dag)]!!.faktiskArbeidTimerPerDag)
-        }
     }
 }
