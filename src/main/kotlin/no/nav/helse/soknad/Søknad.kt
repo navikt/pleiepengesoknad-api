@@ -44,7 +44,7 @@ data class Søknad(
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
     val frilans: Frilans,
-    val frilanserOppdrag: List<FrilanserV2>? = null,
+    val frilanserOppdrag: FrilanserV2? = null,
     val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
@@ -84,6 +84,7 @@ data class Søknad(
         nattevåk = nattevåk,
         beredskap = beredskap,
         frilans = frilans,
+        frilanserOppdrag = frilanserOppdrag,
         selvstendigNæringsdrivende = selvstendigNæringsdrivende,
         barnRelasjon = barnRelasjon,
         barnRelasjonBeskrivelse = barnRelasjonBeskrivelse,
@@ -98,7 +99,7 @@ data class FrilanserV2(
 )
 
 data class FrilanserOppdrag(
-    val navn: String? = null,
+    val navn: String,
     val organisasjonsnummer: String? = null,
     val offentligIdent: String? = null,
     val manuellOppføring: Boolean,
@@ -107,7 +108,6 @@ data class FrilanserOppdrag(
     @JsonFormat(pattern = "yyyy-MM-dd") val ansattFom: LocalDate? = null,
     @JsonFormat(pattern = "yyyy-MM-dd") val ansattTom: LocalDate? = null,
     val styremedlemHeleInntekt: Boolean? = null,
-    val omsorgslønnTimerPerUke: Double? = null,
     val arbeidsforhold: Arbeidsforhold? = null
 )
 

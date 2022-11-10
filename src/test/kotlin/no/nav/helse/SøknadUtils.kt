@@ -9,6 +9,10 @@ import no.nav.helse.soknad.Bosted
 import no.nav.helse.soknad.Enkeltdag
 import no.nav.helse.soknad.Ferieuttak
 import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.FrilanserOppdrag
+import no.nav.helse.soknad.FrilanserOppdragIPerioden
+import no.nav.helse.soknad.FrilanserOppdragType
+import no.nav.helse.soknad.FrilanserV2
 import no.nav.helse.soknad.Land
 import no.nav.helse.soknad.Medlemskap
 import no.nav.helse.soknad.Nattevåk
@@ -247,6 +251,187 @@ class SøknadUtils {
                     arbeidIPeriode = ArbeidIPeriode(
                         type = ArbeidIPeriodeType.ARBEIDER_VANLIG,
                         arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
+                    )
+                )
+            ),
+            frilanserOppdrag = FrilanserV2(
+                harInntektSomFrilanser = true,
+                oppdrag = listOf(
+                    FrilanserOppdrag(
+                        navn = "Frilanser Hansen",
+                        organisasjonsnummer = "12345678910",
+                        offentligIdent = null,
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.FRILANSER,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = null,
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = Arbeidsforhold(
+                            normalarbeidstid = NormalArbeidstid(
+                                timerPerUkeISnitt = Duration.ofHours(8),
+                            ), arbeidIPeriode = ArbeidIPeriode(
+                                type = ArbeidIPeriodeType.ARBEIDER_IKKE,
+                                arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
+                                prosentAvNormalt = 0.0
+                            )
+                        )
+                    ),
+                    FrilanserOppdrag(
+                        navn = "Frilanser Hansen Privat",
+                        organisasjonsnummer = null,
+                        offentligIdent = "01109324567",
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.FRILANSER,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = LocalDate.parse("2022-11-10"),
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = Arbeidsforhold(
+                            normalarbeidstid = NormalArbeidstid(
+                                timerPerUkeISnitt = Duration.ofHours(8),
+                            ), arbeidIPeriode = ArbeidIPeriode(
+                                type = ArbeidIPeriodeType.ARBEIDER_IKKE,
+                                arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
+                                prosentAvNormalt = 0.0
+                            )
+                        )
+                    ),
+                    FrilanserOppdrag(
+                        navn = "Styremedlem Hansen",
+                        organisasjonsnummer = "12345678910",
+                        offentligIdent = null,
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.STYREMELEM_ELLER_VERV,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = null,
+                        styremedlemHeleInntekt = false,
+                        arbeidsforhold = Arbeidsforhold(
+                            normalarbeidstid = NormalArbeidstid(
+                                timerPerUkeISnitt = Duration.ofHours(8),
+                            ), arbeidIPeriode = ArbeidIPeriode(
+                                type = ArbeidIPeriodeType.ARBEIDER_IKKE,
+                                arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
+                                prosentAvNormalt = 0.0
+                            )
+                        )
+                    ),
+                    FrilanserOppdrag(
+                        navn = "Styremedlem Hansen privat",
+                        organisasjonsnummer = null,
+                        offentligIdent = "01109324567",
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.STYREMELEM_ELLER_VERV,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = LocalDate.parse("2022-11-10"),
+                        styremedlemHeleInntekt = true,
+                        arbeidsforhold = Arbeidsforhold(
+                            normalarbeidstid = NormalArbeidstid(
+                                timerPerUkeISnitt = Duration.ofHours(8),
+                            ), arbeidIPeriode = ArbeidIPeriode(
+                                type = ArbeidIPeriodeType.ARBEIDER_IKKE,
+                                arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
+                                prosentAvNormalt = 0.0
+                            )
+                        )
+                    ),
+                    FrilanserOppdrag(
+                        navn = "Fosterforelder Hansen",
+                        organisasjonsnummer = null,
+                        offentligIdent = "01109324567",
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.FOSTERFORELDER,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = null,
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = null
+                    ),
+                    FrilanserOppdrag(
+                        navn = "Fosterforelder Hansen",
+                        organisasjonsnummer = null,
+                        offentligIdent = "01109324567",
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.FOSTERFORELDER,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = LocalDate.parse("2022-11-10"),
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = null
+                    ),
+                    FrilanserOppdrag(
+                        navn = "NAV",
+                        organisasjonsnummer = "12345678910",
+                        offentligIdent = null,
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.OMSORGSSTØNAD,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = null,
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = Arbeidsforhold(
+                            normalarbeidstid = NormalArbeidstid(
+                                timerPerUkeISnitt = Duration.ofHours(40),
+                            ), arbeidIPeriode = ArbeidIPeriode(
+                                type = ArbeidIPeriodeType.ARBEIDER_IKKE,
+                                arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
+                                timerPerUke = Duration.ZERO
+                            )
+                        )
+                    ),
+                    FrilanserOppdrag(
+                        navn = "NAV",
+                        organisasjonsnummer = "12345678910",
+                        offentligIdent = null,
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.OMSORGSSTØNAD,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = LocalDate.parse("2022-11-10"),
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = Arbeidsforhold(
+                            normalarbeidstid = NormalArbeidstid(
+                                timerPerUkeISnitt = Duration.ofHours(40),
+                            ), arbeidIPeriode = ArbeidIPeriode(
+                                type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
+                                arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+                                prosentAvNormalt = 50.0
+                            )
+                        )
+                    ),
+                    FrilanserOppdrag(
+                        navn = "Manuell oppføring",
+                        organisasjonsnummer = null,
+                        offentligIdent = null,
+                        manuellOppføring = true,
+                        oppdragType = FrilanserOppdragType.OMSORGSSTØNAD,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
+                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattTom = LocalDate.parse("2022-11-10"),
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = Arbeidsforhold(
+                            normalarbeidstid = NormalArbeidstid(
+                                timerPerUkeISnitt = Duration.ofHours(40),
+                            ), arbeidIPeriode = ArbeidIPeriode(
+                                type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
+                                arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+                                prosentAvNormalt = 50.0
+                            )
+                        )
+                    ),
+                    FrilanserOppdrag(
+                        navn = "Har ikke oppdrag i perioden",
+                        organisasjonsnummer = null,
+                        offentligIdent = null,
+                        manuellOppføring = false,
+                        oppdragType = null,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.NEI,
+                        ansattFom = null,
+                        ansattTom = null,
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = null
                     )
                 )
             ),

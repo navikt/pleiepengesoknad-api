@@ -33,6 +33,7 @@ data class KomplettSøknad(
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
     val frilans: Frilans,
+    val frilanserOppdrag: FrilanserV2? = null,
     val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
