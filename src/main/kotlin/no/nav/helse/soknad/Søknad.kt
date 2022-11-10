@@ -60,6 +60,7 @@ data class Søknad(
         k9FormatSøknad: Søknad,
         søker: Søker
     ): KomplettSøknad = KomplettSøknad(
+        apiDataVersjon = apiDataVersjon,
         språk = språk,
         søknadId = søknadId,
         mottatt = mottatt,
