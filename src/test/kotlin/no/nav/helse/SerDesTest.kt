@@ -8,6 +8,7 @@ import no.nav.helse.soknad.Beredskap
 import no.nav.helse.soknad.Bosted
 import no.nav.helse.soknad.Ferieuttak
 import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.FrilanserV2
 import no.nav.helse.soknad.KomplettSøknad
 import no.nav.helse.soknad.Land
 import no.nav.helse.soknad.Medlemskap
@@ -785,7 +786,10 @@ internal class SerDesTest {
                     }
                   }
                 },
-              "frilanserOppdrag": null, 
+              "frilanserOppdrag": {
+                "harInntektSomFrilanser": false,
+                "oppdrag": []
+              }, 
               "nattevåk": {
                 "harNattevåk": true,
                 "tilleggsinformasjon": "Har nattevåk"
@@ -1006,6 +1010,10 @@ internal class SerDesTest {
                         arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
                     )
                 )
+            ),
+            frilanserOppdrag = FrilanserV2(
+                harInntektSomFrilanser = false,
+                oppdrag = listOf()
             ),
             harVærtEllerErVernepliktig = true,
             k9FormatSøknad = null
