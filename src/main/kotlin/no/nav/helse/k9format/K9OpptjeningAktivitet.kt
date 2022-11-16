@@ -3,6 +3,7 @@ package no.nav.helse.k9format
 import no.nav.helse.soknad.Søknad
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.FrilanserV2
 import no.nav.k9.søknad.felles.opptjening.Frilanser
 import no.nav.k9.søknad.felles.opptjening.OpptjeningAktivitet
 import no.nav.k9.søknad.felles.opptjening.SelvstendigNæringsdrivende
@@ -20,8 +21,27 @@ internal fun Søknad.byggK9OpptjeningAktivitet(): OpptjeningAktivitet {
     }
     if(frilans.harInntektSomFrilanser){
         opptjeningAktivitet.medFrilanser(frilans.tilK9Frilanser())
+    } else {
+        frilanserOppdrag?.apply {
+            if (harInntektSomFrilanser) {
+                opptjeningAktivitet.medFrilanser(frilanserOppdrag.tilK9Frilanser())
+            }
+        }
     }
+
     return opptjeningAktivitet
+}
+
+internal fun FrilanserV2.tilK9Frilanser(): Frilanser {
+    val sortedOppdrag = oppdrag.sortedBy { it.ansattFom }
+    val ansattFom = sortedOppdrag.first().ansattFom
+    val ansattTom = sortedOppdrag.last { it.ansattTom != null }.ansattTom
+
+    val frilanser = Frilanser()
+    ansattFom?.apply { frilanser.medStartDato(this) }
+    ansattTom?.apply { frilanser.medSluttDato(this) }
+
+    return frilanser
 }
 
 internal fun Frilans.tilK9Frilanser(): Frilanser {

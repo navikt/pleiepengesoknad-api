@@ -2,6 +2,7 @@ package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.FrilanserV2
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.UtenlandskNæring
 import no.nav.k9.søknad.Søknad

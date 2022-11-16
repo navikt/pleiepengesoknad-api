@@ -9,10 +9,6 @@ import no.nav.helse.soknad.Bosted
 import no.nav.helse.soknad.Enkeltdag
 import no.nav.helse.soknad.Ferieuttak
 import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.FrilanserOppdrag
-import no.nav.helse.soknad.FrilanserOppdragIPerioden
-import no.nav.helse.soknad.FrilanserOppdragType
-import no.nav.helse.soknad.FrilanserV2
 import no.nav.helse.soknad.Land
 import no.nav.helse.soknad.Medlemskap
 import no.nav.helse.soknad.Nattevåk
@@ -29,6 +25,10 @@ import no.nav.helse.soknad.VarigEndring
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.FrilanserOppdrag
+import no.nav.helse.soknad.domene.FrilanserOppdragIPerioden
+import no.nav.helse.soknad.domene.FrilanserOppdragType
+import no.nav.helse.soknad.domene.FrilanserV2
 import no.nav.helse.soknad.domene.Næringstyper
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.OpptjeningType
@@ -426,7 +426,7 @@ class SøknadUtils {
                         organisasjonsnummer = null,
                         offentligIdent = null,
                         manuellOppføring = false,
-                        oppdragType = null,
+                        oppdragType = FrilanserOppdragType.FRILANSER,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.NEI,
                         ansattFom = null,
                         ansattTom = null,

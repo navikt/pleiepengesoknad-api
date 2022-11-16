@@ -8,7 +8,6 @@ import no.nav.helse.soknad.Beredskap
 import no.nav.helse.soknad.Bosted
 import no.nav.helse.soknad.Ferieuttak
 import no.nav.helse.soknad.FerieuttakIPerioden
-import no.nav.helse.soknad.FrilanserV2
 import no.nav.helse.soknad.KomplettSøknad
 import no.nav.helse.soknad.Land
 import no.nav.helse.soknad.Medlemskap
@@ -24,6 +23,7 @@ import no.nav.helse.soknad.VarigEndring
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.FrilanserV2
 import no.nav.helse.soknad.domene.Næringstyper
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.OpptjeningType
@@ -502,7 +502,7 @@ internal class SerDesTest {
                     "harOppdragIPerioden": "NEI",
                     "organisasjonsnummer": null,
                     "offentligIdent": null,
-                    "oppdragType": null,
+                    "oppdragType": "FRILANSER",
                     "manuellOppføring": false,
                     "ansattFom": null,
                     "ansattTom": null,
