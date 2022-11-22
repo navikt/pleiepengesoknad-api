@@ -14,12 +14,31 @@ data class FrilanserV2(
     val oppdrag: List<FrilanserOppdrag>,
 ) {
 
-    internal fun valider(felt: String) = mutableListOf<String>().apply {
+    internal fun valider(felt: String, tilOgMed: LocalDate) = mutableListOf<String>().apply {
         if (harInntektSomFrilanser) {
             kreverIkkeTom(oppdrag, "$felt.oppdrag kan ikke være tom dersom $felt.harInntektSomFrilanser=true")
         }
         oppdrag.forEachIndexed { index, frilanserOppdrag ->
-            addAll(frilanserOppdrag.valider("${felt}[$index].oppdrag"))
+            addAll(frilanserOppdrag.valider("${felt}.oppdrag[$index]", tilOgMed))
+        }
+    }
+
+    fun k9ArbeidstidInfo(fraOgMed: LocalDate, tilOgMed: LocalDate): ArbeidstidInfo {
+        return if (!harInntektSomFrilanser) Arbeidsforhold.k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
+        else {
+            oppdrag
+                .map {
+                    val k9ArbeidstidInfo = it.k9ArbeidstidInfo(fraOgMed, tilOgMed)
+                    k9ArbeidstidInfo
+                }
+                .reduce { acc: ArbeidstidInfo, arbeidstidInfo: ArbeidstidInfo ->
+                    arbeidstidInfo.perioder.forEach { (p: no.nav.k9.søknad.felles.type.Periode, periodeInfo: ArbeidstidPeriodeInfo) ->
+                        if (p == null || periodeInfo == null) {
+                            println("NULLLLLLLLL")
+                        } else acc.leggeTilPeriode(p, periodeInfo)
+                    }
+                    acc
+                }
         }
     }
 }
@@ -36,7 +55,7 @@ data class FrilanserOppdrag(
     val styremedlemHeleInntekt: Boolean? = null,
     val arbeidsforhold: Arbeidsforhold? = null,
 ) {
-    internal fun valider(felt: String) = mutableListOf<String>().apply {
+    internal fun valider(felt: String, tilOgMed: LocalDate) = mutableListOf<String>().apply {
         if (arbeidsforhold != null) addAll(arbeidsforhold.valider("$felt.arbeidsforhold"))
         if (ansattFom != null && ansattTom != null) {
             krever(
@@ -46,10 +65,44 @@ data class FrilanserOppdrag(
         }
         when (harOppdragIPerioden) {
             FrilanserOppdragIPerioden.JA -> {
-
+                krever(ansattTom == null, "$felt.ansattTom må være null dersom harOppdragIPerioden=JA")
             }
-            FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN -> {}
-            FrilanserOppdragIPerioden.NEI -> {}
+            FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN -> {
+                krever(
+                    ansattTom != null,
+                    "$felt.ansattTom kan ikke være null dersom harOppdragIPerioden=JA_MEN_AVSLUTTES_I_PERIODEN"
+                )
+                kotlin.runCatching {
+                    krever(
+                        ansattTom!!.isBefore(tilOgMed),
+                        "$felt.ansattTom må være før søknadsperiodens sluttdato dersom harOppdragIPerioden=JA_MEN_AVSLUTTES_I_PERIODEN"
+                    )
+                }
+            }
+            FrilanserOppdragIPerioden.NEI -> {
+                krever(ansattFom == null, "$felt.ansattFom må være null dersom harOppdragIPerioden=NEI")
+                krever(ansattTom == null, "$felt.ansattTom må være null dersom harOppdragIPerioden=NEI")
+            }
+        }
+
+        when (oppdragType) {
+            FrilanserOppdragType.STYREMELEM_ELLER_VERV -> {
+                krever(
+                    styremedlemHeleInntekt != null,
+                    "Dersom $felt.oppdragType=STYREMELEM_ELLER_VERV, så kan ikke styremedlemHeleInntekt være null"
+                )
+                if (styremedlemHeleInntekt != null && styremedlemHeleInntekt) {
+                    krever(
+                        arbeidsforhold != null,
+                        "Dersom $felt.oppdragType=STYREMELEM_ELLER_VERV og styremedlemHeleInntekt=true, så kan ikke arbeidsforhold være null"
+                    )
+                }
+            }
+            FrilanserOppdragType.FOSTERFORELDER -> krever(
+                arbeidsforhold == null,
+                "Dersom $felt.oppdragType=FOSTERFORELDER, må arbeidsforhold være null"
+            )
+            else -> {}
         }
     }
 
@@ -60,7 +113,11 @@ data class FrilanserOppdrag(
             FrilanserOppdragType.FOSTERFORELDER -> Arbeidsforhold.k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
 
             // Omsorgsstønad: fører timer som alle andre, ekstra info om hva de skal ta utgangspunkt i.
-            FrilanserOppdragType.OMSORGSSTØNAD -> håndterArbeidsforhold(fraOgMed, tilOgMed, arbeidsforhold)
+            FrilanserOppdragType.OMSORGSSTØNAD -> {
+                if (styremedlemHeleInntekt != null && styremedlemHeleInntekt == false)
+                    Arbeidsforhold.k9ArbeidstidInfoMedNullTimer(fraOgMed, tilOgMed)
+                else håndterArbeidsforhold(fraOgMed, tilOgMed, arbeidsforhold)
+            }
 
             // Styreverv og lignende: spm om de taper inntekten, hvis ja = føre timer, hvis nei = settes til 0/0.
             FrilanserOppdragType.STYREMELEM_ELLER_VERV -> {

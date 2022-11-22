@@ -7,13 +7,14 @@ import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstid
 import java.time.DayOfWeek
 import java.time.LocalDate
-import kotlin.streams.toList
 
 internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
 
     if(arbeidsgivere.isNotEmpty()) medArbeidstaker(arbeidsgivere.tilK9Arbeidstaker(fraOgMed, tilOgMed))
 
-    medFrilanserArbeidstid(frilans.k9ArbeidstidInfo(fraOgMed, tilOgMed))
+    frilans?.let { medFrilanserArbeidstid(it.k9ArbeidstidInfo(fraOgMed, tilOgMed)) }
+    frilanserOppdrag?.let { medFrilanserArbeidstid(it.k9ArbeidstidInfo(fraOgMed, tilOgMed)) }
+
     selvstendigNæringsdrivende.arbeidsforhold?.let {
         medSelvstendigNæringsdrivendeArbeidstidInfo(selvstendigNæringsdrivende.k9ArbeidstidInfo(fraOgMed, tilOgMed))
     }

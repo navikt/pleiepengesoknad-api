@@ -2,7 +2,22 @@ package no.nav.helse.k9format
 
 import no.nav.helse.SøknadUtils
 import no.nav.helse.soker.Søker
-import no.nav.helse.soknad.*
+import no.nav.helse.soknad.Enkeltdag
+import no.nav.helse.soknad.Ferieuttak
+import no.nav.helse.soknad.FerieuttakIPerioden
+import no.nav.helse.soknad.Omsorgstilbud
+import no.nav.helse.soknad.OmsorgstilbudSvarFortid
+import no.nav.helse.soknad.OmsorgstilbudSvarFremtid
+import no.nav.helse.soknad.PlanUkedager
+import no.nav.helse.soknad.domene.FrilanserOppdrag
+import no.nav.helse.soknad.domene.FrilanserOppdragIPerioden
+import no.nav.helse.soknad.domene.FrilanserOppdragType
+import no.nav.helse.soknad.domene.FrilanserV2
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import no.nav.k9.søknad.JsonUtils
 import no.nav.k9.søknad.felles.type.Periode
 import org.skyscreamer.jsonassert.JSONAssert
@@ -44,6 +59,45 @@ class K9FormatTest {
                     onsdag = Duration.ofHours(2),
                     torsdag = null,
                     fredag = Duration.ofHours(5),
+                )
+            ),
+            frilans = null,
+            frilanserOppdrag = FrilanserV2(
+                harInntektSomFrilanser = true,
+                oppdrag = listOf(
+                    FrilanserOppdrag(
+                        navn = "Oppdrag 1",
+                        organisasjonsnummer = "12345678910",
+                        offentligIdent = null,
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.FRILANSER,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
+                        ansattFom = LocalDate.parse("2021-01-01"),
+                        ansattTom = LocalDate.parse("2021-01-05"),
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = Arbeidsforhold(
+                            normalarbeidstid = NormalArbeidstid(
+                                timerPerUkeISnitt = Duration.ofHours(40),
+                                erLiktHverUke = true
+                            ), arbeidIPeriode = ArbeidIPeriode(
+                                type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
+                                arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
+                                prosentAvNormalt = 50.0
+                            )
+                        )
+                    ),
+                    FrilanserOppdrag(
+                        navn = "Oppdrag 2",
+                        organisasjonsnummer = "12345678910",
+                        offentligIdent = null,
+                        manuellOppføring = false,
+                        oppdragType = FrilanserOppdragType.FOSTERFORELDER,
+                        harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
+                        ansattFom = LocalDate.parse("2021-01-06"),
+                        ansattTom = LocalDate.parse("2021-01-10"),
+                        styremedlemHeleInntekt = null,
+                        arbeidsforhold = null
+                    )
                 )
             )
         )
@@ -114,8 +168,8 @@ class K9FormatTest {
                     }
                   ],
                   "frilanser": {
-                    "startdato": "2018-01-01",
-                    "sluttdato": null
+                    "startdato": "2021-01-01",
+                    "sluttdato": "2021-01-10"
                   }
                 },
                 "dataBruktTilUtledning": {
@@ -224,9 +278,17 @@ class K9FormatTest {
                   ],
                   "frilanserArbeidstidInfo": {
                     "perioder": {
+                          "2021-01-01/2021-01-05": {
+                            "jobberNormaltTimerPerDag": "PT8H",
+                            "faktiskArbeidTimerPerDag": "PT4H"
+                          },
+                          "2021-01-06/2021-01-10": {
+                            "jobberNormaltTimerPerDag": "PT0S",
+                            "faktiskArbeidTimerPerDag": "PT0S"
+                          },
                           "2021-01-01/2021-01-10": {
-                            "jobberNormaltTimerPerDag": "PT7H30M",
-                            "faktiskArbeidTimerPerDag": "PT7H30M"
+                            "jobberNormaltTimerPerDag": "PT0S",
+                            "faktiskArbeidTimerPerDag": "PT0S"
                           }
                      }
                   },

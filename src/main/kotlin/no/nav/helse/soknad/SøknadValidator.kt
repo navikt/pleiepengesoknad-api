@@ -134,7 +134,12 @@ internal fun Søknad.validate() {
     violations.addAll(selvstendigNæringsdrivende.valider())
     violations.addAll(opptjeningIUtlandet.valider())
     violations.addAll(utenlandskNæring.valider("utenlandskNæring").somViolation())
-    violations.addAll(frilans.valider("frilans").somViolation())
+    frilans?.let {
+        violations.addAll(frilans.valider("frilans").somViolation())
+    }
+    frilanserOppdrag?.let {
+        violations.addAll(it.valider("frilanserOppdrag", tilOgMed).somViolation())
+    }
 
     omsorgstilbud?.apply { violations.addAll(this.validate()) }
 

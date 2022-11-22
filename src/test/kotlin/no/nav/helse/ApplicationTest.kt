@@ -732,17 +732,6 @@ class ApplicationTest {
         val opplastetIdVedlegg = engine.jpegUrl(cookie = cookie)
 
         val søknad = SøknadUtils.defaultSøknad().copy(
-            fraOgMed = LocalDate.parse("2022-01-01"),
-            tilOgMed = LocalDate.parse("2022-01-10"),
-            ferieuttakIPerioden = FerieuttakIPerioden(
-                skalTaUtFerieIPerioden = true,
-                ferieuttak = listOf(
-                    Ferieuttak(
-                        fraOgMed = LocalDate.parse("2022-01-01"),
-                        tilOgMed = LocalDate.parse("2022-01-02"),
-                    )
-                )
-            ),
             vedlegg = listOf(URL(jpegUrl)),
             fødselsattestVedleggUrls = listOf(URL(opplastetIdVedlegg))
         )
@@ -971,6 +960,7 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.defaultSøknad().copy(
+                frilanserOppdrag = null,
                 fraOgMed = LocalDate.parse("2022-01-01"),
                 tilOgMed = LocalDate.parse("2022-01-10"),
                 ferieuttakIPerioden = null,
@@ -1127,9 +1117,6 @@ class ApplicationTest {
             expectedCode = HttpStatusCode.BadRequest,
             cookie = cookie,
             requestEntity = SøknadUtils.defaultSøknad().copy(
-                fraOgMed = LocalDate.parse("2022-01-01"),
-                tilOgMed = LocalDate.parse("2022-01-10"),
-                ferieuttakIPerioden = null,
                 vedlegg = listOf(URL(jpegUrl), URL(finnesIkkeUrl)),
             ).somJson()
         )

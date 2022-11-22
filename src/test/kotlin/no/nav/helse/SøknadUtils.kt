@@ -264,12 +264,13 @@ class SøknadUtils {
                         manuellOppføring = false,
                         oppdragType = FrilanserOppdragType.FRILANSER,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA,
-                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattFom = LocalDate.parse("2018-01-01"),
                         ansattTom = null,
                         styremedlemHeleInntekt = null,
                         arbeidsforhold = Arbeidsforhold(
                             normalarbeidstid = NormalArbeidstid(
                                 timerPerUkeISnitt = Duration.ofHours(8),
+                                erLiktHverUke = true
                             ), arbeidIPeriode = ArbeidIPeriode(
                                 type = ArbeidIPeriodeType.ARBEIDER_IKKE,
                                 arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
@@ -284,12 +285,13 @@ class SøknadUtils {
                         manuellOppføring = false,
                         oppdragType = FrilanserOppdragType.FRILANSER,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
-                        ansattFom = LocalDate.parse("2022-11-08"),
-                        ansattTom = LocalDate.parse("2022-11-10"),
+                        ansattFom = LocalDate.parse("2019-01-01"),
+                        ansattTom = LocalDate.parse("2019-01-30"),
                         styremedlemHeleInntekt = null,
                         arbeidsforhold = Arbeidsforhold(
                             normalarbeidstid = NormalArbeidstid(
                                 timerPerUkeISnitt = Duration.ofHours(8),
+                                erLiktHverUke = true
                             ), arbeidIPeriode = ArbeidIPeriode(
                                 type = ArbeidIPeriodeType.ARBEIDER_IKKE,
                                 arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
@@ -304,18 +306,10 @@ class SøknadUtils {
                         manuellOppføring = false,
                         oppdragType = FrilanserOppdragType.STYREMELEM_ELLER_VERV,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA,
-                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattFom = LocalDate.parse("2019-02-01"),
                         ansattTom = null,
                         styremedlemHeleInntekt = false,
-                        arbeidsforhold = Arbeidsforhold(
-                            normalarbeidstid = NormalArbeidstid(
-                                timerPerUkeISnitt = Duration.ofHours(8),
-                            ), arbeidIPeriode = ArbeidIPeriode(
-                                type = ArbeidIPeriodeType.ARBEIDER_IKKE,
-                                arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
-                                prosentAvNormalt = 0.0
-                            )
-                        )
+                        arbeidsforhold = null
                     ),
                     FrilanserOppdrag(
                         navn = "Styremedlem Hansen privat",
@@ -324,12 +318,13 @@ class SøknadUtils {
                         manuellOppføring = false,
                         oppdragType = FrilanserOppdragType.STYREMELEM_ELLER_VERV,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
-                        ansattFom = LocalDate.parse("2022-11-08"),
-                        ansattTom = LocalDate.parse("2022-11-10"),
+                        ansattFom = LocalDate.parse("2019-03-01"),
+                        ansattTom = LocalDate.parse("2019-03-10"),
                         styremedlemHeleInntekt = true,
                         arbeidsforhold = Arbeidsforhold(
                             normalarbeidstid = NormalArbeidstid(
                                 timerPerUkeISnitt = Duration.ofHours(8),
+                                erLiktHverUke = true
                             ), arbeidIPeriode = ArbeidIPeriode(
                                 type = ArbeidIPeriodeType.ARBEIDER_IKKE,
                                 arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
@@ -344,7 +339,7 @@ class SøknadUtils {
                         manuellOppføring = false,
                         oppdragType = FrilanserOppdragType.FOSTERFORELDER,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA,
-                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattFom = LocalDate.parse("2019-04-01"),
                         ansattTom = null,
                         styremedlemHeleInntekt = null,
                         arbeidsforhold = null
@@ -356,8 +351,8 @@ class SøknadUtils {
                         manuellOppføring = false,
                         oppdragType = FrilanserOppdragType.FOSTERFORELDER,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
-                        ansattFom = LocalDate.parse("2022-11-08"),
-                        ansattTom = LocalDate.parse("2022-11-10"),
+                        ansattFom = LocalDate.parse("2019-05-01"),
+                        ansattTom = LocalDate.parse("2019-05-15"),
                         styremedlemHeleInntekt = null,
                         arbeidsforhold = null
                     ),
@@ -368,12 +363,13 @@ class SøknadUtils {
                         manuellOppføring = false,
                         oppdragType = FrilanserOppdragType.OMSORGSSTØNAD,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA,
-                        ansattFom = LocalDate.parse("2022-11-08"),
+                        ansattFom = LocalDate.parse("2019-06-01"),
                         ansattTom = null,
                         styremedlemHeleInntekt = null,
                         arbeidsforhold = Arbeidsforhold(
                             normalarbeidstid = NormalArbeidstid(
                                 timerPerUkeISnitt = Duration.ofHours(40),
+                                erLiktHverUke = true
                             ), arbeidIPeriode = ArbeidIPeriode(
                                 type = ArbeidIPeriodeType.ARBEIDER_IKKE,
                                 arbeiderIPerioden = ArbeiderIPeriodenSvar.HELT_FRAVÆR,
@@ -388,12 +384,13 @@ class SøknadUtils {
                         manuellOppføring = false,
                         oppdragType = FrilanserOppdragType.OMSORGSSTØNAD,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
-                        ansattFom = LocalDate.parse("2022-11-08"),
-                        ansattTom = LocalDate.parse("2022-11-10"),
+                        ansattFom = LocalDate.parse("2019-06-10"),
+                        ansattTom = LocalDate.parse("2019-06-25"),
                         styremedlemHeleInntekt = null,
                         arbeidsforhold = Arbeidsforhold(
                             normalarbeidstid = NormalArbeidstid(
                                 timerPerUkeISnitt = Duration.ofHours(40),
+                                erLiktHverUke = true
                             ), arbeidIPeriode = ArbeidIPeriode(
                                 type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
                                 arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
@@ -408,12 +405,13 @@ class SøknadUtils {
                         manuellOppføring = true,
                         oppdragType = FrilanserOppdragType.OMSORGSSTØNAD,
                         harOppdragIPerioden = FrilanserOppdragIPerioden.JA_MEN_AVSLUTTES_I_PERIODEN,
-                        ansattFom = LocalDate.parse("2022-11-08"),
-                        ansattTom = LocalDate.parse("2022-11-10"),
+                        ansattFom = LocalDate.parse("2019-07-01"),
+                        ansattTom = LocalDate.parse("2019-07-25"),
                         styremedlemHeleInntekt = null,
                         arbeidsforhold = Arbeidsforhold(
                             normalarbeidstid = NormalArbeidstid(
                                 timerPerUkeISnitt = Duration.ofHours(40),
+                                erLiktHverUke = true
                             ), arbeidIPeriode = ArbeidIPeriode(
                                 type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
                                 arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,

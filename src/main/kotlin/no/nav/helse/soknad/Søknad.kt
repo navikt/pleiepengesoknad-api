@@ -43,7 +43,7 @@ data class Søknad(
     val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
-    val frilans: Frilans,
+    val frilans: Frilans? = null,
     val frilanserOppdrag: FrilanserV2? = null,
     val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,

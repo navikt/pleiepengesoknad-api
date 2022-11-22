@@ -19,7 +19,7 @@ internal fun Søknad.byggK9OpptjeningAktivitet(): OpptjeningAktivitet {
     if(selvstendigNæringsdrivende.harInntektSomSelvstendig){
         opptjeningAktivitet.medSelvstendigNæringsdrivende(selvstendigNæringsdrivende.tilK9SelvstendigNæringsdrivende())
     }
-    if(frilans.harInntektSomFrilanser){
+    if(frilans != null && frilans.harInntektSomFrilanser){
         opptjeningAktivitet.medFrilanser(frilans.tilK9Frilanser())
     } else {
         frilanserOppdrag?.apply {
@@ -34,7 +34,7 @@ internal fun Søknad.byggK9OpptjeningAktivitet(): OpptjeningAktivitet {
 
 internal fun FrilanserV2.tilK9Frilanser(): Frilanser {
     val sortedOppdrag = oppdrag.sortedBy { it.ansattFom }
-    val ansattFom = sortedOppdrag.first().ansattFom
+    val ansattFom = sortedOppdrag.first {it.ansattFom != null}.ansattFom
     val ansattTom = sortedOppdrag.last { it.ansattTom != null }.ansattTom
 
     val frilanser = Frilanser()
