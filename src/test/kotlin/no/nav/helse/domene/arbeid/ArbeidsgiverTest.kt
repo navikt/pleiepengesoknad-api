@@ -2,7 +2,12 @@ package no.nav.helse.domene.arbeid
 
 import no.nav.helse.TestUtils.Companion.verifiserFeil
 import no.nav.helse.soknad.Arbeidsgiver
-import no.nav.helse.soknad.domene.arbeid.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NULL_TIMER
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import no.nav.k9.søknad.felles.type.Periode
 import java.time.Duration
 import java.time.LocalDate
@@ -28,16 +33,15 @@ class ArbeidsgiverTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = null,
-                    timerPerUkeISnitt = null
+                    timerPerUkeISnitt = syvOgEnHalvTime
                 ),
                 arbeidIPeriode = ArbeidIPeriode(
-                    type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                    type = ArbeidIPeriodeType.ARBEIDER_ULIKE_UKER_TIMER,
                     arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG,
-                    fasteDager = null
+                    arbeidsuker = null
                 )
             )
-        ).valider("test").verifiserFeil(3)
+        ).valider("test").verifiserFeil(1)
     }
 
     @Test
@@ -48,7 +52,6 @@ class ArbeidsgiverTest {
             erAnsatt = true,
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
                     timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                 ),
                 arbeidIPeriode = ArbeidIPeriode(

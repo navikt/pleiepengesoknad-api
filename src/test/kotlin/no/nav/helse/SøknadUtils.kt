@@ -74,7 +74,6 @@ class SøknadUtils {
                     erAnsatt = true,
                     arbeidsforhold = Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
-                            erLiktHverUke = true,
                             timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                         ),
                         arbeidIPeriode = ArbeidIPeriode(
@@ -125,7 +124,6 @@ class SøknadUtils {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = ArbeidIPeriode(
@@ -241,7 +239,6 @@ class SøknadUtils {
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = ArbeidIPeriode(

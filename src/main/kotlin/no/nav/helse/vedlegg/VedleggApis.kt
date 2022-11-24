@@ -75,7 +75,7 @@ fun Route.vedleggApis(
             call.respondProblemDetails(hasToBeMultupartTypeProblemDetails)
         } else {
             val multipart = call.receiveMultipart()
-            var vedlegg: Vedlegg? = null
+            var vedlegg: Vedlegg?
 
             val eier = idTokenProvider.getIdToken(call).getNorskIdentifikasjonsnummer()
             vedlegg = multipart.getVedlegg(DokumentEier(eier))

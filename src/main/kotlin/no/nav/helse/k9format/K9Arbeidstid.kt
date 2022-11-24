@@ -7,7 +7,6 @@ import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstaker
 import no.nav.k9.søknad.ytelse.psb.v1.arbeidstid.Arbeidstid
 import java.time.DayOfWeek
 import java.time.LocalDate
-import kotlin.streams.toList
 
 internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
 

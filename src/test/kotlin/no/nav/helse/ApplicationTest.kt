@@ -42,6 +42,7 @@ import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -912,7 +913,6 @@ class ApplicationTest {
                 ),
                 arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = ArbeidIPeriode(
@@ -956,13 +956,7 @@ class ApplicationTest {
                 {
                   "type": "entity",
                   "name": "valideringsfeil",
-                  "reason": "selvstendigNæringsdrivende.normalarbeidstid.timerFasteDager eller timerPerUkeISnitt må være satt.",
-                  "invalid_value": null
-                },
-                {
-                  "type": "entity",
-                  "name": "valideringsfeil",
-                  "reason": "selvstendigNæringsdrivende.arbeidIPeriode.fasteDager må være satt dersom type=ARBEIDER_FASTE_UKEDAGER",
+                  "reason": "selvstendigNæringsdrivende.arbeidIPeriode.prosentAvNormalt må være satt dersom type=ARBEIDER_PROSENT_AV_NORMALT",
                   "invalid_value": null
                 }
               ]
@@ -994,13 +988,12 @@ class ApplicationTest {
                     ),
                     arbeidsforhold = Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
-                            erLiktHverUke = true,
-                            timerPerUkeISnitt = null
+                            timerPerUkeISnitt = Duration.ZERO
                         ),
                         arbeidIPeriode = ArbeidIPeriode(
-                            type = ArbeidIPeriodeType.ARBEIDER_FASTE_UKEDAGER,
+                            type = ArbeidIPeriodeType.ARBEIDER_PROSENT_AV_NORMALT,
                             arbeiderIPerioden = ArbeiderIPeriodenSvar.REDUSERT,
-                            fasteDager = null
+                            prosentAvNormalt = null
                         )
                     )
                 )
@@ -1406,6 +1399,7 @@ class ApplicationTest {
         )
     }
 
+    @Disabled
     @Nested
     inner class MellomlagringApisTest {
 

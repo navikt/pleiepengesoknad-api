@@ -5,7 +5,11 @@ import no.nav.helse.soknad.SelvstendigNæringsdrivende
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.domene.Næringstyper.JORDBRUK_SKOGBRUK
-import no.nav.helse.soknad.domene.arbeid.*
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode
+import no.nav.helse.soknad.domene.arbeid.ArbeidIPeriodeType
+import no.nav.helse.soknad.domene.arbeid.ArbeiderIPeriodenSvar
+import no.nav.helse.soknad.domene.arbeid.Arbeidsforhold
+import no.nav.helse.soknad.domene.arbeid.NormalArbeidstid
 import no.nav.k9.søknad.felles.type.Periode
 import java.time.Duration
 import java.time.LocalDate
@@ -45,7 +49,6 @@ class SelvstendigArbeidsforholdTest {
             ),
             arbeidsforhold = Arbeidsforhold(
                 normalarbeidstid = NormalArbeidstid(
-                    erLiktHverUke = true,
                     timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                 ),
                 arbeidIPeriode = ArbeidIPeriode(

@@ -126,7 +126,6 @@ class SoknadValidationTest {
                 erAnsatt = true,
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(

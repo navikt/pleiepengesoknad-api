@@ -90,18 +90,14 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode": null,
                   "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "erLiktHverUke": true,
-                    "timerPerUkeISnitt": "PT37H30M",
-                    "timerFasteDager": null
+                    "timerPerUkeISnitt": "PT37H30M"
                   },
                   "arbeidIPeriode": {
                     "type": "ARBEIDER_VANLIG",
                     "arbeiderIPerioden": "SOM_VANLIG",
-                    "erLiktHverUke": null,
-                    "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null
+                    "arbeidsuker": null
                   }
                 }
                 },
@@ -170,18 +166,14 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "erLiktHverUke": true,
-                    "timerPerUkeISnitt": "PT37H30M",
-                    "timerFasteDager": null
+                    "timerPerUkeISnitt": "PT37H30M"
                   },
                   "arbeidIPeriode": {
                     "type": "ARBEIDER_VANLIG",
                     "arbeiderIPerioden": "SOM_VANLIG",
-                    "erLiktHverUke": null,
-                    "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null
+                    "arbeidsuker": null
                   }
                 }
               },
@@ -265,18 +257,14 @@ internal class SerDesTest {
                 "harInntektSomFrilanser": true,
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "erLiktHverUke": true,
-                    "timerPerUkeISnitt": "PT37H30M",
-                    "timerFasteDager": null
+                    "timerPerUkeISnitt": "PT37H30M"
                   },
                   "arbeidIPeriode": {
                     "type": "ARBEIDER_VANLIG",
                     "arbeiderIPerioden": "SOM_VANLIG",
-                    "erLiktHverUke": null,
-                    "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null
+                    "arbeidsuker": null
                   }
                 }
               },
@@ -349,18 +337,14 @@ internal class SerDesTest {
                   "sluttetFørSøknadsperiode" : null,
                   "arbeidsforhold": {
                       "normalarbeidstid": {
-                        "erLiktHverUke": true,
-                        "timerPerUkeISnitt": "PT37H30M",
-                        "timerFasteDager": null
+                        "timerPerUkeISnitt": "PT37H30M"
                       },
                       "arbeidIPeriode": {
                         "type": "ARBEIDER_VANLIG",
                         "arbeiderIPerioden": "SOM_VANLIG",
-                        "erLiktHverUke": null,
-                        "fasteDager": null,
                         "prosentAvNormalt": null,
                         "timerPerUke": null,
-                        "enkeltdager": null
+                        "arbeidsuker": null
                       }
                     }
                 }
@@ -418,18 +402,14 @@ internal class SerDesTest {
                 },
                 "arbeidsforhold": {
                   "normalarbeidstid": {
-                    "erLiktHverUke": true,
-                    "timerPerUkeISnitt": "PT37H30M",
-                    "timerFasteDager": null
+                    "timerPerUkeISnitt": "PT37H30M"
                   },
                   "arbeidIPeriode": {
                     "type": "ARBEIDER_VANLIG",
                     "arbeiderIPerioden": "SOM_VANLIG",
-                    "erLiktHverUke": null,
-                    "fasteDager": null,
                     "prosentAvNormalt": null,
                     "timerPerUke": null,
-                    "enkeltdager": null
+                    "arbeidsuker": null
                   }
                 }
               },
@@ -540,18 +520,14 @@ internal class SerDesTest {
                   "sluttdato": null,
                   "arbeidsforhold": {
                     "normalarbeidstid": {
-                      "erLiktHverUke": true,
-                      "timerPerUkeISnitt": "PT37H30M",
-                      "timerFasteDager": null
+                      "timerPerUkeISnitt": "PT37H30M"
                     },
                     "arbeidIPeriode": {
                       "type": "ARBEIDER_VANLIG",
                       "arbeiderIPerioden": "SOM_VANLIG",
-                      "erLiktHverUke": null,
-                      "fasteDager": null,
                       "prosentAvNormalt": null,
                       "timerPerUke": null,
-                      "enkeltdager": null
+                      "arbeidsuker": null
                     }
                   }
                 },
@@ -592,7 +568,6 @@ internal class SerDesTest {
                     erAnsatt = true,
                     arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                         normalarbeidstid = NormalArbeidstid(
-                            erLiktHverUke = true,
                             timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                         ),
                         arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
@@ -637,7 +612,6 @@ internal class SerDesTest {
                 ),
                 arbeidsforhold = no.nav.helse.soknad.domene.arbeid.Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = no.nav.helse.soknad.domene.arbeid.ArbeidIPeriode(
@@ -767,7 +741,6 @@ internal class SerDesTest {
                 startdato = LocalDate.parse("2018-01-01"),
                 arbeidsforhold = Arbeidsforhold(
                     normalarbeidstid = NormalArbeidstid(
-                        erLiktHverUke = true,
                         timerPerUkeISnitt = Duration.ofHours(37).plusMinutes(30)
                     ),
                     arbeidIPeriode = ArbeidIPeriode(
