@@ -57,6 +57,7 @@ import no.nav.helse.mellomlagring.mellomlagringApis
 import no.nav.helse.soker.SøkerGateway
 import no.nav.helse.soker.SøkerService
 import no.nav.helse.soker.søkerApis
+import no.nav.helse.soknad.InnsendingCache
 import no.nav.helse.soknad.SøknadService
 import no.nav.helse.soknad.soknadApis
 import no.nav.helse.vedlegg.K9MellomlagringGateway
@@ -202,7 +203,8 @@ fun Application.pleiepengesoknadapi() {
                 ),
                 barnService = barnService,
                 søkerService = søkerService,
-                vedleggService = vedleggService
+                vedleggService = vedleggService,
+                innsendingCache = InnsendingCache(expireMinutes = configuration.getInnSendingCacheExpiryMinutes())
             )
 
             endringsmeldingApis(

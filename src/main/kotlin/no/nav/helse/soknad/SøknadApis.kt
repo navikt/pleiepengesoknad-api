@@ -32,18 +32,24 @@ fun Route.soknadApis(
     idTokenProvider: IdTokenProvider,
     barnService: BarnService,
     søkerService: SøkerService,
-    vedleggService: VedleggService
+    vedleggService: VedleggService,
+    innsendingCache: InnsendingCache
 ) {
 
     post(SØKNAD_URL) {
         val søknad = call.receive<Søknad>()
+        val idToken = idTokenProvider.getIdToken(call)
+
+        val cacheKey = "${idToken.getNorskIdentifikasjonsnummer()}_PSB"
+        innsendingCache.put(cacheKey)
+
         logger.info(formaterStatuslogging(søknad.søknadId, "mottatt"))
 
         søknadService.registrer(
             søknad = søknad,
             callId = call.getCallId(),
             metadata = call.getMetadata(),
-            idToken = idTokenProvider.getIdToken(call)
+            idToken = idToken
         )
 
         call.respond(HttpStatusCode.Accepted)

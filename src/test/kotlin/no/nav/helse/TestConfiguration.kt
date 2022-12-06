@@ -64,6 +64,7 @@ object TestConfiguration {
 
         map["nav.mellomlagring.søknad_tid_timer"] = "1"
         map["nav.mellomlagring.endringsmelding_tid_timer"] = "1"
+        map["nav.cache.innsending.expiry_in_minutes"] = "0"
 
         // Kafka
         kafkaEnvironment?.let {
