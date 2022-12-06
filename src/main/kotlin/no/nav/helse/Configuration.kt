@@ -79,4 +79,8 @@ data class Configuration(val config: ApplicationConfig) {
             keyStore = keyStore
         )
     }
+
+    fun getInnSendingCacheExpiryMinutes(): Long {
+        return config.getRequiredString("nav.cache.innsending.expiry_in_minutes", secret = false).toLong()
+    }
 }

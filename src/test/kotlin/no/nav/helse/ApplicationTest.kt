@@ -42,7 +42,6 @@ import org.json.JSONObject
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -1399,7 +1398,6 @@ class ApplicationTest {
         )
     }
 
-    @Disabled
     @Nested
     inner class MellomlagringApisTest {
 
