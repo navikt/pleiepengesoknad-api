@@ -8,7 +8,7 @@ val kafkaEmbeddedEnvVersion = "3.2.1"
 val kafkaVersion = "3.2.3"
 val fuelVersion = "2.3.1"
 val tokenSupportVersion = "2.1.1"
-val mockOauth2ServerVersion = "0.5.4"
+val mockOauth2ServerVersion = "0.5.7"
 
 val mainClass = "no.nav.helse.AppKt"
 
