@@ -12,7 +12,9 @@ internal fun Søknad.byggK9Arbeidstid(): Arbeidstid = Arbeidstid().apply {
 
     if(arbeidsgivere.isNotEmpty()) medArbeidstaker(arbeidsgivere.tilK9Arbeidstaker(fraOgMed, tilOgMed))
 
-    medFrilanserArbeidstid(frilans.k9ArbeidstidInfo(fraOgMed, tilOgMed))
+    frilans?.let { medFrilanserArbeidstid(it.k9ArbeidstidInfo(fraOgMed, tilOgMed)) }
+    frilanserOppdrag?.let { medFrilanserArbeidstid(it.k9ArbeidstidInfo(fraOgMed, tilOgMed)) }
+
     selvstendigNæringsdrivende.arbeidsforhold?.let {
         medSelvstendigNæringsdrivendeArbeidstidInfo(selvstendigNæringsdrivende.k9ArbeidstidInfo(fraOgMed, tilOgMed))
     }

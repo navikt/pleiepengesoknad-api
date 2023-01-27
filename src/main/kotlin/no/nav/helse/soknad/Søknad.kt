@@ -5,6 +5,7 @@ import no.nav.fpsak.tidsserie.LocalDateInterval
 import no.nav.helse.barn.Barn
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.FrilanserV2
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.UtenlandskNæring
 import no.nav.k9.søknad.Søknad
@@ -42,7 +43,8 @@ data class Søknad(
     val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk? = null,
     val beredskap: Beredskap? = null,
-    val frilans: Frilans,
+    val frilans: Frilans? = null,
+    val frilanserOppdrag: FrilanserV2? = null,
     val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
@@ -82,6 +84,7 @@ data class Søknad(
         nattevåk = nattevåk,
         beredskap = beredskap,
         frilans = frilans,
+        frilanserOppdrag = frilanserOppdrag,
         selvstendigNæringsdrivende = selvstendigNæringsdrivende,
         barnRelasjon = barnRelasjon,
         barnRelasjonBeskrivelse = barnRelasjonBeskrivelse,

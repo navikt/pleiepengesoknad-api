@@ -23,6 +23,7 @@ import no.nav.helse.soknad.VarigEndring
 import no.nav.helse.soknad.Virksomhet
 import no.nav.helse.soknad.YrkesaktivSisteTreFerdigliknedeÅrene
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.FrilanserV2
 import no.nav.helse.soknad.domene.Næringstyper
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.OpptjeningType
@@ -267,6 +268,236 @@ internal class SerDesTest {
                     "arbeidsuker": null
                   }
                 }
+              },
+              "frilanserOppdrag": {
+                "harInntektSomFrilanser": true,
+                "oppdrag": [
+                  {
+                    "navn": "Frilanser Hansen",
+                    "organisasjonsnummer": "12345678910",
+                    "offentligIdent": null,
+                    "oppdragType": "FRILANSER",
+                    "manuellOppføring": false,
+                    "harOppdragIPerioden": "JA",
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": null,
+                    "styremedlemHeleInntekt": null,
+                    "arbeidsforhold": {
+                      "normalarbeidstid": {
+                        "timerPerUkeISnitt": "PT8H",
+                        "erLiktHverUke": null,
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_IKKE",
+                        "arbeiderIPerioden": "HELT_FRAVÆR",
+                        "prosentAvNormalt": 0.0,
+                        "enkeltdager": null,
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "timerPerUke": null
+                      }
+                    }
+                  },
+                  {
+                    "navn": "Frilanser Hansen Privat",
+                    "offentligIdent": "01109324567",
+                    "organisasjonsnummer": null,
+                    "oppdragType": "FRILANSER",
+                    "manuellOppføring": false,
+                    "harOppdragIPerioden": "JA_MEN_AVSLUTTES_I_PERIODEN",
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": "2022-11-10",
+                    "styremedlemHeleInntekt": null,
+                    "arbeidsforhold": {
+                      "normalarbeidstid": {
+                        "timerPerUkeISnitt": "PT8H",
+                        "erLiktHverUke": null,
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_IKKE",
+                        "arbeiderIPerioden": "HELT_FRAVÆR",
+                        "prosentAvNormalt": 0.0,
+                        "enkeltdager": null,
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "timerPerUke": null
+                      }
+                    }
+                  },
+                  {
+                    "navn": "Styremedlem Hansen",
+                    "organisasjonsnummer": "12345678910",
+                    "offentligIdent": null,
+                    "oppdragType": "STYREMELEM_ELLER_VERV",
+                    "manuellOppføring": false,
+                    "harOppdragIPerioden": "JA",
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": null,
+                    "styremedlemHeleInntekt": false,
+                    "arbeidsforhold": {
+                      "normalarbeidstid": {
+                        "timerPerUkeISnitt": "PT8H",
+                        "erLiktHverUke": null,
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_IKKE",
+                        "arbeiderIPerioden": "HELT_FRAVÆR",
+                        "prosentAvNormalt": 0.0,
+                        "enkeltdager": null,
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "timerPerUke": null
+                      }
+                    }
+                  },
+                  {
+                    "navn": "Styremedlem Hansen privat",
+                    "offentligIdent": "01109324567",
+                    "organisasjonsnummer": null,
+                    "oppdragType": "STYREMELEM_ELLER_VERV",
+                    "manuellOppføring": false,
+                    "harOppdragIPerioden": "JA_MEN_AVSLUTTES_I_PERIODEN",
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": "2022-11-10",
+                    "styremedlemHeleInntekt": true,
+                    "arbeidsforhold": {
+                      "normalarbeidstid": {
+                        "timerPerUkeISnitt": "PT8H",
+                        "erLiktHverUke": null,
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_IKKE",
+                        "arbeiderIPerioden": "HELT_FRAVÆR",
+                        "prosentAvNormalt": 0.0,
+                        "enkeltdager": null,
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "timerPerUke": null
+                      }
+                    }
+                  },
+                  {
+                    "navn": "Fosterforelder Hansen",
+                    "offentligIdent": "01109324567",
+                    "organisasjonsnummer": null,
+                    "oppdragType": "FOSTERFORELDER",
+                    "manuellOppføring": false,
+                    "harOppdragIPerioden": "JA",
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": null,
+                    "styremedlemHeleInntekt": null,
+                    "arbeidsforhold": null
+                  },
+                  {
+                    "navn": "Fosterforelder Hansen",
+                    "offentligIdent": "01109324567",
+                    "organisasjonsnummer": null,
+                    "oppdragType": "FOSTERFORELDER",
+                    "manuellOppføring": false,
+                    "harOppdragIPerioden": "JA_MEN_AVSLUTTES_I_PERIODEN",
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": "2022-11-10",
+                    "styremedlemHeleInntekt": null,
+                    "arbeidsforhold": null
+                  },
+                  {
+                    "navn": "NAV",
+                    "organisasjonsnummer": "12345678910",
+                    "offentligIdent": null,
+                    "oppdragType": "OMSORGSSTØNAD",
+                    "harOppdragIPerioden": "JA",
+                    "manuellOppføring": false,
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": null,
+                    "styremedlemHeleInntekt": null,
+                    "arbeidsforhold": {
+                      "normalarbeidstid": {
+                        "timerPerUkeISnitt": "PT40H",
+                        "erLiktHverUke": null,
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_IKKE",
+                        "arbeiderIPerioden": "HELT_FRAVÆR",
+                        "prosentAvNormalt": null,
+                        "enkeltdager": null,
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "timerPerUke": "PT0S"
+                      }
+                    }
+                  },
+                  {
+                    "navn": "NAV",
+                    "organisasjonsnummer": "12345678910",
+                    "offentligIdent": null,
+                    "oppdragType": "OMSORGSSTØNAD",
+                    "manuellOppføring": false,
+                    "harOppdragIPerioden": "JA_MEN_AVSLUTTES_I_PERIODEN",
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": "2022-11-10",
+                    "styremedlemHeleInntekt": null,
+                    "arbeidsforhold": {
+                      "normalarbeidstid": {
+                        "timerPerUkeISnitt": "PT40H",
+                        "erLiktHverUke": null,
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_PROSENT_AV_NORMALT",
+                        "arbeiderIPerioden": "REDUSERT",
+                        "prosentAvNormalt": 50.0,
+                        "enkeltdager": null,
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "timerPerUke": null
+                      }
+                    }
+                  },
+                  {
+                    "navn": "Manuell oppføring",
+                    "organisasjonsnummer": null,
+                    "offentligIdent": null,
+                    "oppdragType": "OMSORGSSTØNAD",
+                    "manuellOppføring": true,
+                    "harOppdragIPerioden": "JA_MEN_AVSLUTTES_I_PERIODEN",
+                    "ansattFom": "2022-11-08",
+                    "ansattTom": "2022-11-10",
+                    "styremedlemHeleInntekt": null,
+                    "arbeidsforhold": {
+                      "normalarbeidstid": {
+                        "timerPerUkeISnitt": "PT40H",
+                        "erLiktHverUke": null,
+                        "timerFasteDager": null
+                      },
+                      "arbeidIPeriode": {
+                        "type": "ARBEIDER_PROSENT_AV_NORMALT",
+                        "arbeiderIPerioden": "REDUSERT",
+                        "prosentAvNormalt": 50.0,
+                        "enkeltdager": null,
+                        "erLiktHverUke": null,
+                        "fasteDager": null,
+                        "timerPerUke": null
+                      }
+                    }
+                  },
+                  {
+                    "navn": "Har ikke oppdrag i perioden",
+                    "harOppdragIPerioden": "NEI",
+                    "organisasjonsnummer": null,
+                    "offentligIdent": null,
+                    "oppdragType": "FRILANSER",
+                    "manuellOppføring": false,
+                    "ansattFom": null,
+                    "ansattTom": null,
+                    "styremedlemHeleInntekt": null,
+                    "arbeidsforhold": null
+                  }
+                ]
               },
               "nattevåk": {
                 "harNattevåk": true,
@@ -531,6 +762,10 @@ internal class SerDesTest {
                     }
                   }
                 },
+              "frilanserOppdrag": {
+                "harInntektSomFrilanser": false,
+                "oppdrag": []
+              }, 
               "nattevåk": {
                 "harNattevåk": true,
                 "tilleggsinformasjon": "Har nattevåk"
@@ -748,6 +983,10 @@ internal class SerDesTest {
                         arbeiderIPerioden = ArbeiderIPeriodenSvar.SOM_VANLIG
                     )
                 )
+            ),
+            frilanserOppdrag = FrilanserV2(
+                harInntektSomFrilanser = false,
+                oppdrag = listOf()
             ),
             harVærtEllerErVernepliktig = true,
             k9FormatSøknad = null

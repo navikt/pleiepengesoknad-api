@@ -10,6 +10,9 @@ internal fun MutableList<String>.krever(resultat: Boolean?, feilmelding: String 
 internal fun MutableList<String>.kreverIkkeNull(verdi: Any?, feilmelding: String = "") {
     if (verdi == null) this.add(feilmelding)
 }
+internal fun MutableList<String>.kreverIkkeTom(verdi: List<Any>, feilmelding: String = "") {
+    if (verdi.isEmpty()) this.add(feilmelding)
+}
 
 internal fun List<String>.somViolation(): Set<Violation> = this.map {
     Violation(

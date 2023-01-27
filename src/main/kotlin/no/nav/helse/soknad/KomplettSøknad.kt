@@ -2,6 +2,7 @@ package no.nav.helse.soknad
 
 import no.nav.helse.soker.Søker
 import no.nav.helse.soknad.domene.Frilans
+import no.nav.helse.soknad.domene.FrilanserV2
 import no.nav.helse.soknad.domene.OpptjeningIUtlandet
 import no.nav.helse.soknad.domene.UtenlandskNæring
 import no.nav.k9.søknad.Søknad
@@ -18,7 +19,7 @@ data class KomplettSøknad(
     val søker: Søker,
     val barn: BarnDetaljer,
     val arbeidsgivere: List<Arbeidsgiver>,
-    var vedleggId : List<String> = listOf(),
+    var vedleggId: List<String> = listOf(),
     val fødselsattestVedleggId: List<String>,
     val medlemskap: Medlemskap,
     val utenlandsoppholdIPerioden: UtenlandsoppholdIPerioden,
@@ -32,7 +33,8 @@ data class KomplettSøknad(
     val omsorgstilbud: Omsorgstilbud? = null,
     val nattevåk: Nattevåk?,
     val beredskap: Beredskap?,
-    val frilans: Frilans,
+    val frilans: Frilans?,
+    val frilanserOppdrag: FrilanserV2? = null,
     val selvstendigNæringsdrivende: SelvstendigNæringsdrivende,
     val barnRelasjon: BarnRelasjon? = null,
     val barnRelasjonBeskrivelse: String? = null,
