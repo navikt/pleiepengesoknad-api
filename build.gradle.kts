@@ -61,7 +61,7 @@ dependencies {
     testImplementation("no.nav:kafka-embedded-env:$kafkaEmbeddedEnvVersion") {
         exclude(group="org.apache.kafka", module="kafka-clients")
     }
-    testImplementation("io.mockk:mockk:1.13.1")
+    testImplementation("io.mockk:mockk:1.13.4")
 }
 
 repositories {
